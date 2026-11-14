@@ -1,0 +1,32 @@
+{
+  "files": [
+    {
+      "name": "osv-pypi-all",
+      "url": "https://osv-vulnerabilities.storage.googleapis.com/PyPI/all.zip",
+      "path": "data/raw/osv-pypi/all.zip",
+      "sha256": "1de5d3c1dfe3e61366562dc984b533325d23b992b25f0840f3fbdd0d60050bf2",
+      "size": 37910217,
+      "last_modified": "Sat, 14 Nov 2026 07:47:50 GMT",
+      "retrieved_at": "2026-11-14T08:36:34.413818Z"
+    },
+    {
+      "name": "osv-pypi-modified-id",
+      "url": "https://osv-vulnerabilities.storage.googleapis.com/PyPI/modified_id.csv",
+      "path": "data/raw/osv-pypi/modified_id.csv",
+      "sha256": "9ac58fc5fadaa65a69dda6f1cd0791412925b1b435f5d8b9f844350f8ce822c4",
+      "size": 1155955,
+      "last_modified": "Sat, 14 Nov 2026 07:47:49 GMT",
+      "retrieved_at": "2026-11-14T08:36:36.252544Z"
+    }
+  ],
+  "repos": [
+    {
+      "name": "github-advisory-database",
+      "url": "https://github.com/github/advisory-database.git",
+      "path": "data/raw/advisory-database",
+      "commit": "caadc2dda7b09d05aa367352ad5de7cfb4498f5b",
+      "committed_at": "2026-11-14T06:33:18Z",
+      "note": "sparse: PyPI GHSA advisories only"
+    }
+  ]
+}

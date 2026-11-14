@@ -1,0 +1,122 @@
+{
+  "as_of": "2026-11-14",
+  "records_total": 26916,
+  "records_by_source": {
+    "GHSA": 6872,
+    "MAL": 12046,
+    "OSV": 12,
+    "PYSEC": 7986
+  },
+  "excluded": {
+    "malicious_package": 12021,
+    "withdrawn": 640
+  },
+  "quarantined": 0,
+  "quarantine_reasons": {},
+  "advisories_in_scope": 14255,
+  "in_scope_by_source": {
+    "GHSA": 6613,
+    "OSV": 11,
+    "PYSEC": 7631
+  },
+  "vulnerabilities": 7105,
+  "packages": 1701,
+  "fix_link_any": {
+    "count": 4840,
+    "total": 7105,
+    "share": 0.681210415200563,
+    "ci95_low": 0.6702792341961978,
+    "ci95_high": 0.6919457520964662
+  },
+  "fix_link_github": {
+    "count": 4799,
+    "total": 7105,
+    "share": 0.6754398311048557,
+    "ci95_low": 0.664460587119715,
+    "ci95_high": 0.6862294675706196
+  },
+  "fix_link_github_commit": {
+    "count": 4416,
+    "total": 7105,
+    "share": 0.6215341308937368,
+    "ci95_low": 0.6101938369329141,
+    "ci95_high": 0.6327430762039523
+  },
+  "fix_link_strong": {
+    "count": 1584,
+    "total": 7105,
+    "share": 0.22294159042927517,
+    "ci95_low": 0.21341470084009204,
+    "ci95_high": 0.23276791235050262
+  },
+  "fix_link_by_kind": {
+    "bitbucket_commit": 3,
+    "github_commit": 4416,
+    "github_compare": 52,
+    "github_pull": 1744,
+    "gitlab_commit": 10,
+    "gitlab_merge_request": 1,
+    "other_commit": 48
+  },
+  "records_with_fix_link_any": {
+    "count": 9402,
+    "total": 14255,
+    "share": 0.6595580498070852,
+    "ci95_low": 0.6517371939022145,
+    "ci95_high": 0.6672929329926041
+  },
+  "symbol_data_osv": {
+    "count": 2,
+    "total": 7105,
+    "share": 0.00028149190710767064,
+    "ci95_low": 0.00007719862782804086,
+    "ci95_high": 0.0010258585899552341
+  },
+  "symbol_data_osv_ids": [
+    "PYSEC-2026-4009",
+    "PYSEC-2026-4010"
+  ],
+  "ghsa_repo": {
+    "expected": 6613,
+    "found": 6612,
+    "missing": [
+      "GHSA-jwvw-v7c5-m82h"
+    ],
+    "with_symbol_data": []
+  },
+  "new_per_day_365": {
+    "days": 365,
+    "total": 2825,
+    "mean": 7.739726027397261,
+    "median": 4.0,
+    "p90": 19.0,
+    "max": 52
+  },
+  "new_per_day_90": {
+    "days": 90,
+    "total": 828,
+    "mean": 9.2,
+    "median": 3.5,
+    "p90": 29.0,
+    "max": 49
+  },
+  "new_with_github_link_per_day_365": {
+    "days": 365,
+    "total": 1825,
+    "mean": 5.0,
+    "median": 3.0,
+    "p90": 12.0,
+    "max": 46
+  },
+  "modified_last_7_days": 69,
+  "modified_last_30_days": 771,
+  "advisories_per_day_per_model": 33,
+  "gate_metric": {
+    "count": 4799,
+    "total": 7105,
+    "share": 0.6754398311048557,
+    "ci95_low": 0.664460587119715,
+    "ci95_high": 0.6862294675706196
+  },
+  "gate_passed": true
+}

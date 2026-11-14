@@ -5,15 +5,17 @@ Read-only, and limited to ``api.github.com``. Repository names come back canonic
 package's declared repository.
 """
 
+import base64
 import re
 from pathlib import Path
 from typing import Any
+from urllib.parse import quote
 
 import httpx
 from pydantic import BaseModel, ConfigDict
 from tenacity.wait import wait_base
 
-from patchsight.pipeline.http import CachedJsonClient
+from patchsight.pipeline.http import CachedJsonClient, NotFoundError
 
 GITHUB_API = "https://api.github.com"
 COMMIT_FILES_PER_PAGE = 300  # fixed by the API for single-commit responses
@@ -33,6 +35,7 @@ class ChangedFile(BaseModel):
     previous_filename: str | None = None
     additions: int = 0
     deletions: int = 0
+    patch: str | None = None
 
 
 class ChangeSet(BaseModel):
@@ -42,6 +45,7 @@ class ChangeSet(BaseModel):
 
     repo: str
     commits: tuple[str, ...]
+    parents: tuple[str, ...] = ()
     files: tuple[ChangedFile, ...]
     truncated: bool
 
@@ -109,6 +113,7 @@ class GitHubClient:
         return ChangeSet(
             repo=_repo_from_html(first["html_url"]),
             commits=(str(first["sha"]),),
+            parents=tuple(str(p["sha"]) for p in first.get("parents") or []),
             files=tuple(files),
             truncated=truncated,
         )
@@ -148,3 +153,19 @@ class GitHubClient:
             files=tuple(_files(raw_files)),
             truncated=len(raw_files) >= COMPARE_FILE_LIMIT,
         )
+
+    def file_content(self, repo: str, path: str, ref: str) -> bytes | None:
+        """A file's bytes at ``ref``, or None if it does not exist there.
+
+        The contents API inlines files up to 1 MB; larger ones are read as git blobs.
+        """
+        try:
+            data = self.http.get_json(f"/repos/{repo}/contents/{quote(path)}", {"ref": ref})
+        except NotFoundError:
+            return None
+        if not isinstance(data, dict) or data.get("type") != "file":
+            return None
+        if data.get("encoding") == "base64" and data.get("content"):
+            return base64.b64decode(data["content"])
+        blob = self.http.get_json(f"/repos/{repo}/git/blobs/{data['sha']}")
+        return base64.b64decode(blob["content"]) if blob.get("content") else b""

@@ -1,6 +1,8 @@
 """Offline pipeline commands: ``python -m patchsight.pipeline <command>``."""
 
 import os
+import tarfile
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Annotated
 
@@ -8,6 +10,7 @@ import httpx
 import typer
 
 from patchsight.pipeline import fix_sample, week1
+from patchsight.pipeline.benchmarks import changedfuncs, dunlap
 from patchsight.pipeline.diffs.github import GitHubClient
 from patchsight.pipeline.ingest import ghsa_repo, snapshot
 from patchsight.pipeline.ingest.aliases import alias_groups
@@ -179,6 +182,81 @@ def fix_sample_command(
         f"{report.verdict}: strict estimate {report.estimated_share_strict.share:.1%}, "
         f"lenient {report.estimated_share_lenient.share:.1%} "
         f"({github.http.network_requests} GitHub and {pypi.http.network_requests} PyPI requests)"
+    )
+
+
+DUNLAP = "dunlap-llm-vulnerable-functions"
+DUNLAP_DATA = "dunlap-patchparser-csv"
+
+
+def _github_token() -> str:
+    token = os.environ.get("GITHUB_TOKEN")
+    if not token:
+        raise typer.BadParameter("set GITHUB_TOKEN; unauthenticated GitHub allows 60 requests/h")
+    return token
+
+
+@app.command("fetch-dunlap")
+def fetch_dunlap_command(root: Root = Path()) -> None:
+    """Clone the Dunlap et al. dataset, extract its CSV, and pin both in the manifest."""
+    dest = root / RAW / "llm-vulnerable-functions"
+    if not (dest / ".git").exists():
+        ghsa_repo._git("clone", "-q", "--depth", "1", dunlap.DUNLAP_REPO_URL, str(dest))
+    target = dest / "data" / "patchparser-data"
+    target.mkdir(parents=True, exist_ok=True)
+    with tarfile.open(dest / "data" / "patchparser-data.tar.gz") as archive:
+        archive.extractall(target, filter="data")
+    csv_path = dest / dunlap.DUNLAP_CSV
+    manifest = snapshot.load_manifest(root / MANIFEST)
+    repo = snapshot.record_repo(DUNLAP, dunlap.DUNLAP_REPO_URL, dest, root, note="Apache-2.0")
+    entry = snapshot.SourceFile(
+        name=DUNLAP_DATA,
+        url=f"{dunlap.DUNLAP_REPO_URL.removesuffix('.git')}/blob/{repo.commit}/"
+        "data/patchparser-data.tar.gz",
+        path=csv_path.relative_to(root).as_posix(),
+        sha256=snapshot.sha256_file(csv_path),
+        size=csv_path.stat().st_size,
+        last_modified=None,
+        retrieved_at=datetime.now(UTC),
+    )
+    snapshot.save_manifest(manifest.with_repo(repo).with_file(entry), root / MANIFEST)
+    typer.echo(f"{DUNLAP}: {repo.commit}; {DUNLAP_DATA} sha256 {entry.sha256}")
+
+
+@app.command("dunlap-baseline")
+def dunlap_baseline_command(
+    root: Root = Path(),
+    cache: Annotated[Path, typer.Option(help="HTTP response cache.")] = Path(".cache/http"),
+    out: Annotated[Path, typer.Option(help="Report path, without extension.")] = Path(
+        "docs/reports/changedfuncs-baseline"
+    ),
+) -> None:
+    """Reproduce ChangedFuncs on the Dunlap benchmark (needs GITHUB_TOKEN)."""
+    token = _github_token()
+    manifest = snapshot.load_manifest(root / MANIFEST)
+    entry = manifest.file(DUNLAP_DATA)
+    reports = dunlap.load(snapshot.verify(entry, root))
+    repo = next(r for r in manifest.repos if r.name == DUNLAP)
+    github = GitHubClient(root / cache / "github", token=token)
+    try:
+        report = changedfuncs.run(github, reports, as_of=entry.retrieved_at.date())
+    finally:
+        github.close()
+    lines = [
+        f"- `{repo.name}`: {repo.url}, commit `{repo.commit}`",
+        f"- `{entry.name}`: `{dunlap.DUNLAP_CSV}`, SHA-256 `{entry.sha256}`",
+        "- Fix commits and file contents: GitHub REST API (Go's own repositories through "
+        "their `github.com/golang` mirrors)",
+    ]
+    target = root / out
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.with_suffix(".json").write_text(report.model_dump_json(indent=2) + "\n", "utf-8")
+    target.with_suffix(".md").write_text(changedfuncs.render_markdown(report, lines), "utf-8")
+    o = report.ours
+    typer.echo(
+        f"ours: P {o.precision:.3f} R {o.recall:.3f} F1 {o.f1:.3f}; "
+        f"identical to released {report.identical_reports}/{report.reports}; "
+        f"{github.http.network_requests} GitHub requests"
     )
 
 

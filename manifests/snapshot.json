@@ -1,6 +1,15 @@
 {
   "files": [
     {
+      "name": "dunlap-patchparser-csv",
+      "url": "https://github.com/s3c2/llm-vulnerable-functions/blob/b11c663f0b9252cea2e1b1f79e5e5e0ac0dcf709/data/patchparser-data.tar.gz",
+      "path": "data/raw/llm-vulnerable-functions/data/patchparser-data/patchparser-data-2023-10-31.csv",
+      "sha256": "27e114745be62ea0ac225a82aa1efec0fc14dd3faa63c9e8bbdd75d563d2775e",
+      "size": 188997021,
+      "last_modified": null,
+      "retrieved_at": "2026-11-14T09:09:44.273744Z"
+    },
+    {
       "name": "osv-pypi-all",
       "url": "https://osv-vulnerabilities.storage.googleapis.com/PyPI/all.zip",
       "path": "data/raw/osv-pypi/all.zip",
@@ -20,6 +29,14 @@
     }
   ],
   "repos": [
+    {
+      "name": "dunlap-llm-vulnerable-functions",
+      "url": "https://github.com/s3c2/llm-vulnerable-functions.git",
+      "path": "data/raw/llm-vulnerable-functions",
+      "commit": "b11c663f0b9252cea2e1b1f79e5e5e0ac0dcf709",
+      "committed_at": "2024-08-20T23:21:59Z",
+      "note": "Apache-2.0"
+    },
     {
       "name": "github-advisory-database",
       "url": "https://github.com/github/advisory-database.git",

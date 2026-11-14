@@ -1,0 +1,3989 @@
+{
+  "as_of": "2026-11-14",
+  "seed": 20261114,
+  "vulnerabilities": 7105,
+  "population": 4799,
+  "gate_share": 0.6754398311048557,
+  "sample_size": 100,
+  "outcomes": {
+    "fix_on_package_repo": 92,
+    "fix_repo_unconfirmed": 2,
+    "non_source_only": 2,
+    "other_repo_only": 2,
+    "unmerged_pr_only": 0,
+    "unresolvable": 2
+  },
+  "real_fix_strict": {
+    "count": 92,
+    "total": 100,
+    "share": 0.92,
+    "ci95_low": 0.8500189223072278,
+    "ci95_high": 0.9589065387268155
+  },
+  "real_fix_lenient": {
+    "count": 94,
+    "total": 100,
+    "share": 0.94,
+    "ci95_low": 0.8752318448839114,
+    "ci95_high": 0.9722138761993719
+  },
+  "estimated_share_strict": {
+    "share": 0.6214046446164673,
+    "low": 0.5741366373191253,
+    "high": 0.647683670562982
+  },
+  "estimated_share_lenient": {
+    "share": 0.6349134412385643,
+    "low": 0.5911664494859804,
+    "high": 0.6566719763379009
+  },
+  "verdict": "met",
+  "fixes_touching_python": {
+    "count": 74,
+    "total": 92,
+    "share": 0.8043478260869565,
+    "ci95_low": 0.7117967157251767,
+    "ci95_high": 0.8725015686880285
+  },
+  "files_per_fix_median": 4.0,
+  "files_per_fix_p90": 12.0,
+  "truncated_fixes": 0,
+  "candidates_checked": 168,
+  "candidate_status": {
+    "not_found": 2,
+    "resolved": 166
+  },
+  "groups": [
+    {
+      "key": "GHSA-49f7-whx5-4256",
+      "advisory_ids": [
+        "GHSA-49f7-whx5-4256",
+        "PYSEC-2026-3816"
+      ],
+      "packages": [
+        "cognee"
+      ],
+      "package_repos": [
+        "topoteretes/cognee"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/topoteretes/cognee/commit/10971db1b0bd97e88f96bd2a9ffb3edb7b22bcd0",
+          "status": "resolved",
+          "repo": "topoteretes/cognee",
+          "on_package_repo": true,
+          "files": 4,
+          "python_files": 4,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/topoteretes/cognee/commit/d10b1b77e2157c6238fd4d1acb1923a048991699",
+          "status": "resolved",
+          "repo": "topoteretes/cognee",
+          "on_package_repo": true,
+          "files": 3,
+          "python_files": 3,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/topoteretes/cognee/commit/ebcf82412d0954f5c5018444f7eee8d96fee5113",
+          "status": "resolved",
+          "repo": "topoteretes/cognee",
+          "on_package_repo": true,
+          "files": 2,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-c978-59m8-c77v",
+      "advisory_ids": [
+        "GHSA-c978-59m8-c77v"
+      ],
+      "packages": [
+        "virtualenv"
+      ],
+      "package_repos": [
+        "pypa/virtualenv"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/pypa/virtualenv/pull/3417",
+          "status": "resolved",
+          "repo": "pypa/virtualenv",
+          "on_package_repo": true,
+          "files": 4,
+          "python_files": 2,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/pypa/virtualenv/commit/2519941bed33ee0d3ac99277f67913e439e476a9",
+          "status": "resolved",
+          "repo": "pypa/virtualenv",
+          "on_package_repo": true,
+          "files": 4,
+          "python_files": 2,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-x99w-6fgc-pmfw",
+      "advisory_ids": [
+        "GHSA-x99w-6fgc-pmfw",
+        "PYSEC-2026-3735"
+      ],
+      "packages": [
+        "nltk"
+      ],
+      "package_repos": [
+        "nltk/nltk"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/nltk/nltk/commit/c3e37113742a1ebeeb4f2ca58941f320f98805ea",
+          "status": "resolved",
+          "repo": "nltk/nltk",
+          "on_package_repo": true,
+          "files": 4,
+          "python_files": 3,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-rww7-2gpw-fv6j",
+      "advisory_ids": [
+        "GHSA-rww7-2gpw-fv6j",
+        "PYSEC-2022-136",
+        "PYSEC-2022-81",
+        "PYSEC-2026-3241"
+      ],
+      "packages": [
+        "tensorflow",
+        "tensorflow-cpu",
+        "tensorflow-gpu"
+      ],
+      "package_repos": [
+        "tensorflow/tensorflow"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": false,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/tensorflow/tensorflow/commit/cb164786dc891ea11d3a900e90367c339305dc7b",
+          "status": "resolved",
+          "repo": "tensorflow/tensorflow",
+          "on_package_repo": true,
+          "files": 1,
+          "python_files": 0,
+          "native_files": 1,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-vp9j-rghq-8jhh",
+      "advisory_ids": [
+        "GHSA-vp9j-rghq-8jhh",
+        "PYSEC-2020-208"
+      ],
+      "packages": [
+        "ansible"
+      ],
+      "package_repos": [
+        "ansible-community/ansible-build-data"
+      ],
+      "outcome": "other_repo_only",
+      "fix_touches_python": false,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/ansible/ansible/commit/77d0effcc5b2da1ef23e4ba32986a9759c27c10d",
+          "status": "resolved",
+          "repo": "ansible/ansible",
+          "on_package_repo": false,
+          "files": 3,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/ansible/ansible/commit/84afa8e90cd168ff13208c8eae3e533ce7e21e1f",
+          "status": "resolved",
+          "repo": "ansible/ansible",
+          "on_package_repo": false,
+          "files": 3,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/ansible/ansible/commit/ffd3757fc35468a97791e452e7f2d14c3e3fcb80",
+          "status": "resolved",
+          "repo": "ansible/ansible",
+          "on_package_repo": false,
+          "files": 3,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-6gmf-2369-c76c",
+      "advisory_ids": [
+        "GHSA-6gmf-2369-c76c",
+        "PYSEC-2025-57"
+      ],
+      "packages": [
+        "zenml"
+      ],
+      "package_repos": [
+        "zenml-io/zenml"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/zenml-io/zenml/commit/cba152eb9ca3071c8372b0b91c02d9d3351de48d",
+          "status": "resolved",
+          "repo": "zenml-io/zenml",
+          "on_package_repo": true,
+          "files": 3,
+          "python_files": 3,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-vcjj-9vg7-vf68",
+      "advisory_ids": [
+        "GHSA-vcjj-9vg7-vf68",
+        "PYSEC-2021-310",
+        "PYSEC-2021-601",
+        "PYSEC-2021-799"
+      ],
+      "packages": [
+        "tensorflow",
+        "tensorflow-cpu",
+        "tensorflow-gpu"
+      ],
+      "package_repos": [
+        "tensorflow/tensorflow"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": false,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/tensorflow/tensorflow/commit/15691e456c7dc9bd6be203b09765b063bf4a380c",
+          "status": "resolved",
+          "repo": "tensorflow/tensorflow",
+          "on_package_repo": true,
+          "files": 1,
+          "python_files": 0,
+          "native_files": 1,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-2wqp-q3c6-ccj5",
+      "advisory_ids": [
+        "GHSA-2wqp-q3c6-ccj5"
+      ],
+      "packages": [
+        "mlflow"
+      ],
+      "package_repos": [
+        "mlflow/mlflow"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/mlflow/mlflow/pull/25890",
+          "status": "resolved",
+          "repo": "mlflow/mlflow",
+          "on_package_repo": true,
+          "files": 4,
+          "python_files": 2,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/mlflow/mlflow/commit/bac30b4148c4f40045b4d4db07ae60ab3838803f",
+          "status": "resolved",
+          "repo": "mlflow/mlflow",
+          "on_package_repo": true,
+          "files": 4,
+          "python_files": 2,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-q4c3-7575-55j2",
+      "advisory_ids": [
+        "GHSA-q4c3-7575-55j2",
+        "PYSEC-2026-3707"
+      ],
+      "packages": [
+        "apache-airflow"
+      ],
+      "package_repos": [
+        "apache/airflow"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/apache/airflow/pull/70685",
+          "status": "resolved",
+          "repo": "apache/airflow",
+          "on_package_repo": true,
+          "files": 4,
+          "python_files": 2,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/apache/airflow/commit/18b622920cf0f486155075125ecdcabc752b1eca",
+          "status": "resolved",
+          "repo": "apache/airflow",
+          "on_package_repo": true,
+          "files": 4,
+          "python_files": 2,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/apache/airflow/commit/a1ab0653121829675ad864080d2cd9d3d1688b01",
+          "status": "resolved",
+          "repo": "apache/airflow",
+          "on_package_repo": true,
+          "files": 3,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-c5x2-p679-95wc",
+      "advisory_ids": [
+        "GHSA-c5x2-p679-95wc",
+        "PYSEC-2021-269",
+        "PYSEC-2021-560",
+        "PYSEC-2021-758"
+      ],
+      "packages": [
+        "tensorflow",
+        "tensorflow-cpu",
+        "tensorflow-gpu"
+      ],
+      "package_repos": [
+        "tensorflow/tensorflow"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": false,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/tensorflow/tensorflow/commit/02cc160e29d20631de3859c6653184e3f876b9d7",
+          "status": "resolved",
+          "repo": "tensorflow/tensorflow",
+          "on_package_repo": true,
+          "files": 2,
+          "python_files": 0,
+          "native_files": 1,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-pw38-xv9x-h8ch",
+      "advisory_ids": [
+        "GHSA-pw38-xv9x-h8ch",
+        "PYSEC-2024-324",
+        "PYSEC-2026-1565"
+      ],
+      "packages": [
+        "llama-index",
+        "llama-index-llms-rungpt"
+      ],
+      "package_repos": [
+        "run-llama/llama_index"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/run-llama/llama_index/commit/d73715eaf0642705583e7897c78b9c8dd2d3a7ba",
+          "status": "resolved",
+          "repo": "run-llama/llama_index",
+          "on_package_repo": true,
+          "files": 3,
+          "python_files": 3,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-793v-gxfp-9q9h",
+      "advisory_ids": [
+        "GHSA-793v-gxfp-9q9h",
+        "PYSEC-2026-1934"
+      ],
+      "packages": [
+        "spacy-llm"
+      ],
+      "package_repos": [
+        "explosion/spacy-llm"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/explosion/spacy-llm/pull/491",
+          "status": "resolved",
+          "repo": "explosion/spacy-llm",
+          "on_package_repo": true,
+          "files": 3,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/explosion/spacy-llm/commit/8bde0490cc1e9de9dd2e84480b7b5cd18a94d739",
+          "status": "resolved",
+          "repo": "explosion/spacy-llm",
+          "on_package_repo": true,
+          "files": 3,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-32p4-gm2c-wmch",
+      "advisory_ids": [
+        "GHSA-32p4-gm2c-wmch",
+        "PYSEC-2026-1121"
+      ],
+      "packages": [
+        "ansible-core"
+      ],
+      "package_repos": [
+        "ansible/ansible"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/ansible/ansible/commit/03794735d370db98a5ec2ad514fab2b0dd22d6be",
+          "status": "resolved",
+          "repo": "ansible/ansible",
+          "on_package_repo": true,
+          "files": 5,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/ansible/ansible/commit/03daf774d0d80fb7235910ed1c2b4fbcaebdfe65",
+          "status": "resolved",
+          "repo": "ansible/ansible",
+          "on_package_repo": true,
+          "files": 5,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/ansible/ansible/commit/3b6de811abea0a811e03e3029222a7e459922892",
+          "status": "resolved",
+          "repo": "ansible/ansible",
+          "on_package_repo": true,
+          "files": 5,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/ansible/ansible/commit/9d7312f695639e804d2caeb1d0f51c716a9ac7dd",
+          "status": "resolved",
+          "repo": "ansible/ansible",
+          "on_package_repo": true,
+          "files": 5,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/ansible/ansible/commit/f7be90626da3035c697623dcf9c90b7a0bc91c92",
+          "status": "resolved",
+          "repo": "ansible/ansible",
+          "on_package_repo": true,
+          "files": 5,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-pgqp-8h46-6x4j",
+      "advisory_ids": [
+        "GHSA-pgqp-8h46-6x4j",
+        "PYSEC-2026-1656"
+      ],
+      "packages": [
+        "mlflow"
+      ],
+      "package_repos": [
+        "mlflow/mlflow"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/mlflow/mlflow/pull/17910",
+          "status": "resolved",
+          "repo": "mlflow/mlflow",
+          "on_package_repo": true,
+          "files": 25,
+          "python_files": 8,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/mlflow/mlflow/commit/b0ffd289e9b0d0cc32c9e3a9b9f3843ae83dbec3",
+          "status": "resolved",
+          "repo": "mlflow/mlflow",
+          "on_package_repo": true,
+          "files": 25,
+          "python_files": 8,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-wwch-cmqr-hhrm",
+      "advisory_ids": [
+        "GHSA-wwch-cmqr-hhrm",
+        "PYSEC-2022-43067"
+      ],
+      "packages": [
+        "ansible-runner"
+      ],
+      "package_repos": [
+        "ansible/ansible-runner"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/ansible/ansible-runner/pull/742",
+          "status": "resolved",
+          "repo": "ansible/ansible-runner",
+          "on_package_repo": true,
+          "files": 8,
+          "python_files": 2,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-m2jw-cj8v-937r",
+      "advisory_ids": [
+        "GHSA-m2jw-cj8v-937r",
+        "PYSEC-2026-1278"
+      ],
+      "packages": [
+        "copyparty"
+      ],
+      "package_repos": [
+        "9001/copyparty"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": false,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/9001/copyparty/commit/438ea6ccb06f39d7cbb4b6ee7ad44606e21a63dd",
+          "status": "resolved",
+          "repo": "9001/copyparty",
+          "on_package_repo": true,
+          "files": 1,
+          "python_files": 0,
+          "native_files": 0,
+          "other_source_files": 1,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-mjqp-26hc-grxg",
+      "advisory_ids": [
+        "GHSA-mjqp-26hc-grxg",
+        "PYSEC-2025-152"
+      ],
+      "packages": [
+        "picklescan"
+      ],
+      "package_repos": [
+        "mmaitre314/picklescan"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/mmaitre314/picklescan/commit/28a7b4ef753466572bda3313737116eeb9b4e5c5",
+          "status": "resolved",
+          "repo": "mmaitre314/picklescan",
+          "on_package_repo": true,
+          "files": 6,
+          "python_files": 2,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-f8q4-jwww-x3wv",
+      "advisory_ids": [
+        "GHSA-f8q4-jwww-x3wv",
+        "PYSEC-2022-166"
+      ],
+      "packages": [
+        "paramiko"
+      ],
+      "package_repos": [
+        "paramiko/paramiko"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/paramiko/paramiko/commit/4c491e299c9b800358b16fa4886d8d94f45abe2e",
+          "status": "resolved",
+          "repo": "paramiko/paramiko",
+          "on_package_repo": true,
+          "files": 3,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-9jmf-237g-qf46",
+      "advisory_ids": [
+        "GHSA-9jmf-237g-qf46",
+        "PYSEC-2024-58"
+      ],
+      "packages": [
+        "django"
+      ],
+      "package_repos": [
+        "django/django"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/django/django/commit/2b00edc0151a660d1eb86da4059904a0fc4e095e",
+          "status": "resolved",
+          "repo": "django/django",
+          "on_package_repo": true,
+          "files": 6,
+          "python_files": 2,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/django/django/commit/9f4f63e9ebb7bf6cb9547ee4e2526b9b96703270",
+          "status": "resolved",
+          "repo": "django/django",
+          "on_package_repo": true,
+          "files": 7,
+          "python_files": 2,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-c7pr-343r-5c46",
+      "advisory_ids": [
+        "GHSA-c7pr-343r-5c46",
+        "PYSEC-2021-366"
+      ],
+      "packages": [
+        "vyper"
+      ],
+      "package_repos": [
+        "vyperlang/vyper"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/vyperlang/vyper/pull/2447",
+          "status": "resolved",
+          "repo": "vyperlang/vyper",
+          "on_package_repo": true,
+          "files": 60,
+          "python_files": 38,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-qw5h-7f53-xrp6",
+      "advisory_ids": [
+        "GHSA-qw5h-7f53-xrp6",
+        "PYSEC-2021-252",
+        "PYSEC-2021-543",
+        "PYSEC-2021-741"
+      ],
+      "packages": [
+        "tensorflow",
+        "tensorflow-cpu",
+        "tensorflow-gpu"
+      ],
+      "package_repos": [
+        "tensorflow/tensorflow"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": false,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/tensorflow/tensorflow/commit/e07e1c3d26492c06f078c7e5bf2d138043e199c1",
+          "status": "resolved",
+          "repo": "tensorflow/tensorflow",
+          "on_package_repo": true,
+          "files": 1,
+          "python_files": 0,
+          "native_files": 1,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-763m-79hh-57f2",
+      "advisory_ids": [
+        "GHSA-763m-79hh-57f2",
+        "PYSEC-2026-3911"
+      ],
+      "packages": [
+        "pypdf"
+      ],
+      "package_repos": [
+        "py-pdf/pypdf"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/py-pdf/pypdf/pull/3966",
+          "status": "resolved",
+          "repo": "py-pdf/pypdf",
+          "on_package_repo": true,
+          "files": 5,
+          "python_files": 3,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/py-pdf/pypdf/commit/d91ab705fd81ed1a9cec175c6958600dea1a4942",
+          "status": "resolved",
+          "repo": "py-pdf/pypdf",
+          "on_package_repo": true,
+          "files": 5,
+          "python_files": 3,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-w7qv-268h-9h3f",
+      "advisory_ids": [
+        "GHSA-w7qv-268h-9h3f"
+      ],
+      "packages": [
+        "loggingredactor"
+      ],
+      "package_repos": [
+        "armurox/loggingredactor"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/armurox/loggingredactor/pull/15",
+          "status": "resolved",
+          "repo": "armurox/loggingredactor",
+          "on_package_repo": true,
+          "files": 10,
+          "python_files": 3,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/armurox/loggingredactor/commit/361a528e56437b9c269e69f3863de4b3e568391b",
+          "status": "resolved",
+          "repo": "armurox/loggingredactor",
+          "on_package_repo": true,
+          "files": 4,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-xvh5-g6gv-559v",
+      "advisory_ids": [
+        "GHSA-xvh5-g6gv-559v",
+        "PYSEC-2026-4363"
+      ],
+      "packages": [
+        "pillow"
+      ],
+      "package_repos": [
+        "python-pillow/pillow"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/github/advisory-database/pull/10903",
+          "status": "resolved",
+          "repo": "github/advisory-database",
+          "on_package_repo": false,
+          "files": 1,
+          "python_files": 0,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/python-pillow/Pillow/pull/10227",
+          "status": "resolved",
+          "repo": "python-pillow/pillow",
+          "on_package_repo": true,
+          "files": 5,
+          "python_files": 1,
+          "native_files": 3,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/python-pillow/Pillow/commit/570df030c0d30c2bf5336b2ab59f3902d8ab0b6d",
+          "status": "resolved",
+          "repo": "python-pillow/pillow",
+          "on_package_repo": true,
+          "files": 5,
+          "python_files": 1,
+          "native_files": 3,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/python-pillow/Pillow/commit/af56ace297b0991d02988fcc2ea933e4824b4fb3",
+          "status": "resolved",
+          "repo": "python-pillow/pillow",
+          "on_package_repo": true,
+          "files": 5,
+          "python_files": 1,
+          "native_files": 3,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-993g-76c3-p5m4",
+      "advisory_ids": [
+        "GHSA-993g-76c3-p5m4",
+        "PYSEC-2026-175"
+      ],
+      "packages": [
+        "pyjwt"
+      ],
+      "package_repos": [
+        "jpadilla/pyjwt"
+      ],
+      "outcome": "other_repo_only",
+      "fix_touches_python": false,
+      "candidates": [
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/github/advisory-database/pull/8521",
+          "status": "resolved",
+          "repo": "github/advisory-database",
+          "on_package_repo": false,
+          "files": 1,
+          "python_files": 0,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-jj53-8fmw-f2w2",
+      "advisory_ids": [
+        "GHSA-jj53-8fmw-f2w2",
+        "PYSEC-2021-424"
+      ],
+      "packages": [
+        "matrix-synapse"
+      ],
+      "package_repos": [
+        "element-hq/synapse",
+        "matrix-org/synapse"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/matrix-org/synapse/commit/cb35df940a",
+          "status": "resolved",
+          "repo": "matrix-org/synapse",
+          "on_package_repo": true,
+          "files": 2,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/matrix-org/synapse",
+          "status": "resolved",
+          "repo": "matrix-org/synapse",
+          "on_package_repo": true,
+          "files": 2,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-8q59-q68h-6hv4",
+      "advisory_ids": [
+        "GHSA-8q59-q68h-6hv4",
+        "PYSEC-2021-142"
+      ],
+      "packages": [
+        "pyyaml"
+      ],
+      "package_repos": [
+        "yaml/pyyaml"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/yaml/pyyaml/commit/a001f2782501ad2d24986959f0239a354675f9dc",
+          "status": "resolved",
+          "repo": "yaml/pyyaml",
+          "on_package_repo": true,
+          "files": 4,
+          "python_files": 2,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-mh33-7rrq-662w",
+      "advisory_ids": [
+        "GHSA-mh33-7rrq-662w",
+        "PYSEC-2019-133"
+      ],
+      "packages": [
+        "urllib3"
+      ],
+      "package_repos": [
+        "urllib3/urllib3"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/urllib3/urllib3/commit/1efadf43dc63317cd9eaa3e0fdb9e05ab07254b1",
+          "status": "resolved",
+          "repo": "urllib3/urllib3",
+          "on_package_repo": true,
+          "files": 14,
+          "python_files": 6,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_compare",
+          "url": "https://github.com/urllib3/urllib3/compare/a6ec68a...1efadf4",
+          "status": "resolved",
+          "repo": "urllib3/urllib3",
+          "on_package_repo": true,
+          "files": 14,
+          "python_files": 6,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-rrx3-2x4g-mq2h",
+      "advisory_ids": [
+        "GHSA-rrx3-2x4g-mq2h",
+        "PYSEC-2026-1227"
+      ],
+      "packages": [
+        "bugsink"
+      ],
+      "package_repos": [
+        "bugsink/bugsink"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/bugsink/bugsink/commit/1201f754e39265d2aac58edf49dc380bac334388",
+          "status": "resolved",
+          "repo": "bugsink/bugsink",
+          "on_package_repo": true,
+          "files": 1,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-fxpg-gg9g-76gj",
+      "advisory_ids": [
+        "GHSA-fxpg-gg9g-76gj",
+        "PYSEC-2010-12"
+      ],
+      "packages": [
+        "django"
+      ],
+      "package_repos": [
+        "django/django"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/django/django/commit/7f84657b6b2243cc787bdb9f296710c8d13ad0bd",
+          "status": "resolved",
+          "repo": "django/django",
+          "on_package_repo": true,
+          "files": 3,
+          "python_files": 2,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-6966-vjj6-99xv",
+      "advisory_ids": [
+        "GHSA-6966-vjj6-99xv",
+        "PYSEC-2026-4057",
+        "PYSEC-2026-4058",
+        "PYSEC-2026-4060",
+        "PYSEC-2026-4112"
+      ],
+      "packages": [
+        "jupyterlab",
+        "jupyterlite",
+        "jupyterlite-core",
+        "notebook"
+      ],
+      "package_repos": [
+        "jupyter/notebook",
+        "jupyterlab/jupyterlab",
+        "jupyterlite/jupyterlite"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": false,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/jupyterlab/jupyterlab/commit/1a10a7da5ff655849b21581c2633b46483ae0be9",
+          "status": "resolved",
+          "repo": "jupyterlab/jupyterlab",
+          "on_package_repo": true,
+          "files": 3,
+          "python_files": 0,
+          "native_files": 0,
+          "other_source_files": 2,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/jupyterlab/jupyterlab/commit/7f9f29e29e0c83fb17b0f11da57d06b3c6a40d96",
+          "status": "resolved",
+          "repo": "jupyterlab/jupyterlab",
+          "on_package_repo": true,
+          "files": 3,
+          "python_files": 0,
+          "native_files": 0,
+          "other_source_files": 2,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/jupyterlab/jupyterlab/commit/cf6e89a8d315c4134cefa50c220bca296da466a7",
+          "status": "resolved",
+          "repo": "jupyterlab/jupyterlab",
+          "on_package_repo": true,
+          "files": 3,
+          "python_files": 0,
+          "native_files": 0,
+          "other_source_files": 2,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-8fxw-76px-3rxv",
+      "advisory_ids": [
+        "GHSA-8fxw-76px-3rxv",
+        "PYSEC-2020-115",
+        "PYSEC-2020-272",
+        "PYSEC-2020-307"
+      ],
+      "packages": [
+        "tensorflow",
+        "tensorflow-cpu",
+        "tensorflow-gpu"
+      ],
+      "package_repos": [
+        "tensorflow/tensorflow"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": false,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/tensorflow/tensorflow/commit/22e07fb204386768e5bcbea563641ea11f96ceb8",
+          "status": "resolved",
+          "repo": "tensorflow/tensorflow",
+          "on_package_repo": true,
+          "files": 4,
+          "python_files": 0,
+          "native_files": 2,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-xrcv-f9gm-v42c",
+      "advisory_ids": [
+        "GHSA-xrcv-f9gm-v42c",
+        "PYSEC-2022-9"
+      ],
+      "packages": [
+        "pillow"
+      ],
+      "package_repos": [
+        "python-pillow/pillow"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": false,
+      "candidates": [
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/python-pillow/Pillow/pull/5920",
+          "status": "resolved",
+          "repo": "python-pillow/pillow",
+          "on_package_repo": true,
+          "files": 2,
+          "python_files": 0,
+          "native_files": 1,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/python-pillow/Pillow/commit/5543e4e2d409cd9e409bc64cdc77be0af007a31f",
+          "status": "resolved",
+          "repo": "python-pillow/pillow",
+          "on_package_repo": true,
+          "files": 2,
+          "python_files": 0,
+          "native_files": 1,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-j69x-v4wc-3fpf",
+      "advisory_ids": [
+        "GHSA-j69x-v4wc-3fpf",
+        "PYSEC-2023-314",
+        "PYSEC-2026-275"
+      ],
+      "packages": [
+        "apache-airflow",
+        "apache-airflow-providers-apache-sqoop"
+      ],
+      "package_repos": [
+        "apache/airflow"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/apache/airflow/pull/29500",
+          "status": "resolved",
+          "repo": "apache/airflow",
+          "on_package_repo": true,
+          "files": 3,
+          "python_files": 2,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-87cj-px37-rc3x",
+      "advisory_ids": [
+        "GHSA-87cj-px37-rc3x",
+        "PYSEC-2021-116"
+      ],
+      "packages": [
+        "bikeshed"
+      ],
+      "package_repos": [
+        "speced/bikeshed"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/tabatkins/bikeshed/commit/b2f668fca204260b1cad28d5078e93471cb6b2dd",
+          "status": "resolved",
+          "repo": "speced/bikeshed",
+          "on_package_repo": true,
+          "files": 8,
+          "python_files": 8,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-r25m-cr6v-p9hq",
+      "advisory_ids": [
+        "GHSA-r25m-cr6v-p9hq",
+        "PYSEC-2023-107"
+      ],
+      "packages": [
+        "ethyca-fides"
+      ],
+      "package_repos": [
+        "ethyca/fides"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/ethyca/fides/commit/f526d9ffb176006d701493c9d0eff6b4884e811f",
+          "status": "resolved",
+          "repo": "ethyca/fides",
+          "on_package_repo": true,
+          "files": 3,
+          "python_files": 2,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-pg75-v6fp-8q59",
+      "advisory_ids": [
+        "GHSA-pg75-v6fp-8q59",
+        "PYSEC-2026-1489"
+      ],
+      "packages": [
+        "keylime"
+      ],
+      "package_repos": [
+        "keylime/keylime"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/keylime/keylime/pull/1421",
+          "status": "resolved",
+          "repo": "keylime/keylime",
+          "on_package_repo": true,
+          "files": 1,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/keylime/keylime/commit/c68d8f0b7ea549c12b6956ab0f3c28ae0360ae17",
+          "status": "resolved",
+          "repo": "keylime/keylime",
+          "on_package_repo": true,
+          "files": 1,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-6wcr-wcqm-3mfh",
+      "advisory_ids": [
+        "GHSA-6wcr-wcqm-3mfh",
+        "PYSEC-2015-11"
+      ],
+      "packages": [
+        "django"
+      ],
+      "package_repos": [
+        "django/django"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/django/django/commit/316bc3fc9437c5960c24baceb93c73f1939711e4",
+          "status": "resolved",
+          "repo": "django/django",
+          "on_package_repo": true,
+          "files": 4,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/django/django/commit/3ebbda0aef9e7a90ac6208bb8f9bc21228e2c7da",
+          "status": "resolved",
+          "repo": "django/django",
+          "on_package_repo": true,
+          "files": 4,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/django/django/commit/8a01c6b53169ee079cb21ac5919fdafcc8c5e172",
+          "status": "resolved",
+          "repo": "django/django",
+          "on_package_repo": true,
+          "files": 3,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/django/django/commit/9f83fc2f66f5a0bac7c291aec55df66050bb6991",
+          "status": "resolved",
+          "repo": "django/django",
+          "on_package_repo": true,
+          "files": 4,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-4pcg-253r-rf9w",
+      "advisory_ids": [
+        "GHSA-4pcg-253r-rf9w",
+        "PYSEC-2026-2700"
+      ],
+      "packages": [
+        "open-webui"
+      ],
+      "package_repos": [],
+      "outcome": "fix_repo_unconfirmed",
+      "fix_touches_python": false,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/open-webui/open-webui/commit/4737e1f11",
+          "status": "resolved",
+          "repo": "open-webui/open-webui",
+          "on_package_repo": null,
+          "files": 15,
+          "python_files": 7,
+          "native_files": 0,
+          "other_source_files": 2,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-9jfm-9rc6-2hfq",
+      "advisory_ids": [
+        "GHSA-9jfm-9rc6-2hfq",
+        "PYSEC-2026-2169"
+      ],
+      "packages": [
+        "glances"
+      ],
+      "package_repos": [
+        "nicolargo/glances"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/nicolargo/glances/commit/4465169b71d93991f1e49740fe02428291099832",
+          "status": "resolved",
+          "repo": "nicolargo/glances",
+          "on_package_repo": true,
+          "files": 5,
+          "python_files": 2,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-8fjr-hghr-4m99",
+      "advisory_ids": [
+        "GHSA-8fjr-hghr-4m99",
+        "PYSEC-2023-164"
+      ],
+      "packages": [
+        "borgbackup"
+      ],
+      "package_repos": [
+        "borgbackup/borg"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/borgbackup/borg/commit/3eb070191da10c2d3f7bc6484cf3d51c3045f884",
+          "status": "resolved",
+          "repo": "borgbackup/borg",
+          "on_package_repo": true,
+          "files": 9,
+          "python_files": 8,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-5xf7-4p34-54qr",
+      "advisory_ids": [
+        "GHSA-5xf7-4p34-54qr",
+        "PYSEC-2026-3612"
+      ],
+      "packages": [
+        "pypdf"
+      ],
+      "package_repos": [
+        "py-pdf/pypdf"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/py-pdf/pypdf/pull/3891",
+          "status": "resolved",
+          "repo": "py-pdf/pypdf",
+          "on_package_repo": true,
+          "files": 2,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/py-pdf/pypdf/commit/ec3b14596186c40caca7cf8ab9b2155203e01b5b",
+          "status": "resolved",
+          "repo": "py-pdf/pypdf",
+          "on_package_repo": true,
+          "files": 2,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-jfgp-674x-6q4p",
+      "advisory_ids": [
+        "GHSA-jfgp-674x-6q4p",
+        "PYSEC-2026-2041"
+      ],
+      "packages": [
+        "weblate"
+      ],
+      "package_repos": [
+        "weblateorg/weblate"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/WeblateOrg/weblate/commit/b6a7eace155fa0feaf01b4ac36165a9c5e63bfdd",
+          "status": "resolved",
+          "repo": "weblateorg/weblate",
+          "on_package_repo": true,
+          "files": 1,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-wcjx-v2wj-xg87",
+      "advisory_ids": [
+        "GHSA-wcjx-v2wj-xg87"
+      ],
+      "packages": [
+        "c2cciutils"
+      ],
+      "package_repos": [
+        "camptocamp/c2cciutils"
+      ],
+      "outcome": "non_source_only",
+      "fix_touches_python": false,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/camptocamp/c2cciutils/commit/1ab415014817d7d1cf09ad56cc8a7dec2a1108d8",
+          "status": "resolved",
+          "repo": "camptocamp/c2cciutils",
+          "on_package_repo": true,
+          "files": 1,
+          "python_files": 0,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-887w-45rq-vxgf",
+      "advisory_ids": [
+        "GHSA-887w-45rq-vxgf",
+        "PYSEC-2019-123"
+      ],
+      "packages": [
+        "sqlalchemy"
+      ],
+      "package_repos": [
+        "sqlalchemy/sqlalchemy"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/sqlalchemy/sqlalchemy/commit/30307c4616ad67c01ddae2e1e8e34fabf6028414",
+          "status": "resolved",
+          "repo": "sqlalchemy/sqlalchemy",
+          "on_package_repo": true,
+          "files": 26,
+          "python_files": 12,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-hgf8-39gv-g3f2",
+      "advisory_ids": [
+        "GHSA-hgf8-39gv-g3f2",
+        "PYSEC-2026-2046"
+      ],
+      "packages": [
+        "werkzeug"
+      ],
+      "package_repos": [
+        "pallets/werkzeug"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/pallets/werkzeug/commit/4b833376a45c323a189cd11d2362bcffdb1c0c13",
+          "status": "resolved",
+          "repo": "pallets/werkzeug",
+          "on_package_repo": true,
+          "files": 4,
+          "python_files": 2,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-6w2r-r2m5-xq5w",
+      "advisory_ids": [
+        "GHSA-6w2r-r2m5-xq5w",
+        "PYSEC-2025-105"
+      ],
+      "packages": [
+        "django"
+      ],
+      "package_repos": [
+        "django/django"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/django/django/commit/102965ea93072fe3c39a30be437c683ec1106ef5",
+          "status": "resolved",
+          "repo": "django/django",
+          "on_package_repo": true,
+          "files": 4,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/django/django/commit/31334e6965ad136a5e369993b01721499c5d1a92",
+          "status": "resolved",
+          "repo": "django/django",
+          "on_package_repo": true,
+          "files": 3,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/django/django/commit/4c044fcc866ec226f612c475950b690b0139d243",
+          "status": "resolved",
+          "repo": "django/django",
+          "on_package_repo": true,
+          "files": 5,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-q4c5-2j6f-r476",
+      "advisory_ids": [
+        "GHSA-q4c5-2j6f-r476",
+        "PYSEC-2026-4111"
+      ],
+      "packages": [
+        "nautobot"
+      ],
+      "package_repos": [
+        "nautobot/nautobot"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/nautobot/nautobot/commit/8682707d0391cbfd7694e3276127b78dc9cf29d8",
+          "status": "resolved",
+          "repo": "nautobot/nautobot",
+          "on_package_repo": true,
+          "files": 11,
+          "python_files": 5,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-fm67-cv37-96ff",
+      "advisory_ids": [
+        "GHSA-fm67-cv37-96ff",
+        "PYSEC-2026-1056"
+      ],
+      "packages": [
+        "ujson"
+      ],
+      "package_repos": [
+        "ultrajson/ultrajson"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": false,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/ultrajson/ultrajson/commit/9c20de0f77b391093967e25d01fb48671104b15b",
+          "status": "resolved",
+          "repo": "ultrajson/ultrajson",
+          "on_package_repo": true,
+          "files": 1,
+          "python_files": 0,
+          "native_files": 1,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-85v3-4m8g-hrh6",
+      "advisory_ids": [
+        "GHSA-85v3-4m8g-hrh6",
+        "PYSEC-2026-2134"
+      ],
+      "packages": [
+        "copier"
+      ],
+      "package_repos": [
+        "copier-org/copier"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/copier-org/copier/commit/cb80a3ffc9c3787de3ed837e04ca29a0ff8ca3df",
+          "status": "resolved",
+          "repo": "copier-org/copier",
+          "on_package_repo": true,
+          "files": 2,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-75mj-4g74-9rg2",
+      "advisory_ids": [
+        "GHSA-75mj-4g74-9rg2",
+        "PYSEC-2026-2000"
+      ],
+      "packages": [
+        "utcp"
+      ],
+      "package_repos": [
+        "universal-tool-calling-protocol/python-utcp"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/universal-tool-calling-protocol/python-utcp/commit/2dc9c02df72cad3770c934959325ec344b441444",
+          "status": "resolved",
+          "repo": "universal-tool-calling-protocol/python-utcp",
+          "on_package_repo": true,
+          "files": 6,
+          "python_files": 2,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-jw7q-gvrg-4vj3",
+      "advisory_ids": [
+        "GHSA-jw7q-gvrg-4vj3",
+        "PYSEC-2026-4156"
+      ],
+      "packages": [
+        "pypdf"
+      ],
+      "package_repos": [
+        "py-pdf/pypdf"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/py-pdf/pypdf/pull/4073",
+          "status": "resolved",
+          "repo": "py-pdf/pypdf",
+          "on_package_repo": true,
+          "files": 2,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/py-pdf/pypdf/commit/d9d38cf99b115deb562d3b68f36c33027bc04f79",
+          "status": "resolved",
+          "repo": "py-pdf/pypdf",
+          "on_package_repo": true,
+          "files": 2,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-f4rr-5m7v-wxcw",
+      "advisory_ids": [
+        "GHSA-f4rr-5m7v-wxcw",
+        "PYSEC-2026-3167",
+        "PYSEC-2026-3315",
+        "PYSEC-2026-986"
+      ],
+      "packages": [
+        "tensorflow",
+        "tensorflow-cpu",
+        "tensorflow-gpu"
+      ],
+      "package_repos": [
+        "tensorflow/tensorflow"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": false,
+      "candidates": [
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/tensorflow/tensorflow/pull/55730",
+          "status": "resolved",
+          "repo": "tensorflow/tensorflow",
+          "on_package_repo": true,
+          "files": 1,
+          "python_files": 0,
+          "native_files": 1,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/tensorflow/tensorflow/commit/b917181c29b50cb83399ba41f4d938dc369109a1",
+          "status": "resolved",
+          "repo": "tensorflow/tensorflow",
+          "on_package_repo": true,
+          "files": 1,
+          "python_files": 0,
+          "native_files": 1,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-75c9-jrh4-79mc",
+      "advisory_ids": [
+        "GHSA-75c9-jrh4-79mc",
+        "PYSEC-2026-3125",
+        "PYSEC-2026-3289",
+        "PYSEC-2026-963"
+      ],
+      "packages": [
+        "tensorflow",
+        "tensorflow-cpu",
+        "tensorflow-gpu"
+      ],
+      "package_repos": [
+        "tensorflow/tensorflow"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/tensorflow/tensorflow/commit/8b202f08d52e8206af2bdb2112a62fafbc546ec7",
+          "status": "resolved",
+          "repo": "tensorflow/tensorflow",
+          "on_package_repo": true,
+          "files": 3,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/tensorflow/tensorflow/commit/c5da7af048611aa29e9382371f0aed5018516cac",
+          "status": "resolved",
+          "repo": "tensorflow/tensorflow",
+          "on_package_repo": true,
+          "files": 2,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-9rpc-5v9q-5r7f",
+      "advisory_ids": [
+        "GHSA-9rpc-5v9q-5r7f",
+        "PYSEC-2021-248",
+        "PYSEC-2021-539",
+        "PYSEC-2021-737"
+      ],
+      "packages": [
+        "tensorflow",
+        "tensorflow-cpu",
+        "tensorflow-gpu"
+      ],
+      "package_repos": [
+        "tensorflow/tensorflow"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": false,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/tensorflow/tensorflow/commit/1d04d7d93f4ed3854abf75d6b712d72c3f70d6b6",
+          "status": "resolved",
+          "repo": "tensorflow/tensorflow",
+          "on_package_repo": true,
+          "files": 1,
+          "python_files": 0,
+          "native_files": 1,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-89g2-xw5c-v95p",
+      "advisory_ids": [
+        "GHSA-89g2-xw5c-v95p",
+        "PYSEC-2026-2892"
+      ],
+      "packages": [
+        "pptagent"
+      ],
+      "package_repos": [
+        "icip-cas/pptagent"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/icip-cas/PPTAgent/commit/418491a9a1c02d9d93194b5973bb58df35cf9d00",
+          "status": "resolved",
+          "repo": "icip-cas/pptagent",
+          "on_package_repo": true,
+          "files": 3,
+          "python_files": 3,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-47c3-hpmg-7j6p",
+      "advisory_ids": [
+        "GHSA-47c3-hpmg-7j6p",
+        "PYSEC-2026-4300"
+      ],
+      "packages": [
+        "shiny"
+      ],
+      "package_repos": [
+        "posit-dev/py-shiny"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/posit-dev/py-shiny/commit/1d8ecb46cbc9621b7dc8812111d26692e086b376",
+          "status": "resolved",
+          "repo": "posit-dev/py-shiny",
+          "on_package_repo": true,
+          "files": 8,
+          "python_files": 5,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-76rv-2r9v-c5m6",
+      "advisory_ids": [
+        "GHSA-76rv-2r9v-c5m6",
+        "PYSEC-2026-3434"
+      ],
+      "packages": [
+        "zae-limiter"
+      ],
+      "package_repos": [
+        "zeroae/zae-limiter"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/zeroae/zae-limiter/commit/481ce44d818d66e31d8837bc48519660ce4c267f",
+          "status": "resolved",
+          "repo": "zeroae/zae-limiter",
+          "on_package_repo": true,
+          "files": 17,
+          "python_files": 8,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-php9-fj8v-98fj",
+      "advisory_ids": [
+        "GHSA-php9-fj8v-98fj",
+        "PYSEC-2026-4157"
+      ],
+      "packages": [
+        "pypdf"
+      ],
+      "package_repos": [
+        "py-pdf/pypdf"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/py-pdf/pypdf/pull/4087",
+          "status": "resolved",
+          "repo": "py-pdf/pypdf",
+          "on_package_repo": true,
+          "files": 2,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/py-pdf/pypdf/commit/959467a9b95be83e2dc5ae873ece5f371263ede7",
+          "status": "resolved",
+          "repo": "py-pdf/pypdf",
+          "on_package_repo": true,
+          "files": 2,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-rp38-pj7h-r8q2",
+      "advisory_ids": [
+        "GHSA-rp38-pj7h-r8q2",
+        "PYSEC-2025-64"
+      ],
+      "packages": [
+        "python-a2a"
+      ],
+      "package_repos": [
+        "themanojdesai/python-a2a"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/themanojdesai/python-a2a",
+          "status": "resolved",
+          "repo": "themanojdesai/python-a2a",
+          "on_package_repo": true,
+          "files": 4,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-vp6j-j7w5-5xjj",
+      "advisory_ids": [
+        "GHSA-vp6j-j7w5-5xjj",
+        "PYSEC-2026-4297"
+      ],
+      "packages": [
+        "pymongo"
+      ],
+      "package_repos": [
+        "mongodb/mongo-python-driver"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/mongodb/mongo-python-driver/pull/3066",
+          "status": "resolved",
+          "repo": "mongodb/mongo-python-driver",
+          "on_package_repo": true,
+          "files": 12,
+          "python_files": 5,
+          "native_files": 1,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/mongodb/mongo-python-driver/commit/1e7a56db4649b14c4c9a6ac20aa4a8d0d1bb238a",
+          "status": "resolved",
+          "repo": "mongodb/mongo-python-driver",
+          "on_package_repo": true,
+          "files": 4,
+          "python_files": 3,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/mongodb/mongo-python-driver/commit/640dd2383a1a2fb1a10e5222d50ebc0b22a61bd7",
+          "status": "resolved",
+          "repo": "mongodb/mongo-python-driver",
+          "on_package_repo": true,
+          "files": 12,
+          "python_files": 5,
+          "native_files": 1,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-pm87-24wq-r8w9",
+      "advisory_ids": [
+        "GHSA-pm87-24wq-r8w9",
+        "PYSEC-2023-158"
+      ],
+      "packages": [
+        "apache-airflow"
+      ],
+      "package_repos": [
+        "apache/airflow"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/apache/airflow/pull/33347",
+          "status": "resolved",
+          "repo": "apache/airflow",
+          "on_package_repo": true,
+          "files": 4,
+          "python_files": 2,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/apache/airflow/commit/2caa186935151683076b74357daad83d2538a3f6",
+          "status": "resolved",
+          "repo": "apache/airflow",
+          "on_package_repo": true,
+          "files": 4,
+          "python_files": 2,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/apache/airflow/commit/f5d8201ea7935d17cecaf25fc90d4ef0ccdd627b",
+          "status": "resolved",
+          "repo": "apache/airflow",
+          "on_package_repo": true,
+          "files": 4,
+          "python_files": 2,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-j5pr-vrjj-9v4h",
+      "advisory_ids": [
+        "GHSA-j5pr-vrjj-9v4h",
+        "PYSEC-2026-1590"
+      ],
+      "packages": [
+        "lollms"
+      ],
+      "package_repos": [
+        "parisneo/lollms"
+      ],
+      "outcome": "unresolvable",
+      "fix_touches_python": false,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/parisneo/lollms/commit/f78437f7b5aa39a78c6201912faf4e0645a38c48",
+          "status": "not_found",
+          "repo": null,
+          "on_package_repo": null,
+          "files": 0,
+          "python_files": 0,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-m9hc-vxjj-4x6q",
+      "advisory_ids": [
+        "GHSA-m9hc-vxjj-4x6q",
+        "PYSEC-2026-1778"
+      ],
+      "packages": [
+        "pghoard"
+      ],
+      "package_repos": [
+        "aiven-open/pghoard"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/Aiven-Open/pghoard/commit/fe9947642cc73bcacf6d19b93eb98f442223fb47",
+          "status": "resolved",
+          "repo": "aiven-open/pghoard",
+          "on_package_repo": true,
+          "files": 2,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-772j-h9xw-ffp5",
+      "advisory_ids": [
+        "GHSA-772j-h9xw-ffp5",
+        "PYSEC-2021-156",
+        "PYSEC-2021-447",
+        "PYSEC-2021-645"
+      ],
+      "packages": [
+        "tensorflow",
+        "tensorflow-cpu",
+        "tensorflow-gpu"
+      ],
+      "package_repos": [
+        "tensorflow/tensorflow"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": false,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/tensorflow/tensorflow/commit/b1cc5e5a50e7cee09f2c6eb48eb40ee9c4125025",
+          "status": "resolved",
+          "repo": "tensorflow/tensorflow",
+          "on_package_repo": true,
+          "files": 1,
+          "python_files": 0,
+          "native_files": 1,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-hf6p-4rv2-9qrp",
+      "advisory_ids": [
+        "GHSA-hf6p-4rv2-9qrp",
+        "PYSEC-2021-117"
+      ],
+      "packages": [
+        "bikeshed"
+      ],
+      "package_repos": [
+        "speced/bikeshed"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/tabatkins/bikeshed/commit/b2f668fca204260b1cad28d5078e93471cb6b2dd",
+          "status": "resolved",
+          "repo": "speced/bikeshed",
+          "on_package_repo": true,
+          "files": 8,
+          "python_files": 8,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-j3wr-m6xh-64hg",
+      "advisory_ids": [
+        "GHSA-j3wr-m6xh-64hg",
+        "PYSEC-2025-244",
+        "PYSEC-2026-1563"
+      ],
+      "packages": [
+        "llama-index",
+        "llama-index-core"
+      ],
+      "package_repos": [
+        "run-llama/llama_index"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/run-llama/llama_index/commit/d1ecfb77578d089cbe66728f18f635c09aa32a05",
+          "status": "resolved",
+          "repo": "run-llama/llama_index",
+          "on_package_repo": true,
+          "files": 1,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-jccx-m9v4-9hwh",
+      "advisory_ids": [
+        "GHSA-jccx-m9v4-9hwh",
+        "PYSEC-2026-1591"
+      ],
+      "packages": [
+        "lollms"
+      ],
+      "package_repos": [
+        "parisneo/lollms"
+      ],
+      "outcome": "unresolvable",
+      "fix_touches_python": false,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/parisneo/lollms/commit/30e7eaba2ccfb751a81e7cb29fdef2ae8ffa6832",
+          "status": "not_found",
+          "repo": null,
+          "on_package_repo": null,
+          "files": 0,
+          "python_files": 0,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-wcm6-wv95-7jw6",
+      "advisory_ids": [
+        "GHSA-wcm6-wv95-7jw6",
+        "PYSEC-2026-907"
+      ],
+      "packages": [
+        "pyload-ng"
+      ],
+      "package_repos": [
+        "pyload/pyload"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": false,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/pyload/pyload/commit/46d75a3087f3237d06530d55998938e2e2bda6bd",
+          "status": "resolved",
+          "repo": "pyload/pyload",
+          "on_package_repo": true,
+          "files": 3,
+          "python_files": 0,
+          "native_files": 0,
+          "other_source_files": 3,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-954p-556p-r752",
+      "advisory_ids": [
+        "GHSA-954p-556p-r752",
+        "PYSEC-2026-3560"
+      ],
+      "packages": [
+        "datamodel-code-generator"
+      ],
+      "package_repos": [
+        "datamodel-code-generator/datamodel-code-generator"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/koxudaxi/datamodel-code-generator/commit/5fdba4a09f2d7a9996a504975b7ef7d63e3715bb",
+          "status": "resolved",
+          "repo": "datamodel-code-generator/datamodel-code-generator",
+          "on_package_repo": true,
+          "files": 34,
+          "python_files": 12,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-v39m-5m9j-m9w9",
+      "advisory_ids": [
+        "GHSA-v39m-5m9j-m9w9",
+        "PYSEC-2026-1632"
+      ],
+      "packages": [
+        "mkdocs-include-markdown-plugin"
+      ],
+      "package_repos": [
+        "mondeja/mkdocs-include-markdown-plugin"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/mondeja/mkdocs-include-markdown-plugin/pull/277",
+          "status": "resolved",
+          "repo": "mondeja/mkdocs-include-markdown-plugin",
+          "on_package_repo": true,
+          "files": 4,
+          "python_files": 2,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/mondeja/mkdocs-include-markdown-plugin/commit/7466d67aa0de8ffbc427204ad2475fed07678915",
+          "status": "resolved",
+          "repo": "mondeja/mkdocs-include-markdown-plugin",
+          "on_package_repo": true,
+          "files": 4,
+          "python_files": 2,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-v845-jxx5-vc9f",
+      "advisory_ids": [
+        "GHSA-v845-jxx5-vc9f",
+        "PYSEC-2023-192"
+      ],
+      "packages": [
+        "urllib3"
+      ],
+      "package_repos": [
+        "urllib3/urllib3"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/urllib3/urllib3/commit/01220354d389cd05474713f8c982d05c9b17aafb",
+          "status": "resolved",
+          "repo": "urllib3/urllib3",
+          "on_package_repo": true,
+          "files": 5,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/urllib3/urllib3/commit/644124ecd0b6e417c527191f866daa05a5a2056d",
+          "status": "resolved",
+          "repo": "urllib3/urllib3",
+          "on_package_repo": true,
+          "files": 5,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-7968-h4m4-ghm9",
+      "advisory_ids": [
+        "GHSA-7968-h4m4-ghm9",
+        "PYSEC-2026-835"
+      ],
+      "packages": [
+        "kiwitcms"
+      ],
+      "package_repos": [
+        "kiwitcms/kiwitcms"
+      ],
+      "outcome": "non_source_only",
+      "fix_touches_python": false,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/kiwitcms/Kiwi/commit/0ed213fa0ddb7a6dc77e3c3b99e8fc90ccdaf46f",
+          "status": "resolved",
+          "repo": "kiwitcms/kiwitcms",
+          "on_package_repo": true,
+          "files": 1,
+          "python_files": 0,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-h3rc-6mm3-gc2m",
+      "advisory_ids": [
+        "GHSA-h3rc-6mm3-gc2m"
+      ],
+      "packages": [
+        "vllm"
+      ],
+      "package_repos": [
+        "vllm-project/vllm"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/vllm-project/vllm/pull/58830",
+          "status": "resolved",
+          "repo": "vllm-project/vllm",
+          "on_package_repo": true,
+          "files": 17,
+          "python_files": 8,
+          "native_files": 1,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/vllm-project/vllm/commit/31f2e70cd3e403aaa471fb7fe3d33a7207aaf3cc",
+          "status": "resolved",
+          "repo": "vllm-project/vllm",
+          "on_package_repo": true,
+          "files": 17,
+          "python_files": 8,
+          "native_files": 1,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-v82p-hv3v-p6qp",
+      "advisory_ids": [
+        "GHSA-v82p-hv3v-p6qp",
+        "PYSEC-2021-287",
+        "PYSEC-2021-578",
+        "PYSEC-2021-776"
+      ],
+      "packages": [
+        "tensorflow",
+        "tensorflow-cpu",
+        "tensorflow-gpu"
+      ],
+      "package_repos": [
+        "tensorflow/tensorflow"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": false,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/tensorflow/tensorflow/commit/203214568f5bc237603dbab6e1fd389f1572f5c9",
+          "status": "resolved",
+          "repo": "tensorflow/tensorflow",
+          "on_package_repo": true,
+          "files": 1,
+          "python_files": 0,
+          "native_files": 1,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/tensorflow/tensorflow/commit/9e62869465573cb2d9b5053f1fa02a81fce21d69",
+          "status": "resolved",
+          "repo": "tensorflow/tensorflow",
+          "on_package_repo": true,
+          "files": 1,
+          "python_files": 0,
+          "native_files": 1,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-67pf-62xr-q35m",
+      "advisory_ids": [
+        "GHSA-67pf-62xr-q35m",
+        "PYSEC-2026-3118",
+        "PYSEC-2026-3284",
+        "PYSEC-2026-958"
+      ],
+      "packages": [
+        "tensorflow",
+        "tensorflow-cpu",
+        "tensorflow-gpu"
+      ],
+      "package_repos": [
+        "tensorflow/tensorflow"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": false,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/tensorflow/tensorflow/commit/888e34b49009a4e734c27ab0c43b0b5102682c56",
+          "status": "resolved",
+          "repo": "tensorflow/tensorflow",
+          "on_package_repo": true,
+          "files": 2,
+          "python_files": 0,
+          "native_files": 1,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-vwhf-3v6x-wff8",
+      "advisory_ids": [
+        "GHSA-vwhf-3v6x-wff8",
+        "PYSEC-2023-260"
+      ],
+      "packages": [
+        "mlflow"
+      ],
+      "package_repos": [
+        "mlflow/mlflow"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/mlflow/mlflow/commit/28ff3f94994941e038f2172c6484b65dc4db6ca1",
+          "status": "resolved",
+          "repo": "mlflow/mlflow",
+          "on_package_repo": true,
+          "files": 6,
+          "python_files": 3,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-r49h-6qxq-624f",
+      "advisory_ids": [
+        "GHSA-r49h-6qxq-624f",
+        "PYSEC-2026-2035"
+      ],
+      "packages": [
+        "weave"
+      ],
+      "package_repos": [
+        "wandb/weave"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/wandb/weave/pull/1657",
+          "status": "resolved",
+          "repo": "wandb/weave",
+          "on_package_repo": true,
+          "files": 1,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/wandb/weave/commit/f43d5fb75e0d52933a52ecd9a0ce2f9b082e6c9f",
+          "status": "resolved",
+          "repo": "wandb/weave",
+          "on_package_repo": true,
+          "files": 1,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-cf7p-gm2m-833m",
+      "advisory_ids": [
+        "GHSA-cf7p-gm2m-833m",
+        "PYSEC-2023-112"
+      ],
+      "packages": [
+        "cryptography"
+      ],
+      "package_repos": [
+        "pyca/cryptography"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/pyca/cryptography/pull/7960",
+          "status": "resolved",
+          "repo": "pyca/cryptography",
+          "on_package_repo": true,
+          "files": 6,
+          "python_files": 2,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/pyca/cryptography/pull/9208",
+          "status": "resolved",
+          "repo": "pyca/cryptography",
+          "on_package_repo": true,
+          "files": 5,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/pyca/cryptography/commit/1ca7adc97b76a9dfbd3d850628b613eb93b78fc3",
+          "status": "resolved",
+          "repo": "pyca/cryptography",
+          "on_package_repo": true,
+          "files": 5,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_compare",
+          "url": "https://github.com/pyca/cryptography/compare/41.0.1...41.0.2",
+          "status": "resolved",
+          "repo": "pyca/cryptography",
+          "on_package_repo": true,
+          "files": 13,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-q4v3-wmm6-hcrx",
+      "advisory_ids": [
+        "GHSA-q4v3-wmm6-hcrx",
+        "PYSEC-2020-211"
+      ],
+      "packages": [
+        "pyrad"
+      ],
+      "package_repos": [
+        "pyradius/pyrad"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/wichert/pyrad/commit/38f74b36814ca5b1a27d9898141126af4953bee5",
+          "status": "resolved",
+          "repo": "pyradius/pyrad",
+          "on_package_repo": true,
+          "files": 2,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-w4rh-fgx7-q63m",
+      "advisory_ids": [
+        "GHSA-w4rh-fgx7-q63m",
+        "PYSEC-2025-23"
+      ],
+      "packages": [
+        "ray"
+      ],
+      "package_repos": [
+        "ray-project/ray"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/ray-project/ray/pull/50409",
+          "status": "resolved",
+          "repo": "ray-project/ray",
+          "on_package_repo": true,
+          "files": 1,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/ray-project/ray/commit/64a2e4010522d60b90c389634f24df77b603d85d",
+          "status": "resolved",
+          "repo": "ray-project/ray",
+          "on_package_repo": true,
+          "files": 1,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-jp4c-xjxw-mgf9",
+      "advisory_ids": [
+        "GHSA-jp4c-xjxw-mgf9",
+        "PYSEC-2026-2876"
+      ],
+      "packages": [
+        "pip"
+      ],
+      "package_repos": [
+        "pypa/pip"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/pypa/pip/pull/13923",
+          "status": "resolved",
+          "repo": "pypa/pip",
+          "on_package_repo": true,
+          "files": 9,
+          "python_files": 5,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/pypa/pip/commit/b369bfc96cc524e00c267e1693290e6599c36bad",
+          "status": "resolved",
+          "repo": "pypa/pip",
+          "on_package_repo": true,
+          "files": 9,
+          "python_files": 5,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-crhf-3pfg-w68w",
+      "advisory_ids": [
+        "GHSA-crhf-3pfg-w68w",
+        "PYSEC-2026-2091"
+      ],
+      "packages": [
+        "django"
+      ],
+      "package_repos": [
+        "django/django"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/django/django/commit/38dfbd27d7d4f4e6eaa087d7a90f2613fbf55b3a",
+          "status": "resolved",
+          "repo": "django/django",
+          "on_package_repo": true,
+          "files": 4,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/django/django/commit/6c66eb8cec52b303af85c2c6e4dd00aa37654dbc",
+          "status": "resolved",
+          "repo": "django/django",
+          "on_package_repo": true,
+          "files": 3,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/django/django/commit/6ca2bbe2efce21010eff48f1f36a3f621d698ed8",
+          "status": "resolved",
+          "repo": "django/django",
+          "on_package_repo": true,
+          "files": 4,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-937f-qh3w-6g87",
+      "advisory_ids": [
+        "GHSA-937f-qh3w-6g87",
+        "PYSEC-2022-282"
+      ],
+      "packages": [
+        "octoprint"
+      ],
+      "package_repos": [
+        "octoprint/octoprint"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/octoprint/octoprint/commit/40e6217ac1a85cc5ed592873ae49db01d3005da4",
+          "status": "resolved",
+          "repo": "octoprint/octoprint",
+          "on_package_repo": true,
+          "files": 8,
+          "python_files": 5,
+          "native_files": 0,
+          "other_source_files": 2,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-xwc8-rf6m-xr86",
+      "advisory_ids": [
+        "GHSA-xwc8-rf6m-xr86",
+        "PYSEC-2026-1450"
+      ],
+      "packages": [
+        "hnswlib"
+      ],
+      "package_repos": [
+        "nmslib/hnswlib"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": false,
+      "candidates": [
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/nmslib/hnswlib/pull/484",
+          "status": "resolved",
+          "repo": "nmslib/hnswlib",
+          "on_package_repo": true,
+          "files": 1,
+          "python_files": 0,
+          "native_files": 1,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/nmslib/hnswlib/commit/f6d170ce0b41f9e75ace473b09df6e7872590757",
+          "status": "resolved",
+          "repo": "nmslib/hnswlib",
+          "on_package_repo": true,
+          "files": 1,
+          "python_files": 0,
+          "native_files": 1,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-v9g2-g7j4-4jxc",
+      "advisory_ids": [
+        "GHSA-v9g2-g7j4-4jxc",
+        "PYSEC-2026-1479"
+      ],
+      "packages": [
+        "jupyter-scheduler"
+      ],
+      "package_repos": [
+        "jupyter-server/jupyter-scheduler"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/jupyter-server/jupyter_server/pull/1392",
+          "status": "resolved",
+          "repo": "jupyter-server/jupyter_server",
+          "on_package_repo": false,
+          "files": 17,
+          "python_files": 12,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/jupyter-server/jupyter-scheduler/commit/06435a2277bb2b8f441ec9cedafa474572b92c5d",
+          "status": "resolved",
+          "repo": "jupyter-server/jupyter-scheduler",
+          "on_package_repo": true,
+          "files": 1,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/jupyter-server/jupyter-scheduler/commit/a621b386397280cc8ee5a208dca4607cb71cdd65",
+          "status": "resolved",
+          "repo": "jupyter-server/jupyter-scheduler",
+          "on_package_repo": true,
+          "files": 1,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/jupyter-server/jupyter-scheduler/commit/d428ac871909444e175ba421bf8ab4980d6ebf9f",
+          "status": "resolved",
+          "repo": "jupyter-server/jupyter-scheduler",
+          "on_package_repo": true,
+          "files": 1,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/jupyter-server/jupyter-scheduler/commit/f4137a779fdf0cc4a9688a42dd8c6e7ade60f044",
+          "status": "resolved",
+          "repo": "jupyter-server/jupyter-scheduler",
+          "on_package_repo": true,
+          "files": 1,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-qvrw-v9rv-5rjx",
+      "advisory_ids": [
+        "GHSA-qvrw-v9rv-5rjx",
+        "PYSEC-2023-251"
+      ],
+      "packages": [
+        "aiohttp"
+      ],
+      "package_repos": [
+        "aio-libs/aiohttp"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/aio-libs/aiohttp/pull/7806/files",
+          "status": "resolved",
+          "repo": "aio-libs/aiohttp",
+          "on_package_repo": true,
+          "files": 4,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/aio-libs/aiohttp/commit/e4ae01c2077d2cfa116aa82e4ff6866857f7c466",
+          "status": "resolved",
+          "repo": "aio-libs/aiohttp",
+          "on_package_repo": true,
+          "files": 4,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-8r96-8889-qg2x",
+      "advisory_ids": [
+        "GHSA-8r96-8889-qg2x",
+        "PYSEC-2023-242"
+      ],
+      "packages": [
+        "httpie"
+      ],
+      "package_repos": [
+        "httpie/cli"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/httpie/cli/commit/7f03c52d2237440c5a672296ce6955aae4ed4f09",
+          "status": "resolved",
+          "repo": "httpie/cli",
+          "on_package_repo": true,
+          "files": 6,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-33fm-6gp7-4p47",
+      "advisory_ids": [
+        "GHSA-33fm-6gp7-4p47",
+        "PYSEC-2026-2309"
+      ],
+      "packages": [
+        "weblate"
+      ],
+      "package_repos": [
+        "weblateorg/weblate"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/WeblateOrg/weblate/pull/17722",
+          "status": "resolved",
+          "repo": "weblateorg/weblate",
+          "on_package_repo": true,
+          "files": 9,
+          "python_files": 5,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/WeblateOrg/weblate/commit/78773cc141ce0a97900c11341e6cf856451395fd",
+          "status": "resolved",
+          "repo": "weblateorg/weblate",
+          "on_package_repo": true,
+          "files": 9,
+          "python_files": 5,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-m4pr-6v3c-6fgr",
+      "advisory_ids": [
+        "GHSA-m4pr-6v3c-6fgr"
+      ],
+      "packages": [
+        "onnx"
+      ],
+      "package_repos": [
+        "onnx/onnx"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": false,
+      "candidates": [
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/onnx/onnx/pull/7916",
+          "status": "resolved",
+          "repo": "onnx/onnx",
+          "on_package_repo": true,
+          "files": 6,
+          "python_files": 0,
+          "native_files": 5,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/onnx/onnx/commit/dd6bc92ea39fd2274fd671f0734b0b8b558356f5",
+          "status": "resolved",
+          "repo": "onnx/onnx",
+          "on_package_repo": true,
+          "files": 6,
+          "python_files": 0,
+          "native_files": 5,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-h6g5-wqqr-3mw3",
+      "advisory_ids": [
+        "GHSA-h6g5-wqqr-3mw3",
+        "PYSEC-2023-2"
+      ],
+      "packages": [
+        "apache-airflow"
+      ],
+      "package_repos": [
+        "apache/airflow"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/apache/airflow/pull/29501",
+          "status": "resolved",
+          "repo": "apache/airflow",
+          "on_package_repo": true,
+          "files": 1,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/apache/airflow/commit/965e76d9ed00ef354a834739ac46f24068630951",
+          "status": "resolved",
+          "repo": "apache/airflow",
+          "on_package_repo": true,
+          "files": 1,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-8mx5-7m5m-r77g",
+      "advisory_ids": [
+        "GHSA-8mx5-7m5m-r77g"
+      ],
+      "packages": [
+        "filelock"
+      ],
+      "package_repos": [
+        "tox-dev/filelock"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/tox-dev/filelock/pull/835",
+          "status": "resolved",
+          "repo": "tox-dev/filelock",
+          "on_package_repo": true,
+          "files": 20,
+          "python_files": 9,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/tox-dev/filelock/commit/e1e825b1992f69fb6b346dc395d5ae4893536c0a",
+          "status": "resolved",
+          "repo": "tox-dev/filelock",
+          "on_package_repo": true,
+          "files": 20,
+          "python_files": 9,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-px37-jpqx-97q9",
+      "advisory_ids": [
+        "GHSA-px37-jpqx-97q9",
+        "PYSEC-2026-1207"
+      ],
+      "packages": [
+        "aws-sam-cli"
+      ],
+      "package_repos": [
+        "aws/aws-sam-cli"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/aws/aws-sam-cli/pull/7865",
+          "status": "resolved",
+          "repo": "aws/aws-sam-cli",
+          "on_package_repo": true,
+          "files": 8,
+          "python_files": 4,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-pmch-g965-grmr",
+      "advisory_ids": [
+        "GHSA-pmch-g965-grmr",
+        "PYSEC-2026-2580"
+      ],
+      "packages": [
+        "langroid"
+      ],
+      "package_repos": [],
+      "outcome": "fix_repo_unconfirmed",
+      "fix_touches_python": false,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/langroid/langroid/commit/00b7dd7b79c5d03c94be284cf3459d98195ebfba",
+          "status": "resolved",
+          "repo": "langroid/langroid",
+          "on_package_repo": null,
+          "files": 2,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-vgf2-gvx8-xwc3",
+      "advisory_ids": [
+        "GHSA-vgf2-gvx8-xwc3",
+        "PYSEC-2025-33"
+      ],
+      "packages": [
+        "vyper"
+      ],
+      "package_repos": [
+        "vyperlang/vyper"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/vyperlang/vyper/pull/4451",
+          "status": "resolved",
+          "repo": "vyperlang/vyper",
+          "on_package_repo": true,
+          "files": 7,
+          "python_files": 2,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/vyperlang/vyper/commit/7136eab0a254aa2ff7ddca41cc05f2ee1fa99caf",
+          "status": "resolved",
+          "repo": "vyperlang/vyper",
+          "on_package_repo": true,
+          "files": 7,
+          "python_files": 2,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-cw65-gx24-rc82",
+      "advisory_ids": [
+        "GHSA-cw65-gx24-rc82"
+      ],
+      "packages": [
+        "virtualenv"
+      ],
+      "package_repos": [
+        "pypa/virtualenv"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/pypa/virtualenv/pull/3429",
+          "status": "resolved",
+          "repo": "pypa/virtualenv",
+          "on_package_repo": true,
+          "files": 5,
+          "python_files": 2,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/pypa/virtualenv/commit/554d9f9d4f7758f5cf53f993031e29787f1f74c5",
+          "status": "resolved",
+          "repo": "pypa/virtualenv",
+          "on_package_repo": true,
+          "files": 5,
+          "python_files": 2,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-wpqr-jcpx-745r",
+      "advisory_ids": [
+        "GHSA-wpqr-jcpx-745r",
+        "PYSEC-2026-1057"
+      ],
+      "packages": [
+        "ujson"
+      ],
+      "package_repos": [
+        "ultrajson/ultrajson"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": false,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/ultrajson/ultrajson/commit/67ec07183342589d602e0fcf7bb1ff3e19272687",
+          "status": "resolved",
+          "repo": "ultrajson/ultrajson",
+          "on_package_repo": true,
+          "files": 4,
+          "python_files": 0,
+          "native_files": 3,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-hxpf-9xvq-wph8",
+      "advisory_ids": [
+        "GHSA-hxpf-9xvq-wph8",
+        "PYSEC-2026-3489"
+      ],
+      "packages": [
+        "netlicensing-mcp"
+      ],
+      "package_repos": [
+        "labs64/netlicensing-mcp"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/Labs64/NetLicensing-MCP/pull/6",
+          "status": "resolved",
+          "repo": "labs64/netlicensing-mcp",
+          "on_package_repo": true,
+          "files": 2,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/Labs64/NetLicensing-MCP/commit/b8fd0ea76d533202573eb24add9fb2fbd9331496",
+          "status": "resolved",
+          "repo": "labs64/netlicensing-mcp",
+          "on_package_repo": true,
+          "files": 2,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-jq4v-f5q6-mjqq",
+      "advisory_ids": [
+        "GHSA-jq4v-f5q6-mjqq",
+        "PYSEC-2021-19"
+      ],
+      "packages": [
+        "lxml"
+      ],
+      "package_repos": [
+        "lxml/lxml"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_pull",
+          "url": "https://github.com/lxml/lxml/pull/316",
+          "status": "resolved",
+          "repo": "lxml/lxml",
+          "on_package_repo": true,
+          "files": 2,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/lxml/lxml/pull/316/commits/10ec1b4e9f93713513a3264ed6158af22492f270",
+          "status": "resolved",
+          "repo": "lxml/lxml",
+          "on_package_repo": true,
+          "files": 1,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/lxml/lxml/commit/2d01a1ba8984e0483ce6619b972832377f208a0d",
+          "status": "resolved",
+          "repo": "lxml/lxml",
+          "on_package_repo": true,
+          "files": 2,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        },
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/lxml/lxml/commit/a5f9cb52079dc57477c460dbe6ba0f775e14a999",
+          "status": "resolved",
+          "repo": "lxml/lxml",
+          "on_package_repo": true,
+          "files": 3,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    },
+    {
+      "key": "GHSA-832w-fhmw-w4f4",
+      "advisory_ids": [
+        "GHSA-832w-fhmw-w4f4",
+        "PYSEC-2026-1320"
+      ],
+      "packages": [
+        "dtale"
+      ],
+      "package_repos": [
+        "man-group/dtale"
+      ],
+      "outcome": "fix_on_package_repo",
+      "fix_touches_python": true,
+      "candidates": [
+        {
+          "kind": "github_commit",
+          "url": "https://github.com/man-group/dtale/commit/1e26ed3ca12fe83812b90f12a2b3e5fb0b740f7a",
+          "status": "resolved",
+          "repo": "man-group/dtale",
+          "on_package_repo": true,
+          "files": 2,
+          "python_files": 1,
+          "native_files": 0,
+          "other_source_files": 0,
+          "truncated": false,
+          "error": null
+        }
+      ]
+    }
+  ]
+}

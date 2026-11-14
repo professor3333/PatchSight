@@ -1,0 +1,150 @@
+"""Read fix commits, pull requests and tag comparisons through the GitHub REST API.
+
+Read-only, and limited to ``api.github.com``. Repository names come back canonical
+(lower-cased ``owner/name``, after following renames), so they can be compared with the
+package's declared repository.
+"""
+
+import re
+from pathlib import Path
+from typing import Any
+
+import httpx
+from pydantic import BaseModel, ConfigDict
+from tenacity.wait import wait_base
+
+from patchsight.pipeline.http import CachedJsonClient
+
+GITHUB_API = "https://api.github.com"
+COMMIT_FILES_PER_PAGE = 300  # fixed by the API for single-commit responses
+MAX_COMMIT_PAGES = 10  # the API stops listing files at 3,000
+PULL_FILES_PER_PAGE = 100
+MAX_PULL_PAGES = 30
+COMPARE_FILE_LIMIT = 300
+
+_HTML_REPO = re.compile(r"^https://github\.com/(?P<owner>[^/]+)/(?P<repo>[^/]+)/")
+
+
+class ChangedFile(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
+    filename: str
+    status: str
+    previous_filename: str | None = None
+    additions: int = 0
+    deletions: int = 0
+
+
+class ChangeSet(BaseModel):
+    """The files a commit, merged pull request or comparison changed."""
+
+    model_config = ConfigDict(frozen=True)
+
+    repo: str
+    commits: tuple[str, ...]
+    files: tuple[ChangedFile, ...]
+    truncated: bool
+
+
+class PullRequest(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
+    repo: str
+    number: int
+    merged: bool
+    merge_commit_sha: str | None
+
+
+def _files(raw: list[dict[str, Any]]) -> list[ChangedFile]:
+    return [ChangedFile.model_validate(item) for item in raw]
+
+
+def _repo_from_html(url: str) -> str:
+    match = _HTML_REPO.match(url)
+    if not match:
+        raise ValueError(f"unexpected html_url {url!r}")
+    return f"{match['owner']}/{match['repo']}".lower()
+
+
+class GitHubClient:
+    def __init__(
+        self,
+        cache_dir: Path,
+        token: str | None = None,
+        transport: httpx.BaseTransport | None = None,
+        wait: wait_base | None = None,
+    ) -> None:
+        headers = {
+            "Accept": "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2022-11-28",
+            "User-Agent": "patchsight-pipeline",
+        }
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
+        self.http = CachedJsonClient(
+            GITHUB_API, cache_dir, headers=headers, transport=transport, wait=wait
+        )
+
+    def close(self) -> None:
+        self.http.close()
+
+    def canonical_repo(self, repo: str) -> str:
+        """``owner/name`` as GitHub currently names it, lower-cased. Follows renames."""
+        data = self.http.get_json(f"/repos/{repo}")
+        return str(data["full_name"]).lower()
+
+    def commit(self, repo: str, sha: str) -> ChangeSet:
+        files: list[ChangedFile] = []
+        first: dict[str, Any] = {}
+        truncated = False
+        for page in range(1, MAX_COMMIT_PAGES + 1):
+            data = self.http.get_json(f"/repos/{repo}/commits/{sha}", {"page": page})
+            first = first or data
+            batch = data.get("files") or []
+            files.extend(_files(batch))
+            if len(batch) < COMMIT_FILES_PER_PAGE:
+                break
+        else:
+            truncated = True
+        return ChangeSet(
+            repo=_repo_from_html(first["html_url"]),
+            commits=(str(first["sha"]),),
+            files=tuple(files),
+            truncated=truncated,
+        )
+
+    def pull(self, repo: str, number: int) -> PullRequest:
+        data = self.http.get_json(f"/repos/{repo}/pulls/{number}")
+        return PullRequest(
+            repo=str(data["base"]["repo"]["full_name"]).lower(),
+            number=number,
+            merged=bool(data.get("merged")),
+            merge_commit_sha=data.get("merge_commit_sha"),
+        )
+
+    def pull_files(self, repo: str, number: int) -> ChangeSet:
+        pull = self.pull(repo, number)
+        files: list[ChangedFile] = []
+        truncated = False
+        for page in range(1, MAX_PULL_PAGES + 1):
+            batch = self.http.get_json(
+                f"/repos/{repo}/pulls/{number}/files",
+                {"page": page, "per_page": PULL_FILES_PER_PAGE},
+            )
+            files.extend(_files(batch))
+            if len(batch) < PULL_FILES_PER_PAGE:
+                break
+        else:
+            truncated = True
+        commits = (pull.merge_commit_sha,) if pull.merge_commit_sha else ()
+        return ChangeSet(repo=pull.repo, commits=commits, files=tuple(files), truncated=truncated)
+
+    def compare(self, repo: str, base: str, head: str) -> ChangeSet:
+        data = self.http.get_json(f"/repos/{repo}/compare/{base}...{head}")
+        raw_files = data.get("files") or []
+        return ChangeSet(
+            repo=_repo_from_html(data["html_url"]),
+            commits=tuple(str(c["sha"]) for c in data.get("commits") or []),
+            files=tuple(_files(raw_files)),
+            truncated=len(raw_files) >= COMPARE_FILE_LIMIT,
+        )

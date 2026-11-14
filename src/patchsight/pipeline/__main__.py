@@ -1,14 +1,18 @@
 """Offline pipeline commands: ``python -m patchsight.pipeline <command>``."""
 
+import os
 from pathlib import Path
 from typing import Annotated
 
 import httpx
 import typer
 
-from patchsight.pipeline import week1
+from patchsight.pipeline import fix_sample, week1
+from patchsight.pipeline.diffs.github import GitHubClient
 from patchsight.pipeline.ingest import ghsa_repo, snapshot
+from patchsight.pipeline.ingest.aliases import alias_groups
 from patchsight.pipeline.ingest.osv import Advisory, Excluded, Quarantined, normalise_dump
+from patchsight.pipeline.pypi import PyPIClient
 
 app = typer.Typer(name="patchsight-pipeline", no_args_is_help=True, add_completion=False)
 
@@ -115,6 +119,67 @@ def week1_report_command(
     target.with_suffix(".md").write_text(week1.render_markdown(report, lines), "utf-8")
     verdict = "PASS" if report.gate_passed else "FAIL"
     typer.echo(f"gate {verdict}: {report.gate_metric.share:.1%} with a GitHub fix link")
+
+
+@app.command("fix-sample")
+def fix_sample_command(
+    root: Root = Path(),
+    size: Annotated[int, typer.Option(help="Vulnerabilities to sample.")] = 100,
+    seed: Annotated[int, typer.Option(help="Random seed, recorded in the report.")] = 20261114,
+    cache: Annotated[Path, typer.Option(help="HTTP response cache.")] = Path(".cache/http"),
+    out: Annotated[Path, typer.Option(help="Report path, without extension.")] = Path(
+        "docs/reports/fix-candidate-sample"
+    ),
+) -> None:
+    """Check a random sample of fix candidates against GitHub (needs GITHUB_TOKEN)."""
+    token = os.environ.get("GITHUB_TOKEN")
+    if not token:
+        raise typer.BadParameter("set GITHUB_TOKEN; unauthenticated GitHub allows 60 requests/h")
+    manifest, dump = _load_verified(root)
+    advisories = [r for r in normalise_dump(dump) if isinstance(r, Advisory)]
+    by_id = {a.id: a for a in advisories}
+    groups = alias_groups(advisories)
+    population = [
+        g
+        for g in groups
+        if any(
+            c.kind in week1.GITHUB_KINDS for i in g.advisory_ids for c in by_id[i].fix_candidates
+        )
+    ]
+    sample = fix_sample.draw_sample(population, size, seed)
+
+    github = GitHubClient(root / cache / "github", token=token)
+    pypi = PyPIClient(root / cache / "pypi")
+    try:
+        checks = []
+        for number, group in enumerate(sample, 1):
+            checks.append(fix_sample.check_group(group, by_id, github, pypi))
+            if number % 10 == 0:
+                typer.echo(f"checked {number}/{len(sample)}", err=True)
+    finally:
+        github.close()
+        pypi.close()
+
+    dump_entry = manifest.file(DUMP)
+    report = fix_sample.build_report(
+        checks,
+        as_of=dump_entry.retrieved_at.date(),
+        seed=seed,
+        vulnerabilities=len(groups),
+        population=len(population),
+    )
+    lines = [
+        f"- `{dump_entry.name}`: SHA-256 `{dump_entry.sha256}` (see `manifests/snapshot.json`)"
+    ]
+    target = root / out
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.with_suffix(".json").write_text(report.model_dump_json(indent=2) + "\n", "utf-8")
+    target.with_suffix(".md").write_text(fix_sample.render_markdown(report, lines), "utf-8")
+    typer.echo(
+        f"{report.verdict}: strict estimate {report.estimated_share_strict.share:.1%}, "
+        f"lenient {report.estimated_share_lenient.share:.1%} "
+        f"({github.http.network_requests} GitHub and {pypi.http.network_requests} PyPI requests)"
+    )
 
 
 if __name__ == "__main__":

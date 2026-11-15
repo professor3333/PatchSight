@@ -8,6 +8,7 @@ Credentials are sent as headers but never become part of a cache key.
 
 import hashlib
 import json
+import time
 from collections.abc import Callable, Mapping
 from pathlib import Path
 from typing import Any
@@ -36,6 +37,10 @@ class NotFoundError(HttpError):
 class RateLimitError(HttpError):
     """The server's rate limit is exhausted."""
 
+    def __init__(self, message: str, reset_at: float | None = None) -> None:
+        super().__init__(message)
+        self.reset_at = reset_at
+
 
 class _RetryableError(Exception):
     pass
@@ -50,8 +55,18 @@ class CachedJsonClient:
         transport: httpx.BaseTransport | None = None,
         max_attempts: int = 4,
         wait: wait_base | None = None,
+        wait_for_rate_limit: float = 0.0,
+        sleep: Callable[[float], None] = time.sleep,
+        clock: Callable[[], float] = time.time,
     ) -> None:
+        """``wait_for_rate_limit``: the longest wait, in seconds, for an exhausted rate
+        limit to reset before retrying. Zero raises ``RateLimitError`` at once."""
         self._cache_dir = cache_dir
+        self._max_attempts = max_attempts
+        self._wait_for_rate_limit = wait_for_rate_limit
+        self._sleep = sleep
+        self._clock = clock
+        self.rate_limit_waits = 0
         self._http = httpx.Client(
             base_url=base_url,
             headers=dict(headers or {}),
@@ -89,10 +104,24 @@ class CachedJsonClient:
         return cached["body"]
 
     def _fetch(self, path: str, params: Mapping[str, str | int]) -> dict[str, Any]:
-        for attempt in self._retrying():
-            with attempt:
-                return self._fetch_once(path, params)
-        raise AssertionError("unreachable")  # pragma: no cover
+        while True:
+            try:
+                for attempt in self._retrying():
+                    with attempt:
+                        return self._fetch_once(path, params)
+            except _RetryableError as error:
+                # Out of retries: an ordinary, catchable failure, not an internal type.
+                raise HttpError(f"gave up after {self._max_attempts} attempts: {error}") from None
+            except RateLimitError as limited:
+                if limited.reset_at is None:
+                    raise
+                wait = limited.reset_at - self._clock() + 5.0
+                if not 0 < wait <= self._wait_for_rate_limit:
+                    raise
+                self.rate_limit_waits += 1
+                self._sleep(wait)
+            else:  # pragma: no cover - the loop above always returns or raises
+                raise AssertionError("unreachable")
 
     def _fetch_once(self, path: str, params: Mapping[str, str | int]) -> dict[str, Any]:
         self.network_requests += 1
@@ -106,8 +135,9 @@ class CachedJsonClient:
         if status in NOT_FOUND_STATUSES:
             return {"status": status, "body": None}
         if status in (403, 429) and response.headers.get("x-ratelimit-remaining") == "0":
-            reset = response.headers.get("x-ratelimit-reset", "unknown")
-            raise RateLimitError(f"{path}: rate limit exhausted until {reset}")
+            reset = response.headers.get("x-ratelimit-reset")
+            reset_at = float(reset) if reset and reset.isdigit() else None
+            raise RateLimitError(f"{path}: rate limit exhausted until {reset}", reset_at)
         if status in RETRY_STATUSES or status == 429:
             raise _RetryableError(f"{path}: HTTP {status}")
         raise HttpError(f"{path}: HTTP {status}")

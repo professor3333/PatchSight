@@ -13,7 +13,7 @@ resolved; the build report counts them.
 import hashlib
 import json
 from collections import Counter
-from collections.abc import Iterable, Sequence
+from collections.abc import Callable, Iterable, Sequence
 from datetime import UTC, datetime
 
 from pydantic import BaseModel
@@ -183,13 +183,16 @@ def build(
     github: GitHubClient,
     pypi: PyPIClient,
     db_version: str,
+    progress: Callable[[int, int], None] | None = None,
 ) -> tuple[list[Record], dict[str, str], BuildReport]:
     now = datetime.now(UTC)
     records: list[Record] = []
     aliases: dict[str, str] = {}
     outcomes: list[BuildOutcome] = []
-    for group in groups:
+    for number, group in enumerate(groups, 1):
         built, outcome = fallback_records(group, by_id, github, pypi, now)
+        if progress is not None and (number % 100 == 0 or number == len(groups)):
+            progress(number, len(groups))
         outcomes.append(outcome)
         if built:
             records.extend(built)

@@ -461,10 +461,14 @@ def build_db_command(
         groups = fix_sample.draw_sample(groups, sample, seed)
     dump_entry = manifest.file(DUMP)
     version = dump_entry.retrieved_at.strftime("%Y.%m.%d")
-    github = GitHubClient(root / cache / "github", token=token)
+    # A full build takes hours: wait out GitHub's hourly limit instead of failing.
+    github = GitHubClient(root / cache / "github", token=token, wait_for_rate_limit=3900)
     pypi = PyPIClient(root / cache / "pypi")
     try:
-        records, aliases, report = build_db.build(groups, by_id, github, pypi, version)
+        records, aliases, report = build_db.build(
+            groups, by_id, github, pypi, version,
+            progress=lambda done, total: typer.echo(f"built {done}/{total}", err=True),
+        )  # fmt: skip
     finally:
         github.close()
         pypi.close()

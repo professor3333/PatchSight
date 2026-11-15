@@ -77,6 +77,7 @@ class GitHubClient:
         token: str | None = None,
         transport: httpx.BaseTransport | None = None,
         wait: wait_base | None = None,
+        wait_for_rate_limit: float = 0.0,
     ) -> None:
         headers = {
             "Accept": "application/vnd.github+json",
@@ -86,7 +87,12 @@ class GitHubClient:
         if token:
             headers["Authorization"] = f"Bearer {token}"
         self.http = CachedJsonClient(
-            GITHUB_API, cache_dir, headers=headers, transport=transport, wait=wait
+            GITHUB_API,
+            cache_dir,
+            headers=headers,
+            transport=transport,
+            wait=wait,
+            wait_for_rate_limit=wait_for_rate_limit,
         )
 
     def close(self) -> None:

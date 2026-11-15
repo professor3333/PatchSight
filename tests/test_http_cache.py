@@ -80,3 +80,42 @@ def test_other_client_errors_are_not_cached(tmp_path: Path) -> None:
     with pytest.raises(HttpError, match="HTTP 401"):
         client.get_json("/private")
     assert not list((tmp_path / "cache").rglob("*.json"))
+
+
+def _limited_then_ok(reset_in: float, clock: list[float]) -> httpx.MockTransport:
+    responses = iter(
+        [
+            httpx.Response(403, headers={"x-ratelimit-remaining": "0",
+                                         "x-ratelimit-reset": str(int(clock[0] + reset_in))}),
+            httpx.Response(200, json={"ok": True}),
+        ]
+    )  # fmt: skip
+    return httpx.MockTransport(lambda request: next(responses))
+
+
+def test_waits_out_a_rate_limit_that_resets_soon(tmp_path: Path) -> None:
+    clock = [1_000_000.0]
+    slept: list[float] = []
+    client = CachedJsonClient(
+        "https://api.example.org", tmp_path, transport=_limited_then_ok(60, clock),
+        wait=wait_none(), wait_for_rate_limit=3900, sleep=slept.append, clock=lambda: clock[0],
+    )  # fmt: skip
+    assert client.get_json("/x") == {"ok": True}
+    assert client.rate_limit_waits == 1
+    assert slept == [pytest.approx(65.0)]
+
+
+def test_does_not_wait_for_a_distant_reset(tmp_path: Path) -> None:
+    clock = [1_000_000.0]
+    client = CachedJsonClient(
+        "https://api.example.org", tmp_path, transport=_limited_then_ok(7200, clock),
+        wait=wait_none(), wait_for_rate_limit=3900, sleep=lambda s: None, clock=lambda: clock[0],
+    )  # fmt: skip
+    with pytest.raises(RateLimitError):
+        client.get_json("/x")
+
+
+def test_exhausted_retries_raise_a_catchable_http_error(tmp_path: Path) -> None:
+    client = _client(tmp_path, httpx.MockTransport(lambda request: httpx.Response(502)))
+    with pytest.raises(HttpError, match="gave up after 3 attempts"):
+        client.get_json("/flaky")

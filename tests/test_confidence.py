@@ -23,7 +23,7 @@ def _a(*names: str, status: str = "ok", truncated: bool = False) -> Answer:
 def test_agreement_rules(
     primary: Answer, secondary: Answer, rule: str, tier: str, agreed: set[str]
 ) -> None:
-    decision = decide(primary, secondary, rule)  # type: ignore[arg-type]
+    decision = decide(primary, secondary, rule, require_public=False)  # type: ignore[arg-type]
     assert (decision.tier, set(decision.agreed)) == (tier, agreed)
 
 
@@ -41,7 +41,7 @@ def test_conditions_that_force_low_confidence(
     primary: Answer, secondary: Answer | None, reason: str
 ) -> None:
     for rule in ("identical", "subset", "overlap"):
-        decision = decide(primary, secondary, rule)  # type: ignore[arg-type]
+        decision = decide(primary, secondary, rule, require_public=False)  # type: ignore[arg-type]
         assert (decision.tier, decision.reason) == ("low", reason)
 
 
@@ -86,3 +86,41 @@ def test_fallback_never_lowers_recall(
             False,
         )  # type: ignore[arg-type]
         assert on.overall.true_positives >= off.overall.true_positives
+
+
+def test_a_public_symbol_is_required_for_high_confidence() -> None:
+    private = decide(_a("normalizePath"), _a("normalizePath"))
+    assert (private.tier, private.reason) == ("low", "no public symbol among the agreed answers")
+    via_entry_point = decide(
+        Answer(status="ok", vulnerable=frozenset({"normalizePath"}),
+               entry_points=frozenset({"NewRequestHandler"})),
+        _a("normalizePath"),
+    )  # fmt: skip
+    assert via_entry_point.tier == "high"
+    assert set(via_entry_point.symbols) == {"normalizePath", "NewRequestHandler"}
+
+
+@pytest.mark.parametrize(
+    ("name", "language", "public"),
+    [
+        ("Reader.Read", "go", True), ("Reader.init", "go", False), ("ParseHeader", "go", True),
+        ("pkg.loader.load", "python", True), ("pkg.loader._load", "python", False),
+        ("pkg.Loader.__init__", "python", True),
+    ],
+)  # fmt: skip
+def test_is_public(name: str, language: str, public: bool) -> None:
+    from patchsight.eval.confidence import is_public
+
+    assert is_public(name, language) is public  # type: ignore[arg-type]
+
+
+def test_safety_view_counts_entry_points_and_lenient_names() -> None:
+    from patchsight.eval.safety import lenient_match, safety
+
+    assert lenient_match("Conn.decryptTicket", "decryptTicket")
+    assert lenient_match("syscall.ForkExec", "ForkExec")
+    assert not lenient_match("forkExec", "ForkExec")
+    s = safety(
+        {"A": {"Conn.decryptTicket"}, "B": {"helper"}}, {"A": {"decryptTicket"}, "B": {"Run"}}
+    )
+    assert (s.truth_found, s.miss_rate) == (1, 0.5)

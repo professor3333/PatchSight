@@ -13,7 +13,7 @@ import typer
 
 from patchsight import db
 from patchsight.pipeline import build_db, fix_sample, week1
-from patchsight.pipeline.benchmarks import changedfuncs, dunlap, extraction, splits
+from patchsight.pipeline.benchmarks import bundle, changedfuncs, dunlap, extraction, splits
 from patchsight.pipeline.diffs.github import GitHubClient
 from patchsight.pipeline.extract.prompt import load_template
 from patchsight.pipeline.ingest import ghsa_repo, snapshot
@@ -202,6 +202,8 @@ DUNLAP = "dunlap-llm-vulnerable-functions"
 DUNLAP_DATA = "dunlap-patchparser-csv"
 DUNLAP_ADVISORIES = "dunlap-govulndb-advisories-csv"
 DUNLAP_SPLIT = Path("splits/dunlap-v1.json")
+DUNLAP_BUNDLE = Path("benchmarks/dunlap-v1/candidates.json")
+BASELINE_REPORT = Path("docs/reports/changedfuncs-baseline.json")
 DUNLAP_DEV_SIZE = 60
 
 
@@ -479,6 +481,60 @@ def build_db_command(
         f"db {version}: {report.records} records, {report.symbols} symbols from "
         f"{report.groups} vulnerabilities; {report.status}"
     )
+
+
+@app.command("export-dunlap-bundle")
+def export_dunlap_bundle_command(
+    root: Root = Path(),
+    cache: Annotated[Path, typer.Option(help="HTTP response cache.")] = Path(".cache/http"),
+) -> None:
+    """Write the benchmark bundle: candidate metadata and truth, no code (needs GITHUB_TOKEN)."""
+    token = _github_token()
+    manifest = snapshot.load_manifest(root / MANIFEST)
+    data = manifest.file(DUNLAP_DATA)
+    repo = next(r for r in manifest.repos if r.name == DUNLAP)
+    reports = dunlap.load(snapshot.verify(data, root))
+    github = GitHubClient(root / cache / "github", token=token)
+    try:
+        exported = bundle.export(
+            github, reports, {"dataset_commit": repo.commit, "dataset_csv_sha256": data.sha256}
+        )
+    finally:
+        github.close()
+    bundle.save(exported, root / DUNLAP_BUNDLE)
+    count = sum(len(r.candidates) for r in exported.reports)
+    typer.echo(f"{DUNLAP_BUNDLE}: {len(exported.reports)} reports, {count} candidates")
+
+
+@app.command("reproduce")
+def reproduce_command(root: Root = Path()) -> None:
+    """Recompute the benchmark tables offline from committed files. No network, no API key."""
+    data = bundle.load(root / DUNLAP_BUNDLE)
+    frozen = splits.load_split(root / DUNLAP_SPLIT)
+    lines = ["ChangedFuncs on the Dunlap Go benchmark (unit: report, function)", ""]
+    lines.append(f"{'part':<6} {'reports':>7} {'cand.':>6} {'TP':>4} {'P':>6} {'R':>6} {'F1':>6}")
+    results = {}
+    for part in ("all", "dev", "test"):
+        s = bundle.changedfuncs_scores(data, frozen.split.ids(part))
+        results[part] = s
+        lines.append(
+            f"{part:<6} {s.reports:>7} {s.true_positives + s.false_positives:>6} "
+            f"{s.true_positives:>4} {s.precision:>6.3f} {s.recall:>6.3f} {s.f1:>6.3f}"
+        )
+    lines += ["", "Paper (Dunlap et al., DIMVA 2024): P 0.22, R 0.90, F1 0.35 on 2,370 candidates"]
+    typer.echo("\n".join(lines))
+
+    committed = changedfuncs.BaselineReport.model_validate_json(
+        (root / BASELINE_REPORT).read_text(encoding="utf-8")
+    ).ours
+    mine = results["all"]
+    same = (mine.true_positives, mine.false_positives, mine.false_negatives) == (
+        committed.true_positives, committed.false_positives, committed.false_negatives,
+    )  # fmt: skip
+    if not same:
+        typer.echo(f"MISMATCH with {BASELINE_REPORT}", err=True)
+        raise typer.Exit(code=1)
+    typer.echo(f"\nMatches {BASELINE_REPORT} exactly.")
 
 
 if __name__ == "__main__":

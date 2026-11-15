@@ -1,4 +1,4 @@
-.PHONY: install lint format typecheck test check
+.PHONY: install lint format typecheck test check reproduce
 
 install:
 	uv sync --all-extras
@@ -18,3 +18,7 @@ test:
 	uv run pytest -m "not live and not slow"
 
 check: lint typecheck test
+
+# Recompute the benchmark tables from committed files: no network, no API key.
+reproduce:
+	uv run python -m patchsight.pipeline reproduce

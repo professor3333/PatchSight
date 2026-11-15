@@ -38,3 +38,6 @@ jobs:
 
       - name: Test
         run: uv run pytest -m "not live and not slow"
+
+      - name: Reproduce the benchmark table
+        run: uv run python -m patchsight.pipeline reproduce

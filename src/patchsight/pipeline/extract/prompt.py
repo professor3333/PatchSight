@@ -18,6 +18,7 @@ from pathlib import Path
 from pydantic import BaseModel, ConfigDict
 
 from patchsight.pipeline.diffs.hunks import Hunk
+from patchsight.pipeline.llm.tokens import MESSAGE_OVERHEAD, TokenCounter
 
 _VERSION = re.compile(r"^version:\s*(\S+)\s*$", re.MULTILINE)
 _SECTION = re.compile(r"^## (system|user)\s*$", re.MULTILINE)
@@ -140,13 +141,13 @@ def render(
     advisory: AdvisoryText,
     inputs: Sequence[CandidateInput],
     budget_tokens: int,
-    chars_per_token: float,
+    counter: TokenCounter,
     max_hunk_lines: int,
 ) -> RenderedPrompt:
     """Render the prompt, keeping as many candidates as fit within ``budget_tokens``."""
 
     def estimate(text: str) -> int:
-        return int(len(text) / chars_per_token) + 1
+        return counter.count(text)
 
     advisory_text = neutralise(f"{advisory.summary}\n\n{advisory.details}".strip())
 
@@ -164,7 +165,7 @@ def render(
         return f'<candidate {attributes} kind="{item.kind}">\n{hunks}\n</candidate>'
 
     base = template.system + template.user.replace("{{advisory}}", advisory_text)
-    base_tokens = estimate(base)
+    base_tokens = estimate(base) + 2 * MESSAGE_OVERHEAD
     costs = [estimate(block("F0000", item)) for item in inputs]
     order = bm25_rank(
         advisory_text, [f"{i.name} {' '.join(h for x in i.hunks for h in x.lines)}" for i in inputs]
@@ -212,7 +213,7 @@ def render(
         hunk_ids=tuple(
             sorted({h for c in candidates for h in c.hunk_ids}, key=lambda x: int(x[1:]))
         ),
-        estimated_tokens=estimate(template.system + user),
+        estimated_tokens=estimate(template.system) + estimate(user) + 2 * MESSAGE_OVERHEAD,
         truncated=bool(dropped),
         dropped=dropped,
     )

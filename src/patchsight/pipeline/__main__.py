@@ -19,6 +19,7 @@ from patchsight.pipeline.ingest.aliases import alias_groups
 from patchsight.pipeline.ingest.osv import Advisory, Excluded, Quarantined, normalise_dump
 from patchsight.pipeline.llm.client import client_for
 from patchsight.pipeline.llm.config import load_config
+from patchsight.pipeline.llm.tokens import HfTokenizer
 from patchsight.pipeline.pypi import PyPIClient
 
 app = typer.Typer(name="patchsight-pipeline", no_args_is_help=True, add_completion=False)
@@ -122,8 +123,10 @@ def week1_report_command(
     report = week1.build_report(results, as_of=dump_entry.retrieved_at, ghsa_scan=ghsa_scan)
     target = root / out
     target.parent.mkdir(parents=True, exist_ok=True)
-    target.with_suffix(".json").write_text(report.model_dump_json(indent=2) + "\n", "utf-8")
-    target.with_suffix(".md").write_text(week1.render_markdown(report, lines), "utf-8")
+    target.with_name(target.name + ".json").write_text(
+        report.model_dump_json(indent=2) + "\n", "utf-8"
+    )
+    target.with_name(target.name + ".md").write_text(week1.render_markdown(report, lines), "utf-8")
     verdict = "PASS" if report.gate_passed else "FAIL"
     typer.echo(f"gate {verdict}: {report.gate_metric.share:.1%} with a GitHub fix link")
 
@@ -180,8 +183,12 @@ def fix_sample_command(
     ]
     target = root / out
     target.parent.mkdir(parents=True, exist_ok=True)
-    target.with_suffix(".json").write_text(report.model_dump_json(indent=2) + "\n", "utf-8")
-    target.with_suffix(".md").write_text(fix_sample.render_markdown(report, lines), "utf-8")
+    target.with_name(target.name + ".json").write_text(
+        report.model_dump_json(indent=2) + "\n", "utf-8"
+    )
+    target.with_name(target.name + ".md").write_text(
+        fix_sample.render_markdown(report, lines), "utf-8"
+    )
     typer.echo(
         f"{report.verdict}: strict estimate {report.estimated_share_strict.share:.1%}, "
         f"lenient {report.estimated_share_lenient.share:.1%} "
@@ -282,8 +289,12 @@ def dunlap_baseline_command(
     ]
     target = root / out
     target.parent.mkdir(parents=True, exist_ok=True)
-    target.with_suffix(".json").write_text(report.model_dump_json(indent=2) + "\n", "utf-8")
-    target.with_suffix(".md").write_text(changedfuncs.render_markdown(report, lines), "utf-8")
+    target.with_name(target.name + ".json").write_text(
+        report.model_dump_json(indent=2) + "\n", "utf-8"
+    )
+    target.with_name(target.name + ".md").write_text(
+        changedfuncs.render_markdown(report, lines), "utf-8"
+    )
     o = report.ours
     typer.echo(
         f"ours: P {o.precision:.3f} R {o.recall:.3f} F1 {o.f1:.3f}; "
@@ -315,11 +326,12 @@ def dunlap_extract_command(
     frozen = splits.load_split(root / DUNLAP_SPLIT)
     llm_config = load_config(root / config)
     template = load_template(root / prompt)
-    llm, model_id = client_for(llm_config, role, root / cache / "llm")
+    counter = HfTokenizer(llm_config.tokenizer, root / cache / "tokenizer")
+    llm, model_id = client_for(llm_config, role, root / cache / "llm", counter)
     github = GitHubClient(root / cache / "http" / "github", token=token)
     try:
         result = extraction.run(
-            github, llm, llm_config, role, template, reports, advisories,
+            github, llm, llm_config, role, template, counter, reports, advisories,
             as_of=data.retrieved_at.date(), sample_size=sample, seed=seed,
             ids=frozen.split.ids(split), split=f"{frozen.split.name}:{split}",
             split_sha256=frozen.sha256,
@@ -334,8 +346,12 @@ def dunlap_extract_command(
     ]
     target = root / out
     target.parent.mkdir(parents=True, exist_ok=True)
-    target.with_suffix(".json").write_text(result.model_dump_json(indent=2) + "\n", "utf-8")
-    target.with_suffix(".md").write_text(extraction.render_markdown(result, lines), "utf-8")
+    target.with_name(target.name + ".json").write_text(
+        result.model_dump_json(indent=2) + "\n", "utf-8"
+    )
+    target.with_name(target.name + ".md").write_text(
+        extraction.render_markdown(result, lines), "utf-8"
+    )
     e, n = result.extraction, result.changedfuncs
     typer.echo(
         f"{result.reports} reports: extraction P {e.precision:.3f} R {e.recall:.3f} F1 {e.f1:.3f}; "

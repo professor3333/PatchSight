@@ -25,6 +25,7 @@ from patchsight.pipeline.llm.client import (
     ProviderRejectedError,
 )
 from patchsight.pipeline.llm.config import ModelConfig
+from patchsight.pipeline.llm.tokens import TokenCounter
 
 Status = Literal["ok", "repaired", "dead_letter", "no_candidates"]
 
@@ -81,10 +82,10 @@ def extract(
     inputs: Sequence[CandidateInput],
     known_names: Set[str],
     budget_tokens: int,
-    chars_per_token: float,
+    counter: TokenCounter,
     max_hunk_lines: int,
 ) -> ExtractionOutcome:
-    prompt = render(template, advisory, inputs, budget_tokens, chars_per_token, max_hunk_lines)
+    prompt = render(template, advisory, inputs, budget_tokens, counter, max_hunk_lines)
     base = {
         "advisory_id": advisory.id,
         "model": model.model,

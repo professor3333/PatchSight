@@ -14,6 +14,7 @@ from patchsight.pipeline.extract.schema import response_schema
 from patchsight.pipeline.extract.validate import ValidationFailedError, validate
 from patchsight.pipeline.llm.client import LLMClient, LLMRequest, RateLimiter
 from patchsight.pipeline.llm.config import ModelConfig
+from patchsight.pipeline.llm.tokens import CharEstimate
 
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE = prompts.load_template(ROOT / "prompts" / "extract_v1.md")
@@ -43,7 +44,7 @@ INPUTS = [
 
 
 def _render(budget: int = 5000) -> prompts.RenderedPrompt:
-    return prompts.render(TEMPLATE, ADVISORY, INPUTS, budget, 3.0, 80)
+    return prompts.render(TEMPLATE, ADVISORY, INPUTS, budget, CharEstimate(3.0), 80)
 
 
 def _answer(**overrides: Any) -> str:
@@ -172,7 +173,9 @@ def _client(tmp_path: Path, answers: list[str]) -> tuple[LLMClient, list[LLMRequ
 
 
 def _extract(client: LLMClient, inputs: list[prompts.CandidateInput] = INPUTS) -> Any:
-    return extract(client, MODEL, TEMPLATE, ADVISORY, inputs, {"ParseHeader"}, 5000, 3.0, 80)
+    return extract(
+        client, MODEL, TEMPLATE, ADVISORY, inputs, {"ParseHeader"}, 5000, CharEstimate(3.0), 80
+    )
 
 
 def test_extract_ok(tmp_path: Path) -> None:

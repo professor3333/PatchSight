@@ -151,3 +151,63 @@ def test_daily_request_cap_counts_the_ledger(tmp_path: Path) -> None:
         limiter.settle(1)
     with pytest.raises(QuotaExhaustedError, match="request cap"):
         RateLimiter(100_000, 2, ledger=ledger, wall=wall).acquire(1)
+
+
+def test_redact_removes_account_ids_and_keys() -> None:
+    from patchsight.pipeline.llm.client import redact
+
+    message = "Request too large in organization `org_01abcDEF234567` (api_key=gsk_secret123)"
+    cleaned = redact(message)
+    assert "org_01abcDEF234567" not in cleaned
+    assert "gsk_secret123" not in cleaned
+    assert "org_[redacted]" in cleaned
+
+
+def test_rejections_are_cached_and_redacted(tmp_path: Path) -> None:
+    from patchsight.pipeline.llm.client import ProviderRejectedError
+
+    calls = 0
+
+    def backend(request: LLMRequest) -> tuple[str, int, int]:
+        nonlocal calls
+        calls += 1
+        raise ProviderRejectedError("Failed to generate JSON for org_01abcDEF234567")
+
+    client = LLMClient(backend, RateLimiter(100_000, 100), tmp_path)
+    for _ in range(2):
+        with pytest.raises(ProviderRejectedError) as raised:
+            client.complete(_request())
+        assert "org_01abcDEF234567" not in str(raised.value)
+    assert calls == 1  # the second attempt replays the cached rejection
+    stored = next(tmp_path.rglob("*.json")).read_text()
+    assert "org_01abcDEF234567" not in stored
+
+
+def test_prompt_budget_leaves_room_for_the_repair_round() -> None:
+    from patchsight.pipeline.llm.config import LLMConfig
+
+    config = LLMConfig.model_validate(
+        {
+            "providers": {
+                "p": {"base_url": "u", "api_key_env": "K", "tokens_per_minute": 8000,
+                      "requests_per_day": 10, "input_tokens_per_minute": 5000},
+            },
+            "models": {"m": {"provider": "p", "model": "x", "max_output_tokens": 1500, "seed": 1}},
+            "budget": {"max_prompt_tokens": 9999, "max_hunk_lines": 80},
+            "tokenizer": {"repo": "r", "revision": "v", "sha256": "s"},
+        }
+    )  # fmt: skip
+    # TPM: 8,000 - 2 x 1,500 - 400 = 4,600. ITPM: 5,000 - 1,500 - 400 = 3,100 (binding).
+    assert config.prompt_budget("m") == 3100
+
+
+def test_tokenizer_file_must_match_its_pin(tmp_path: Path) -> None:
+    pytest.importorskip("tokenizers")
+    from patchsight.pipeline.llm.tokens import HfTokenizer, TokenizerConfig, TokenizerMismatchError
+
+    pin = TokenizerConfig(repo="o/m", revision="abc", sha256="0" * 64)
+    path = tmp_path / "o__m" / "abc" / "tokenizer.json"
+    path.parent.mkdir(parents=True)
+    path.write_text("{}")
+    with pytest.raises(TokenizerMismatchError):
+        HfTokenizer(pin, tmp_path)

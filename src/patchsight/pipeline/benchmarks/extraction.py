@@ -22,6 +22,7 @@ from patchsight.pipeline.extract.extractor import ExtractionOutcome, extract
 from patchsight.pipeline.extract.prompt import AdvisoryText, CandidateInput, PromptTemplate
 from patchsight.pipeline.llm.client import LLMClient
 from patchsight.pipeline.llm.config import LLMConfig
+from patchsight.pipeline.llm.tokens import TokenCounter
 
 DUNLAP_ADVISORIES = "data/advisory-data/govulndb-2023-10-26.csv"
 BOOTSTRAP = 2000
@@ -102,6 +103,7 @@ def run(
     config: LLMConfig,
     role: str,
     template: PromptTemplate,
+    counter: TokenCounter,
     reports: Sequence[dunlap.DunlapReport],
     advisories: dict[str, AdvisoryText],
     as_of: date,
@@ -133,7 +135,7 @@ def run(
             inputs,
             known,
             budget,
-            config.budget.chars_per_token,
+            counter,
             config.budget.max_hunk_lines,
         )
         outcomes.append(outcome)
@@ -233,8 +235,8 @@ def render_markdown(run_: ExtractionRun, source_lines: Sequence[str]) -> str:
             f"{run_.provider_rejections} rejected by the provider and retried).",
             f"- Tokens: {run_.prompt_tokens:,} prompt and {run_.completion_tokens:,} completion "
             f"(mean {run_.prompt_tokens / max(run_.reports, 1):,.0f} prompt tokens per report).",
-            f"- Token estimate accuracy: actual prompt tokens are {estimate_ratio:.2f} times the "
-            "estimate (below 1 means the estimate is conservative).",
+            f"- Token count accuracy: the provider reported {estimate_ratio:.2f} times the tokens "
+            "PatchSight counted with the model's tokenizer.",
             "",
         ]
     )

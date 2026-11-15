@@ -11,6 +11,7 @@
 import hashlib
 import json
 import os
+import re
 import time
 from collections import deque
 from collections.abc import Callable
@@ -20,6 +21,16 @@ from typing import Any, cast
 from pydantic import BaseModel, ConfigDict
 
 from patchsight.pipeline.llm.config import LLMConfig
+from patchsight.pipeline.llm.tokens import CharEstimate, TokenCounter
+
+_ACCOUNT_ID = re.compile(r"\b(org|user|proj|acct)_[A-Za-z0-9]{6,}")
+_SECRET = re.compile(r"(?i)\b(api[_-]?key|token|secret)\b(\W{1,3})\S+")
+
+
+def redact(text: str) -> str:
+    """Remove account identifiers and anything key-like from provider messages."""
+    text = _ACCOUNT_ID.sub(lambda m: f"{m.group(1)}_[redacted]", text)
+    return _SECRET.sub(lambda m: f"{m.group(1)}{m.group(2)}[redacted]", text)
 
 
 class QuotaExhaustedError(RuntimeError):
@@ -159,7 +170,7 @@ def openai_backend(base_url: str, api_key: str) -> Backend:
             return _create(request)
         except (BadRequestError, APIStatusError) as error:
             if isinstance(error, BadRequestError) or error.status_code == 413:
-                raise ProviderRejectedError(str(error)[:300]) from error
+                raise ProviderRejectedError(redact(str(error))[:300]) from error
             raise
 
     def _create(request: LLMRequest) -> tuple[str, int, int]:
@@ -199,29 +210,40 @@ class LLMClient:
         backend: Backend,
         limiter: RateLimiter,
         cache_dir: Path,
-        chars_per_token: float = 3.0,
+        counter: TokenCounter | None = None,
     ) -> None:
         self._backend = backend
         self._limiter = limiter
         self._cache_dir = cache_dir
-        self._chars_per_token = chars_per_token
+        self._counter: TokenCounter = counter or CharEstimate()
         self.network_calls = 0
 
     def estimate_tokens(self, text: str) -> int:
-        return int(len(text) / self._chars_per_token) + 1
+        return self._counter.count(text)
 
     def complete(self, request: LLMRequest) -> LLMResponse:
         key = request.cache_key()
         path = self._cache_dir / key[:2] / f"{key}.json"
         if path.exists():
             cached = json.loads(path.read_text(encoding="utf-8"))
+            if "rejected" in cached:
+                # Rejections are cached too, so a re-run gives the same outcome for free.
+                raise ProviderRejectedError(cached["rejected"])
             return LLMResponse(**cached, cached=True, seconds=0.0)
 
         prompt_text = "".join(m["content"] for m in request.messages)
         estimate = self.estimate_tokens(prompt_text) + request.max_tokens
         self._limiter.acquire(estimate)
         started = time.monotonic()
-        content, prompt_tokens, completion_tokens = self._backend(request)
+        try:
+            content, prompt_tokens, completion_tokens = self._backend(request)
+        except ProviderRejectedError as rejected:
+            self.network_calls += 1
+            self._limiter.settle(estimate)  # the provider may still count it; stay conservative
+            message = redact(str(rejected))
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(json.dumps({"rejected": message}), encoding="utf-8")
+            raise ProviderRejectedError(message) from rejected
         seconds = time.monotonic() - started
         self.network_calls += 1
         self._limiter.settle(prompt_tokens + completion_tokens)
@@ -236,7 +258,9 @@ class LLMClient:
         return LLMResponse(**record, cached=False, seconds=seconds)
 
 
-def client_for(config: LLMConfig, role: str, cache_dir: Path) -> tuple[LLMClient, str]:
+def client_for(
+    config: LLMConfig, role: str, cache_dir: Path, counter: TokenCounter
+) -> tuple[LLMClient, str]:
     """A live client for one configured model role, and that model's ID."""
     model = config.models[role]
     provider = config.providers[model.provider]
@@ -251,4 +275,4 @@ def client_for(config: LLMConfig, role: str, cache_dir: Path) -> tuple[LLMClient
         ledger=ledger,
     )
     backend = openai_backend(provider.base_url, api_key)
-    return LLMClient(backend, limiter, cache_dir, config.budget.chars_per_token), model.model
+    return LLMClient(backend, limiter, cache_dir, counter), model.model

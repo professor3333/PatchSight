@@ -165,3 +165,25 @@ def test_week1_report_refuses_a_changed_dump(tmp_path: Path) -> None:
     result = CliRunner().invoke(app, ["week1-report", "--root", str(tmp_path)])
     assert result.exit_code != 0
     assert isinstance(result.exception, snapshot.SnapshotMismatchError)
+
+
+def test_report_names_with_dots_keep_their_full_name(
+    tmp_path: Path, make_record: RecordFactory
+) -> None:
+    dump = tmp_path / "data" / "raw" / "osv-pypi" / "all.zip"
+    dump.parent.mkdir(parents=True)
+    with zipfile.ZipFile(dump, "w") as archive:
+        archive.writestr("a.json", json.dumps(make_record()))
+    entry = snapshot.SourceFile(
+        name="osv-pypi-all", url="u", path="data/raw/osv-pypi/all.zip",
+        sha256=snapshot.sha256_file(dump), size=dump.stat().st_size, last_modified=None,
+        retrieved_at=AS_OF,
+    )  # fmt: skip
+    snapshot.save_manifest(
+        snapshot.SnapshotManifest().with_file(entry), tmp_path / "manifests" / "snapshot.json"
+    )
+    out = "docs/reports/run-qwen3.8-27b"
+    result = CliRunner().invoke(app, ["week1-report", "--root", str(tmp_path), "--out", out])
+    assert result.exit_code == 0, result.output
+    assert (tmp_path / f"{out}.json").exists()
+    assert (tmp_path / f"{out}.md").exists()

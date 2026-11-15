@@ -6,6 +6,8 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict
 
+from patchsight.pipeline.llm.tokens import TokenizerConfig
+
 
 class ProviderConfig(BaseModel):
     model_config = ConfigDict(frozen=True)
@@ -15,6 +17,8 @@ class ProviderConfig(BaseModel):
     tokens_per_minute: int
     requests_per_day: int
     tokens_per_day: int | None = None
+    # A separate cap on input tokens per minute, which one request must also fit under.
+    input_tokens_per_minute: int | None = None
 
 
 class ModelConfig(BaseModel):
@@ -31,7 +35,6 @@ class BudgetConfig(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     max_prompt_tokens: int
-    chars_per_token: float
     max_hunk_lines: int
 
 
@@ -41,13 +44,24 @@ class LLMConfig(BaseModel):
     providers: dict[str, ProviderConfig]
     models: dict[str, ModelConfig]
     budget: BudgetConfig
+    tokenizer: TokenizerConfig
 
     def prompt_budget(self, role: str) -> int:
-        """Largest prompt for this model that still fits one request under the TPM cap."""
+        """Largest prompt, in exact tokens, that still fits the repair round under the caps.
+
+        A repair round sends the prompt, the previous answer (up to ``max_output_tokens``)
+        and a short repair note, and asks for another ``max_output_tokens``.
+        """
         model = self.models[role]
         provider = self.providers[model.provider]
-        headroom = provider.tokens_per_minute - model.max_output_tokens - 500
-        return max(0, min(self.budget.max_prompt_tokens, headroom))
+        repair_note = 400
+        limits = [
+            self.budget.max_prompt_tokens,
+            provider.tokens_per_minute - 2 * model.max_output_tokens - repair_note,
+        ]
+        if provider.input_tokens_per_minute is not None:
+            limits.append(provider.input_tokens_per_minute - model.max_output_tokens - repair_note)
+        return max(0, min(limits))
 
 
 def load_config(path: Path) -> LLMConfig:

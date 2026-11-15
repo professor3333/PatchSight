@@ -9,6 +9,8 @@ api_key_env = "GROQ_API_KEY"
 tokens_per_minute = 8000
 requests_per_day = 1000
 tokens_per_day = 200000
+# Found in a 413 response on 2026-11-15: input tokens per minute, which one request must fit.
+input_tokens_per_minute = 7000
 
 [models.extractor]
 provider = "groq"
@@ -21,8 +23,9 @@ extra = { reasoning_effort = "none" }
 [models.second_opinion]
 provider = "groq"
 model = "openai/gpt-oss-120b"
-# gpt-oss cannot disable reasoning, and its reasoning counts as output tokens.
-max_output_tokens = 2500
+# gpt-oss cannot disable reasoning, and its reasoning counts as output tokens. The same
+# output allowance as the extractor keeps every role's prompt budget, and so its prompts, equal.
+max_output_tokens = 1500
 seed = 20261114
 extra = { reasoning_effort = "low" }
 
@@ -46,10 +49,17 @@ seed = 20261114
 extra = { chat_template_kwargs = { enable_thinking = false } }
 
 [budget]
-# Upper bound for one prompt. The effective limit is also capped by the provider's
-# tokens-per-minute minus the model's output allowance, so one request always fits.
-max_prompt_tokens = 5500
-# Conservative estimate for code-heavy text; actual usage is recorded on every call.
-chars_per_token = 3.0
+# Exact tokens, counted with the model's tokenizer. The effective limit per role is also
+# capped so the repair round fits the provider's limits (see LLMConfig.prompt_budget):
+# 8,000 - 2 x 1,500 - 400 = 4,600 on Groq. Kaggle uses the same value, so all roles and
+# both hosts see identical prompts.
+max_prompt_tokens = 4600
 # Longest hunk shown to the model; longer hunks are cut with a marker.
 max_hunk_lines = 80
+
+[tokenizer]
+# Qwen3.8's own tokenizer (shared by the Groq model and the Kaggle GGUF), pinned and
+# verified by SHA-256.
+repo = "Qwen/Qwen3.8-27B"
+revision = "37561816e66b5b9153b1b64c10968c18c1e6f4a0"
+sha256 = "0997f410c57a1f4e53b09e4be8f4a172d90edd9564368fb0847030937229b9f3"

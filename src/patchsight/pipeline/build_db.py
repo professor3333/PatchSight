@@ -107,6 +107,7 @@ def fallback_records(
 
     symbols: dict[str, Symbol] = {}
     used: list[FixCommitRef] = []
+    module_level_only = False
     for repo, sha in commits:
         try:
             mapping = map_commit(github, repo, sha, include=_python_source)
@@ -118,6 +119,11 @@ def fallback_records(
             continue
         changed = [(f.mapping.path, c) for f in mapping.files for c in f.mapping.changed]
         if not changed:
+            # Python changed, but only at module level (for example registration calls):
+            # the paper's "vulnerable function unchanged" case.
+            module_level_only = module_level_only or any(
+                f.mapping.module_level_hunks for f in mapping.files
+            )
             continue
         used.append(FixCommitRef(repo=mapping.repo, sha=mapping.sha))
         for path, definition in changed:
@@ -135,7 +141,10 @@ def fallback_records(
             )
 
     if not used:
-        status = "no_python_fix" if commits else "no_resolvable_commit"
+        if module_level_only:
+            status = "module_level_only"
+        else:
+            status = "no_python_fix" if commits else "no_resolvable_commit"
         return [], BuildOutcome(vulnerability=group.key, status=status, commits=len(commits))
     roots = tuple(sorted({s.module.split(".")[0] for s in symbols.values() if s.module}))
     modified = max(by_id[i].modified for i in group.advisory_ids)

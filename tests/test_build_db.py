@@ -100,3 +100,18 @@ def test_input_hash_tracks_only_extraction_inputs(make_advisory: AdvisoryFactory
     assert digest(modified="2026-12-01T00:00:00Z") == base  # a timestamp bump alone
     assert digest(details="Rewritten details.") != base
     assert digest(references=[]) != base  # fix candidates changed
+
+
+def test_module_level_only_fixes_are_reported_as_such(
+    stub: dict[str, Any], make_advisory: AdvisoryFactory
+) -> None:
+    from patchsight.pipeline.diffs.mapping import FileMapping as FM
+
+    mapping = _mapping("example/some-pkg", {"src/some_pkg/registry.py": []})
+    file = mapping.files[0].model_copy(
+        update={"mapping": FM(path="src/some_pkg/registry.py", changed=(), module_level_hunks=(0,),
+                              parse_errors=False)}
+    )  # fmt: skip
+    stub["mapping"] = mapping.model_copy(update={"files": (file,)})
+    records, outcome = _build(make_advisory)
+    assert (records, outcome.status) == ([], "module_level_only")

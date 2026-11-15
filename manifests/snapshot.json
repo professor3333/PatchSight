@@ -1,13 +1,22 @@
 {
   "files": [
     {
+      "name": "dunlap-govulndb-advisories-csv",
+      "url": "https://github.com/s3c2/llm-vulnerable-functions/blob/b11c663f0b9252cea2e1b1f79e5e5e0ac0dcf709/data/advisory-data/govulndb-2023-10-26.csv",
+      "path": "data/raw/llm-vulnerable-functions/data/advisory-data/govulndb-2023-10-26.csv",
+      "sha256": "eb34f8d26a7e111040bcd5b5451de79c8ce637f1e95cef4bbcb61c9228d532fc",
+      "size": 173746,
+      "last_modified": null,
+      "retrieved_at": "2026-11-15T02:23:00.183133Z"
+    },
+    {
       "name": "dunlap-patchparser-csv",
       "url": "https://github.com/s3c2/llm-vulnerable-functions/blob/b11c663f0b9252cea2e1b1f79e5e5e0ac0dcf709/data/patchparser-data.tar.gz",
       "path": "data/raw/llm-vulnerable-functions/data/patchparser-data/patchparser-data-2023-10-31.csv",
       "sha256": "27e114745be62ea0ac225a82aa1efec0fc14dd3faa63c9e8bbdd75d563d2775e",
       "size": 188997021,
       "last_modified": null,
-      "retrieved_at": "2026-11-14T09:09:44.273744Z"
+      "retrieved_at": "2026-11-15T02:23:00.180935Z"
     },
     {
       "name": "osv-pypi-all",

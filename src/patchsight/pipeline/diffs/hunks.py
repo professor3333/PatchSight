@@ -25,6 +25,9 @@ class Hunk(BaseModel):
     new_count: int
     removed: tuple[int, ...]
     added: tuple[int, ...]
+    # The hunk's diff lines, each starting with ' ', '-' or '+'. Used to show the change
+    # to the model; never stored in published data.
+    lines: tuple[str, ...] = ()
 
 
 class PatchParseError(ValueError):
@@ -49,6 +52,7 @@ def parse_patch(patch: str) -> list[Hunk]:
         old_line, new_line = old_start, new_start
         removed: list[int] = []
         added: list[int] = []
+        body: list[str] = []
         old_seen = new_seen = 0
         i += 1
         while i < len(lines) and (old_seen < old_count or new_seen < new_count):
@@ -72,6 +76,7 @@ def parse_patch(patch: str) -> list[Hunk]:
                 new_seen += 1
             else:
                 raise PatchParseError(f"unexpected line in hunk: {line[:60]!r}")
+            body.append(line if line else " ")
             i += 1
         while i < len(lines) and lines[i].startswith("\\"):
             i += 1
@@ -84,6 +89,7 @@ def parse_patch(patch: str) -> list[Hunk]:
                 new_count=new_count,
                 removed=tuple(removed),
                 added=tuple(added),
+                lines=tuple(body),
             )
         )
     return hunks
@@ -107,6 +113,8 @@ def diff_hunks(old_text: str | None, new_text: str | None) -> list[Hunk]:
                 new_count=b1 - b0,
                 removed=tuple(range(a0 + 1, a1 + 1)),
                 added=tuple(range(b0 + 1, b1 + 1)),
+                lines=tuple(f"-{x}" for x in old_lines[a0:a1])
+                + tuple(f"+{x}" for x in new_lines[b0:b1]),
             )
         )
     return hunks

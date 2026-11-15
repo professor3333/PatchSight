@@ -10,11 +10,14 @@ import httpx
 import typer
 
 from patchsight.pipeline import fix_sample, week1
-from patchsight.pipeline.benchmarks import changedfuncs, dunlap
+from patchsight.pipeline.benchmarks import changedfuncs, dunlap, extraction
 from patchsight.pipeline.diffs.github import GitHubClient
+from patchsight.pipeline.extract.prompt import load_template
 from patchsight.pipeline.ingest import ghsa_repo, snapshot
 from patchsight.pipeline.ingest.aliases import alias_groups
 from patchsight.pipeline.ingest.osv import Advisory, Excluded, Quarantined, normalise_dump
+from patchsight.pipeline.llm.client import client_for
+from patchsight.pipeline.llm.config import load_config
 from patchsight.pipeline.pypi import PyPIClient
 
 app = typer.Typer(name="patchsight-pipeline", no_args_is_help=True, add_completion=False)
@@ -187,6 +190,7 @@ def fix_sample_command(
 
 DUNLAP = "dunlap-llm-vulnerable-functions"
 DUNLAP_DATA = "dunlap-patchparser-csv"
+DUNLAP_ADVISORIES = "dunlap-govulndb-advisories-csv"
 
 
 def _github_token() -> str:
@@ -219,7 +223,19 @@ def fetch_dunlap_command(root: Root = Path()) -> None:
         last_modified=None,
         retrieved_at=datetime.now(UTC),
     )
-    snapshot.save_manifest(manifest.with_repo(repo).with_file(entry), root / MANIFEST)
+    advisories_path = dest / extraction.DUNLAP_ADVISORIES
+    advisories = snapshot.SourceFile(
+        name=DUNLAP_ADVISORIES,
+        url=f"{dunlap.DUNLAP_REPO_URL.removesuffix('.git')}/blob/{repo.commit}/"
+        f"{extraction.DUNLAP_ADVISORIES}",
+        path=advisories_path.relative_to(root).as_posix(),
+        sha256=snapshot.sha256_file(advisories_path),
+        size=advisories_path.stat().st_size,
+        last_modified=None,
+        retrieved_at=datetime.now(UTC),
+    )
+    manifest = manifest.with_repo(repo).with_file(entry).with_file(advisories)
+    snapshot.save_manifest(manifest, root / MANIFEST)
     typer.echo(f"{DUNLAP}: {repo.commit}; {DUNLAP_DATA} sha256 {entry.sha256}")
 
 
@@ -257,6 +273,53 @@ def dunlap_baseline_command(
         f"ours: P {o.precision:.3f} R {o.recall:.3f} F1 {o.f1:.3f}; "
         f"identical to released {report.identical_reports}/{report.reports}; "
         f"{github.http.network_requests} GitHub requests"
+    )
+
+
+@app.command("dunlap-extract")
+def dunlap_extract_command(
+    root: Root = Path(),
+    role: Annotated[str, typer.Option(help="Model role in the LLM config.")] = "extractor",
+    sample: Annotated[int | None, typer.Option(help="Run on a seeded sample of N reports.")] = None,
+    seed: Annotated[int, typer.Option(help="Sample seed.")] = extraction.SEED,
+    config: Annotated[Path, typer.Option(help="LLM config.")] = Path("configs/llm.toml"),
+    prompt: Annotated[Path, typer.Option(help="Prompt template.")] = Path("prompts/extract_v1.md"),
+    cache: Annotated[Path, typer.Option(help="Response cache root.")] = Path(".cache"),
+    out: Annotated[Path, typer.Option(help="Report path, without extension.")] = Path(
+        "docs/reports/extraction-dunlap"
+    ),
+) -> None:
+    """Run LLM extraction on the Dunlap benchmark (needs GITHUB_TOKEN and the model's key)."""
+    token = _github_token()
+    manifest = snapshot.load_manifest(root / MANIFEST)
+    data = manifest.file(DUNLAP_DATA)
+    reports = dunlap.load(snapshot.verify(data, root))
+    advisories = extraction.load_advisories(snapshot.verify(manifest.file(DUNLAP_ADVISORIES), root))
+    llm_config = load_config(root / config)
+    template = load_template(root / prompt)
+    llm, model_id = client_for(llm_config, role, root / cache / "llm")
+    github = GitHubClient(root / cache / "http" / "github", token=token)
+    try:
+        result = extraction.run(
+            github, llm, llm_config, role, template, reports, advisories,
+            as_of=data.retrieved_at.date(), sample_size=sample, seed=seed,
+        )  # fmt: skip
+    finally:
+        github.close()
+    lines = [
+        f"- Benchmark: `{DUNLAP_DATA}` SHA-256 `{data.sha256}` (see `manifests/snapshot.json`)",
+        f"- Prompt: `{prompt.as_posix()}` (`{template.version}`); config: `{config.as_posix()}`",
+        f"- Model: `{model_id}` via role `{role}`",
+    ]
+    target = root / out
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.with_suffix(".json").write_text(result.model_dump_json(indent=2) + "\n", "utf-8")
+    target.with_suffix(".md").write_text(extraction.render_markdown(result, lines), "utf-8")
+    e, n = result.extraction, result.changedfuncs
+    typer.echo(
+        f"{result.reports} reports: extraction P {e.precision:.3f} R {e.recall:.3f} F1 {e.f1:.3f}; "
+        f"ChangedFuncs P {n.precision:.3f} R {n.recall:.3f} F1 {n.f1:.3f}; "
+        f"status {result.status}; {llm.network_calls} model calls"
     )
 
 

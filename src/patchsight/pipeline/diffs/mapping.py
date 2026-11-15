@@ -62,6 +62,8 @@ class FileMapping(BaseModel):
     changed: tuple[ChangedDefinition, ...]
     module_level_hunks: tuple[int, ...]
     parse_errors: bool
+    # Every definition name in either version of the file, for validating names.
+    known_names: tuple[str, ...] = ()
 
 
 def language_for(path: str) -> SourceLanguage | None:
@@ -197,4 +199,5 @@ def map_hunks(
         ),
         module_level_hunks=tuple(sorted(module_level)),
         parse_errors=old_errors or new_errors,
+        known_names=tuple(sorted({d.name for d in (*old_defs, *new_defs)})),
     )

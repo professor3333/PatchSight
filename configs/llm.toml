@@ -1,0 +1,35 @@
+# LLM providers and models for the offline pipeline. Changing a model here is a routine
+# change, but it must be followed by a full evaluation run before any release.
+
+[providers.groq]
+base_url = "https://api.groq.com/openai/v1"
+api_key_env = "GROQ_API_KEY"
+# Measured 2026-11-14 from response headers (x-ratelimit-limit-*). The daily token cap
+# is not in the headers; confirm it in the provider console.
+tokens_per_minute = 8000
+requests_per_day = 1000
+
+[models.extractor]
+provider = "groq"
+model = "qwen/qwen3.8-27b"
+max_output_tokens = 1500
+seed = 20261114
+# No chain-of-thought: Dunlap et al. found it about 13x slower for similar F1.
+extra = { reasoning_effort = "none" }
+
+[models.second_opinion]
+provider = "groq"
+model = "openai/gpt-oss-120b"
+# gpt-oss cannot disable reasoning, and its reasoning counts as output tokens.
+max_output_tokens = 2500
+seed = 20261114
+extra = { reasoning_effort = "low" }
+
+[budget]
+# Upper bound for one prompt. The effective limit is also capped by the provider's
+# tokens-per-minute minus the model's output allowance, so one request always fits.
+max_prompt_tokens = 5500
+# Conservative estimate for code-heavy text; actual usage is recorded on every call.
+chars_per_token = 3.0
+# Longest hunk shown to the model; longer hunks are cut with a marker.
+max_hunk_lines = 80

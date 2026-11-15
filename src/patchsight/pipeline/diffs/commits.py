@@ -6,7 +6,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict
 
 from patchsight.pipeline.diffs.github import ChangedFile, GitHubClient
-from patchsight.pipeline.diffs.hunks import PatchParseError, diff_hunks, parse_patch
+from patchsight.pipeline.diffs.hunks import Hunk, PatchParseError, diff_hunks, parse_patch
 from patchsight.pipeline.diffs.mapping import (
     FileMapping,
     SourceLanguage,
@@ -33,6 +33,7 @@ class MappedFile(BaseModel):
     status: str
     previous_path: str | None
     diff_source: DiffSource
+    hunks: tuple[Hunk, ...] = ()
 
 
 class CommitMapping(BaseModel):
@@ -79,6 +80,7 @@ def _map_file(
         status=changed.status,
         previous_path=changed.previous_filename,
         diff_source=source,
+        hunks=tuple(hunks),
     )
 
 

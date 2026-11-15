@@ -4,7 +4,6 @@ This module is on the hot path: it must never import ``patchsight.pipeline``,
 ``patchsight.eval`` or any LLM client. ``tests/test_import_boundary.py`` enforces this.
 """
 
-import os
 from pathlib import Path
 from typing import Annotated
 
@@ -41,13 +40,50 @@ def main(
     """Symbol-level vulnerability triage for Python dependencies."""
 
 
-def _default_db() -> Path:
-    configured = os.environ.get("PATCHSIGHT_DB")
-    return (
-        Path(configured)
-        if configured
-        else Path.home() / ".cache" / "patchsight" / "patchsight.sqlite"
+db_app = typer.Typer(help="Download and inspect the symbol database.", no_args_is_help=True)
+app.add_typer(db_app, name="db")
+
+
+@db_app.command("update")
+def db_update() -> None:
+    """Download the latest published database if it is newer, verifying its SHA-256."""
+    from patchsight.db import DatabaseError
+    from patchsight.scan import dbcache
+
+    try:
+        status, pointer = dbcache.update()
+    except (DatabaseError, OSError) as error:
+        typer.echo(f"error: {error}", err=True)
+        raise typer.Exit(code=2) from None
+    verb = "Downloaded" if status == "updated" else "Already have"
+    typer.echo(
+        f"{verb} database {pointer.db_version} ({pointer.records:,} records) "
+        f"at {dbcache.default_db_path()}"
     )
+
+
+@db_app.command("info")
+def db_info(
+    database: Annotated[Path | None, typer.Option("--db", help="Database to describe.")] = None,
+) -> None:
+    """Show which database a scan would use."""
+    from patchsight.db import DatabaseError, SymbolDatabase
+    from patchsight.scan import dbcache
+    from patchsight.scan.report import stale_warning
+
+    path = database or dbcache.default_db_path()
+    try:
+        opened = SymbolDatabase(path)
+    except DatabaseError as error:
+        typer.echo(f"error: {error}; run 'patchsight db update'", err=True)
+        raise typer.Exit(code=2) from None
+    meta = opened.meta
+    opened.close()
+    typer.echo(f"{path}")
+    for key in ("db_version", "schema_version", "builder", "built_at", "snapshot_sha256"):
+        typer.echo(f"  {key}: {meta.get(key, '?')}")
+    if warning := stale_warning(meta):
+        typer.echo(f"  warning: {warning}")
 
 
 @app.command()
@@ -57,7 +93,8 @@ def scan(
         Path | None, typer.Option("--requirements", help="Lockfile (default: requirements.txt).")
     ] = None,
     database: Annotated[
-        Path | None, typer.Option("--db", help="Symbol database (default: $PATCHSIGHT_DB).")
+        Path | None,
+        typer.Option("--db", help="Symbol database (default: the one 'db update' downloaded)."),
     ] = None,
     output: Annotated[str, typer.Option("--format", help="text or json.")] = "text",
     fail_on: Annotated[
@@ -66,6 +103,7 @@ def scan(
 ) -> None:
     """Label every dependency alert as called, imported but not called, not imported, or unknown."""
     from patchsight.db import DatabaseError
+    from patchsight.scan.dbcache import default_db_path
     from patchsight.scan.osv_client import OsvError
     from patchsight.scan.report import render_json, render_text
     from patchsight.scan.run import run_scan
@@ -75,8 +113,11 @@ def scan(
         typer.echo(f"error: no lockfile at {lockfile}; pass --requirements", err=True)
         raise typer.Exit(code=2)
     try:
-        alerts, dependencies, meta = run_scan(path, lockfile, database or _default_db())
-    except (DatabaseError, OsvError) as error:
+        alerts, dependencies, meta = run_scan(path, lockfile, database or default_db_path())
+    except DatabaseError as error:
+        typer.echo(f"error: {error}; run 'patchsight db update' or pass --db", err=True)
+        raise typer.Exit(code=2) from None
+    except OsvError as error:
         typer.echo(f"error: {error}", err=True)
         raise typer.Exit(code=2) from None
     shown = lockfile.as_posix()

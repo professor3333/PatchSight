@@ -1,5 +1,6 @@
 """Offline pipeline commands: ``python -m patchsight.pipeline <command>``."""
 
+import json
 import os
 import subprocess
 import tarfile
@@ -535,6 +536,51 @@ def reproduce_command(root: Root = Path()) -> None:
         typer.echo(f"MISMATCH with {BASELINE_REPORT}", err=True)
         raise typer.Exit(code=1)
     typer.echo(f"\nMatches {BASELINE_REPORT} exactly.")
+
+
+@app.command("package-db")
+def package_db_command(
+    database: Annotated[Path, typer.Argument(help="A database built by build-db.")],
+    root: Root = Path(),
+    repo: Annotated[str, typer.Option(help="GitHub repository the release lives in.")] = (
+        "professor3333/PatchSight"
+    ),
+    pointer: Annotated[Path, typer.Option(help="Pointer file to write.")] = Path(
+        "releases/latest.json"
+    ),
+) -> None:
+    """Compress a database for release and write the pointer the CLI downloads it by."""
+    import gzip
+    import shutil
+
+    opened = db.SymbolDatabase(database)
+    meta = dict(opened.meta)
+    records = opened.record_count()
+    opened.close()
+    version = meta["db_version"]
+    tag = f"db-{version}"
+    asset = root / "data" / "build" / "release" / f"patchsight-db-{version}.sqlite.gz"
+    asset.parent.mkdir(parents=True, exist_ok=True)
+    # mtime=0 keeps the archive byte-identical for the same database, so its hash is stable.
+    with (
+        database.open("rb") as source,
+        asset.open("wb") as raw,
+        gzip.GzipFile(fileobj=raw, mode="wb", mtime=0) as sink,
+    ):
+        shutil.copyfileobj(source, sink)
+    record = {
+        "db_version": version,
+        "schema_version": int(meta["schema_version"]),
+        "url": f"https://github.com/{repo}/releases/download/{tag}/{asset.name}",
+        "sha256": snapshot.sha256_file(asset),
+        "size": asset.stat().st_size,
+        "built_at": meta["built_at"],
+        "records": records,
+    }
+    (root / pointer).parent.mkdir(parents=True, exist_ok=True)
+    (root / pointer).write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
+    typer.echo(f"{asset.relative_to(root)}: {record['size']:,} bytes, sha256 {record['sha256']}")
+    typer.echo(f"wrote {pointer}; publish with: gh release create {tag} {asset.relative_to(root)}")
 
 
 if __name__ == "__main__":

@@ -179,6 +179,9 @@ class SymbolDatabase:
     def close(self) -> None:
         self._connection.close()
 
+    def record_count(self) -> int:
+        return int(self._connection.execute("SELECT COUNT(*) FROM records").fetchone()[0])
+
     def vulnerability_for(self, identifier: str) -> str | None:
         row = self._connection.execute(
             "SELECT vulnerability FROM aliases WHERE identifier = ?", (identifier,)

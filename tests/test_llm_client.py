@@ -105,3 +105,47 @@ def test_repository_config_loads_and_fits_one_request_per_window() -> None:
         budget = config.prompt_budget(role)
         assert 0 < budget <= config.budget.max_prompt_tokens
         assert budget + model.max_output_tokens < provider.tokens_per_minute
+
+
+class FakeWall:
+    def __init__(self) -> None:
+        self.now = 1_000_000.0
+
+    def __call__(self) -> float:
+        return self.now
+
+
+def test_daily_token_cap_is_shared_across_runs(tmp_path: Path) -> None:
+    ledger = tmp_path / "usage" / "model.jsonl"
+    wall = FakeWall()
+    first_run = RateLimiter(100_000, 1000, tokens_per_day=1000, ledger=ledger, wall=wall)
+    first_run.acquire(500)
+    first_run.settle(600)  # the provider reported 600 tokens
+
+    second_run = RateLimiter(100_000, 1000, tokens_per_day=1000, ledger=ledger, wall=wall)
+    second_run.acquire(300)  # 600 + 300 fits
+    second_run.settle(300)
+    with pytest.raises(QuotaExhaustedError, match="daily token cap"):
+        second_run.acquire(200)  # 900 + 200 does not
+
+
+def test_daily_window_rolls_over(tmp_path: Path) -> None:
+    ledger = tmp_path / "usage.jsonl"
+    wall = FakeWall()
+    limiter = RateLimiter(100_000, 1000, tokens_per_day=1000, ledger=ledger, wall=wall)
+    limiter.acquire(900)
+    limiter.settle(900)
+    wall.now += 86_401  # more than 24 hours later
+    later = RateLimiter(100_000, 1000, tokens_per_day=1000, ledger=ledger, wall=wall)
+    later.acquire(900)
+
+
+def test_daily_request_cap_counts_the_ledger(tmp_path: Path) -> None:
+    ledger = tmp_path / "usage.jsonl"
+    wall = FakeWall()
+    for _ in range(2):
+        limiter = RateLimiter(100_000, 2, ledger=ledger, wall=wall)
+        limiter.acquire(1)
+        limiter.settle(1)
+    with pytest.raises(QuotaExhaustedError, match="request cap"):
+        RateLimiter(100_000, 2, ledger=ledger, wall=wall).acquire(1)

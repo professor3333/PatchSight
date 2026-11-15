@@ -63,22 +63,51 @@ Backend = Callable[[LLMRequest], tuple[str, int, int]]
 
 
 class RateLimiter:
-    """Sliding-window token limiter, plus a per-run request cap."""
+    """Token limits at two scales.
+
+    * Per minute: a sliding 60-second window over estimated tokens, held in memory.
+    * Per day: a rolling 24-hour ledger of actual usage, kept on disk when ``ledger`` is
+      given, so separate runs share one daily budget. When the next call would exceed the
+      daily token or request cap, the run stops with ``QuotaExhaustedError``; everything
+      already answered is cached, so the next run resumes where this one stopped.
+    """
 
     def __init__(
         self,
         tokens_per_minute: int,
         requests_per_day: int,
+        tokens_per_day: int | None = None,
+        ledger: Path | None = None,
         clock: Callable[[], float] = time.monotonic,
         sleep: Callable[[float], None] = time.sleep,
+        wall: Callable[[], float] = time.time,
     ) -> None:
         self.tokens_per_minute = tokens_per_minute
         self.requests_per_day = requests_per_day
+        self.tokens_per_day = tokens_per_day
+        self._ledger = ledger
         self._clock = clock
         self._sleep = sleep
+        self._wall = wall
         self._window: deque[tuple[float, int]] = deque()
+        self._day: list[tuple[float, int]] = self._load_ledger()
         self.requests = 0
         self.waited = 0.0
+
+    def _load_ledger(self) -> list[tuple[float, int]]:
+        if self._ledger is None or not self._ledger.exists():
+            return []
+        entries = []
+        for line in self._ledger.read_text(encoding="utf-8").splitlines():
+            if line.strip():
+                record = json.loads(line)
+                entries.append((float(record["t"]), int(record["tokens"])))
+        return entries
+
+    def _last_day(self) -> list[tuple[float, int]]:
+        cutoff = self._wall() - 86_400.0
+        self._day = [entry for entry in self._day if entry[0] > cutoff]
+        return self._day
 
     def _used(self, now: float) -> int:
         while self._window and now - self._window[0][0] >= 60.0:
@@ -86,8 +115,17 @@ class RateLimiter:
         return sum(tokens for _, tokens in self._window)
 
     def acquire(self, tokens: int) -> None:
-        if self.requests >= self.requests_per_day:
-            raise QuotaExhaustedError(f"request cap of {self.requests_per_day} reached")
+        day = self._last_day()
+        requests_today = len(day) if self._ledger is not None else self.requests
+        if requests_today >= self.requests_per_day:
+            raise QuotaExhaustedError(f"daily request cap of {self.requests_per_day} reached")
+        if self.tokens_per_day is not None:
+            used_today = sum(t for _, t in day)
+            if used_today + tokens > self.tokens_per_day:
+                raise QuotaExhaustedError(
+                    f"daily token cap: {used_today:,} used in the last 24 h, this call needs "
+                    f"about {tokens:,}, cap {self.tokens_per_day:,}. Cached work resumes later."
+                )
         tokens = min(tokens, self.tokens_per_minute)
         while self._used(self._clock()) + tokens > self.tokens_per_minute:
             wait = 60.0 - (self._clock() - self._window[0][0]) + 0.05
@@ -97,10 +135,16 @@ class RateLimiter:
         self.requests += 1
 
     def settle(self, actual: int) -> None:
-        """Replace the most recent estimate with the tokens the provider reported."""
+        """Record the tokens the provider reported for the most recent call."""
         if self._window:
             when, _ = self._window.pop()
             self._window.append((when, min(actual, self.tokens_per_minute)))
+        entry = (self._wall(), actual)
+        self._day.append(entry)
+        if self._ledger is not None:
+            self._ledger.parent.mkdir(parents=True, exist_ok=True)
+            with self._ledger.open("a", encoding="utf-8") as handle:
+                handle.write(json.dumps({"t": entry[0], "tokens": actual}) + "\n")
 
 
 def openai_backend(base_url: str, api_key: str) -> Backend:
@@ -199,6 +243,12 @@ def client_for(config: LLMConfig, role: str, cache_dir: Path) -> tuple[LLMClient
     api_key = os.environ.get(provider.api_key_env)
     if not api_key:
         raise RuntimeError(f"set {provider.api_key_env} to call {model.provider}")
-    limiter = RateLimiter(provider.tokens_per_minute, provider.requests_per_day)
+    ledger = cache_dir / "usage" / f"{model.model.replace('/', '__')}.jsonl"
+    limiter = RateLimiter(
+        provider.tokens_per_minute,
+        provider.requests_per_day,
+        tokens_per_day=provider.tokens_per_day,
+        ledger=ledger,
+    )
     backend = openai_backend(provider.base_url, api_key)
     return LLMClient(backend, limiter, cache_dir, config.budget.chars_per_token), model.model

@@ -10,7 +10,7 @@ import httpx
 import typer
 
 from patchsight.pipeline import fix_sample, week1
-from patchsight.pipeline.benchmarks import changedfuncs, dunlap, extraction
+from patchsight.pipeline.benchmarks import changedfuncs, dunlap, extraction, splits
 from patchsight.pipeline.diffs.github import GitHubClient
 from patchsight.pipeline.extract.prompt import load_template
 from patchsight.pipeline.ingest import ghsa_repo, snapshot
@@ -191,6 +191,8 @@ def fix_sample_command(
 DUNLAP = "dunlap-llm-vulnerable-functions"
 DUNLAP_DATA = "dunlap-patchparser-csv"
 DUNLAP_ADVISORIES = "dunlap-govulndb-advisories-csv"
+DUNLAP_SPLIT = Path("splits/dunlap-v1.json")
+DUNLAP_DEV_SIZE = 60
 
 
 def _github_token() -> str:
@@ -280,6 +282,7 @@ def dunlap_baseline_command(
 def dunlap_extract_command(
     root: Root = Path(),
     role: Annotated[str, typer.Option(help="Model role in the LLM config.")] = "extractor",
+    split: Annotated[str, typer.Option(help="Split part: dev, test or all.")] = "dev",
     sample: Annotated[int | None, typer.Option(help="Run on a seeded sample of N reports.")] = None,
     seed: Annotated[int, typer.Option(help="Sample seed.")] = extraction.SEED,
     config: Annotated[Path, typer.Option(help="LLM config.")] = Path("configs/llm.toml"),
@@ -295,6 +298,7 @@ def dunlap_extract_command(
     data = manifest.file(DUNLAP_DATA)
     reports = dunlap.load(snapshot.verify(data, root))
     advisories = extraction.load_advisories(snapshot.verify(manifest.file(DUNLAP_ADVISORIES), root))
+    frozen = splits.load_split(root / DUNLAP_SPLIT)
     llm_config = load_config(root / config)
     template = load_template(root / prompt)
     llm, model_id = client_for(llm_config, role, root / cache / "llm")
@@ -303,6 +307,8 @@ def dunlap_extract_command(
         result = extraction.run(
             github, llm, llm_config, role, template, reports, advisories,
             as_of=data.retrieved_at.date(), sample_size=sample, seed=seed,
+            ids=frozen.split.ids(split), split=f"{frozen.split.name}:{split}",
+            split_sha256=frozen.sha256,
         )  # fmt: skip
     finally:
         github.close()
@@ -320,6 +326,18 @@ def dunlap_extract_command(
         f"{result.reports} reports: extraction P {e.precision:.3f} R {e.recall:.3f} F1 {e.f1:.3f}; "
         f"ChangedFuncs P {n.precision:.3f} R {n.recall:.3f} F1 {n.f1:.3f}; "
         f"status {result.status}; {llm.network_calls} model calls"
+    )
+
+
+@app.command("dunlap-split")
+def dunlap_split_command(root: Root = Path()) -> None:
+    """Freeze the Dunlap dev/test split once. Refuses to overwrite an existing split."""
+    manifest = snapshot.load_manifest(root / MANIFEST)
+    reports = dunlap.load(snapshot.verify(manifest.file(DUNLAP_DATA), root))
+    split = splits.make_split(reports, "dunlap-v1", DUNLAP_DEV_SIZE, extraction.SEED)
+    record = splits.save_split(split, root / DUNLAP_SPLIT)
+    typer.echo(
+        f"{DUNLAP_SPLIT}: dev {len(split.dev)}, test {len(split.test)}, sha256 {record.sha256}"
     )
 
 

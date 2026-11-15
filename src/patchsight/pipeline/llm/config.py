@@ -14,6 +14,7 @@ class ProviderConfig(BaseModel):
     api_key_env: str
     tokens_per_minute: int
     requests_per_day: int
+    tokens_per_day: int | None = None
 
 
 class ModelConfig(BaseModel):

@@ -33,6 +33,8 @@ class ExtractionRun(BaseModel):
     model: str
     prompt_version: str
     reports: int
+    split: str
+    split_sha256: str | None
     sample_size: int | None
     sample_seed: int
     extraction: SetScores
@@ -83,9 +85,12 @@ def candidate_inputs(mappings: Sequence[CommitMapping]) -> tuple[list[CandidateI
 
 
 def select(
-    reports: Sequence[dunlap.DunlapReport], size: int | None, seed: int
+    reports: Sequence[dunlap.DunlapReport],
+    size: int | None,
+    seed: int,
+    ids: frozenset[str] | None = None,
 ) -> list[dunlap.DunlapReport]:
-    ordered = sorted(reports, key=lambda r: r.id)
+    ordered = sorted((r for r in reports if ids is None or r.id in ids), key=lambda r: r.id)
     if size is None or size >= len(ordered):
         return ordered
     return sorted(random.Random(seed).sample(ordered, size), key=lambda r: r.id)  # noqa: S311
@@ -102,6 +107,9 @@ def run(
     as_of: date,
     sample_size: int | None,
     seed: int = SEED,
+    ids: frozenset[str] | None = None,
+    split: str = "all",
+    split_sha256: str | None = None,
 ) -> ExtractionRun:
     model = config.models[role]
     budget = config.prompt_budget(role)
@@ -109,7 +117,7 @@ def run(
     predicted: dict[str, set[str]] = {}
     naive: dict[str, set[str]] = {}
     outcomes: list[ExtractionOutcome] = []
-    for report in select(reports, sample_size, seed):
+    for report in select(reports, sample_size, seed, ids):
         mappings = [
             map_commit(github, c.github_repo, c.sha, include=dunlap.paper_path_filter)
             for c in report.commits
@@ -136,6 +144,8 @@ def run(
         model=model.model,
         prompt_version=template.version,
         reports=len(outcomes),
+        split=split,
+        split_sha256=split_sha256,
         sample_size=sample_size,
         sample_seed=seed,
         extraction=score(predicted, truth, BOOTSTRAP, seed),
@@ -165,12 +175,16 @@ def _row(label: str, s: SetScores) -> str:
 
 
 def render_markdown(run_: ExtractionRun, source_lines: Sequence[str]) -> str:
-    scope = (
-        f"a seeded random sample of {run_.reports} reports (seed {run_.sample_seed}). "
-        "**A sample run, not the benchmark result.**"
-        if run_.sample_size is not None
-        else f"all {run_.reports} reports."
+    split_note = f"split `{run_.split}`" + (
+        f" (SHA-256 `{run_.split_sha256}`)" if run_.split_sha256 else ""
     )
+    if run_.sample_size is not None:
+        scope = (
+            f"a seeded random sample of {run_.reports} reports (seed {run_.sample_seed}) from "
+            f"{split_note}. **A sample run, not the benchmark result.**"
+        )
+    else:
+        scope = f"all {run_.reports} reports of {split_note}."
     estimate_ratio = (
         run_.prompt_tokens / run_.estimated_prompt_tokens if run_.estimated_prompt_tokens else 0.0
     )

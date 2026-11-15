@@ -4,10 +4,11 @@
 [providers.groq]
 base_url = "https://api.groq.com/openai/v1"
 api_key_env = "GROQ_API_KEY"
-# Measured 2026-11-14 from response headers (x-ratelimit-limit-*). The daily token cap
-# is not in the headers; confirm it in the provider console.
+# Per model. Requests per day and tokens per minute measured 2026-11-14 from response
+# headers; tokens per day read from the Groq console by the owner on 2026-11-15.
 tokens_per_minute = 8000
 requests_per_day = 1000
+tokens_per_day = 200000
 
 [models.extractor]
 provider = "groq"

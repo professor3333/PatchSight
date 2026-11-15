@@ -26,6 +26,25 @@ max_output_tokens = 2500
 seed = 20261114
 extra = { reasoning_effort = "low" }
 
+[providers.kaggle]
+# llama.cpp's llama-server on a Kaggle notebook with two T4 GPUs (notebooks/kaggle_full_run.ipynb).
+base_url = "http://127.0.0.1:8080/v1"
+api_key_env = "LLAMA_SERVER_KEY"
+# A local server has no provider quota. These values only bound one request; the budget
+# below then gives Kaggle and Groq identical prompts, so their results compare directly.
+tokens_per_minute = 1000000
+requests_per_day = 100000
+
+[models.kaggle_extractor]
+provider = "kaggle"
+# Model identity for caching and reports: weights repository, revision and quantisation.
+# Same base model as the Groq extractor, quantised to 4 bits (Q4_K_M, 19.4 GB).
+model = "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M"
+max_output_tokens = 1500
+seed = 20261114
+# llama.cpp switches Qwen's thinking mode off through the chat template.
+extra = { chat_template_kwargs = { enable_thinking = false } }
+
 [budget]
 # Upper bound for one prompt. The effective limit is also capped by the provider's
 # tokens-per-minute minus the model's output allowance, so one request always fits.

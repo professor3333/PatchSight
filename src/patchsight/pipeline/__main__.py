@@ -2,6 +2,7 @@
 
 import os
 import tarfile
+import zipfile
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Annotated
@@ -204,41 +205,54 @@ def _github_token() -> str:
 
 @app.command("fetch-dunlap")
 def fetch_dunlap_command(root: Root = Path()) -> None:
-    """Clone the Dunlap et al. dataset, extract its CSV, and pin both in the manifest."""
+    """Clone the Dunlap et al. dataset and extract its CSVs.
+
+    If the manifest already pins the dataset, the pinned commit is checked out and both CSVs
+    are verified against their pinned hashes; nothing in the manifest changes. Only the
+    first run records new pins.
+    """
     dest = root / RAW / "llm-vulnerable-functions"
+    manifest = snapshot.load_manifest(root / MANIFEST)
+    pinned = next((r for r in manifest.repos if r.name == DUNLAP), None)
     if not (dest / ".git").exists():
-        ghsa_repo._git("clone", "-q", "--depth", "1", dunlap.DUNLAP_REPO_URL, str(dest))
+        ghsa_repo._git("clone", "-q", dunlap.DUNLAP_REPO_URL, str(dest))
+    if pinned is not None:
+        ghsa_repo._git("-C", str(dest), "checkout", "-q", pinned.commit)
     target = dest / "data" / "patchparser-data"
     target.mkdir(parents=True, exist_ok=True)
     with tarfile.open(dest / "data" / "patchparser-data.tar.gz") as archive:
         archive.extractall(target, filter="data")
-    csv_path = dest / dunlap.DUNLAP_CSV
-    manifest = snapshot.load_manifest(root / MANIFEST)
+
+    if pinned is not None:
+        for name in (DUNLAP_DATA, DUNLAP_ADVISORIES):
+            snapshot.verify(manifest.file(name), root)
+        typer.echo(f"{DUNLAP}: pinned commit {pinned.commit} checked out; CSV hashes verified")
+        return
+
     repo = snapshot.record_repo(DUNLAP, dunlap.DUNLAP_REPO_URL, dest, root, note="Apache-2.0")
-    entry = snapshot.SourceFile(
-        name=DUNLAP_DATA,
-        url=f"{dunlap.DUNLAP_REPO_URL.removesuffix('.git')}/blob/{repo.commit}/"
-        "data/patchparser-data.tar.gz",
-        path=csv_path.relative_to(root).as_posix(),
-        sha256=snapshot.sha256_file(csv_path),
-        size=csv_path.stat().st_size,
-        last_modified=None,
-        retrieved_at=datetime.now(UTC),
-    )
-    advisories_path = dest / extraction.DUNLAP_ADVISORIES
-    advisories = snapshot.SourceFile(
-        name=DUNLAP_ADVISORIES,
-        url=f"{dunlap.DUNLAP_REPO_URL.removesuffix('.git')}/blob/{repo.commit}/"
-        f"{extraction.DUNLAP_ADVISORIES}",
-        path=advisories_path.relative_to(root).as_posix(),
-        sha256=snapshot.sha256_file(advisories_path),
-        size=advisories_path.stat().st_size,
-        last_modified=None,
-        retrieved_at=datetime.now(UTC),
-    )
-    manifest = manifest.with_repo(repo).with_file(entry).with_file(advisories)
+    base = f"{dunlap.DUNLAP_REPO_URL.removesuffix('.git')}/blob/{repo.commit}/"
+    entries = []
+    for name, relative, published in (
+        (DUNLAP_DATA, dunlap.DUNLAP_CSV, "data/patchparser-data.tar.gz"),
+        (DUNLAP_ADVISORIES, extraction.DUNLAP_ADVISORIES, extraction.DUNLAP_ADVISORIES),
+    ):
+        path = dest / relative
+        entries.append(
+            snapshot.SourceFile(
+                name=name,
+                url=base + published,
+                path=path.relative_to(root).as_posix(),
+                sha256=snapshot.sha256_file(path),
+                size=path.stat().st_size,
+                last_modified=None,
+                retrieved_at=datetime.now(UTC),
+            )
+        )
+    manifest = manifest.with_repo(repo)
+    for entry in entries:
+        manifest = manifest.with_file(entry)
     snapshot.save_manifest(manifest, root / MANIFEST)
-    typer.echo(f"{DUNLAP}: {repo.commit}; {DUNLAP_DATA} sha256 {entry.sha256}")
+    typer.echo(f"{DUNLAP}: pinned {repo.commit}")
 
 
 @app.command("dunlap-baseline")
@@ -309,6 +323,7 @@ def dunlap_extract_command(
             as_of=data.retrieved_at.date(), sample_size=sample, seed=seed,
             ids=frozen.split.ids(split), split=f"{frozen.split.name}:{split}",
             split_sha256=frozen.sha256,
+            progress=lambda done, total: typer.echo(f"extracted {done}/{total}", err=True),
         )  # fmt: skip
     finally:
         github.close()
@@ -339,6 +354,47 @@ def dunlap_split_command(root: Root = Path()) -> None:
     typer.echo(
         f"{DUNLAP_SPLIT}: dev {len(split.dev)}, test {len(split.test)}, sha256 {record.sha256}"
     )
+
+
+KAGGLE_RUN_PREFIXES = (".cache/llm/", "docs/reports/", "run-info.json", "llama-server.log")
+
+
+@app.command("import-kaggle-run")
+def import_kaggle_run_command(
+    archive: Annotated[Path, typer.Argument(help="The zip downloaded from the Kaggle run.")],
+    root: Root = Path(),
+) -> None:
+    """Import a Kaggle run: model responses into the cache, its files into data/interim.
+
+    Only expected paths are accepted; anything absolute, containing "..", or outside the
+    expected prefixes is refused. Regenerate the reports afterwards with dunlap-extract
+    --role kaggle_extractor, which then replays from the cache with no model calls.
+    """
+    inbox = root / "data" / "interim" / "kaggle" / archive.stem
+    with zipfile.ZipFile(archive) as bundle:
+        members = [m for m in bundle.infolist() if not m.is_dir()]
+        for member in members:
+            name = member.filename
+            if (
+                name.startswith("/")
+                or ".." in Path(name).parts
+                or not name.startswith(KAGGLE_RUN_PREFIXES)
+            ):
+                raise typer.BadParameter(f"unexpected path in archive: {name!r}")
+        responses = 0
+        for member in members:
+            # Responses go into the shared cache; the run's usage ledger does not, so it can
+            # never overwrite this machine's daily-quota ledger.
+            if member.filename.startswith(".cache/llm/") and not member.filename.startswith(
+                ".cache/llm/usage/"
+            ):
+                target = root / member.filename
+                responses += member.filename.endswith(".json")
+            else:
+                target = inbox / member.filename
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(bundle.read(member))
+    typer.echo(f"imported {responses} cached responses; run files in {inbox.relative_to(root)}")
 
 
 if __name__ == "__main__":

@@ -8,7 +8,7 @@ so every run carries its own naive baseline.
 import csv
 import random
 from collections import Counter
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from datetime import date
 from pathlib import Path
 
@@ -110,6 +110,7 @@ def run(
     ids: frozenset[str] | None = None,
     split: str = "all",
     split_sha256: str | None = None,
+    progress: Callable[[int, int], None] | None = None,
 ) -> ExtractionRun:
     model = config.models[role]
     budget = config.prompt_budget(role)
@@ -117,7 +118,8 @@ def run(
     predicted: dict[str, set[str]] = {}
     naive: dict[str, set[str]] = {}
     outcomes: list[ExtractionOutcome] = []
-    for report in select(reports, sample_size, seed, ids):
+    chosen = select(reports, sample_size, seed, ids)
+    for number, report in enumerate(chosen, 1):
         mappings = [
             map_commit(github, c.github_repo, c.sha, include=dunlap.paper_path_filter)
             for c in report.commits
@@ -138,6 +140,8 @@ def run(
         truth[report.id] = set(report.symbols)
         predicted[report.id] = set(outcome.vulnerable)
         naive[report.id] = {i.name for i in inputs}
+        if progress is not None and (number % 10 == 0 or number == len(chosen)):
+            progress(number, len(chosen))
 
     return ExtractionRun(
         as_of=as_of,

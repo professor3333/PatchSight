@@ -99,7 +99,9 @@ def test_limiter_stops_at_the_daily_request_cap() -> None:
 
 def test_repository_config_loads_and_fits_one_request_per_window() -> None:
     config = load_config(ROOT / "configs" / "llm.toml")
-    for role in ("extractor", "second_opinion"):
+    # Kaggle and Groq must see identical prompts for their results to compare.
+    assert config.prompt_budget("kaggle_extractor") == config.prompt_budget("extractor")
+    for role in ("extractor", "second_opinion", "kaggle_extractor"):
         model = config.models[role]
         provider = config.providers[model.provider]
         budget = config.prompt_budget(role)

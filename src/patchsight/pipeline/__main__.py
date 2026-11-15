@@ -1,6 +1,7 @@
 """Offline pipeline commands: ``python -m patchsight.pipeline <command>``."""
 
 import os
+import subprocess
 import tarfile
 import zipfile
 from datetime import UTC, datetime
@@ -10,7 +11,8 @@ from typing import Annotated
 import httpx
 import typer
 
-from patchsight.pipeline import fix_sample, week1
+from patchsight import db
+from patchsight.pipeline import build_db, fix_sample, week1
 from patchsight.pipeline.benchmarks import changedfuncs, dunlap, extraction, splits
 from patchsight.pipeline.diffs.github import GitHubClient
 from patchsight.pipeline.extract.prompt import load_template
@@ -417,6 +419,66 @@ def import_kaggle_run_command(
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(bundle.read(member))
     typer.echo(f"imported {responses} cached responses; run files in {inbox.relative_to(root)}")
+
+
+@app.command("build-db")
+def build_db_command(
+    root: Root = Path(),
+    ids: Annotated[str | None, typer.Option(help="Comma-separated advisory IDs.")] = None,
+    sample: Annotated[int | None, typer.Option(help="Seeded sample of N vulnerabilities.")] = None,
+    seed: Annotated[int, typer.Option(help="Sample seed.")] = 20261114,
+    cache: Annotated[Path, typer.Option(help="HTTP response cache.")] = Path(".cache/http"),
+    out: Annotated[Path, typer.Option(help="Output path, without extension.")] = Path(
+        "data/build/patchsight"
+    ),
+) -> None:
+    """Build a symbol database of fallback records (needs GITHUB_TOKEN)."""
+    token = _github_token()
+    manifest, dump = _load_verified(root)
+    advisories = [r for r in normalise_dump(dump) if isinstance(r, Advisory)]
+    by_id = {a.id: a for a in advisories}
+    groups = [
+        g
+        for g in alias_groups(advisories)
+        if any(
+            c.kind in week1.GITHUB_KINDS for i in g.advisory_ids for c in by_id[i].fix_candidates
+        )
+    ]
+    if ids:
+        wanted = {i.strip() for i in ids.split(",") if i.strip()}
+        groups = [g for g in groups if wanted & set(g.identifiers)]
+    elif sample is not None:
+        groups = fix_sample.draw_sample(groups, sample, seed)
+    dump_entry = manifest.file(DUMP)
+    version = dump_entry.retrieved_at.strftime("%Y.%m.%d")
+    github = GitHubClient(root / cache / "github", token=token)
+    pypi = PyPIClient(root / cache / "pypi")
+    try:
+        records, aliases, report = build_db.build(groups, by_id, github, pypi, version)
+    finally:
+        github.close()
+        pypi.close()
+    commit = subprocess.run(  # noqa: S603 - fixed argv, no shell
+        ["git", "-C", str(root), "rev-parse", "HEAD"],  # noqa: S607
+        capture_output=True, text=True, check=False,
+    ).stdout.strip()  # fmt: skip
+    meta = {
+        "db_version": version,
+        "built_at": datetime.now(UTC).isoformat(),
+        "builder": "fallback-v1",
+        "snapshot_sha256": dump_entry.sha256,
+        "code_commit": commit,
+    }
+    target = root / out
+    db.write(target.with_name(target.name + ".sqlite"), records, aliases, meta)
+    target.with_name(target.name + ".jsonl").write_text(build_db.jsonl(records), "utf-8")
+    target.with_name(target.name + "-build.json").write_text(
+        report.model_dump_json(indent=2) + "\n", "utf-8"
+    )
+    typer.echo(
+        f"db {version}: {report.records} records, {report.symbols} symbols from "
+        f"{report.groups} vulnerabilities; {report.status}"
+    )
 
 
 if __name__ == "__main__":

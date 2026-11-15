@@ -524,6 +524,7 @@ def export_replay_command(
     tag: Annotated[str, typer.Argument(help="Report tag, e.g. extract-v1-qwen3.8-27b-q4km.")],
     root: Root = Path(),
     role: Annotated[str, typer.Option(help="Model role the run used.")] = "kaggle_extractor",
+    part: Annotated[str, typer.Option("--split", help="Split part the run covered.")] = "all",
     config: Annotated[Path, typer.Option(help="LLM config.")] = Path("configs/llm.toml"),
     prompt: Annotated[Path, typer.Option(help="Prompt template.")] = Path("prompts/extract_v1.md"),
     cache: Annotated[Path, typer.Option(help="Cache root.")] = Path(".cache"),
@@ -531,7 +532,10 @@ def export_replay_command(
     """Write a replay bundle from the response cache only (never calls a model)."""
     token = _github_token()
     manifest = snapshot.load_manifest(root / MANIFEST)
-    reports = dunlap.load(snapshot.verify(manifest.file(DUNLAP_DATA), root))
+    ids = splits.load_split(root / DUNLAP_SPLIT).split.ids(part)
+    reports = [
+        r for r in dunlap.load(snapshot.verify(manifest.file(DUNLAP_DATA), root)) if r.id in ids
+    ]
     advisories = extraction.load_advisories(snapshot.verify(manifest.file(DUNLAP_ADVISORIES), root))
     llm_config = load_config(root / config)
     counter = HfTokenizer(llm_config.tokenizer, root / cache / "tokenizer")
@@ -539,7 +543,7 @@ def export_replay_command(
     try:
         exported = replay.export(
             github, root / cache / "llm", llm_config, role, load_template(root / prompt), counter,
-            reports, advisories,
+            reports, advisories, split=part,
         )  # fmt: skip
     finally:
         github.close()
@@ -676,13 +680,15 @@ def reproduce_command(root: Root = Path()) -> None:
         typer.echo(f"\nLLM extraction, {run.model}, {run.prompt_version} (replayed offline)\n")
         typer.echo(f"{'part':<6} {'reports':>7} {'TP':>4} {'P':>6} {'R':>6} {'F1':>6}  outcomes")
         for part in ("all", "dev", "test"):
+            report_path = root / "docs" / "reports" / f"extraction-dunlap-{part}-{tag}.json"
+            if not report_path.exists():
+                continue  # this run did not cover that part
             s, statuses = replay.replay(run, truth, frozen.split.ids(part))
             outcomes = ", ".join(f"{k} {v}" for k, v in statuses.items())
             typer.echo(
                 f"{part:<6} {s.reports:>7} {s.true_positives:>4} {s.precision:>6.3f} "
                 f"{s.recall:>6.3f} {s.f1:>6.3f}  {outcomes}"
             )
-            report_path = root / "docs" / "reports" / f"extraction-dunlap-{part}-{tag}.json"
             published = extraction.ExtractionRun.model_validate_json(
                 report_path.read_text(encoding="utf-8")
             )

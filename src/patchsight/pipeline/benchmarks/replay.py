@@ -60,6 +60,7 @@ class ReplayBundle(BaseModel):
     benchmark: str
     model: str
     prompt_version: str
+    split: str = "all"
     reports: tuple[ReplayReport, ...]
 
 
@@ -97,6 +98,7 @@ def export(
     counter: TokenCounter,
     reports: Sequence[dunlap.DunlapReport],
     advisories: dict[str, AdvisoryText],
+    split: str = "all",
 ) -> ReplayBundle:
     model = config.models[role]
     budget = config.prompt_budget(role)
@@ -129,6 +131,7 @@ def export(
         benchmark="dunlap-dimva24",
         model=model.model,
         prompt_version=template.version,
+        split=split,
         reports=tuple(exported),
     )
 

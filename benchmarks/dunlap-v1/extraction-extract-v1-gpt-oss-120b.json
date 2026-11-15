@@ -1,0 +1,2559 @@
+{
+ "replay_version": 1,
+ "benchmark": "dunlap-dimva24",
+ "model": "openai/gpt-oss-120b",
+ "prompt_version": "extract-v1",
+ "split": "dev",
+ "reports": [
+  {
+   "id": "GO-2020-0004",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "nanoauth.go",
+     "name": "Auth.ListenAndServe",
+     "hunk_ids": [
+      "H5"
+     ]
+    },
+    {
+     "id": "F2",
+     "path": "nanoauth.go",
+     "name": "Auth.ListenAndServeTLS",
+     "hunk_ids": [
+      "H3",
+      "H4"
+     ]
+    },
+    {
+     "id": "F3",
+     "path": "nanoauth.go",
+     "name": "Auth.ServeHTTP",
+     "hunk_ids": [
+      "H1",
+      "H2"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The fix adds a check that returns an error when the token is empty, addressing the authentication bypass.\",\n      \"evidence_hunk_ids\": [\"H5\"]\n    },\n    {\n      \"candidate_id\": \"F2\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"An early error is now returned for an empty token and the previous bypass logic is removed, fixing the vulnerability.\",\n      \"evidence_hunk_ids\": [\"H3\", \"H4\"]\n    },\n    {\n      \"candidate_id\": \"F3\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The comparison now uses ConstantTimeCompare to eliminate the timing side\u2011channel.\",\n      \"evidence_hunk_ids\": [\"H2\"]\n    }\n  ],\n  \"public_entry_points\": [\n    \"Auth.ListenAndServe\",\n    \"Auth.ListenAndServeTLS\"\n  ]\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2020-0009",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "cipher/cbc_hmac.go",
+     "name": "cbcAEAD.Open",
+     "hunk_ids": [
+      "H3"
+     ]
+    },
+    {
+     "id": "F2",
+     "path": "cipher/cbc_hmac.go",
+     "name": "cbcAEAD.Seal",
+     "hunk_ids": [
+      "H1",
+      "H2"
+     ]
+    },
+    {
+     "id": "F3",
+     "path": "cipher/cbc_hmac.go",
+     "name": "cbcAEAD.computeAuthTag",
+     "hunk_ids": [
+      "H3"
+     ]
+    },
+    {
+     "id": "F4",
+     "path": "cipher/cbc_hmac.go",
+     "name": "padBuffer",
+     "hunk_ids": [
+      "H5"
+     ]
+    },
+    {
+     "id": "F5",
+     "path": "cipher/cbc_hmac.go",
+     "name": "resize",
+     "hunk_ids": [
+      "H4"
+     ]
+    },
+    {
+     "id": "F6",
+     "path": "cipher/concat_kdf.go",
+     "name": "NewConcatKDF",
+     "hunk_ids": [
+      "H6"
+     ]
+    },
+    {
+     "id": "F7",
+     "path": "cipher/ecdh_es.go",
+     "name": "DeriveECDHES",
+     "hunk_ids": [
+      "H7"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The fix changes integer length calculations to uint64 in resize and buffer allocation, removing the overflow that could be exploited when computing the auth tag.\",\n      \"evidence_hunk_ids\": [\"H3\"]\n    },\n    {\n      \"candidate_id\": \"F2\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"Seal now uses uint64 for slice sizes and resize, preventing overflow of the ciphertext and tag buffers.\",\n      \"evidence_hunk_ids\": [\"H1\", \"H2\"]\n    },\n    {\n      \"candidate_id\": \"F3\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"computeAuthTag\u2019s buffer allocation is changed to uint64, fixing the overflow risk during tag computation.\",\n      \"evidence_hunk_ids\": [\"H3\"]\n    },\n    {\n      \"candidate_id\": \"F4\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"padBuffer now calls resize with uint64 sizes, eliminating overflow when adding padding.\",\n      \"evidence_hunk_ids\": [\"H5\"]\n    },\n    {\n      \"candidate_id\": \"F5\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The resize function signature and capacity check are updated to use uint64, the core fix for the integer overflow vulnerability.\",\n      \"evidence_hunk_ids\": [\"H4\"]\n    },\n    {\n      \"candidate_id\": \"F6\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Changes only affect a KDF buffer size and are unrelated to the AES\u2011CBC\u2011HMAC overflow described in the advisory.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F7\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Adds a size check for ECDH\u2011ES output; this is a separate safety measure not linked to the reported overflow.\",\n      \"evidence_hunk_ids\": []\n    }\n  ],\n  \"public_entry_points\": [\n    \"cbcAEAD.Seal\",\n    \"cbcAEAD.Open\"\n  ]\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2020-0010",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "asymmetric.go",
+     "name": "ecDecrypterSigner.decryptKey",
+     "hunk_ids": [
+      "H1"
+     ]
+    },
+    {
+     "id": "F2",
+     "path": "cipher/ecdh_es.go",
+     "name": "DeriveECDHES",
+     "hunk_ids": [
+      "H2"
+     ]
+    },
+    {
+     "id": "F3",
+     "path": "jwk.go",
+     "name": "rawJsonWebKey.ecPublicKey",
+     "hunk_ids": [
+      "H3"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The fix adds an explicit curve check (`!ctx.privateKey.Curve.IsOnCurve`) for the supplied public key before decryption, directly addressing the invalid\u2011curve attack described in the advisory.\",\n      \"evidence_hunk_ids\": [\"H1\"]\n    },\n    {\n      \"candidate_id\": \"F2\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"A curve validation (`!priv.PublicKey.Curve.IsOnCurve`) is introduced before the ECDH computation, preventing use of a mismatched public key and thus fixing the same vulnerability.\",\n      \"evidence_hunk_ids\": [\"H2\"]\n    },\n    {\n      \"candidate_id\": \"F3\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"The changes add validation for missing X/Y values and ensure the key lies on the declared curve, but this concerns JWK parsing rather than the decryption\u2011time invalid\u2011curve check described in the advisory.\",\n      \"evidence_hunk_ids\": []\n    }\n  ],\n  \"public_entry_points\": [\n    \"ecDecrypterSigner.decryptKey\"\n  ]\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2020-0013",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "ssh/client.go",
+     "name": "FixedHostKey",
+     "hunk_ids": [
+      "H2"
+     ]
+    },
+    {
+     "id": "F2",
+     "path": "ssh/client.go",
+     "name": "InsecureIgnoreHostKey",
+     "hunk_ids": [
+      "H2"
+     ]
+    },
+    {
+     "id": "F3",
+     "path": "ssh/client.go",
+     "name": "NewClientConn",
+     "hunk_ids": [
+      "H1"
+     ]
+    },
+    {
+     "id": "F4",
+     "path": "ssh/client.go",
+     "name": "fixedHostKey.check",
+     "hunk_ids": [
+      "H2"
+     ]
+    },
+    {
+     "id": "F5",
+     "path": "ssh/handshake.go",
+     "name": "handshakeTransport.client",
+     "hunk_ids": [
+      "H3"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Adds an insecure helper function but does not affect host key verification logic.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F2\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Duplicate of the insecure helper; unrelated to the default verification issue.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F3\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"Introduces a nil\u2011check for HostKeyCallback, enforcing verification that was previously missing.\",\n      \"evidence_hunk_ids\": [\"H1\"]\n    },\n    {\n      \"candidate_id\": \"F4\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Method of the fixedHostKey type; not related to the missing default callback.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F5\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Changes call semantics of an existing callback but does not introduce or fix the default\u2011verification problem.\",\n      \"evidence_hunk_ids\": []\n    }\n  ],\n  \"public_entry_points\": [\n    \"NewClientConn\"\n  ]\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2020-0014",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "html/parse.go",
+     "name": "inSelectIM",
+     "hunk_ids": [
+      "H1",
+      "H2"
+     ]
+    },
+    {
+     "id": "F2",
+     "path": "html/parse.go",
+     "name": "inSelectInTableIM",
+     "hunk_ids": [
+      "H3"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The fix adds a branch that ignores the token when popUntil fails, preventing the parser from getting stuck in an infinite loop on malformed select tags.\",\n      \"evidence_hunk_ids\": [\"H1\", \"H2\"]\n    },\n    {\n      \"candidate_id\": \"F2\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The change introduces explicit token\u2011ignoring logic and proper scope popping for select tags inside tables, addressing the infinite\u2011loop condition.\",\n      \"evidence_hunk_ids\": [\"H3\"]\n    }\n  ],\n  \"public_entry_points\": [\"Parse\"]\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2020-0022",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "lz4.go",
+     "name": "Uncompress",
+     "hunk_ids": [
+      "H1"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The change replaces the unsafe C call LZ4_uncompress with the bounds\u2011checking LZ4_decompress_safe, fixing the out\u2011of\u2011bounds write described in the advisory.\",\n      \"evidence_hunk_ids\": [\"H1\"]\n    }\n  ],\n  \"public_entry_points\": [\"Uncompress\"]\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2020-0023",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "algorithms.go",
+     "name": "Algorithm.validateSignature",
+     "hunk_ids": [
+      "H1"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The fix replaces a direct string comparison with constant\u2011time hmac.Equal, addressing the timing side\u2011channel described in the advisory.\",\n      \"evidence_hunk_ids\": [\"H1\"]\n    }\n  ],\n  \"public_entry_points\": [\"Algorithm.validateSignature\"]\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2020-0026",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "pkg/build/strategies/sti/sti.go",
+     "name": "New",
+     "hunk_ids": [
+      "H1"
+     ]
+    },
+    {
+     "id": "F2",
+     "path": "pkg/tar/tar.go",
+     "name": "NewParanoid",
+     "hunk_ids": [
+      "H2"
+     ]
+    },
+    {
+     "id": "F3",
+     "path": "pkg/tar/tar.go",
+     "name": "stiTar.ExtractTarStreamFromTarReader",
+     "hunk_ids": [
+      "H3",
+      "H4"
+     ]
+    },
+    {
+     "id": "F4",
+     "path": "pkg/tar/tar.go",
+     "name": "stiTar.extractFile",
+     "hunk_ids": [
+      "H6"
+     ]
+    },
+    {
+     "id": "F5",
+     "path": "pkg/tar/tar.go",
+     "name": "stiTar.extractLink",
+     "hunk_ids": [
+      "H5"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Only changes the constructor to use the new paranoid tar handler; the vulnerability resides in the extraction logic, not in this wrapper.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F2\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Introduces a new constructor and struct fields but does not contain the path\u2011sanitization logic itself.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F3\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"Adds checks that clean paths and reject files whose cleaned path escapes the target directory, directly fixing the arbitrary file write issue.\",\n      \"evidence_hunk_ids\": [\"H3\", \"H4\"]\n    },\n    {\n      \"candidate_id\": \"F4\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Adds an overwrite\u2011prevention guard, which is unrelated to the relative\u2011path traversal vulnerability described.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F5\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"Adds validation that prevents symlinks from pointing outside the extraction directory, addressing the path\u2011traversal write vector.\",\n      \"evidence_hunk_ids\": [\"H5\"]\n    }\n  ],\n  \"public_entry_points\": [\"New\"]\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2020-0028",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "scan_rr.go",
+     "name": "setTA",
+     "hunk_ids": [
+      "H1"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The fix changes the error handling in setTA to correctly propagate parsing errors instead of returning a nil pointer, addressing the nil\u2011pointer panic described in the advisory.\",\n      \"evidence_hunk_ids\": [\"H1\"]\n    }\n  ],\n  \"public_entry_points\": [\"setTA\"]\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2020-0034",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "unzip.go",
+     "name": "Unzip.Extract",
+     "hunk_ids": [
+      "H1"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The added prefix check prevents directory traversal, indicating the original function allowed unsafe paths.\",\n      \"evidence_hunk_ids\": [\"H1\"]\n    }\n  ],\n  \"public_entry_points\": [\"Unzip.Extract\"]\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2020-0037",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "rpc/lib/client/http_client.go",
+     "name": "makeHTTPClient",
+     "hunk_ids": [
+      "H1"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"evidence_hunk_ids\": [\"H1\"],\n      \"is_vulnerable\": true,\n      \"rationale\": \"The fix disables HTTP transport compression (DisableCompression: true) to prevent GZIP\u2011bomb DoS, directly addressing the uncontrolled resource consumption described in the advisory.\"\n    }\n  ],\n  \"public_entry_points\": []\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2021-0057",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "parser.go",
+     "name": "searchKeys",
+     "hunk_ids": [
+      "H1"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The fix adds explicit length and delimiter checks before converting the array index string, preventing out-of-bounds panic that the advisory describes.\",\n      \"evidence_hunk_ids\": [\"H1\"]\n    }\n  ],\n  \"public_entry_points\": []\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2021-0072",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "registry/handlers/blobupload.go",
+     "name": "blobUploadHandler.PatchBlobData",
+     "hunk_ids": [
+      "H1"
+     ]
+    },
+    {
+     "id": "F2",
+     "path": "registry/handlers/blobupload.go",
+     "name": "blobUploadHandler.PutBlobUploadComplete",
+     "hunk_ids": [
+      "H2"
+     ]
+    },
+    {
+     "id": "F3",
+     "path": "registry/handlers/helpers.go",
+     "name": "copyFullPayload",
+     "hunk_ids": [
+      "H3",
+      "H4",
+      "H5"
+     ]
+    },
+    {
+     "id": "F4",
+     "path": "registry/handlers/manifests.go",
+     "name": "manifestHandler.PutManifest",
+     "hunk_ids": [
+      "H6"
+     ]
+    },
+    {
+     "id": "F5",
+     "path": "registry/storage/blobstore.go",
+     "name": "blobStore.Get",
+     "hunk_ids": [
+      "H7",
+      "H8"
+     ]
+    },
+    {
+     "id": "F6",
+     "path": "registry/storage/io.go",
+     "name": "getContent",
+     "hunk_ids": [
+      "H9"
+     ]
+    },
+    {
+     "id": "F7",
+     "path": "registry/storage/io.go",
+     "name": "limitReader",
+     "hunk_ids": [
+      "H9"
+     ]
+    },
+    {
+     "id": "F8",
+     "path": "registry/storage/io.go",
+     "name": "limitedReader.Read",
+     "hunk_ids": [
+      "H9"
+     ]
+    },
+    {
+     "id": "F9",
+     "path": "registry/storage/io.go",
+     "name": "readAllLimited",
+     "hunk_ids": [
+      "H9"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F3\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The function copyFullPayload was changed to accept a size limit and use http.MaxBytesReader, directly addressing the unlimited payload issue.\",\n      \"evidence_hunk_ids\": [\"H3\", \"H4\"]\n    },\n    {\n      \"candidate_id\": \"F5\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"blobStore.Get now calls getContent which enforces a maximum read size, fixing the unbounded content retrieval.\",\n      \"evidence_hunk_ids\": [\"H7\", \"H8\"]\n    },\n    {\n      \"candidate_id\": \"F6\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The new getContent function reads blob data through readAllLimited with maxBlobGetSize, adding the missing size restriction.\",\n      \"evidence_hunk_ids\": [\"H9\"]\n    },\n    {\n      \"candidate_id\": \"F4\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"manifestHandler.PutManifest now passes maxManifestBodySize to copyFullPayload, limiting manifest payload size.\",\n      \"evidence_hunk_ids\": [\"H6\"]\n    },\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Only updates the error handling and passes -1 limit, not addressing the allocation issue.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F2\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Similar to F1, changes error handling without adding size limits.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F7\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Duplicate of F6; the function already covered, this entry is a repeat.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F8\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Method limitedReader.Read is unchanged logic; the vulnerability fix is in the caller functions.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F9\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Function readAllLimited is part of the limit enforcement already captured in F6; this entry does not itself introduce the vulnerability.\",\n      \"evidence_hunk_ids\": []\n    }\n  ],\n  \"public_entry_points\": [\n    \"blobUploadHandler.PatchBlobData\",\n    \"blobUploadHandler.PutBlobUploadComplete\",\n    \"manifestHandler.PutManifest\",\n    \"blobStore.Get\"\n  ]\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2021-0078",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "html/parse.go",
+     "name": "inBodyIM",
+     "hunk_ids": [
+      "H1"
+     ]
+    },
+    {
+     "id": "F2",
+     "path": "html/parse.go",
+     "name": "inFramesetIM",
+     "hunk_ids": [
+      "H2"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The fix removes special handling of the Template token in the inBody insertion mode, eliminating the code path that could trigger a panic on malformed HTML.\",\n      \"evidence_hunk_ids\": [\"H1\"]\n    },\n    {\n      \"candidate_id\": \"F2\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The change deletes the Template case in the inFrameset insertion mode, removing the divergent behavior that caused the panic.\",\n      \"evidence_hunk_ids\": [\"H2\"]\n    }\n  ],\n  \"public_entry_points\": []\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2021-0079",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "p2p/discover/net.go",
+     "name": "Network.checkTopicRegister",
+     "hunk_ids": [
+      "H1"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"The change only reorders a bounds check without altering validation logic, indicating a refactor rather than a fix for the out-of-bounds panic.\",\n      \"evidence_hunk_ids\": []\n    }\n  ],\n  \"public_entry_points\": []\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2021-0085",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "libcontainer/apparmor/apparmor.go",
+     "name": "changeOnExec",
+     "hunk_ids": [
+      "H5"
+     ]
+    },
+    {
+     "id": "F2",
+     "path": "libcontainer/apparmor/apparmor.go",
+     "name": "setProcAttr",
+     "hunk_ids": [
+      "H4",
+      "H5"
+     ]
+    },
+    {
+     "id": "F3",
+     "path": "libcontainer/apparmor/apparmor.go",
+     "name": "setprocattr",
+     "hunk_ids": [
+      "H4"
+     ]
+    },
+    {
+     "id": "F4",
+     "path": "libcontainer/utils/utils_unix.go",
+     "name": "CloseExecFrom",
+     "hunk_ids": [
+      "H6"
+     ]
+    },
+    {
+     "id": "F5",
+     "path": "libcontainer/utils/utils_unix.go",
+     "name": "EnsureProcHandle",
+     "hunk_ids": [
+      "H6"
+     ]
+    },
+    {
+     "id": "F6",
+     "path": "vendor/github.com/opencontainers/selinux/go-selinux/label/label_selinux.go",
+     "name": "InitLabels",
+     "hunk_ids": [
+      "H7"
+     ]
+    },
+    {
+     "id": "F7",
+     "path": "vendor/github.com/opencontainers/selinux/go-selinux/selinux_linux.go",
+     "name": "PeerLabel",
+     "hunk_ids": [
+      "H12"
+     ]
+    },
+    {
+     "id": "F8",
+     "path": "vendor/github.com/opencontainers/selinux/go-selinux/selinux_linux.go",
+     "name": "SetTaskLabel",
+     "hunk_ids": [
+      "H11"
+     ]
+    },
+    {
+     "id": "F9",
+     "path": "vendor/github.com/opencontainers/selinux/go-selinux/selinux_linux.go",
+     "name": "isProcHandle",
+     "hunk_ids": [
+      "H8"
+     ]
+    },
+    {
+     "id": "F10",
+     "path": "vendor/github.com/opencontainers/selinux/go-selinux/selinux_linux.go",
+     "name": "readCon",
+     "hunk_ids": [
+      "H9"
+     ]
+    },
+    {
+     "id": "F11",
+     "path": "vendor/github.com/opencontainers/selinux/go-selinux/selinux_linux.go",
+     "name": "writeCon",
+     "hunk_ids": [
+      "H10"
+     ]
+    },
+    {
+     "id": "F12",
+     "path": "vendor/github.com/opencontainers/selinux/go-selinux/selinux_stub.go",
+     "name": "PeerLabel",
+     "hunk_ids": [
+      "H14"
+     ]
+    },
+    {
+     "id": "F13",
+     "path": "vendor/github.com/opencontainers/selinux/go-selinux/selinux_stub.go",
+     "name": "SetTaskLabel",
+     "hunk_ids": [
+      "H13"
+     ]
+    },
+    {
+     "id": "F14",
+     "path": "go-selinux/selinux_linux.go",
+     "name": "isProcHandle",
+     "hunk_ids": [
+      "H1"
+     ]
+    },
+    {
+     "id": "F15",
+     "path": "go-selinux/selinux_linux.go",
+     "name": "readCon",
+     "hunk_ids": [
+      "H2"
+     ]
+    },
+    {
+     "id": "F16",
+     "path": "go-selinux/selinux_linux.go",
+     "name": "writeCon",
+     "hunk_ids": [
+      "H3"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"changeOnExec only forwards to setProcAttr and does not contain the validation logic.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F2\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The fix adds EnsureProcHandle before writing to the proc attribute file, addressing the improper validation that allowed AppArmor bypass.\",\n      \"evidence_hunk_ids\": [\"H5\"]\n    },\n    {\n      \"candidate_id\": \"F3\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Only renames the function without adding the proc\u2011fs validation, so it does not address the vulnerability.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F4\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Adds EnsureProcHandle to CloseExecFrom, which is unrelated to mount\u2011target validation in AppArmor.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F5\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Same as F4; the change concerns CloseExecFrom, not the AppArmor mount validation.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F6\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Modifies SELinux label parsing messages; unrelated to the AppArmor issue.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F7\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Introduces a new PeerLabel helper for SELinux; not related to the vulnerability.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F8\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Adds a SELinux SetTaskLabel function; unrelated to AppArmor mount validation.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F9\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Adds a helper isProcHandle for SELinux code; not part of the vulnerable AppArmor path.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F10\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Adds proc\u2011fs checks to SELinux readCon; unrelated to the AppArmor mount target issue.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F11\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Adds proc\u2011fs checks to SELinux writeCon; not the vulnerable function.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F12\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Stub implementation of PeerLabel for non\u2011Linux builds; unrelated.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F13\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Stub implementation of SetTaskLabel; not related to the AppArmor bypass.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F14\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Duplicate SELinux isProcHandle helper; not part of the vulnerable code.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F15\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"SELinux readCon proc\u2011fs validation; unrelated to the AppArmor issue.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F16\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"SELinux writeCon proc\u2011fs validation; not the vulnerable function.\",\n      \"evidence_hunk_ids\": []\n    }\n  ],\n  \"public_entry_points\": []\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2021-0086",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "domain/section/markdown/markdown.go",
+     "name": "Provider.Render",
+     "hunk_ids": [
+      "H1"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The fix adds sanitization of the rendered markdown output, indicating the original function returned unsanitized HTML causing XSS.\",\n      \"evidence_hunk_ids\": [\"H1\"]\n    }\n  ],\n  \"public_entry_points\": [\"Render\"]\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2021-0090",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "types/vote_set.go",
+     "name": "VoteSet.MakeCommit",
+     "hunk_ids": [
+      "H1"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The fix adds a check that skips signatures whose block ID does not match the majority block, preventing the verification failure that caused the denial\u2011of\u2011service.\",\n      \"evidence_hunk_ids\": [\"H1\"]\n    }\n  ],\n  \"public_entry_points\": [\"VoteSet.MakeCommit\"]\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2021-0107",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "websocket.go",
+     "name": "Server.socketHandler",
+     "hunk_ids": [
+      "H1"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The fix adds nil\u2011check handling for options.AuthenticateMethod and returns unauthorized responses, addressing the panic/authentication bypass described in the advisory.\",\n      \"evidence_hunk_ids\": [\"H1\"]\n    }\n  ],\n  \"public_entry_points\": []\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2021-0142",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "src/encoding/binary/varint.go",
+     "name": "ReadUvarint",
+     "hunk_ids": [
+      "H1"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The change adds a loop bound (MaxVarintLen64) and an explicit overflow return, preventing unlimited reads that the advisory describes.\",\n      \"evidence_hunk_ids\": [\"H1\"]\n    }\n  ],\n  \"public_entry_points\": [\"ReadUvarint\"]\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2021-0154",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "src/crypto/tls/handshake_server.go",
+     "name": "serverHandshakeState.checkForResumption",
+     "hunk_ids": [
+      "H1"
+     ]
+    },
+    {
+     "id": "F2",
+     "path": "src/crypto/tls/ticket.go",
+     "name": "Conn.decryptTicket",
+     "hunk_ids": [
+      "H2"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The fix adds an early return when SessionTicketsDisabled is true, preventing the server from incorrectly using a ticket for resumption, which was the core of the MITM issue.\",\n      \"evidence_hunk_ids\": [\"H1\"]\n    },\n    {\n      \"candidate_id\": \"F2\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The change adds a guard that aborts ticket decryption when SessionTicketsDisabled is set, closing the path that allowed spoofed client certificates.\",\n      \"evidence_hunk_ids\": [\"H2\"]\n    }\n  ],\n  \"public_entry_points\": []\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2021-0235",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "src/crypto/elliptic/p224.go",
+     "name": "p224Contract",
+     "hunk_ids": [
+      "H1",
+      "H2",
+      "H3",
+      "H4",
+      "H5"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The fix modifies the reduction and carry logic in p224Contract to ensure the output stays below the prime, correcting the overflow handling that caused invalid points.\",\n      \"evidence_hunk_ids\": [\"H1\", \"H3\", \"H4\"]\n    }\n  ],\n  \"public_entry_points\": []\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2021-0241",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "src/net/http/httputil/reverseproxy.go",
+     "name": "ReverseProxy.ServeHTTP",
+     "hunk_ids": [
+      "H1"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The fix removes forwarding of hop-by-hop headers by deleting them from the outbound request and adds correct handling for the \\\"Te\\\" header, directly addressing the described header\u2011dropping issue.\",\n      \"evidence_hunk_ids\": [\"H1\"]\n    }\n  ],\n  \"public_entry_points\": [\"ReverseProxy.ServeHTTP\"]\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2021-0242",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "src/math/big/ratconv.go",
+     "name": "Rat.SetString",
+     "hunk_ids": [
+      "H1",
+      "H2"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The fix adds explicit bounds checks for exponent size and returns an error instead of panicking, directly addressing the large\u2011exponent panic described in the advisory.\",\n      \"evidence_hunk_ids\": [\"H1\", \"H2\"]\n    }\n  ],\n  \"public_entry_points\": [\"Rat.SetString\"]\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2021-0243",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "src/crypto/tls/key_agreement.go",
+     "name": "rsaKeyAgreement.generateClientKeyExchange",
+     "hunk_ids": [
+      "H1"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The fix adds a type\u2011assertion check for the server certificate's public key and returns an error instead of proceeding, addressing the panic caused by an incorrect key type.\",\n      \"evidence_hunk_ids\": [\"H1\"]\n    }\n  ],\n  \"public_entry_points\": []\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2021-0264",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "src/archive/zip/reader.go",
+     "name": "Reader.Open",
+     "hunk_ids": [
+      "H2"
+     ]
+    },
+    {
+     "id": "F2",
+     "path": "src/archive/zip/reader.go",
+     "name": "Reader.initFileList",
+     "hunk_ids": [
+      "H1"
+     ]
+    },
+    {
+     "id": "F3",
+     "path": "src/archive/zip/reader.go",
+     "name": "split",
+     "hunk_ids": [
+      "H3"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"Adds a fs.ValidPath check and returns a PathError before calling openLookup, directly preventing the panic described in the advisory.\",\n      \"evidence_hunk_ids\": [\"H2\"]\n    },\n    {\n      \"candidate_id\": \"F2\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"Skips entries whose cleaned name is empty, ensuring invalid archive entries are not added to the file list and avoiding the panic.\",\n      \"evidence_hunk_ids\": [\"H1\"]\n    },\n    {\n      \"candidate_id\": \"F3\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Only adds a length guard to the split helper; this is a defensive tweak unrelated to the panic vulnerability.\",\n      \"evidence_hunk_ids\": []\n    }\n  ],\n  \"public_entry_points\": [\"Open\"]\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2021-0317",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "src/math/big/ratconv.go",
+     "name": "Rat.SetString",
+     "hunk_ids": [
+      "H1"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The added overflow guard for -n prevents the negative exponent overflow that caused uncontrolled memory consumption.\",\n      \"evidence_hunk_ids\": [\"H1\"]\n    }\n  ],\n  \"public_entry_points\": [\"Rat.SetString\"]\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2021-0356",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "ssh/client.go",
+     "name": "verifyHostKeySignature",
+     "hunk_ids": [
+      "H4"
+     ]
+    },
+    {
+     "id": "F2",
+     "path": "ssh/handshake.go",
+     "name": "algorithmSignerWrapper.SignWithAlgorithm",
+     "hunk_ids": [
+      "H8"
+     ]
+    },
+    {
+     "id": "F3",
+     "path": "ssh/handshake.go",
+     "name": "handshakeTransport.sendKexInit",
+     "hunk_ids": [
+      "H6"
+     ]
+    },
+    {
+     "id": "F4",
+     "path": "ssh/handshake.go",
+     "name": "handshakeTransport.server",
+     "hunk_ids": [
+      "H8"
+     ]
+    },
+    {
+     "id": "F5",
+     "path": "ssh/handshake.go",
+     "name": "pickHostKey",
+     "hunk_ids": [
+      "H8"
+     ]
+    },
+    {
+     "id": "F6",
+     "path": "ssh/kex.go",
+     "name": "dhGEXSHA.Server",
+     "hunk_ids": [
+      "H17",
+      "H18"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Only updates signature algorithm validation logic; does not address the Signer handling that caused the crash.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F2\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"Introduces algorithmSignerWrapper and pickHostKey to ensure a non\u2011AlgorithmSigner Signer is not used for unsupported algorithms, directly fixing the crash scenario described in the advisory (see H8).\",\n      \"evidence_hunk_ids\": [\"H8\"]\n    },\n    {\n      \"candidate_id\": \"F3\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Modifies how server host key algorithms are advertised; unrelated to the Signer validation bug.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F4\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"Repeats the same host\u2011key selection logic as F2, adding algorithmSignerWrapper and pickHostKey to prevent misuse of a Signer that lacks AlgorithmSigner (see H8).\",\n      \"evidence_hunk_ids\": [\"H8\"]\n    },\n    {\n      \"candidate_id\": \"F5\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"Extracts the host\u2011key picking logic into a separate function, preserving the same fix that avoids the crash caused by incompatible Signer implementations (see H8).\",\n      \"evidence_hunk_ids\": [\"H8\"]\n    },\n    {\n      \"candidate_id\": \"F6\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"Changes the DH GEX server method to accept an AlgorithmSigner and pass the algorithm name to signAndMarshal, aligning with the new wrapper logic and preventing panics when a plain Signer is used (see H17, H18).\",\n      \"evidence_hunk_ids\": [\"H17\", \"H18\"]\n    }\n  ],\n  \"public_entry_points\": [\n    \"ServerConfig.AddHostKey\"\n  ]\n}"
+   ],
+   "truncated": true,
+   "dropped": [
+    "Certificate.SignCert",
+    "Certificate.Type",
+    "certToPrivAlgo",
+    "underlyingAlgo",
+    "algorithmsForKeyFormat",
+    "handshakeTransport.client",
+    "handshakeTransport.enterKeyExchange",
+    "curve25519sha256.Server",
+    "dhGroup.Server",
+    "ecHash",
+    "ecdh.Server",
+    "dsaPrivateKey.Sign",
+    "dsaPrivateKey.SignWithAlgorithm",
+    "dsaPublicKey.Verify",
+    "ecHash",
+    "ecdsaPublicKey.Verify",
+    "parsePubKey",
+    "rsaPublicKey.Verify",
+    "rsaSigner.Sign",
+    "skECDSAPublicKey.Verify",
+    "skEd25519PublicKey.Verify",
+    "wrappedSigner.Sign",
+    "wrappedSigner.SignWithAlgorithm",
+    "signAndMarshal"
+   ]
+  },
+  {
+   "id": "GO-2022-0189",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "src/cmd/go/internal/get/get.go",
+     "name": "downloadPackage",
+     "hunk_ids": [
+      "H1"
+     ]
+    },
+    {
+     "id": "F2",
+     "path": "src/cmd/go/internal/get/path.go",
+     "name": "CheckImportPath",
+     "hunk_ids": [
+      "H2"
+     ]
+    },
+    {
+     "id": "F3",
+     "path": "src/cmd/go/internal/get/path.go",
+     "name": "checkElem",
+     "hunk_ids": [
+      "H2"
+     ]
+    },
+    {
+     "id": "F4",
+     "path": "src/cmd/go/internal/get/path.go",
+     "name": "checkPath",
+     "hunk_ids": [
+      "H2"
+     ]
+    },
+    {
+     "id": "F5",
+     "path": "src/cmd/go/internal/get/path.go",
+     "name": "pathOK",
+     "hunk_ids": [
+      "H2"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The added call to CheckImportPath validates import paths and prevents malicious \\\".git\\\" elements, fixing the remote execution issue.\",\n      \"evidence_hunk_ids\": [\"H1\"]\n    },\n    {\n      \"candidate_id\": \"F2\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Introduces a new validation helper; the vulnerability was not in this function itself.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F3\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Duplicate copy of validation logic; unrelated to the original flaw.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F4\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Duplicate copy of path validation; not the source of the vulnerability.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F5\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Defines a helper used by validation; the bug was not here.\",\n      \"evidence_hunk_ids\": []\n    }\n  ],\n  \"public_entry_points\": [\"go get\"]\n}"
+   ],
+   "truncated": true,
+   "dropped": [
+    "fileNameOK"
+   ]
+  },
+  {
+   "id": "GO-2022-0190",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "src/cmd/go/internal/get/path.go",
+     "name": "CheckImportPath",
+     "hunk_ids": [
+      "H2"
+     ]
+    },
+    {
+     "id": "F2",
+     "path": "src/cmd/go/internal/get/path.go",
+     "name": "checkElem",
+     "hunk_ids": [
+      "H2"
+     ]
+    },
+    {
+     "id": "F3",
+     "path": "src/cmd/go/internal/get/path.go",
+     "name": "checkPath",
+     "hunk_ids": [
+      "H2"
+     ]
+    },
+    {
+     "id": "F4",
+     "path": "src/cmd/go/internal/get/path.go",
+     "name": "fileNameOK",
+     "hunk_ids": [
+      "H2"
+     ]
+    },
+    {
+     "id": "F5",
+     "path": "src/cmd/go/internal/get/path.go",
+     "name": "pathOK",
+     "hunk_ids": [
+      "H2"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"CheckImportPath only forwards to checkPath and does not contain the validation logic that was fixed.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F2\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"checkElem validates individual path elements and the fix adds rejection of '{' and '}' characters here (see added validation in H2).\",\n      \"evidence_hunk_ids\": [\"H2\"]\n    },\n    {\n      \"candidate_id\": \"F3\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"checkPath iterates over path elements and invokes checkElem; the fix adds handling for curly braces at this level (see changes in H2).\",\n      \"evidence_hunk_ids\": [\"H2\"]\n    },\n    {\n      \"candidate_id\": \"F4\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"fileNameOK is unrelated to import\u2011path validation and was not changed for the vulnerability.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F5\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"pathOK deals with character classification but the vulnerability fix targets the higher\u2011level path checks, not this helper.\",\n      \"evidence_hunk_ids\": []\n    }\n  ],\n  \"public_entry_points\": []\n}"
+   ],
+   "truncated": true,
+   "dropped": [
+    "downloadPackage"
+   ]
+  },
+  {
+   "id": "GO-2022-0251",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "validator/lib/ber.go",
+     "name": "readObject",
+     "hunk_ids": [
+      "H1"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The added guard checks for a zero\u2011length BER object and returns an error instead of processing NUL contents, directly addressing the crash described in the advisory.\",\n      \"evidence_hunk_ids\": [\"H1\"]\n    }\n  ],\n  \"public_entry_points\": [\"readObject\"]\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2022-0273",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "src/archive/zip/reader.go",
+     "name": "Reader.init",
+     "hunk_ids": [
+      "H1"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The added guard `end.directorySize < uint64(size) && ...` prevents a size\u2011based overflow that could cause a panic in NewReader/OpenReader, indicating the vulnerability lived in this function.\",\n      \"evidence_hunk_ids\": [\"H1\"]\n    }\n  ],\n  \"public_entry_points\": [\"NewReader\", \"OpenReader\"]\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2022-0274",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "libcontainer/container_linux.go",
+     "name": "linuxContainer.bootstrapData",
+     "hunk_ids": [
+      "H1"
+     ]
+    },
+    {
+     "id": "F2",
+     "path": "libcontainer/specconv/spec_linux.go",
+     "name": "createLibcontainerMount",
+     "hunk_ids": [
+      "H2"
+     ]
+    },
+    {
+     "id": "F3",
+     "path": "libcontainer/container_linux.go",
+     "name": "linuxContainer.bootstrapData",
+     "hunk_ids": [
+      "H3"
+     ]
+    },
+    {
+     "id": "F4",
+     "path": "libcontainer/message_linux.go",
+     "name": "Bytemsg.Serialize",
+     "hunk_ids": [
+      "H4"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"Adds a null\u2011byte check on mount source to prevent the bypass described in the advisory.\",\n      \"evidence_hunk_ids\": [\"H1\"]\n    },\n    {\n      \"candidate_id\": \"F2\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"Introduces validation that mount source, destination, and device strings contain no null byte, directly addressing the namespace bypass.\",\n      \"evidence_hunk_ids\": [\"H2\"]\n    },\n    {\n      \"candidate_id\": \"F3\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Implements panic\u2011recovery handling for netlink errors, unrelated to the null\u2011byte mount issue.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F4\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Adds a length check for netlink message serialization, not related to the namespace restriction bypass.\",\n      \"evidence_hunk_ids\": []\n    }\n  ],\n  \"public_entry_points\": [\n    \"createLibcontainerMount\",\n    \"bootstrapData\"\n  ]\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2022-0289",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "src/syscall/exec_unix.go",
+     "name": "forkExec",
+     "hunk_ids": [
+      "H1",
+      "H2",
+      "H3"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The fix adds proper cleanup of pipe file descriptors and removes the previous -1 sentinel handling, addressing the misdirected I/O bug in forkExec.\",\n      \"evidence_hunk_ids\": [\"H1\", \"H2\", \"H3\"]\n    }\n  ],\n  \"public_entry_points\": [\"ForkExec\"]\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2022-0345",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "chroot/run.go",
+     "name": "RunUsingChroot",
+     "hunk_ids": [
+      "H1"
+     ]
+    },
+    {
+     "id": "F2",
+     "path": "chroot/run.go",
+     "name": "logNamespaceDiagnostics",
+     "hunk_ids": [
+      "H5",
+      "H6",
+      "H7"
+     ]
+    },
+    {
+     "id": "F3",
+     "path": "chroot/run.go",
+     "name": "runUsingChroot",
+     "hunk_ids": [
+      "H3"
+     ]
+    },
+    {
+     "id": "F4",
+     "path": "chroot/run.go",
+     "name": "runUsingChrootExecMain",
+     "hunk_ids": [
+      "H4"
+     ]
+    },
+    {
+     "id": "F5",
+     "path": "chroot/run.go",
+     "name": "runUsingChrootMain",
+     "hunk_ids": [
+      "H2"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The fix removes propagation of the full environment by replacing `cmd.Env = append(..., os.Environ()...)` with a limited list, directly addressing the described leakage.\",\n      \"evidence_hunk_ids\": [\"H1\"]\n    },\n    {\n      \"candidate_id\": \"F2\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Changes only affect debug logging and a removed variable, unrelated to environment handling.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F3\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"Similarly to F1, it stops passing `os.Environ()` to the child process, fixing the environment variable leak.\",\n      \"evidence_hunk_ids\": [\"H3\"]\n    },\n    {\n      \"candidate_id\": \"F4\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Adds a nil\u2011check for options.Spec.Process; this is a safety check, not related to env leakage.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F5\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Adds a nil\u2011check for options.Spec.Process; unrelated to the vulnerability.\",\n      \"evidence_hunk_ids\": []\n    }\n  ],\n  \"public_entry_points\": [\"RunUsingChroot\"]\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2022-0355",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "uri.go",
+     "name": "normalizePath",
+     "hunk_ids": [
+      "H1"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The fix adds Windows\u2011specific backslash handling to normalizePath, directly addressing the directory\u2011traversal issue described in the advisory.\",\n      \"evidence_hunk_ids\": [\"H1\"]\n    }\n  ],\n  \"public_entry_points\": []\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2022-0370",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "websocket/ws.go",
+     "name": "Dialer.Dial",
+     "hunk_ids": [
+      "H2"
+     ]
+    },
+    {
+     "id": "F2",
+     "path": "websocket/ws.go",
+     "name": "Dialer.DialDirect",
+     "hunk_ids": [
+      "H3"
+     ]
+    },
+    {
+     "id": "F3",
+     "path": "websocket/ws.go",
+     "name": "Dialer.config",
+     "hunk_ids": [
+      "H3",
+      "H4"
+     ]
+    },
+    {
+     "id": "F4",
+     "path": "websocket/ws.go",
+     "name": "NewClient",
+     "hunk_ids": [
+      "H1"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Only updates the arguments passed to config; the vulnerability is in how ServerName is set, not in this caller.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F2\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Adjusts the call signature of config but does not contain the logic that validates the certificate.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F3\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"Changes ServerName from cfg.Location.Host to the remote address, fixing the incorrect certificate validation.\",\n      \"evidence_hunk_ids\": [\"H4\"]\n    },\n    {\n      \"candidate_id\": \"F4\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Modifies the caller to pass the domain string to config; the core validation bug resides in config.\",\n      \"evidence_hunk_ids\": []\n    }\n  ],\n  \"public_entry_points\": [\n    \"Dialer.Dial\",\n    \"NewClient\"\n  ]\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2022-0379",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "manifest/manifestlist/manifestlist.go",
+     "name": "init",
+     "hunk_ids": [
+      "H1"
+     ]
+    },
+    {
+     "id": "F2",
+     "path": "manifest/manifestlist/manifestlist.go",
+     "name": "validateIndex",
+     "hunk_ids": [
+      "H2"
+     ]
+    },
+    {
+     "id": "F3",
+     "path": "manifest/ocischema/manifest.go",
+     "name": "init",
+     "hunk_ids": [
+      "H3"
+     ]
+    },
+    {
+     "id": "F4",
+     "path": "manifest/ocischema/manifest.go",
+     "name": "validateManifest",
+     "hunk_ids": [
+      "H4"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The init function now calls validateIndex before unmarshalling, indicating the original code lacked this check and caused type confusion.\",\n      \"evidence_hunk_ids\": [\"H1\"]\n    },\n    {\n      \"candidate_id\": \"F2\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"validateIndex is a new helper added to perform validation; the vulnerability was in the unmarshalling logic, not in this function itself.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F3\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The init function now calls validateManifest before unmarshalling, fixing the previous lack of validation that allowed manifest/index confusion.\",\n      \"evidence_hunk_ids\": [\"H3\"]\n    },\n    {\n      \"candidate_id\": \"F4\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"validateManifest is a newly introduced validation helper; the original vulnerability resided in the unmarshalling path, not in this function.\",\n      \"evidence_hunk_ids\": []\n    }\n  ],\n  \"public_entry_points\": []\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2022-0463",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "server/web/tree.go",
+     "name": "Tree.match",
+     "hunk_ids": [
+      "H1"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The fix adds a condition `pattern == \\\"\\\"` to prevent matching when the pattern is empty, directly addressing the overly\u2011broad route matching described in the advisory.\",\n      \"evidence_hunk_ids\": [\"H1\"]\n    }\n  ],\n  \"public_entry_points\": []\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2022-0536",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "src/net/http/h2_bundle.go",
+     "name": "http2ClientConn.roundTrip",
+     "hunk_ids": [
+      "H6"
+     ]
+    },
+    {
+     "id": "F2",
+     "path": "src/net/http/h2_bundle.go",
+     "name": "http2FrameWriteRequest.isControl",
+     "hunk_ids": [
+      "H7"
+     ]
+    },
+    {
+     "id": "F3",
+     "path": "src/net/http/h2_bundle.go",
+     "name": "http2Server.maxQueuedControlFrames",
+     "hunk_ids": [
+      "H1"
+     ]
+    },
+    {
+     "id": "F4",
+     "path": "src/net/http/h2_bundle.go",
+     "name": "http2serverConn.processSettings",
+     "hunk_ids": [
+      "H5"
+     ]
+    },
+    {
+     "id": "F5",
+     "path": "src/net/http/h2_bundle.go",
+     "name": "http2serverConn.scheduleFrameWrite",
+     "hunk_ids": [
+      "H4"
+     ]
+    },
+    {
+     "id": "F6",
+     "path": "src/net/http/h2_bundle.go",
+     "name": "http2serverConn.serve",
+     "hunk_ids": [
+      "H2"
+     ]
+    },
+    {
+     "id": "F7",
+     "path": "src/net/http/h2_bundle.go",
+     "name": "http2serverConn.writeFrame",
+     "hunk_ids": [
+      "H3"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F5\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The decrement of queuedControlFrames on sending a control frame limits memory growth, fixing the unchecked queue that caused the reset\u2011flood DoS.\",\n      \"evidence_hunk_ids\": [\"H4\"]\n    },\n    {\n      \"candidate_id\": \"F6\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"A new check aborts the connection when queuedControlFrames exceeds maxQueuedControlFrames, addressing the missing limit that allowed unlimited memory allocation.\",\n      \"evidence_hunk_ids\": [\"H2\"]\n    },\n    {\n      \"candidate_id\": \"F7\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The increment of queuedControlFrames for each control frame (including RST_STREAM) introduces accounting that was previously absent, preventing the reset\u2011flood memory exhaustion.\",\n      \"evidence_hunk_ids\": [\"H3\"]\n    },\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Only a comment URL change; unrelated to the reset\u2011flood vulnerability.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F2\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Adds a helper method to classify control frames; supporting the fix but not itself vulnerable.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F3\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Introduces a configurable limit constant; a new feature rather than the location of the original flaw.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F4\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Adds a TODO comment about SETTINGS ACK handling; unrelated to the memory\u2011exhaustion issue.\",\n      \"evidence_hunk_ids\": []\n    }\n  ],\n  \"public_entry_points\": []\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2022-0621",
+   "candidates": [],
+   "answers": [],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2022-0646",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "service/sms/api.go",
+     "name": "ImportAppCatalogInput.GoString",
+     "hunk_ids": [
+      "H16"
+     ]
+    },
+    {
+     "id": "F2",
+     "path": "service/sms/api.go",
+     "name": "SMS.GetAppReplicationConfigurationWithContext",
+     "hunk_ids": [
+      "H3"
+     ]
+    },
+    {
+     "id": "F3",
+     "path": "service/sms/api.go",
+     "name": "SMS.GetAppValidationConfiguration",
+     "hunk_ids": [
+      "H3"
+     ]
+    },
+    {
+     "id": "F4",
+     "path": "service/sms/api.go",
+     "name": "SMS.GetAppValidationConfigurationWithContext",
+     "hunk_ids": [
+      "H3"
+     ]
+    },
+    {
+     "id": "F5",
+     "path": "service/sms/api.go",
+     "name": "SMS.GetAppValidationOutputWithContext",
+     "hunk_ids": [
+      "H3"
+     ]
+    },
+    {
+     "id": "F6",
+     "path": "service/sms/api.go",
+     "name": "ServerLaunchConfiguration.SetEc2KeyName",
+     "hunk_ids": [
+      "H27"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"The changes add struct definitions and string helpers unrelated to S3 encryption.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F2\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"The diff adds a new API request method for GetAppValidationConfiguration, unrelated to cryptographic handling.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F3\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Duplicate of F2, only API scaffolding, not related to the vulnerable encryption client.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F4\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Again API request scaffolding for validation configuration, not the S3 Crypto SDK.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F5\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Similar API method addition, unrelated to the cryptographic algorithm issue.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F6\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Adds a setter for an EC2 launch configuration field, unrelated to encryption.\",\n      \"evidence_hunk_ids\": []\n    }\n  ],\n  \"public_entry_points\": []\n}"
+   ],
+   "truncated": true,
+   "dropped": [
+    "S3Target.SetConnectionName",
+    "AppSummary.SetImportedAppId",
+    "AppSummary.SetLatestReplicationTime",
+    "AppSummary.SetLaunchConfigurationStatus",
+    "AppSummary.SetName",
+    "AppSummary.SetReplicationConfigurationStatus",
+    "AppValidationConfiguration.GoString",
+    "AppValidationConfiguration.SetAppValidationStrategy",
+    "AppValidationConfiguration.SetName",
+    "AppValidationConfiguration.SetSsmValidationParameters",
+    "AppValidationConfiguration.SetValidationId",
+    "AppValidationConfiguration.String",
+    "AppValidationConfiguration.Validate",
+    "AppValidationOutput.GoString",
+    "AppValidationOutput.SetSsmOutput",
+    "AppValidationOutput.String",
+    "DeleteAppValidationConfigurationInput.GoString",
+    "DeleteAppValidationConfigurationInput.SetAppId",
+    "DeleteAppValidationConfigurationInput.String",
+    "DeleteAppValidationConfigurationInput.Validate",
+    "DeleteAppValidationConfigurationOutput.GoString",
+    "DeleteAppValidationConfigurationOutput.String",
+    "DryRunOperationException.Code",
+    "DryRunOperationException.Error",
+    "DryRunOperationException.GoString",
+    "DryRunOperationException.Message",
+    "DryRunOperationException.OrigErr",
+    "DryRunOperationException.RequestID",
+    "DryRunOperationException.StatusCode",
+    "DryRunOperationException.String",
+    "GetAppLaunchConfigurationOutput.SetAppId",
+    "GetAppLaunchConfigurationOutput.SetAutoLaunch",
+    "GetAppReplicationConfigurationOutput.SetServerGroupReplicationConfigurations",
+    "GetAppValidationConfigurationInput.GoString",
+    "GetAppValidationConfigurationInput.SetAppId",
+    "GetAppValidationConfigurationInput.String",
+    "GetAppValidationConfigurationInput.Validate",
+    "GetAppValidationConfigurationOutput.GoString",
+    "GetAppValidationConfigurationOutput.SetAppValidationConfigurations",
+    "GetAppValidationConfigurationOutput.SetServerGroupValidationConfigurations",
+    "GetAppValidationConfigurationOutput.String",
+    "GetAppValidationOutputInput.GoString",
+    "GetAppValidationOutputInput.SetAppId",
+    "GetAppValidationOutputInput.String",
+    "GetAppValidationOutputInput.Validate",
+    "GetAppValidationOutputOutput.GoString",
+    "GetAppValidationOutputOutput.SetValidationOutputList",
+    "GetAppValidationOutputOutput.String",
+    "GetServersOutput.SetServerList",
+    "ImportAppCatalogInput.SetRoleName",
+    "ImportAppCatalogInput.String",
+    "ImportAppCatalogOutput.GoString",
+    "ImportAppCatalogOutput.String",
+    "NotificationContext.GoString",
+    "NotificationContext.SetStatus",
+    "NotificationContext.SetStatusMessage",
+    "NotificationContext.SetValidationId",
+    "NotificationContext.String",
+    "NotifyAppValidationOutputInput.GoString",
+    "NotifyAppValidationOutputInput.SetAppId",
+    "NotifyAppValidationOutputInput.SetNotificationContext",
+    "NotifyAppValidationOutputInput.String",
+    "NotifyAppValidationOutputInput.Validate",
+    "NotifyAppValidationOutputOutput.GoString",
+    "NotifyAppValidationOutputOutput.String",
+    "PutAppLaunchConfigurationInput.SetAppId",
+    "PutAppLaunchConfigurationInput.SetAutoLaunch",
+    "PutAppLaunchConfigurationInput.Validate",
+    "PutAppValidationConfigurationInput.GoString",
+    "PutAppValidationConfigurationInput.SetAppId",
+    "PutAppValidationConfigurationInput.SetAppValidationConfigurations",
+    "PutAppValidationConfigurationInput.SetServerGroupValidationConfigurations",
+    "PutAppValidationConfigurationInput.String",
+    "PutAppValidationConfigurationInput.Validate",
+    "PutAppValidationConfigurationOutput.GoString",
+    "PutAppValidationConfigurationOutput.String",
+    "S3Location.GoString",
+    "S3Location.Validate",
+    "SMS.DeleteAppReplicationConfigurationWithContext",
+    "SMS.DeleteAppValidationConfiguration",
+    "SMS.DeleteAppValidationConfigurationRequest",
+    "SMS.DeleteAppValidationConfigurationWithContext",
+    "SMS.GetAppValidationConfigurationRequest",
+    "SMS.GetAppValidationOutput",
+    "SMS.GetAppValidationOutputRequest",
+    "SMS.ImportAppCatalog",
+    "SMS.ImportAppCatalogRequest",
+    "SMS.ImportAppCatalogWithContext",
+    "SMS.ListAppsWithContext",
+    "SMS.NotifyAppValidationOutput",
+    "SMS.NotifyAppValidationOutputRequest",
+    "SMS.NotifyAppValidationOutputWithContext",
+    "SMS.PutAppReplicationConfigurationWithContext",
+    "SMS.PutAppValidationConfiguration",
+    "SMS.PutAppValidationConfigurationRequest",
+    "SMS.PutAppValidationConfigurationWithContext",
+    "SMS.StartAppReplicationWithContext",
+    "SMS.StartOnDemandAppReplication",
+    "SMS.StartOnDemandAppReplicationRequest",
+    "SMS.StartOnDemandAppReplicationWithContext",
+    "SSMOutput.GoString",
+    "SSMOutput.SetS3Location",
+    "SSMOutput.String",
+    "SSMValidationParameters.GoString",
+    "SSMValidationParameters.SetCommand",
+    "SSMValidationParameters.SetExecutionTimeoutSeconds",
+    "SSMValidationParameters.SetInstanceId",
+    "SSMValidationParameters.SetOutputS3BucketName",
+    "SSMValidationParameters.SetScriptType",
+    "SSMValidationParameters.SetSource",
+    "SSMValidationParameters.String",
+    "SSMValidationParameters.Validate",
+    "ServerGroupLaunchConfiguration.GoString",
+    "ServerGroupLaunchConfiguration.Validate",
+    "ServerGroupValidationConfiguration.GoString",
+    "ServerGroupValidationConfiguration.SetServerGroupId",
+    "ServerGroupValidationConfiguration.SetServerValidationConfigurations",
+    "ServerGroupValidationConfiguration.String",
+    "ServerGroupValidationConfiguration.Validate",
+    "ServerLaunchConfiguration.SetConfigureScript",
+    "ServerLaunchConfiguration.SetConfigureScriptType",
+    "ServerLaunchConfiguration.SetIamInstanceProfileName",
+    "ServerLaunchConfiguration.Validate",
+    "ServerValidationConfiguration.GoString",
+    "ServerValidationConfiguration.SetName",
+    "ServerValidationConfiguration.SetServer",
+    "ServerValidationConfiguration.SetServerValidationStrategy",
+    "ServerValidationConfiguration.SetUserDataValidationParameters",
+    "ServerValidationConfiguration.SetValidationId",
+    "ServerValidationConfiguration.String",
+    "ServerValidationConfiguration.Validate",
+    "ServerValidationOutput.GoString",
+    "ServerValidationOutput.SetServer",
+    "ServerValidationOutput.String",
+    "Source.GoString",
+    "Source.SetS3Location",
+    "Source.String",
+    "Source.Validate",
+    "StartOnDemandAppReplicationInput.GoString",
+    "StartOnDemandAppReplicationInput.SetAppId",
+    "StartOnDemandAppReplicationInput.SetDescription",
+    "StartOnDemandAppReplicationInput.String",
+    "StartOnDemandAppReplicationInput.Validate",
+    "StartOnDemandAppReplicationOutput.GoString",
+    "StartOnDemandAppReplicationOutput.String",
+    "UserData.SetS3Location",
+    "UserData.Validate",
+    "UserDataValidationParameters.GoString",
+    "UserDataValidationParameters.SetScriptType",
+    "UserDataValidationParameters.SetSource",
+    "UserDataValidationParameters.String",
+    "UserDataValidationParameters.Validate",
+    "ValidationOutput.GoString",
+    "ValidationOutput.SetAppValidationOutput",
+    "ValidationOutput.SetLatestValidationTime",
+    "ValidationOutput.SetName",
+    "ValidationOutput.SetServerValidationOutput",
+    "ValidationOutput.SetStatus",
+    "ValidationOutput.SetStatusMessage",
+    "ValidationOutput.SetValidationId",
+    "ValidationOutput.String",
+    "newErrorDryRunOperationException"
+   ]
+  },
+  {
+   "id": "GO-2022-0945",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "crypter.go",
+     "name": "JsonWebEncryption.Decrypt",
+     "hunk_ids": [
+      "H1",
+      "H2"
+     ]
+    },
+    {
+     "id": "F2",
+     "path": "crypter.go",
+     "name": "JsonWebEncryption.DecryptMulti",
+     "hunk_ids": [
+      "H2"
+     ]
+    },
+    {
+     "id": "F3",
+     "path": "signing.go",
+     "name": "JsonWebSignature.Verify",
+     "hunk_ids": [
+      "H3",
+      "H4"
+     ]
+    },
+    {
+     "id": "F4",
+     "path": "signing.go",
+     "name": "JsonWebSignature.VerifyMulti",
+     "hunk_ids": [
+      "H3",
+      "H4"
+     ]
+    },
+    {
+     "id": "F5",
+     "path": "cipher/cbc_hmac.go",
+     "name": "resize",
+     "hunk_ids": [
+      "H8"
+     ]
+    },
+    {
+     "id": "F6",
+     "path": "cipher/ecdh_es.go",
+     "name": "DeriveECDHES",
+     "hunk_ids": [
+      "H11"
+     ]
+    },
+    {
+     "id": "F7",
+     "path": "asymmetric.go",
+     "name": "ecDecrypterSigner.decryptKey",
+     "hunk_ids": [
+      "H12"
+     ]
+    },
+    {
+     "id": "F8",
+     "path": "cipher/ecdh_es.go",
+     "name": "DeriveECDHES",
+     "hunk_ids": [
+      "H13"
+     ]
+    },
+    {
+     "id": "F9",
+     "path": "jwk.go",
+     "name": "rawJsonWebKey.ecPublicKey",
+     "hunk_ids": [
+      "H14"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F3\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The fix adds a check that rejects payloads with more than one signature and introduces VerifyMulti, addressing the ambiguity of which signature is valid.\",\n      \"evidence_hunk_ids\": [\"H3\"]\n    },\n    {\n      \"candidate_id\": \"F4\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"Same changes as F3: added multi\u2011signature handling and error for multiple signatures, fixing the validation bypass.\",\n      \"evidence_hunk_ids\": [\"H3\"]\n    },\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Changes relate to decryption recipient limits, unrelated to signature validation.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F2\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Duplicate of decryption logic; not related to signature verification.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F5\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Adjusts resize function signature; unrelated to the reported issue.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F6\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Adds size limit check for ECDH\u2011ES output; not related to signature validation bypass.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F7\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Adds curve validation for public key in epk header; unrelated to signature validation.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F8\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Adds panic for mismatched curves in ECDH\u2011ES; not related to signature validation.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F9\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Improves EC key validation errors; unrelated to signature validation bypass.\",\n      \"evidence_hunk_ids\": []\n    }\n  ],\n  \"public_entry_points\": [\"Verify\"]\n}"
+   ],
+   "truncated": true,
+   "dropped": [
+    "cbcAEAD.Open",
+    "cbcAEAD.Seal",
+    "cbcAEAD.computeAuthTag",
+    "padBuffer",
+    "NewConcatKDF"
+   ]
+  },
+  {
+   "id": "GO-2022-0956",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "decode.go",
+     "name": "allowedAliasRatio",
+     "hunk_ids": [
+      "H1"
+     ]
+    },
+    {
+     "id": "F2",
+     "path": "decode.go",
+     "name": "decoder.unmarshal",
+     "hunk_ids": [
+      "H1"
+     ]
+    },
+    {
+     "id": "F3",
+     "path": "scannerc.go",
+     "name": "yaml_parser_increase_flow_level",
+     "hunk_ids": [
+      "H2"
+     ]
+    },
+    {
+     "id": "F4",
+     "path": "scannerc.go",
+     "name": "yaml_parser_roll_indent",
+     "hunk_ids": [
+      "H3"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"The change only adds a helper function and constants; it does not modify the vulnerable alias\u2011expansion logic.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F2\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The conditional that previously used a fixed 0.99 ratio is replaced with allowedAliasRatio, directly addressing the excessive aliasing resource consumption.\",\n      \"evidence_hunk_ids\": [\"H1\"]\n    },\n    {\n      \"candidate_id\": \"F3\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Introduces a max flow level check, which is unrelated to the alias\u2011expansion CPU/memory issue described in the advisory.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F4\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Adds a limit on indentation depth, unrelated to the YAML alias resource consumption problem.\",\n      \"evidence_hunk_ids\": []\n    }\n  ],\n  \"public_entry_points\": []\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2022-0962",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "pkg/strvals/parser.go",
+     "name": "setIndex",
+     "hunk_ids": [
+      "H1"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The added guard `if index > MaxIndex` prevents creating excessively large arrays, directly fixing the out\u2011of\u2011memory panic described in the advisory.\",\n      \"evidence_hunk_ids\": [\"H1\"]\n    }\n  ],\n  \"public_entry_points\": []\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2022-1052",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "evidence/pool.go",
+     "name": "Pool.AddEvidence",
+     "hunk_ids": [
+      "H4"
+     ]
+    },
+    {
+     "id": "F2",
+     "path": "evidence/pool.go",
+     "name": "Pool.AddEvidenceFromConsensus",
+     "hunk_ids": [
+      "H5"
+     ]
+    },
+    {
+     "id": "F3",
+     "path": "evidence/pool.go",
+     "name": "Pool.CheckEvidence",
+     "hunk_ids": [
+      "H6"
+     ]
+    },
+    {
+     "id": "F4",
+     "path": "evidence/pool.go",
+     "name": "Pool.ReportConflictingVotes",
+     "hunk_ids": [
+      "H5"
+     ]
+    },
+    {
+     "id": "F5",
+     "path": "evidence/pool.go",
+     "name": "Pool.flushConsensusBuffer",
+     "hunk_ids": [
+      "H8"
+     ]
+    },
+    {
+     "id": "F6",
+     "path": "evidence/pool.go",
+     "name": "Pool.processConsensusBuffer",
+     "hunk_ids": [
+      "H8"
+     ]
+    },
+    {
+     "id": "F7",
+     "path": "evidence/pool.go",
+     "name": "Pool.updateState",
+     "hunk_ids": [
+      "H8"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Only changes log level from Info to Debug, unrelated to timestamp handling.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F2\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Renames AddEvidenceFromConsensus to ReportConflictingVotes and adds documentation; does not address timestamp logic.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F3\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Simplifies error propagation but does not modify evidence creation or timestamp handling.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F4\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Duplicate of F2; same refactor without fixing timestamp logic.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F5\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"Replaces flushConsensusBuffer with processConsensusBuffer that now sets evidence timestamps based on block height, fixing the uncontrolled resource consumption issue.\",\n      \"evidence_hunk_ids\": [\"H8\"]\n    },\n    {\n      \"candidate_id\": \"F6\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Contains the new correct implementation; the vulnerability was in the removed flushConsensusBuffer, not in this new method.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F7\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Only adds state\u2011updating helper and the new processConsensusBuffer; not the original vulnerable code.\",\n      \"evidence_hunk_ids\": []\n    }\n  ],\n  \"public_entry_points\": [\n    \"AddEvidenceFromConsensus\"\n  ]\n}"
+   ],
+   "truncated": true,
+   "dropped": [
+    "State.tryAddVote",
+    "NewPool",
+    "Pool.Update",
+    "Pool.removePendingEvidence",
+    "EmptyEvidencePool.AddEvidence",
+    "EmptyEvidencePool.AddEvidenceFromConsensus",
+    "EmptyEvidencePool.CheckEvidence",
+    "EmptyEvidencePool.ReportConflictingVotes",
+    "EmptyEvidencePool.Update"
+   ]
+  },
+  {
+   "id": "GO-2022-1178",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "transport.go",
+     "name": "Transport.refreshToken",
+     "hunk_ids": [
+      "H1"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The fix removes detailed request information from the error returned by Transport.refreshToken, preventing the JWT from being leaked in error messages.\",\n      \"evidence_hunk_ids\": [\"H1\"]\n    }\n  ],\n  \"public_entry_points\": [\"Transport\"]\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2023-1494",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "gosqljson.go",
+     "name": "ExecDb",
+     "hunk_ids": [
+      "H3"
+     ]
+    },
+    {
+     "id": "F2",
+     "path": "gosqljson.go",
+     "name": "QueryDbToArray",
+     "hunk_ids": [
+      "H1"
+     ]
+    },
+    {
+     "id": "F3",
+     "path": "gosqljson.go",
+     "name": "QueryDbToMap",
+     "hunk_ids": [
+      "H2"
+     ]
+    },
+    {
+     "id": "F4",
+     "path": "gosqljson.go",
+     "name": "SqlSafe",
+     "hunk_ids": [
+      "H4"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The fix adds a call to SqlSafe(&sqlStatement) to sanitize the query before execution, indicating the function previously allowed unsafe SQL injection.\",\n      \"evidence_hunk_ids\": [\"H3\"]\n    },\n    {\n      \"candidate_id\": \"F2\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"A SqlSafe(&sqlStatement) call was inserted before the query, showing the original code was vulnerable to injection.\",\n      \"evidence_hunk_ids\": [\"H1\"]\n    },\n    {\n      \"candidate_id\": \"F3\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The added SqlSafe(&sqlStatement) call sanitizes the statement, implying the function previously permitted injection.\",\n      \"evidence_hunk_ids\": [\"H2\"]\n    },\n    {\n      \"candidate_id\": \"F4\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"SqlSafe is the new sanitization helper itself, not the source of the vulnerability.\",\n      \"evidence_hunk_ids\": []\n    }\n  ],\n  \"public_entry_points\": [\n    \"ExecDb\",\n    \"QueryDbToArray\",\n    \"QueryDbToMap\"\n  ]\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2023-1573",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "images/archive/importer.go",
+     "name": "onUntarJSON",
+     "hunk_ids": [
+      "H1"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The fix adds a size limit (jsonLimit) to the reader used by onUntarJSON, preventing unbounded reads that caused memory exhaustion.\",\n      \"evidence_hunk_ids\": [\"H1\"]\n    }\n  ],\n  \"public_entry_points\": []\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2023-1574",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "oci/spec_opts.go",
+     "name": "WithAdditionalGIDs",
+     "hunk_ids": [
+      "H10"
+     ]
+    },
+    {
+     "id": "F2",
+     "path": "oci/spec_opts.go",
+     "name": "WithAppendAdditionalGroups",
+     "hunk_ids": [
+      "H11"
+     ]
+    },
+    {
+     "id": "F3",
+     "path": "oci/spec_opts.go",
+     "name": "WithUIDGID",
+     "hunk_ids": [
+      "H3"
+     ]
+    },
+    {
+     "id": "F4",
+     "path": "oci/spec_opts.go",
+     "name": "WithUser",
+     "hunk_ids": [
+      "H2"
+     ]
+    },
+    {
+     "id": "F5",
+     "path": "oci/spec_opts.go",
+     "name": "WithUserID",
+     "hunk_ids": [
+      "H4",
+      "H5",
+      "H6"
+     ]
+    },
+    {
+     "id": "F6",
+     "path": "oci/spec_opts.go",
+     "name": "WithUsername",
+     "hunk_ids": [
+      "H7",
+      "H8",
+      "H9"
+     ]
+    },
+    {
+     "id": "F7",
+     "path": "oci/spec_opts.go",
+     "name": "ensureAdditionalGids",
+     "hunk_ids": [
+      "H1"
+     ]
+    },
+    {
+     "id": "F8",
+     "path": "pkg/cri/server/container_create_linux.go",
+     "name": "criService.containerSpecOpts",
+     "hunk_ids": [
+      "H12"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The fix clears s.Process.User.AdditionalGids and defers ensureAdditionalGids to guarantee proper supplementary group setup.\",\n      \"evidence_hunk_ids\": [\"H10\"]\n    },\n    {\n      \"candidate_id\": \"F2\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Adds a new API for appending groups but does not modify the core handling of supplementary groups.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F3\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"Introduces defer ensureAdditionalGids and resets AdditionalGids to nil to correctly initialize supplementary groups.\",\n      \"evidence_hunk_ids\": [\"H3\"]\n    },\n    {\n      \"candidate_id\": \"F4\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"Adds defer ensureAdditionalGids and clears AdditionalGids, fixing the missing primary GID in the supplementary list.\",\n      \"evidence_hunk_ids\": [\"H2\"]\n    },\n    {\n      \"candidate_id\": \"F5\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"Restructures user lookup to reset AdditionalGids and defer ensureAdditionalGids, ensuring proper group handling.\",\n      \"evidence_hunk_ids\": [\"H4\", \"H5\", \"H6\"]\n    },\n    {\n      \"candidate_id\": \"F6\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"Adds defer ensureAdditionalGids and clears AdditionalGids, fixing supplementary group initialization for usernames.\",\n      \"evidence_hunk_ids\": [\"H7\", \"H8\", \"H9\"]\n    },\n    {\n      \"candidate_id\": \"F7\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"Introduces ensureAdditionalGids which adds the primary GID to the additional GID list, directly addressing the vulnerability.\",\n      \"evidence_hunk_ids\": [\"H1\"]\n    },\n    {\n      \"candidate_id\": \"F8\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Only updates the call site to include WithSupplementalGroups; the vulnerability fix resides in the spec option functions.\",\n      \"evidence_hunk_ids\": []\n    }\n  ],\n  \"public_entry_points\": [\n    \"WithAdditionalGIDs\",\n    \"WithUIDGID\",\n    \"WithUser\",\n    \"WithUserID\",\n    \"WithUsername\",\n    \"WithAppendAdditionalGroups\"\n  ]\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2023-1595",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "p256_asm.go",
+     "name": "P256Point.ScalarBaseMult",
+     "hunk_ids": [
+      "H2"
+     ]
+    },
+    {
+     "id": "F2",
+     "path": "p256_asm.go",
+     "name": "P256Point.ScalarMult",
+     "hunk_ids": [
+      "H3"
+     ]
+    },
+    {
+     "id": "F3",
+     "path": "p256_asm.go",
+     "name": "p256OrdReduce",
+     "hunk_ids": [
+      "H1"
+     ]
+    },
+    {
+     "id": "F4",
+     "path": "p256_ordinv.go",
+     "name": "p256OrdInverse",
+     "hunk_ids": [
+      "H4"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The fix adds a call to p256OrdReduce before the scalar multiplication, indicating the original function used unreduced scalars.\",\n      \"evidence_hunk_ids\": [\"H2\"]\n    },\n    {\n      \"candidate_id\": \"F2\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"A reduction step is inserted before the scalar multiplication, showing the prior code operated on unreduced scalars.\",\n      \"evidence_hunk_ids\": [\"H3\"]\n    },\n    {\n      \"candidate_id\": \"F3\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"This candidate introduces the reduction helper itself; it is not the location of the original multiplication bug.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F4\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"The added reduction is for inversion, unrelated to the multiplication vulnerability described.\",\n      \"evidence_hunk_ids\": []\n    }\n  ],\n  \"public_entry_points\": [\n    \"P256Point.ScalarBaseMult\",\n    \"P256Point.ScalarMult\"\n  ]\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2023-1600",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "analyze.go",
+     "name": "Teler.checkCommonWebAttack",
+     "hunk_ids": [
+      "H1",
+      "H2"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The fix adds calls to `removeSpecialChars` when processing the request URI and body, directly addressing the improper handling of CR/LF and tab characters that caused arbitrary JavaScript execution.\",\n      \"evidence_hunk_ids\": [\"H1\", \"H2\"]\n    }\n  ],\n  \"public_entry_points\": []\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2023-1623",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "pkg/fieldpath/paved.go",
+     "name": "Pave",
+     "hunk_ids": [
+      "H1"
+     ]
+    },
+    {
+     "id": "F2",
+     "path": "pkg/fieldpath/paved.go",
+     "name": "PaveObject",
+     "hunk_ids": [
+      "H1"
+     ]
+    },
+    {
+     "id": "F3",
+     "path": "pkg/fieldpath/paved.go",
+     "name": "Paved.maxFieldPathIndexEnabled",
+     "hunk_ids": [
+      "H1"
+     ]
+    },
+    {
+     "id": "F4",
+     "path": "pkg/fieldpath/paved.go",
+     "name": "Paved.setValue",
+     "hunk_ids": [
+      "H2"
+     ]
+    },
+    {
+     "id": "F5",
+     "path": "pkg/fieldpath/paved.go",
+     "name": "WithMaxFieldPathIndex",
+     "hunk_ids": [
+      "H1"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Adds configuration options but does not modify the SetValue logic that caused the OOM issue.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F2\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Same as F1; only introduces option handling, unrelated to the vulnerable indexing behavior.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F3\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Defines a helper method for the new option but does not address the original unchecked index in SetValue.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F4\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"Introduces a check against maxFieldPathIndex before writing to the array, directly fixing the unchecked index that caused out\u2011of\u2011memory panics.\",\n      \"evidence_hunk_ids\": [\"H2\"]\n    },\n    {\n      \"candidate_id\": \"F5\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Provides the WithMaxFieldPathIndex function; it supports the new limit but does not itself contain the vulnerable code.\",\n      \"evidence_hunk_ids\": []\n    }\n  ],\n  \"public_entry_points\": [\"SetValue\"]\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2023-1640",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "file/file.go",
+     "name": "BytesToFile",
+     "hunk_ids": [
+      "H3"
+     ]
+    },
+    {
+     "id": "F2",
+     "path": "file/file.go",
+     "name": "ClearFile",
+     "hunk_ids": [
+      "H4"
+     ]
+    },
+    {
+     "id": "F3",
+     "path": "file/file.go",
+     "name": "Create",
+     "hunk_ids": [
+      "H2"
+     ]
+    },
+    {
+     "id": "F4",
+     "path": "file/file.go",
+     "name": "IsExist",
+     "hunk_ids": [
+      "H1"
+     ]
+    },
+    {
+     "id": "F5",
+     "path": "file/file.go",
+     "name": "IsPathExist",
+     "hunk_ids": [
+      "H1"
+     ]
+    },
+    {
+     "id": "F6",
+     "path": "file/file.go",
+     "name": "IsShortcut",
+     "hunk_ids": [
+      "H2"
+     ]
+    },
+    {
+     "id": "F7",
+     "path": "file/file.go",
+     "name": "RemoveFile",
+     "hunk_ids": [
+      "H2"
+     ]
+    },
+    {
+     "id": "F8",
+     "path": "zip/unzip.go",
+     "name": "unzipFile",
+     "hunk_ids": [
+      "H5",
+      "H6"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"The changes only rename parameters and use a helper function, unrelated to path traversal.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F2\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Adds a new utility to clear a file; not related to unzip handling.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F3\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Refactors file creation logic and adds a shortcut check; does not address zip extraction.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F4\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Renames existence\u2011check function; no impact on zip extraction.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F5\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Duplicate of F4 with same rename; unrelated to the vulnerability.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F6\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Duplicate of F3; does not modify unzip logic.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F7\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Duplicate of F3; unrelated to path traversal fix.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F8\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"H5 adds sanitisation of the file name to prevent \\\"../\\\" traversal before joining with the destination directory.\",\n      \"evidence_hunk_ids\": [\"H5\"]\n    }\n  ],\n  \"public_entry_points\": []\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2023-1713",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "server/http_download.go",
+     "name": "Server.Download",
+     "hunk_ids": [
+      "H1"
+     ]
+    },
+    {
+     "id": "F2",
+     "path": "server/http_header.go",
+     "name": "Server.CrossOrigin",
+     "hunk_ids": [
+      "H2"
+     ]
+    },
+    {
+     "id": "F3",
+     "path": "server/http_upload.go",
+     "name": "Server.upload",
+     "hunk_ids": [
+      "H3"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"The change adds a check for \\\"..\\\" in the download handler, which does not address the upload path\u2011traversal issue described in the advisory.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F2\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"The modification only sets a response header for CORS and is unrelated to file path handling.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F3\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The fix sanitizes the uploaded path by removing dots, directly addressing the path\u2011traversal vulnerability in the upload endpoint.\",\n      \"evidence_hunk_ids\": [\"H3\"]\n    }\n  ],\n  \"public_entry_points\": [\"Server.upload\"]\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2023-1765",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "abe/cpabe/tkn20/internal/tkn/bk.go",
+     "name": "EncryptCCA",
+     "hunk_ids": [
+      "H1"
+     ]
+    },
+    {
+     "id": "F2",
+     "path": "blindsign/blindrsa/blindrsa.go",
+     "name": "RSAVerifier.Blind",
+     "hunk_ids": [
+      "H2"
+     ]
+    },
+    {
+     "id": "F3",
+     "path": "kem/frodo/frodo640shake/frodo.go",
+     "name": "PublicKey.EncapsulateTo",
+     "hunk_ids": [
+      "H3"
+     ]
+    },
+    {
+     "id": "F4",
+     "path": "kem/kyber/kyber1024/kyber.go",
+     "name": "PublicKey.EncapsulateTo",
+     "hunk_ids": [
+      "H4"
+     ]
+    },
+    {
+     "id": "F5",
+     "path": "kem/kyber/kyber512/kyber.go",
+     "name": "PublicKey.EncapsulateTo",
+     "hunk_ids": [
+      "H5"
+     ]
+    },
+    {
+     "id": "F6",
+     "path": "kem/kyber/kyber768/kyber.go",
+     "name": "PublicKey.EncapsulateTo",
+     "hunk_ids": [
+      "H6"
+     ]
+    },
+    {
+     "id": "F7",
+     "path": "kem/kyber/templates/pkg.templ.go",
+     "name": "PublicKey.EncapsulateTo",
+     "hunk_ids": [
+      "H7"
+     ]
+    },
+    {
+     "id": "F8",
+     "path": "kem/sike/sikep434/sike.go",
+     "name": "scheme.Encapsulate",
+     "hunk_ids": [
+      "H8"
+     ]
+    },
+    {
+     "id": "F9",
+     "path": "kem/sike/sikep503/sike.go",
+     "name": "scheme.Encapsulate",
+     "hunk_ids": [
+      "H9"
+     ]
+    },
+    {
+     "id": "F10",
+     "path": "kem/sike/sikep751/sike.go",
+     "name": "scheme.Encapsulate",
+     "hunk_ids": [
+      "H10"
+     ]
+    },
+    {
+     "id": "F11",
+     "path": "kem/sike/templates/pkg.templ.go",
+     "name": "scheme.Encapsulate",
+     "hunk_ids": [
+      "H11"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The fix adds error handling for the randomness read, addressing the missing error check described in the advisory.\",\n      \"evidence_hunk_ids\": [\"H1\"]\n    },\n    {\n      \"candidate_id\": \"F2\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The change replaces a direct random read with io.ReadFull and checks the error, fixing the unchecked randomness source.\",\n      \"evidence_hunk_ids\": [\"H2\"]\n    },\n    {\n      \"candidate_id\": \"F3\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The patch adds an error check after cryptoRand.Read for the encapsulation seed, correcting the vulnerability.\",\n      \"evidence_hunk_ids\": [\"H3\"]\n    },\n    {\n      \"candidate_id\": \"F4\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"Error handling is added to the seed generation, fixing the unchecked randomness issue.\",\n      \"evidence_hunk_ids\": [\"H4\"]\n    },\n    {\n      \"candidate_id\": \"F5\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The update introduces error checking for the random seed read, addressing the advisory problem.\",\n      \"evidence_hunk_ids\": [\"H5\"]\n    },\n    {\n      \"candidate_id\": \"F6\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"Adds proper error handling for cryptoRand.Read, fixing the missing check.\",\n      \"evidence_hunk_ids\": [\"H6\"]\n    },\n    {\n      \"candidate_id\": \"F7\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"Introduces error handling for the random seed read, correcting the vulnerability.\",\n      \"evidence_hunk_ids\": [\"H7\"]\n    },\n    {\n      \"candidate_id\": \"F8\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"Changes the direct read to a checked read with error propagation, fixing the unchecked randomness.\",\n      \"evidence_hunk_ids\": [\"H8\"]\n    },\n    {\n      \"candidate_id\": \"F9\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"Adds error handling for the seed generation read, addressing the advisory issue.\",\n      \"evidence_hunk_ids\": [\"H9\"]\n    },\n    {\n      \"candidate_id\": \"F10\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"Introduces error checking for the random seed read, fixing the missing error check.\",\n      \"evidence_hunk_ids\": [\"H10\"]\n    },\n    {\n      \"candidate_id\": \"F11\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"Adds proper error handling for the seed read, correcting the vulnerability.\",\n      \"evidence_hunk_ids\": [\"H11\"]\n    }\n  ],\n  \"public_entry_points\": [\n    \"EncryptCCA\",\n    \"RSAVerifier.Blind\",\n    \"PublicKey.EncapsulateTo\",\n    \"scheme.Encapsulate\"\n  ]\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2023-1992",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "openpgp/clearsign/clearsign.go",
+     "name": "Decode",
+     "hunk_ids": [
+      "H1",
+      "H2"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The fix adds checks that reject a start\u2011line suffix and disallow control/Unicode characters or unexpected header keys, directly addressing the malformed\u2011message acceptance bug.\",\n      \"evidence_hunk_ids\": [\"H1\", \"H2\"]\n    }\n  ],\n  \"public_entry_points\": [\"Decode\"]\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2023-2024",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "core/record/envelope.go",
+     "name": "ConsumeEnvelope",
+     "hunk_ids": [
+      "H1"
+     ]
+    },
+    {
+     "id": "F2",
+     "path": "p2p/protocol/identify/id.go",
+     "name": "idService.consumeMessage",
+     "hunk_ids": [
+      "H2"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"The change only adjusts error return values and does not affect how peer records are stored, so it is unrelated to the OOM issue.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F2\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The fix adds validation of the signed peer record's public key and peer ID before calling `ConsumePeerRecord`, preventing arbitrary records from being stored and causing OOM.\",\n      \"evidence_hunk_ids\": [\"H2\"]\n    }\n  ],\n  \"public_entry_points\": [\n    \"idService.consumeMessage\"\n  ]\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2023-2077",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "protocol/socks/handshake.go",
+     "name": "HandleConnection0",
+     "hunk_ids": [
+      "H1"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"evidence_hunk_ids\": [\"H1\"],\n      \"is_vulnerable\": true,\n      \"rationale\": \"The fix adds a check that returns an error when the SOCKS5 authentication response is not successful, indicating the previous code allowed authentication bypass.\"\n    }\n  ],\n  \"public_entry_points\": []\n}"
+   ],
+   "truncated": false,
+   "dropped": []
+  },
+  {
+   "id": "GO-2023-2101",
+   "candidates": [
+    {
+     "id": "F1",
+     "path": "ecc/bls12-377/g1.go",
+     "name": "G1Jac.mulWindowed",
+     "hunk_ids": [
+      "H1"
+     ]
+    },
+    {
+     "id": "F2",
+     "path": "ecc/bls12-377/g2.go",
+     "name": "G2Jac.mulWindowed",
+     "hunk_ids": [
+      "H2"
+     ]
+    },
+    {
+     "id": "F3",
+     "path": "ecc/bls12-377/internal/fptower/e12.go",
+     "name": "E12.ExpGLV",
+     "hunk_ids": [
+      "H3"
+     ]
+    },
+    {
+     "id": "F4",
+     "path": "ecc/bls12-378/g1.go",
+     "name": "G1Jac.mulWindowed",
+     "hunk_ids": [
+      "H4"
+     ]
+    },
+    {
+     "id": "F5",
+     "path": "ecc/bls12-378/g2.go",
+     "name": "G2Jac.mulWindowed",
+     "hunk_ids": [
+      "H5"
+     ]
+    },
+    {
+     "id": "F6",
+     "path": "ecc/bls12-378/internal/fptower/e12.go",
+     "name": "E12.ExpGLV",
+     "hunk_ids": [
+      "H6"
+     ]
+    },
+    {
+     "id": "F7",
+     "path": "ecc/bls12-381/g1.go",
+     "name": "G1Jac.mulWindowed",
+     "hunk_ids": [
+      "H7"
+     ]
+    },
+    {
+     "id": "F8",
+     "path": "ecc/bls12-381/g2.go",
+     "name": "G2Jac.mulWindowed",
+     "hunk_ids": [
+      "H8"
+     ]
+    },
+    {
+     "id": "F9",
+     "path": "ecc/bls12-381/internal/fptower/e12.go",
+     "name": "E12.ExpGLV",
+     "hunk_ids": [
+      "H9"
+     ]
+    },
+    {
+     "id": "F10",
+     "path": "ecc/bls24-315/g1.go",
+     "name": "G1Jac.mulWindowed",
+     "hunk_ids": [
+      "H10"
+     ]
+    },
+    {
+     "id": "F11",
+     "path": "ecc/bls24-315/g2.go",
+     "name": "G2Jac.mulWindowed",
+     "hunk_ids": [
+      "H11"
+     ]
+    },
+    {
+     "id": "F12",
+     "path": "ecc/bls24-315/internal/fptower/e24.go",
+     "name": "E24.ExpGLV",
+     "hunk_ids": [
+      "H12"
+     ]
+    },
+    {
+     "id": "F13",
+     "path": "ecc/bls24-317/g1.go",
+     "name": "G1Jac.mulWindowed",
+     "hunk_ids": [
+      "H13"
+     ]
+    },
+    {
+     "id": "F14",
+     "path": "ecc/bls24-317/g2.go",
+     "name": "G2Jac.mulWindowed",
+     "hunk_ids": [
+      "H14"
+     ]
+    },
+    {
+     "id": "F15",
+     "path": "ecc/bls24-317/internal/fptower/e24.go",
+     "name": "E24.ExpGLV",
+     "hunk_ids": [
+      "H15"
+     ]
+    },
+    {
+     "id": "F16",
+     "path": "ecc/bn254/g1.go",
+     "name": "G1Jac.mulWindowed",
+     "hunk_ids": [
+      "H16"
+     ]
+    },
+    {
+     "id": "F17",
+     "path": "ecc/bn254/g2.go",
+     "name": "G2Jac.mulWindowed",
+     "hunk_ids": [
+      "H17"
+     ]
+    },
+    {
+     "id": "F18",
+     "path": "ecc/bw6-633/g1.go",
+     "name": "G1Jac.mulWindowed",
+     "hunk_ids": [
+      "H19"
+     ]
+    }
+   ],
+   "answers": [
+    "{\n  \"items\": [\n    {\n      \"candidate_id\": \"F1\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"The change only adds handling for negative scalars in a multiplication routine, unrelated to exponentiation.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F2\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Similar scalar\u2011negation fix for G2 multiplication, not related to exponentiation logic.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F3\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"The loop bound was changed from a fixed half\u2011length to a dynamic hiWordIndex based on the maximum bit length, fixing incorrect exponentiation.\",\n      \"evidence_hunk_ids\": [\"H3\"]\n    },\n    {\n      \"candidate_id\": \"F4\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Duplicate of F1 for another curve, only adds negative\u2011scalar handling.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F5\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Duplicate of F2 for another curve, unrelated to exponentiation.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F6\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"Adjusts the loop start to use the computed hiWordIndex, correcting the exponentiation iteration range.\",\n      \"evidence_hunk_ids\": [\"H6\"]\n    },\n    {\n      \"candidate_id\": \"F7\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Same negative\u2011scalar fix as F1, not an exponentiation change.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F8\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Same negative\u2011scalar fix as F2, unrelated to exponentiation.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F9\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"Loop bound updated to hiWordIndex, fixing the exponentiation algorithm.\",\n      \"evidence_hunk_ids\": [\"H9\"]\n    },\n    {\n      \"candidate_id\": \"F10\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Negative\u2011scalar handling added to multiplication, not exponentiation.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F11\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Same kind of scalar\u2011negation fix as other mulWindowed methods.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F12\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"Introduces maxBit and hiWordIndex to correctly bound the exponentiation loop.\",\n      \"evidence_hunk_ids\": [\"H12\"]\n    },\n    {\n      \"candidate_id\": \"F13\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Negative\u2011scalar handling for G1 multiplication, unrelated to exponentiation.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F14\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Negative\u2011scalar handling for G2 multiplication, not an exponentiation fix.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F15\",\n      \"is_vulnerable\": true,\n      \"rationale\": \"Loop start changed to hiWordIndex, correcting the exponentiation computation.\",\n      \"evidence_hunk_ids\": [\"H15\"]\n    },\n    {\n      \"candidate_id\": \"F16\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Adds negative\u2011scalar support to G1 multiplication, not related to exponentiation.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F17\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Adds negative\u2011scalar support to G2 multiplication, unrelated to exponentiation.\",\n      \"evidence_hunk_ids\": []\n    },\n    {\n      \"candidate_id\": \"F18\",\n      \"is_vulnerable\": false,\n      \"rationale\": \"Negative\u2011scalar handling for G1 multiplication on bw6\u2011633 curve, not an exponentiation change.\",\n      \"evidence_hunk_ids\": []\n    }\n  ],\n  \"public_entry_points\": [\"ExpGLV\"]\n}"
+   ],
+   "truncated": true,
+   "dropped": [
+    "E12.ExpGLV",
+    "G2Jac.mulWindowed",
+    "E6.ExpGLV",
+    "G1Jac.mulWindowed",
+    "G2Jac.mulWindowed",
+    "E6.ExpGLV",
+    "G1Jac.mulWindowed",
+    "G2Jac.mulWindowed",
+    "E6.ExpGLV",
+    "G1Jac.mulWindowed"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,242 @@
+[
+  {
+    "rule": "identical",
+    "fallback": true,
+    "overall": {
+      "reports": 60,
+      "true_positives": 92,
+      "false_positives": 275,
+      "false_negatives": 26,
+      "precision": 0.2506811989100817,
+      "recall": 0.7796610169491526,
+      "f1": 0.37938144329896906,
+      "miss_rate": 0.16666666666666666,
+      "exact_match": 0.45,
+      "precision_ci95": null,
+      "recall_ci95": null,
+      "f1_ci95": null
+    },
+    "high_reports": 36,
+    "high_share": 0.6,
+    "high": {
+      "reports": 36,
+      "true_positives": 38,
+      "false_positives": 9,
+      "false_negatives": 15,
+      "precision": 0.8085106382978723,
+      "recall": 0.7169811320754716,
+      "f1": 0.76,
+      "miss_rate": 0.16666666666666666,
+      "exact_match": 0.6388888888888888,
+      "precision_ci95": null,
+      "recall_ci95": null,
+      "f1_ci95": null
+    },
+    "low_reasons": {
+      "the two models disagree": 14,
+      "prompt truncated to the token budget": 7,
+      "an empty symbol set": 2,
+      "extractor answer failed validation": 1
+    }
+  },
+  {
+    "rule": "identical",
+    "fallback": false,
+    "overall": {
+      "reports": 60,
+      "true_positives": 76,
+      "false_positives": 31,
+      "false_negatives": 42,
+      "precision": 0.7102803738317757,
+      "recall": 0.6440677966101694,
+      "f1": 0.6755555555555555,
+      "miss_rate": 0.21666666666666667,
+      "exact_match": 0.4666666666666667,
+      "precision_ci95": null,
+      "recall_ci95": null,
+      "f1_ci95": null
+    },
+    "high_reports": 36,
+    "high_share": 0.6,
+    "high": {
+      "reports": 36,
+      "true_positives": 38,
+      "false_positives": 9,
+      "false_negatives": 15,
+      "precision": 0.8085106382978723,
+      "recall": 0.7169811320754716,
+      "f1": 0.76,
+      "miss_rate": 0.16666666666666666,
+      "exact_match": 0.6388888888888888,
+      "precision_ci95": null,
+      "recall_ci95": null,
+      "f1_ci95": null
+    },
+    "low_reasons": {
+      "the two models disagree": 14,
+      "prompt truncated to the token budget": 7,
+      "an empty symbol set": 2,
+      "extractor answer failed validation": 1
+    }
+  },
+  {
+    "rule": "subset",
+    "fallback": true,
+    "overall": {
+      "reports": 60,
+      "true_positives": 91,
+      "false_positives": 253,
+      "false_negatives": 27,
+      "precision": 0.26453488372093026,
+      "recall": 0.7711864406779662,
+      "f1": 0.393939393939394,
+      "miss_rate": 0.16666666666666666,
+      "exact_match": 0.4666666666666667,
+      "precision_ci95": null,
+      "recall_ci95": null,
+      "f1_ci95": null
+    },
+    "high_reports": 49,
+    "high_share": 0.8166666666666667,
+    "high": {
+      "reports": 49,
+      "true_positives": 64,
+      "false_positives": 27,
+      "false_negatives": 23,
+      "precision": 0.7032967032967034,
+      "recall": 0.735632183908046,
+      "f1": 0.7191011235955056,
+      "miss_rate": 0.14285714285714285,
+      "exact_match": 0.5102040816326531,
+      "precision_ci95": null,
+      "recall_ci95": null,
+      "f1_ci95": null
+    },
+    "low_reasons": {
+      "prompt truncated to the token budget": 7,
+      "an empty symbol set": 2,
+      "extractor answer failed validation": 1,
+      "the two models disagree": 1
+    }
+  },
+  {
+    "rule": "subset",
+    "fallback": false,
+    "overall": {
+      "reports": 60,
+      "true_positives": 77,
+      "false_positives": 36,
+      "false_negatives": 41,
+      "precision": 0.6814159292035398,
+      "recall": 0.652542372881356,
+      "f1": 0.6666666666666666,
+      "miss_rate": 0.21666666666666667,
+      "exact_match": 0.4666666666666667,
+      "precision_ci95": null,
+      "recall_ci95": null,
+      "f1_ci95": null
+    },
+    "high_reports": 49,
+    "high_share": 0.8166666666666667,
+    "high": {
+      "reports": 49,
+      "true_positives": 64,
+      "false_positives": 27,
+      "false_negatives": 23,
+      "precision": 0.7032967032967034,
+      "recall": 0.735632183908046,
+      "f1": 0.7191011235955056,
+      "miss_rate": 0.14285714285714285,
+      "exact_match": 0.5102040816326531,
+      "precision_ci95": null,
+      "recall_ci95": null,
+      "f1_ci95": null
+    },
+    "low_reasons": {
+      "prompt truncated to the token budget": 7,
+      "an empty symbol set": 2,
+      "extractor answer failed validation": 1,
+      "the two models disagree": 1
+    }
+  },
+  {
+    "rule": "overlap",
+    "fallback": true,
+    "overall": {
+      "reports": 60,
+      "true_positives": 91,
+      "false_positives": 262,
+      "false_negatives": 27,
+      "precision": 0.2577903682719547,
+      "recall": 0.7711864406779662,
+      "f1": 0.38641188959660294,
+      "miss_rate": 0.16666666666666666,
+      "exact_match": 0.4666666666666667,
+      "precision_ci95": null,
+      "recall_ci95": null,
+      "f1_ci95": null
+    },
+    "high_reports": 45,
+    "high_share": 0.75,
+    "high": {
+      "reports": 45,
+      "true_positives": 62,
+      "false_positives": 17,
+      "false_negatives": 20,
+      "precision": 0.7848101265822784,
+      "recall": 0.7560975609756098,
+      "f1": 0.7701863354037267,
+      "miss_rate": 0.13333333333333333,
+      "exact_match": 0.5555555555555556,
+      "precision_ci95": null,
+      "recall_ci95": null,
+      "f1_ci95": null
+    },
+    "low_reasons": {
+      "prompt truncated to the token budget": 7,
+      "the two models disagree": 5,
+      "an empty symbol set": 2,
+      "extractor answer failed validation": 1
+    }
+  },
+  {
+    "rule": "overlap",
+    "fallback": false,
+    "overall": {
+      "reports": 60,
+      "true_positives": 77,
+      "false_positives": 34,
+      "false_negatives": 41,
+      "precision": 0.6936936936936937,
+      "recall": 0.652542372881356,
+      "f1": 0.6724890829694323,
+      "miss_rate": 0.21666666666666667,
+      "exact_match": 0.45,
+      "precision_ci95": null,
+      "recall_ci95": null,
+      "f1_ci95": null
+    },
+    "high_reports": 45,
+    "high_share": 0.75,
+    "high": {
+      "reports": 45,
+      "true_positives": 62,
+      "false_positives": 17,
+      "false_negatives": 20,
+      "precision": 0.7848101265822784,
+      "recall": 0.7560975609756098,
+      "f1": 0.7701863354037267,
+      "miss_rate": 0.13333333333333333,
+      "exact_match": 0.5555555555555556,
+      "precision_ci95": null,
+      "recall_ci95": null,
+      "f1_ci95": null
+    },
+    "low_reasons": {
+      "prompt truncated to the token budget": 7,
+      "the two models disagree": 5,
+      "an empty symbol set": 2,
+      "extractor answer failed validation": 1
+    }
+  }
+]

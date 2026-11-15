@@ -1,0 +1,13 @@
+{
+  "patchsight_commit": "319b75399cdb7d25987dc0313874a772393b5f80",
+  "llama_cpp_tag": "b12024",
+  "model_repo": "ggml-org/Qwen3.8-27B-GGUF",
+  "model_revision": "c1869413dece09109e55b7dcc2c77ef382b0d0bd",
+  "model_file": "Qwen3.8-27B-Q4_K_M.gguf",
+  "model_sha256": "d15d4b6de55f662ac40e867702d31afe738d032fa06b829b2b1a21a49d4a48ee",
+  "gpus": [
+    "Tesla T4, 15360 MiB",
+    "Tesla T4, 15360 MiB"
+  ],
+  "split": "all"
+}

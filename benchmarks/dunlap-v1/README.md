@@ -15,6 +15,21 @@ For each of the 280 GoVulnDB reports in the benchmark:
 No source code is included. Candidates were produced by PatchSight's own pipeline: diffs fetched
 from GitHub, then hunks mapped to definitions with tree-sitter.
 
+## LLM runs
+
+Each `extraction-<tag>.json` is a replay bundle for one extraction run. For every report it holds:
+
+- the candidates as the model saw them: ID, function name, path, and the hunk IDs each may cite;
+- the model's raw answers, in order (`null` where the provider rejected an attempt).
+
+`make reproduce` re-runs the live validator and attempt logic on those answers, and checks the
+scores against `docs/reports/extraction-dunlap-{all,dev,test}-<tag>.json`. No prompts are
+stored, because prompts contain the fix diffs.
+
+| Tag | Model | Prompt | Where it ran |
+|---|---|---|---|
+| `extract-v1-qwen3.8-27b-q4km` | `ggml-org/Qwen3.8-27B-GGUF@c1869413` (Q4_K_M) | `extract-v1` | Kaggle, 2× T4, llama.cpp `b12024` (`docs/reports/kaggle-run-extract-v1-qwen3.8-27b-q4km.json`) |
+
 ## Sources and licences
 
 - **Benchmark and ground truth:** Dunlap et al., "Pairing Security Advisories with Vulnerable
@@ -31,4 +46,5 @@ from GitHub, then hunks mapped to definitions with tree-sitter.
 ```bash
 python -m patchsight.pipeline fetch-dunlap
 GITHUB_TOKEN=... python -m patchsight.pipeline export-dunlap-bundle
+GITHUB_TOKEN=... python -m patchsight.pipeline export-replay <tag>   # needs that run's response cache
 ```

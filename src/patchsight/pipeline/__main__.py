@@ -14,7 +14,14 @@ import typer
 
 from patchsight import db
 from patchsight.pipeline import build_db, fix_sample, week1
-from patchsight.pipeline.benchmarks import bundle, changedfuncs, dunlap, extraction, splits
+from patchsight.pipeline.benchmarks import (
+    bundle,
+    changedfuncs,
+    dunlap,
+    extraction,
+    replay,
+    splits,
+)
 from patchsight.pipeline.diffs.github import GitHubClient
 from patchsight.pipeline.extract.prompt import load_template
 from patchsight.pipeline.ingest import ghsa_repo, snapshot
@@ -507,6 +514,36 @@ def export_dunlap_bundle_command(
     typer.echo(f"{DUNLAP_BUNDLE}: {len(exported.reports)} reports, {count} candidates")
 
 
+@app.command("export-replay")
+def export_replay_command(
+    tag: Annotated[str, typer.Argument(help="Report tag, e.g. extract-v1-qwen3.8-27b-q4km.")],
+    root: Root = Path(),
+    role: Annotated[str, typer.Option(help="Model role the run used.")] = "kaggle_extractor",
+    config: Annotated[Path, typer.Option(help="LLM config.")] = Path("configs/llm.toml"),
+    prompt: Annotated[Path, typer.Option(help="Prompt template.")] = Path("prompts/extract_v1.md"),
+    cache: Annotated[Path, typer.Option(help="Cache root.")] = Path(".cache"),
+) -> None:
+    """Write a replay bundle from the response cache only (never calls a model)."""
+    token = _github_token()
+    manifest = snapshot.load_manifest(root / MANIFEST)
+    reports = dunlap.load(snapshot.verify(manifest.file(DUNLAP_DATA), root))
+    advisories = extraction.load_advisories(snapshot.verify(manifest.file(DUNLAP_ADVISORIES), root))
+    llm_config = load_config(root / config)
+    counter = HfTokenizer(llm_config.tokenizer, root / cache / "tokenizer")
+    github = GitHubClient(root / cache / "http" / "github", token=token)
+    try:
+        exported = replay.export(
+            github, root / cache / "llm", llm_config, role, load_template(root / prompt), counter,
+            reports, advisories,
+        )  # fmt: skip
+    finally:
+        github.close()
+    target = root / DUNLAP_BUNDLE.parent / f"extraction-{tag}.json"
+    replay.save(exported, target)
+    answers = sum(len(r.answers) for r in exported.reports)
+    typer.echo(f"{target.relative_to(root)}: {len(exported.reports)} reports, {answers} answers")
+
+
 @app.command("reproduce")
 def reproduce_command(root: Root = Path()) -> None:
     """Recompute the benchmark tables offline from committed files. No network, no API key."""
@@ -536,6 +573,30 @@ def reproduce_command(root: Root = Path()) -> None:
         typer.echo(f"MISMATCH with {BASELINE_REPORT}", err=True)
         raise typer.Exit(code=1)
     typer.echo(f"\nMatches {BASELINE_REPORT} exactly.")
+
+    truth = {r.id: set(r.symbols) for r in data.reports}
+    for path in sorted((root / DUNLAP_BUNDLE.parent).glob("extraction-*.json")):
+        tag = path.stem.removeprefix("extraction-")
+        run = replay.load(path)
+        typer.echo(f"\nLLM extraction, {run.model}, {run.prompt_version} (replayed offline)\n")
+        typer.echo(f"{'part':<6} {'reports':>7} {'TP':>4} {'P':>6} {'R':>6} {'F1':>6}  outcomes")
+        for part in ("all", "dev", "test"):
+            s, statuses = replay.replay(run, truth, frozen.split.ids(part))
+            outcomes = ", ".join(f"{k} {v}" for k, v in statuses.items())
+            typer.echo(
+                f"{part:<6} {s.reports:>7} {s.true_positives:>4} {s.precision:>6.3f} "
+                f"{s.recall:>6.3f} {s.f1:>6.3f}  {outcomes}"
+            )
+            report_path = root / "docs" / "reports" / f"extraction-dunlap-{part}-{tag}.json"
+            published = extraction.ExtractionRun.model_validate_json(
+                report_path.read_text(encoding="utf-8")
+            )
+            expected = (published.extraction.true_positives, published.extraction.false_positives,
+                        published.extraction.false_negatives, published.status)  # fmt: skip
+            if (s.true_positives, s.false_positives, s.false_negatives, statuses) != expected:
+                typer.echo(f"MISMATCH with {report_path.relative_to(root)}", err=True)
+                raise typer.Exit(code=1)
+        typer.echo(f"\nMatches docs/reports/extraction-dunlap-*-{tag}.json exactly.")
 
 
 @app.command("package-db")

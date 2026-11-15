@@ -17,7 +17,7 @@ from patchsight.pipeline.extract.prompt import load_template
 from patchsight.pipeline.ingest import ghsa_repo, snapshot
 from patchsight.pipeline.ingest.aliases import alias_groups
 from patchsight.pipeline.ingest.osv import Advisory, Excluded, Quarantined, normalise_dump
-from patchsight.pipeline.llm.client import client_for
+from patchsight.pipeline.llm.client import QuotaExhaustedError, RateLimitedError, client_for
 from patchsight.pipeline.llm.config import load_config
 from patchsight.pipeline.llm.tokens import HfTokenizer
 from patchsight.pipeline.pypi import PyPIClient
@@ -337,6 +337,12 @@ def dunlap_extract_command(
             split_sha256=frozen.sha256,
             progress=lambda done, total: typer.echo(f"extracted {done}/{total}", err=True),
         )  # fmt: skip
+    except (QuotaExhaustedError, RateLimitedError) as stopped:
+        typer.echo(f"stopped: {stopped}", err=True)
+        typer.echo(
+            "Every answer so far is cached. Re-run the same command later to resume.", err=True
+        )
+        raise typer.Exit(code=2) from None
     finally:
         github.close()
     lines = [

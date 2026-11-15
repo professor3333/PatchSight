@@ -211,3 +211,35 @@ def test_tokenizer_file_must_match_its_pin(tmp_path: Path) -> None:
     path.write_text("{}")
     with pytest.raises(TokenizerMismatchError):
         HfTokenizer(pin, tmp_path)
+
+
+@pytest.mark.parametrize(
+    ("message", "expected"),
+    [
+        ("Rate limit on tokens per day (TPD): Limit 200000, Used 197108 for org_01abcDEF234567",
+         "QuotaExhaustedError"),
+        ("Rate limit on tokens per minute (TPM): Limit 8000", "RateLimitedError"),
+    ],
+)  # fmt: skip
+def test_rate_limits_map_to_typed_redacted_errors(
+    monkeypatch: pytest.MonkeyPatch, message: str, expected: str
+) -> None:
+    openai = pytest.importorskip("openai")
+    import httpx
+
+    from patchsight.pipeline.llm import client as client_module
+
+    class FakeCompletions:
+        def create(self, **_: object) -> object:
+            response = httpx.Response(429, request=httpx.Request("POST", "https://x/v1"))
+            raise openai.RateLimitError(message, response=response, body=None)
+
+    class FakeOpenAI:
+        def __init__(self, **_: object) -> None:
+            self.chat = type("Chat", (), {"completions": FakeCompletions()})()
+
+    monkeypatch.setattr(openai, "OpenAI", FakeOpenAI)
+    backend = client_module.openai_backend("https://x/v1", "key")
+    with pytest.raises(getattr(client_module, expected)) as raised:
+        backend(_request())
+    assert "org_01abcDEF234567" not in str(raised.value)

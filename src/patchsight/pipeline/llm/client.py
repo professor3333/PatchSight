@@ -37,6 +37,10 @@ class QuotaExhaustedError(RuntimeError):
     """The provider's daily request cap for this run is used up."""
 
 
+class RateLimitedError(RuntimeError):
+    """The provider kept refusing for rate limits after the SDK's own retries."""
+
+
 class ProviderRejectedError(RuntimeError):
     """The provider refused this one generation, for example output that failed its schema
     check or a request too large. Worth one retry; it does not mean the provider is down."""
@@ -161,13 +165,19 @@ class RateLimiter:
 def openai_backend(base_url: str, api_key: str) -> Backend:
     """A backend that calls any OpenAI-compatible endpoint with strict JSON-schema output."""
     # Imported lazily: offline tests never need the SDK.
-    from openai import APIStatusError, BadRequestError, OpenAI
+    from openai import APIStatusError, BadRequestError, OpenAI, RateLimitError
 
     client = OpenAI(base_url=base_url, api_key=api_key, max_retries=4, timeout=180.0)
 
     def call(request: LLMRequest) -> tuple[str, int, int]:
         try:
             return _create(request)
+        except RateLimitError as error:
+            # Per-minute limits are retried by the SDK; a daily cap cannot be waited out.
+            message = redact(str(error))
+            if "per day" in message.lower():
+                raise QuotaExhaustedError(message[:300]) from None
+            raise RateLimitedError(message[:300]) from None
         except (BadRequestError, APIStatusError) as error:
             if isinstance(error, BadRequestError) or error.status_code == 413:
                 raise ProviderRejectedError(redact(str(error))[:300]) from error

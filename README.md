@@ -14,7 +14,7 @@ your scan is a database lookup and static analysis, with no model and no server.
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
 [![LLM at scan time: none](https://img.shields.io/badge/LLM_at_scan_time-none-2ea44f)](docs/adr/0002-no-llm-at-scan-time.md)
 [![Benchmark: reproducible](https://img.shields.io/badge/benchmark-reproducible-8957e5)](#results-at-a-glance)
-[![Symbol database](https://img.shields.io/github/v/release/professor3333/PatchSight?label=symbol%20database&color=4338CA)](https://github.com/professor3333/PatchSight/releases/latest)
+[![Symbol database](https://img.shields.io/github/v/release/professor3333/PatchSight?filter=db-*&label=symbol%20database&color=4338CA)](https://github.com/professor3333/PatchSight/releases)
 
 [Quick start](#quick-start) · [Results](#results-at-a-glance) · [How it works](#how-it-works) · [Status](#project-status) · [Design](docs/proposal.md)
 

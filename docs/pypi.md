@@ -1,0 +1,66 @@
+# PatchSight
+
+**Know which vulnerable Python dependencies your code actually calls.**
+
+[![PyPI](https://img.shields.io/pypi/v/patchsight?color=4338CA)](https://pypi.org/project/patchsight/)
+[![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-3776AB?logo=python&logoColor=white)](https://pypi.org/project/patchsight/)
+[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue)](https://github.com/professor3333/PatchSight/blob/main/LICENSE)
+[![ci](https://github.com/professor3333/PatchSight/actions/workflows/ci.yml/badge.svg)](https://github.com/professor3333/PatchSight/actions/workflows/ci.yml)
+
+Dependency scanners flag a package *version* as vulnerable. PatchSight checks whether your code references the vulnerable *functions*.
+
+An LLM reads each PyPI security fix offline and records which functions carry the bug. Your scan looks those functions up and checks your code with static analysis: **no LLM, no server, and your code never leaves your machine.** Only package names and versions are sent to [OSV](https://osv.dev).
+
+## Quick start
+
+```bash
+pip install patchsight
+
+patchsight db update      # download the latest symbol database (SHA-256 verified)
+patchsight scan .         # scan ./requirements.txt and the code under .
+```
+
+| Option | What it does |
+|:---|:---|
+| `--requirements PATH` | Scan a different lockfile |
+| `--format json` | Machine-readable output |
+| `--fail-on called` | Exit 1 if any alert is CALLED: a CI gate (`unknown` also fails on UNKNOWN) |
+| `--db PATH` | Use a specific database file (or set `PATCHSIGHT_DB`) |
+| `patchsight db info` | Show which database a scan uses, and its age |
+
+## Verdicts
+
+| | Verdict | Meaning |
+|:---:|:---|:---|
+| 🔴 | **CALLED** | A reference in your code resolves to a vulnerable function, its class, or an entry point that reaches it. **Fix these first.** |
+| 🟢 | **IMPORTED, NOT CALLED** | The package is imported, but no vulnerable symbol is referenced. Given only for high-confidence data. |
+| ⚪ | **NOT IMPORTED** | Your code never imports the package directly. It may still be used through other dependencies. |
+| 🟡 | **UNKNOWN** | No symbol data, only low-confidence data, or dynamic code the scanner can't follow. |
+
+**Fail towards noise, never towards silence.** Every alert is shown. Low-confidence data can raise an alert to CALLED but never lower it, and "not called" covers only direct use that can be resolved statically. PatchSight supports triage; it doesn't judge whether your deployment is vulnerable.
+
+## Results
+
+On the Go benchmark of Dunlap et al. (DIMVA 2024), 280 vulnerability reports:
+
+| System | Precision | Recall | F1 |
+|:---|:---:|:---:|:---:|
+| Every changed function (naive baseline, reproduced) | 0.225 | 0.893 | 0.360 |
+| Best open model in the paper (Mixtral 8x7B) | 0.60 | 0.74 | 0.66 |
+| **PatchSight: Qwen3.8-27B, 4-bit** | **0.751** | **0.621** | **0.680** |
+
+The F1 95% interval is 0.62 to 0.74. The reports and a one-command offline reproduction are [in the repository](https://github.com/professor3333/PatchSight#results-at-a-glance).
+
+## Status: early release
+
+- Parses `requirements.txt`, using exact `==` pins only. Unpinned packages are listed, not guessed.
+- The current symbol database ([`db-2026.11.14`](https://github.com/professor3333/PatchSight/releases/tag/db-2026.11.14)) covers 3,505 PyPI vulnerabilities with **fallback records**: every function the fix changed, at low confidence. Expect many UNKNOWN verdicts until LLM-extracted, high-confidence records are published.
+- Transitive use and dynamic code (`getattr` with a computed name, `importlib`, star imports) aren't analysed. They give UNKNOWN or NOT IMPORTED, never a false "not called".
+
+## Links
+
+- [Source, design and benchmark reports](https://github.com/professor3333/PatchSight)
+- [Symbol database releases](https://github.com/professor3333/PatchSight/releases)
+- [Issues](https://github.com/professor3333/PatchSight/issues)
+
+Code: Apache-2.0. Advisory data: [OSV.dev](https://osv.dev), the [GitHub Advisory Database](https://github.com/github/advisory-database) and the [PyPA Advisory Database](https://github.com/pypa/advisory-database), all CC BY 4.0. No third-party source code is redistributed.

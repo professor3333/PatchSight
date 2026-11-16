@@ -1,11 +1,29 @@
 [project]
 name = "patchsight"
-version = "0.0.1.dev0"
-description = "Symbol-level vulnerability triage for Python dependencies."
-readme = "README.md"
+version = "0.1.0"
+description = "Know which vulnerable Python dependencies your code actually calls: symbol-level triage, no LLM at scan time."
+readme = "docs/pypi.md"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
 requires-python = ">=3.12"
+authors = [{ name = "Niroj33" }]
+keywords = [
+    "security", "vulnerability", "dependencies", "supply-chain", "sca",
+    "static-analysis", "reachability", "osv", "pypi", "cli",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Security",
+    "Topic :: Software Development :: Quality Assurance",
+    "Typing :: Typed",
+]
 dependencies = [
     "httpx>=0.28.1",
     "packaging>=26.3",
@@ -16,6 +34,13 @@ dependencies = [
 
 [project.scripts]
 patchsight = "patchsight.cli:app"
+
+[project.urls]
+Homepage = "https://github.com/professor3333/PatchSight"
+Source = "https://github.com/professor3333/PatchSight"
+Issues = "https://github.com/professor3333/PatchSight/issues"
+Releases = "https://github.com/professor3333/PatchSight/releases"
+Benchmark = "https://github.com/professor3333/PatchSight#results-at-a-glance"
 
 [project.optional-dependencies]
 pipeline = [

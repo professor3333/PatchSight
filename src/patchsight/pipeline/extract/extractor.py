@@ -84,8 +84,11 @@ def extract(
     budget_tokens: int,
     counter: TokenCounter,
     max_hunk_lines: int,
+    max_candidates: int | None = None,
 ) -> ExtractionOutcome:
-    prompt = render(template, advisory, inputs, budget_tokens, counter, max_hunk_lines)
+    prompt = render(
+        template, advisory, inputs, budget_tokens, counter, max_hunk_lines, max_candidates
+    )
     base = {
         "advisory_id": advisory.id,
         "model": model.model,

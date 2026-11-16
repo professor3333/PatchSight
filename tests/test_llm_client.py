@@ -201,6 +201,26 @@ def test_prompt_budget_leaves_room_for_the_repair_round() -> None:
     assert config.prompt_budget("m") == 3100
 
 
+def test_candidate_limit_follows_the_output_limit() -> None:
+    from patchsight.pipeline.llm.config import LLMConfig
+
+    def config(**budget: int) -> LLMConfig:
+        return LLMConfig.model_validate(
+            {
+                "providers": {"p": {"base_url": "u", "api_key_env": "K",
+                                    "tokens_per_minute": 8000, "requests_per_day": 10}},
+                "models": {"m": {"provider": "p", "model": "x", "max_output_tokens": 1500,
+                                 "seed": 1}},
+                "budget": {"max_prompt_tokens": 4600, "max_hunk_lines": 80, **budget},
+                "tokenizer": {"repo": "r", "revision": "v", "sha256": "s"},
+            }
+        )  # fmt: skip
+
+    assert config().candidate_limit("m") is None  # off unless configured
+    assert config(output_tokens_per_candidate=105).candidate_limit("m") == 14  # 1,500 // 105
+    assert config(output_tokens_per_candidate=5000).candidate_limit("m") == 1
+
+
 def test_tokenizer_file_must_match_its_pin(tmp_path: Path) -> None:
     pytest.importorskip("tokenizers")
     from patchsight.pipeline.llm.tokens import HfTokenizer, TokenizerConfig, TokenizerMismatchError

@@ -102,6 +102,7 @@ def export(
 ) -> ReplayBundle:
     model = config.models[role]
     budget = config.prompt_budget(role)
+    limit = config.candidate_limit(role)
     exported = []
     for report in sorted(reports, key=lambda r: r.id):
         mappings = [
@@ -110,12 +111,13 @@ def export(
         ]
         inputs, known = candidate_inputs(mappings)
         prompt = render(
-            template, advisories[report.id], inputs, budget, counter, config.budget.max_hunk_lines
-        )
+            template, advisories[report.id], inputs, budget, counter,
+            config.budget.max_hunk_lines, limit,
+        )  # fmt: skip
         recorder = _Recorder(llm_cache, counter)
         extract(
             recorder, model, template, advisories[report.id], inputs, known, budget, counter,
-            config.budget.max_hunk_lines,
+            config.budget.max_hunk_lines, limit,
         )  # fmt: skip
         exported.append(
             ReplayReport(

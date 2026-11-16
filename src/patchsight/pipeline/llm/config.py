@@ -36,6 +36,10 @@ class BudgetConfig(BaseModel):
 
     max_prompt_tokens: int
     max_hunk_lines: int
+    # Output tokens one answered candidate needs (verdict, rationale, citations, and for
+    # reasoning models their reasoning). When set, a prompt holds at most
+    # max_output_tokens // this many candidates, so the answer fits the output limit.
+    output_tokens_per_candidate: int | None = None
 
 
 class LLMConfig(BaseModel):
@@ -62,6 +66,13 @@ class LLMConfig(BaseModel):
         if provider.input_tokens_per_minute is not None:
             limits.append(provider.input_tokens_per_minute - model.max_output_tokens - repair_note)
         return max(0, min(limits))
+
+    def candidate_limit(self, role: str) -> int | None:
+        """Most candidates whose answers fit the role's output limit, or None for no limit."""
+        per_candidate = self.budget.output_tokens_per_candidate
+        if per_candidate is None:
+            return None
+        return max(1, self.models[role].max_output_tokens // per_candidate)
 
 
 def load_config(path: Path) -> LLMConfig:

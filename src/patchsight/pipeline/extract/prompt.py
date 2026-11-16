@@ -4,9 +4,10 @@
   IDs, so validation is a set lookup and invented names cannot get through.
 * Untrusted text (the advisory and the code) goes inside tags. Any closing-tag sequence
   inside it is neutralised, so data cannot break out of its tag.
-* When the candidates exceed the token budget, they are ranked by BM25 against the
-  advisory text and kept in rank order until the budget is full. The result records
-  which candidates were dropped, so truncation is never silent.
+* When the candidates exceed the token budget, or the number of answers that fit the
+  output limit, they are ranked by BM25 against the advisory text and kept in rank order
+  until either limit is reached. The result records which candidates were dropped, so
+  truncation is never silent.
 """
 
 import math
@@ -143,8 +144,12 @@ def render(
     budget_tokens: int,
     counter: TokenCounter,
     max_hunk_lines: int,
+    max_candidates: int | None = None,
 ) -> RenderedPrompt:
-    """Render the prompt, keeping as many candidates as fit within ``budget_tokens``."""
+    """Render the prompt, keeping as many candidates as fit within ``budget_tokens``.
+
+    ``max_candidates`` caps the count as well, so the model's answer fits its output limit.
+    """
 
     def estimate(text: str) -> int:
         return counter.count(text)
@@ -175,7 +180,8 @@ def render(
     used = base_tokens
     for index in order:
         # The best-ranked candidate is always kept; others only while they fit.
-        if kept and used + costs[index] > budget_tokens:
+        full = max_candidates is not None and len(kept) >= max_candidates
+        if kept and (full or used + costs[index] > budget_tokens):
             continue
         kept.add(index)
         used += costs[index]

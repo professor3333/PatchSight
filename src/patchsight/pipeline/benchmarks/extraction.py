@@ -116,6 +116,7 @@ def run(
 ) -> ExtractionRun:
     model = config.models[role]
     budget = config.prompt_budget(role)
+    limit = config.candidate_limit(role)
     truth: dict[str, set[str]] = {}
     predicted: dict[str, set[str]] = {}
     naive: dict[str, set[str]] = {}
@@ -137,6 +138,7 @@ def run(
             budget,
             counter,
             config.budget.max_hunk_lines,
+            limit,
         )
         outcomes.append(outcome)
         truth[report.id] = set(report.symbols)

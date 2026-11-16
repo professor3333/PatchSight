@@ -102,6 +102,24 @@ def test_tight_budget_keeps_the_best_bm25_match_and_records_drops() -> None:
     assert set(rendered.dropped) == {"helper", "FormatDocs"}
 
 
+def test_candidate_limit_keeps_the_best_ranked_and_records_drops() -> None:
+    rendered = prompts.render(TEMPLATE, ADVISORY, INPUTS, 5000, CharEstimate(3.0), 80, 2)
+    assert [c.name for c in rendered.candidates] == ["ParseHeader", "helper"]
+    assert rendered.truncated
+    assert rendered.dropped == ("FormatDocs",)
+
+
+def test_a_limit_the_candidates_fit_changes_nothing() -> None:
+    unlimited = _render()
+    assert prompts.render(TEMPLATE, ADVISORY, INPUTS, 5000, CharEstimate(3.0), 80, 3) == unlimited
+    assert not unlimited.truncated
+
+
+def test_the_best_candidate_is_kept_even_with_a_zero_limit() -> None:
+    rendered = prompts.render(TEMPLATE, ADVISORY, INPUTS, 5000, CharEstimate(3.0), 80, 0)
+    assert [c.name for c in rendered.candidates] == ["ParseHeader"]
+
+
 def test_bm25_ranks_by_advisory_terms() -> None:
     order = prompts.bm25_rank("parse header buffer", ["format docs", "ParseHeader buffer"])
     assert order == [1, 0]
@@ -207,6 +225,19 @@ def test_extract_without_candidates_makes_no_call(tmp_path: Path) -> None:
     outcome = _extract(client, inputs=[])
     assert (outcome.status, outcome.calls) == ("no_candidates", 0)
     assert not seen
+
+
+def test_extract_applies_the_candidate_limit(tmp_path: Path) -> None:
+    one = json.dumps({"items": [{"candidate_id": "F1", "is_vulnerable": True,
+                                 "rationale": "Bounds fix.", "evidence_hunk_ids": ["H2"]}],
+                      "public_entry_points": []})  # fmt: skip
+    client, seen = _client(tmp_path, [one])
+    outcome = extract(
+        client, MODEL, TEMPLATE, ADVISORY, INPUTS, {"ParseHeader"}, 5000, CharEstimate(3.0), 80, 1
+    )
+    assert (outcome.status, outcome.candidates, outcome.truncated) == ("ok", 1, True)
+    assert outcome.dropped_candidates == ("helper", "FormatDocs")
+    assert 'id="F2"' not in seen[0].messages[1]["content"]
 
 
 def _rejecting_client(tmp_path: Path, script: list[str | None]) -> LLMClient:

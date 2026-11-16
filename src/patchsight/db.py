@@ -269,6 +269,23 @@ class SymbolDatabase:
         ).fetchone()
         return str(row[0]) if row else None
 
+    def identifiers_for(self, vulnerability: str) -> list[str]:
+        """Every advisory ID and alias that points at this vulnerability."""
+        rows = self._connection.execute(
+            "SELECT identifier FROM aliases WHERE vulnerability = ? ORDER BY identifier",
+            (vulnerability,),
+        ).fetchall()
+        return [str(r[0]) for r in rows]
+
+    def records_for(self, vulnerability: str) -> list[Record]:
+        """The vulnerability's records, one per affected package."""
+        packages = self._connection.execute(
+            "SELECT package FROM records WHERE vulnerability = ? ORDER BY package",
+            (vulnerability,),
+        ).fetchall()
+        found = (self.record(vulnerability, str(p[0])) for p in packages)
+        return [r for r in found if r is not None]
+
     def record(self, vulnerability: str, package: str) -> Record | None:
         row = self._connection.execute(
             "SELECT * FROM records WHERE vulnerability = ? AND package = ?",

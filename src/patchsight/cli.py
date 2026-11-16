@@ -128,3 +128,34 @@ def scan(
     failing = {"called": {"CALLED"}, "unknown": {"CALLED", "UNKNOWN"}}.get(fail_on, set())
     if any(a.verdict in failing for a in alerts):
         raise typer.Exit(code=1)
+
+
+@app.command()
+def explain(
+    identifier: Annotated[str, typer.Argument(help="Advisory ID: GHSA, PYSEC or CVE.")],
+    database: Annotated[
+        Path | None,
+        typer.Option("--db", help="Symbol database (default: the one 'db update' downloaded)."),
+    ] = None,
+    output: Annotated[str, typer.Option("--format", help="text or json.")] = "text",
+) -> None:
+    """Show why the database lists the symbols it does for an advisory, with evidence."""
+    from patchsight.db import DatabaseError, SymbolDatabase
+    from patchsight.scan import explain as explaining
+    from patchsight.scan.dbcache import default_db_path
+
+    try:
+        opened = SymbolDatabase(database or default_db_path())
+    except DatabaseError as error:
+        typer.echo(f"error: {error}; run 'patchsight db update' or pass --db", err=True)
+        raise typer.Exit(code=2) from None
+    try:
+        vulnerability, identifiers, records = explaining.lookup(opened, identifier)
+        meta = opened.meta
+    finally:
+        opened.close()
+    canonical = explaining.normalise_identifier(identifier)
+    render = explaining.render_json if output == "json" else explaining.render_text
+    typer.echo(render(canonical, vulnerability, identifiers, records, meta))
+    if not records:
+        raise typer.Exit(code=1)

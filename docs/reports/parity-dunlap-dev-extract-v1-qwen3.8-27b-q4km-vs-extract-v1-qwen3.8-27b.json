@@ -1,0 +1,61 @@
+{
+  "reports": 60,
+  "reference_failed": [
+    "GO-2022-0621"
+  ],
+  "candidate_failed": [
+    "GO-2021-0057",
+    "GO-2022-0189",
+    "GO-2022-0621",
+    "GO-2022-0646",
+    "GO-2022-0945"
+  ],
+  "paired": 55,
+  "reference": {
+    "reports": 55,
+    "true_positives": 73,
+    "false_positives": 30,
+    "false_negatives": 31,
+    "precision": 0.7087378640776699,
+    "recall": 0.7019230769230769,
+    "f1": 0.7053140096618358,
+    "miss_rate": 0.2,
+    "exact_match": 0.4727272727272727,
+    "precision_ci95": null,
+    "recall_ci95": null,
+    "f1_ci95": null
+  },
+  "candidate": {
+    "reports": 55,
+    "true_positives": 75,
+    "false_positives": 45,
+    "false_negatives": 29,
+    "precision": 0.625,
+    "recall": 0.7211538461538461,
+    "f1": 0.6696428571428571,
+    "miss_rate": 0.18181818181818182,
+    "exact_match": 0.4727272727272727,
+    "precision_ci95": null,
+    "recall_ci95": null,
+    "f1_ci95": null
+  },
+  "f1_difference": 0.03567115251897868,
+  "f1_difference_ci95": {
+    "low": -0.0025164157464509264,
+    "high": 0.07862827270985899
+  },
+  "identical": 47,
+  "candidate_adds_only": 8,
+  "candidate_drops_only": 0,
+  "both_add_and_drop": 0,
+  "differing": [
+    "GO-2020-0009",
+    "GO-2020-0026",
+    "GO-2020-0028",
+    "GO-2021-0072",
+    "GO-2021-0085",
+    "GO-2021-0356",
+    "GO-2022-0190",
+    "GO-2022-0370"
+  ]
+}

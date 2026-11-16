@@ -167,6 +167,7 @@ The offline pipeline is `python -m patchsight.pipeline <command>`.
 | `build-db`, `package-db` | Build the symbol database, and package a release with its pointer |
 | `fetch-dunlap`, `dunlap-baseline`, `dunlap-extract` | The Go benchmark: the baseline and LLM extraction |
 | `export-replay`, `confidence-report`, `reproduce` | Replay committed model answers offline, compare confidence rules, rebuild the tables |
+| `parity-report` | Compare two runs of the same prompt, such as the self-hosted 4-bit model against the hosted one |
 
 </details>
 

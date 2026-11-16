@@ -9,6 +9,10 @@ its vulnerability, so the scanner can look up whatever ID OSV returns.
   Low-confidence symbols can make an alert ``CALLED`` but never ``IMPORTED_NOT_CALLED``.
 
 Stdlib ``sqlite3`` only, so the scan path can read it without any pipeline dependency.
+
+Compatibility: the ``extraction`` table (second-opinion model and the reason for the tier)
+was added within schema version 1. Readers that predate it never query it, so they keep
+working; this reader treats a database without it as having no such provenance.
 """
 
 import json
@@ -55,6 +59,13 @@ CREATE TABLE symbols (
     FOREIGN KEY (vulnerability, package) REFERENCES records (vulnerability, package)
 );
 CREATE INDEX symbols_by_record ON symbols (vulnerability, package);
+CREATE TABLE extraction (
+    vulnerability TEXT NOT NULL,
+    package TEXT NOT NULL,
+    second_opinion_model TEXT,
+    tier_reason TEXT,
+    PRIMARY KEY (vulnerability, package)
+);
 """
 
 
@@ -99,6 +110,9 @@ class Record(BaseModel):
     advisory_modified: datetime
     truncated: bool
     extracted_at: datetime
+    # LLM records only: the second model's ID (ADR 0005) and why the tier was chosen.
+    second_opinion_model: str | None = None
+    tier_reason: str | None = None
 
 
 def write(
@@ -137,6 +151,16 @@ def write(
                     record.extracted_at.isoformat(),
                 ),
             )
+            if record.second_opinion_model is not None or record.tier_reason is not None:
+                connection.execute(
+                    "INSERT INTO extraction VALUES (?, ?, ?, ?)",
+                    (
+                        record.vulnerability,
+                        record.package,
+                        record.second_opinion_model,
+                        record.tier_reason,
+                    ),
+                )
             connection.executemany(
                 "INSERT INTO symbols VALUES (?, ?, ?, ?, ?, ?, ?)",
                 [
@@ -175,6 +199,13 @@ class SymbolDatabase:
                 f"{path} has schema version {version}; this version of PatchSight reads "
                 f"version {SCHEMA_VERSION}. Update PatchSight or download a matching database."
             )
+        tables = {
+            name
+            for (name,) in self._connection.execute(
+                "SELECT name FROM sqlite_master WHERE type = 'table'"
+            )
+        }
+        self._has_extraction = "extraction" in tables
 
     def close(self) -> None:
         self._connection.close()
@@ -200,6 +231,15 @@ class SymbolDatabase:
             "WHERE vulnerability = ? AND package = ? ORDER BY qualified_name",
             (vulnerability, package),
         ).fetchall()
+        provenance = (
+            self._connection.execute(
+                "SELECT second_opinion_model, tier_reason FROM extraction "
+                "WHERE vulnerability = ? AND package = ?",
+                (vulnerability, package),
+            ).fetchone()
+            if self._has_extraction
+            else None
+        )
         return Record(
             vulnerability=row[0],
             package=row[1],
@@ -218,4 +258,6 @@ class SymbolDatabase:
                 Symbol(qualified_name=s[0], module=s[1], name=s[2], kind=s[3], path=s[4])
                 for s in symbols
             ),
+            second_opinion_model=provenance[0] if provenance else None,
+            tier_reason=provenance[1] if provenance else None,
         )

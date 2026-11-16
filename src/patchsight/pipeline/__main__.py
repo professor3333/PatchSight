@@ -6,6 +6,7 @@ import subprocess
 import tarfile
 import time
 import zipfile
+from collections import Counter
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Annotated
@@ -467,8 +468,19 @@ def build_db_command(
     out: Annotated[Path, typer.Option(help="Output path, without extension.")] = Path(
         "data/build/patchsight"
     ),
+    llm: Annotated[
+        Path | None, typer.Option(help="Extractor outcomes (pypi-extract JSONL) to merge.")
+    ] = None,
+    second: Annotated[
+        Path | None, typer.Option(help="Second-opinion outcomes (pypi-extract JSONL).")
+    ] = None,
 ) -> None:
-    """Build a symbol database of fallback records (needs GITHUB_TOKEN)."""
+    """Build the symbol database: fallback records, upgraded by LLM extraction when given
+    (needs GITHUB_TOKEN)."""
+    from patchsight.pipeline import llm_records
+
+    if second is not None and llm is None:
+        raise typer.BadParameter("--second needs --llm")
     token = _github_token()
     manifest, dump = _load_verified(root)
     by_id, groups = _github_fix_groups(dump, ids, sample, seed)
@@ -485,6 +497,11 @@ def build_db_command(
     finally:
         github.close()
         pypi.close()
+    merged: dict[str, int] = {}
+    if llm is not None:
+        primaries = llm_records.load(root / llm)
+        secondaries = llm_records.load(root / second) if second is not None else {}
+        records, merged = llm_records.apply(records, primaries, secondaries)
     commit = subprocess.run(  # noqa: S603 - fixed argv, no shell
         ["git", "-C", str(root), "rev-parse", "HEAD"],  # noqa: S607
         capture_output=True, text=True, check=False,
@@ -492,10 +509,12 @@ def build_db_command(
     meta = {
         "db_version": version,
         "built_at": datetime.now(UTC).isoformat(),
-        "builder": "fallback-v1",
+        "builder": "llm-v1" if llm is not None else "fallback-v1",
         "snapshot_sha256": dump_entry.sha256,
         "code_commit": commit,
     }
+    if llm is not None:
+        meta["records_by_tier"] = json.dumps(dict(Counter(r.confidence for r in records)))
     target = root / out
     db.write(target.with_name(target.name + ".sqlite"), records, aliases, meta)
     target.with_name(target.name + ".jsonl").write_text(build_db.jsonl(records), "utf-8")
@@ -503,9 +522,11 @@ def build_db_command(
         report.model_dump_json(indent=2) + "\n", "utf-8"
     )
     typer.echo(
-        f"db {version}: {report.records} records, {report.symbols} symbols from "
-        f"{report.groups} vulnerabilities; {report.status}"
+        f"db {version}: {len(records)} records, {sum(len(r.symbols) for r in records)} symbols "
+        f"from {report.groups} vulnerabilities; {report.status}"
     )
+    if merged:
+        typer.echo(f"LLM merge: {merged}")
 
 
 @app.command("export-dunlap-bundle")
@@ -849,6 +870,10 @@ def pypi_extract_command(
     max_minutes: Annotated[
         float | None, typer.Option(help="Start no new vulnerability after this many minutes.")
     ] = None,
+    eligible_from: Annotated[
+        Path | None,
+        typer.Option(help="Extractor outcomes: run only where a second opinion can help."),
+    ] = None,
 ) -> None:
     """Run LLM extraction on PyPI vulnerabilities (needs the model's key, and GITHUB_TOKEN
     unless --offline)."""
@@ -859,6 +884,13 @@ def pypi_extract_command(
     _, dump = _load_verified(root)
     by_id, groups = _github_fix_groups(dump, ids, sample, seed)
     suffix = ""
+    if eligible_from is not None:
+        from patchsight.pipeline import llm_records
+
+        primaries = llm_records.load(root / eligible_from)
+        eligible = {k for k, e in primaries.items() if llm_records.needs_second_opinion(e)}
+        groups = [g for g in groups if g.key in eligible]
+        typer.echo(f"{len(groups)} of {len(primaries)} extractions can use a second opinion")
     if shard is not None:
         k, _, n = shard.partition("/")
         if not (k.isdigit() and n.isdigit()):

@@ -21,6 +21,7 @@ from pydantic import BaseModel, ConfigDict
 from patchsight.db import FixCommitRef, Symbol
 from patchsight.pipeline import build_db
 from patchsight.pipeline.benchmarks.extraction import candidate_inputs
+from patchsight.pipeline.diffs.commits import CommitMapping
 from patchsight.pipeline.diffs.github import GitHubClient
 from patchsight.pipeline.extract.extractor import ExtractionOutcome, extract
 from patchsight.pipeline.extract.prompt import AdvisoryText, PromptTemplate, render
@@ -44,6 +45,9 @@ class PyPIExtraction(BaseModel):
     fix_commits: tuple[FixCommitRef, ...]
     # The vulnerable candidates as database symbols (module-qualified, with path and kind).
     vulnerable_symbols: tuple[Symbol, ...]
+    # The validated entry points, module-qualified from the files that define them, as the
+    # scanner matches them (``yaml.full_load``, not ``full_load``).
+    entry_points: tuple[str, ...] = ()
     outcome: ExtractionOutcome
 
 
@@ -114,6 +118,28 @@ def plan_vulnerability(
     )
 
 
+def qualify_entry_points(
+    names: Sequence[str], mappings: Sequence[CommitMapping]
+) -> tuple[str, ...]:
+    """Module-qualify each entry point by every changed file that defines it.
+
+    Entry points are validated against the definitions in the changed files, so each name
+    has at least one; a file outside any importable module leaves the bare name.
+    """
+    paths: dict[str, set[str]] = {}
+    for mapping in mappings:
+        for file in mapping.files:
+            for known in file.mapping.known_names:
+                paths.setdefault(known, set()).add(file.mapping.path)
+    qualified: set[str] = set()
+    for name in names:
+        for path in paths.get(name, ()):
+            qualified.add(build_db.symbol_for(path, name, "function").qualified_name)
+        if name not in paths:
+            qualified.add(name)
+    return tuple(sorted(qualified))
+
+
 def in_shard(key: str, shard: int, shards: int) -> bool:
     """Whether a vulnerability belongs to shard ``shard`` of ``shards`` (1-based), stably."""
     if not 1 <= shard <= shards:
@@ -161,6 +187,7 @@ def extract_vulnerability(
     )  # fmt: skip
     kinds = {(i.path, i.name): i.kind for i in inputs}
     return PyPIExtraction(
+        entry_points=qualify_entry_points(outcome.entry_points, fixes.mappings),
         vulnerability=group.key,
         packages=fixes.packages,
         input_hash=build_db.input_hash(group, by_id),

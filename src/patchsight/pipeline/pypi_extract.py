@@ -18,7 +18,7 @@ from collections.abc import Callable, Sequence
 
 from pydantic import BaseModel, ConfigDict
 
-from patchsight.db import FixCommitRef, Symbol
+from patchsight.db import FixCommitRef, HunkLocation, Symbol, SymbolEvidence
 from patchsight.pipeline import build_db
 from patchsight.pipeline.benchmarks.extraction import candidate_inputs
 from patchsight.pipeline.diffs.commits import CommitMapping
@@ -48,6 +48,8 @@ class PyPIExtraction(BaseModel):
     # The validated entry points, module-qualified from the files that define them, as the
     # scanner matches them (``yaml.full_load``, not ``full_load``).
     entry_points: tuple[str, ...] = ()
+    # Rationale and cited hunk locations for each vulnerable symbol.
+    evidence: tuple[SymbolEvidence, ...] = ()
     outcome: ExtractionOutcome
 
 
@@ -115,6 +117,28 @@ def plan_vulnerability(
         full_prompt_tokens=full.estimated_tokens,
         kept=len(sent.candidates),
         truncated=sent.truncated,
+    )
+
+
+def symbol_evidence(
+    outcome: ExtractionOutcome, kinds: dict[tuple[str, str], str]
+) -> tuple[SymbolEvidence, ...]:
+    """Evidence per qualified symbol. A definition changed by two commits appears as two
+    candidates: its first rationale is kept and the cited hunks are combined."""
+    merged: dict[str, tuple[str, list[HunkLocation]]] = {}
+    for item in outcome.evidence:
+        name = build_db.symbol_for(item.path, item.name, kinds[(item.path, item.name)])
+        _, hunks = merged.setdefault(name.qualified_name, (item.rationale, []))
+        for ref in item.hunks:
+            location = HunkLocation(
+                commit=ref.source, path=ref.path, old_start=ref.old_start,
+                old_count=ref.old_count, new_start=ref.new_start, new_count=ref.new_count,
+            )  # fmt: skip
+            if location not in hunks:
+                hunks.append(location)
+    return tuple(
+        SymbolEvidence(qualified_name=name, rationale=rationale, hunks=tuple(hunks))
+        for name, (rationale, hunks) in sorted(merged.items())
     )
 
 
@@ -188,6 +212,7 @@ def extract_vulnerability(
     kinds = {(i.path, i.name): i.kind for i in inputs}
     return PyPIExtraction(
         entry_points=qualify_entry_points(outcome.entry_points, fixes.mappings),
+        evidence=symbol_evidence(outcome, kinds),
         vulnerability=group.key,
         packages=fixes.packages,
         input_hash=build_db.input_hash(group, by_id),

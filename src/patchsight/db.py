@@ -11,8 +11,10 @@ its vulnerability, so the scanner can look up whatever ID OSV returns.
 Stdlib ``sqlite3`` only, so the scan path can read it without any pipeline dependency.
 
 Compatibility: the ``extraction`` table (second-opinion model and the reason for the tier)
-was added within schema version 1. Readers that predate it never query it, so they keep
-working; this reader treats a database without it as having no such provenance.
+and the ``evidence`` table (each flagged symbol's rationale and cited hunk locations) were
+added within schema version 1. Readers that predate them never query them, so they keep
+working; this reader treats a database without them as having no such provenance. Evidence
+holds commit SHAs, paths and line ranges only, never code (rule 13).
 """
 
 import json
@@ -66,6 +68,14 @@ CREATE TABLE extraction (
     tier_reason TEXT,
     PRIMARY KEY (vulnerability, package)
 );
+CREATE TABLE evidence (
+    vulnerability TEXT NOT NULL,
+    package TEXT NOT NULL,
+    qualified_name TEXT NOT NULL,
+    rationale TEXT NOT NULL,
+    hunks TEXT NOT NULL,
+    PRIMARY KEY (vulnerability, package, qualified_name)
+);
 """
 
 
@@ -78,6 +88,29 @@ class FixCommitRef(BaseModel):
 
     repo: str
     sha: str
+
+
+class HunkLocation(BaseModel):
+    """Where a cited diff hunk sits: the fix commit, the file and both line ranges."""
+
+    model_config = ConfigDict(frozen=True)
+
+    commit: str
+    path: str
+    old_start: int
+    old_count: int
+    new_start: int
+    new_count: int
+
+
+class SymbolEvidence(BaseModel):
+    """Why the model flagged a symbol: a one-sentence rationale and the hunks it cited."""
+
+    model_config = ConfigDict(frozen=True)
+
+    qualified_name: str
+    rationale: str
+    hunks: tuple[HunkLocation, ...]
 
 
 class Symbol(BaseModel):
@@ -113,6 +146,9 @@ class Record(BaseModel):
     # LLM records only: the second model's ID (ADR 0005) and why the tier was chosen.
     second_opinion_model: str | None = None
     tier_reason: str | None = None
+    # The symbols the model judged vulnerable (all of a high record's symbols; in a low
+    # record, the model's picks among every changed definition).
+    evidence: tuple[SymbolEvidence, ...] = ()
 
 
 def write(
@@ -162,6 +198,19 @@ def write(
                     ),
                 )
             connection.executemany(
+                "INSERT INTO evidence VALUES (?, ?, ?, ?, ?)",
+                [
+                    (
+                        record.vulnerability,
+                        record.package,
+                        e.qualified_name,
+                        e.rationale,
+                        json.dumps([h.model_dump() for h in e.hunks]),
+                    )
+                    for e in record.evidence
+                ],
+            )
+            connection.executemany(
                 "INSERT INTO symbols VALUES (?, ?, ?, ?, ?, ?, ?)",
                 [
                     (
@@ -206,6 +255,7 @@ class SymbolDatabase:
             )
         }
         self._has_extraction = "extraction" in tables
+        self._has_evidence = "evidence" in tables
 
     def close(self) -> None:
         self._connection.close()
@@ -240,6 +290,15 @@ class SymbolDatabase:
             if self._has_extraction
             else None
         )
+        evidence = (
+            self._connection.execute(
+                "SELECT qualified_name, rationale, hunks FROM evidence "
+                "WHERE vulnerability = ? AND package = ? ORDER BY qualified_name",
+                (vulnerability, package),
+            ).fetchall()
+            if self._has_evidence
+            else []
+        )
         return Record(
             vulnerability=row[0],
             package=row[1],
@@ -260,4 +319,12 @@ class SymbolDatabase:
             ),
             second_opinion_model=provenance[0] if provenance else None,
             tier_reason=provenance[1] if provenance else None,
+            evidence=tuple(
+                SymbolEvidence(
+                    qualified_name=e[0],
+                    rationale=e[1],
+                    hunks=tuple(HunkLocation(**h) for h in json.loads(e[2])),
+                )
+                for e in evidence
+            ),
         )

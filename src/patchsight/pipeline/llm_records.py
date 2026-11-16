@@ -17,7 +17,7 @@ from collections import Counter
 from collections.abc import Iterable, Mapping, Sequence
 from pathlib import Path
 
-from patchsight.db import Record, Symbol
+from patchsight.db import Record, Symbol, SymbolEvidence
 from patchsight.eval.confidence import VALID, Answer, Decision, decide, is_public
 from patchsight.pipeline.pypi_extract import PyPIExtraction
 
@@ -77,6 +77,10 @@ def merge(
     entry_points = set(primary.entry_points)
     if valid_second and secondary is not None:
         entry_points |= set(secondary.entry_points)
+    evidence: dict[str, SymbolEvidence] = {e.qualified_name: e for e in primary.evidence}
+    if valid_second and secondary is not None:
+        for item in secondary.evidence:
+            evidence.setdefault(item.qualified_name, item)
     symbols: tuple[Symbol, ...] | None = None  # None: keep the fallback set
     if decision.tier == "high" and secondary is not None:
         by_name: dict[str, Symbol] = {
@@ -84,6 +88,7 @@ def merge(
             for s in (*primary.vulnerable_symbols, *secondary.vulnerable_symbols)
         }
         symbols = tuple(by_name[name] for name in sorted(decision.agreed))
+        evidence = {k: v for k, v in evidence.items() if k in decision.agreed}
     records = [
         record.model_copy(
             update={
@@ -98,6 +103,7 @@ def merge(
                 if valid_second and secondary
                 else None,
                 "tier_reason": decision.reason,
+                "evidence": tuple(evidence[k] for k in sorted(evidence)),
             }
         )
         for record in fallback

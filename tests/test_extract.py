@@ -203,6 +203,27 @@ def test_extract_ok(tmp_path: Path) -> None:
     assert seen[0].prompt_version == "extract-v1"
 
 
+def test_outcome_carries_evidence_for_vulnerable_candidates_only(tmp_path: Path) -> None:
+    long = "Bounds   fix\n on the header. " + "x" * 400
+    answer = json.loads(_answer())
+    answer["items"][0]["rationale"] = long
+    client, _ = _client(tmp_path, [json.dumps(answer)])
+    outcome = _extract(client)
+    (item,) = outcome.evidence
+    assert (item.path, item.name) == ("h/parse.go", "ParseHeader")
+    assert item.rationale.startswith("Bounds fix on the header. ")  # whitespace collapsed
+    assert len(item.rationale) == 300  # capped
+    (hunk,) = item.hunks
+    assert (hunk.id, hunk.source, hunk.path) == ("H2", "s1", "h/parse.go")
+    assert (hunk.old_start, hunk.old_count, hunk.new_start, hunk.new_count) == (1, 1, 1, 1)
+
+
+def test_prompt_lists_where_every_hunk_comes_from() -> None:
+    rendered = _render()
+    assert [r.id for r in rendered.hunks] == list(rendered.hunk_ids)
+    assert {r.path for r in rendered.hunks} == {"h/parse.go", "h/docs.go"}
+
+
 def test_extract_repairs_once(tmp_path: Path) -> None:
     broken = json.loads(_answer())
     broken["items"][0]["candidate_id"] = "F7"

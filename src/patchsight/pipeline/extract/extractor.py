@@ -8,6 +8,7 @@ from pydantic import BaseModel, ConfigDict
 from patchsight.pipeline.extract.prompt import (
     AdvisoryText,
     CandidateInput,
+    HunkRef,
     PromptTemplate,
     RenderedPrompt,
     render,
@@ -36,6 +37,21 @@ REPAIR_MESSAGE = (
 )
 
 
+# A rationale is one sentence; anything longer is cut, so stored text stays short.
+MAX_RATIONALE = 300
+
+
+class CandidateEvidence(BaseModel):
+    """Why one candidate was judged vulnerable, and the hunks the answer cited."""
+
+    model_config = ConfigDict(frozen=True)
+
+    path: str
+    name: str
+    rationale: str
+    hunks: tuple[HunkRef, ...]
+
+
 class ExtractionOutcome(BaseModel):
     model_config = ConfigDict(frozen=True)
 
@@ -47,6 +63,7 @@ class ExtractionOutcome(BaseModel):
     vulnerable: tuple[str, ...]
     # (path, name) of each vulnerable candidate: a name can occur in several files.
     vulnerable_locations: tuple[tuple[str, str], ...] = ()
+    evidence: tuple[CandidateEvidence, ...] = ()
     entry_points: tuple[str, ...]
     entry_points_dropped: int
     invented_ids_first_attempt: int
@@ -59,6 +76,20 @@ class ExtractionOutcome(BaseModel):
     calls: int
     cached_calls: int
     provider_rejections: int
+
+
+def _evidence(prompt: RenderedPrompt, result: ValidatedExtraction) -> tuple[CandidateEvidence, ...]:
+    refs = {r.id: r for r in prompt.hunks}
+    by_id = {c.id: c for c in prompt.candidates}
+    return tuple(
+        CandidateEvidence(
+            path=by_id[cid].path,
+            name=by_id[cid].name,
+            rationale=" ".join(result.rationales[cid].split())[:MAX_RATIONALE],
+            hunks=tuple(refs[h] for h in result.evidence[cid] if h in refs),
+        )
+        for cid in result.vulnerable_ids
+    )
 
 
 def _request(
@@ -157,6 +188,7 @@ def extract(
         status="ok" if len(responses) == 1 and not rejections else "repaired",
         vulnerable=tuple(sorted({names[cid] for cid in result.vulnerable_ids})),
         vulnerable_locations=tuple(sorted({locations[cid] for cid in result.vulnerable_ids})),
+        evidence=_evidence(prompt, result),
         entry_points=result.entry_points,
         entry_points_dropped=len(result.entry_points_dropped),
         errors=tuple(errors) if len(responses) > 1 or rejections else (),

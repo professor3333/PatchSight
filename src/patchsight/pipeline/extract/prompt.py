@@ -65,6 +65,20 @@ class Candidate(BaseModel):
     hunk_ids: tuple[str, ...]
 
 
+class HunkRef(BaseModel):
+    """Where a numbered hunk comes from: the commit, the file and both line ranges."""
+
+    model_config = ConfigDict(frozen=True)
+
+    id: str
+    source: str
+    path: str
+    old_start: int
+    old_count: int
+    new_start: int
+    new_count: int
+
+
 class RenderedPrompt(BaseModel):
     model_config = ConfigDict(frozen=True)
 
@@ -72,6 +86,7 @@ class RenderedPrompt(BaseModel):
     messages: tuple[dict[str, str], ...]
     candidates: tuple[Candidate, ...]
     hunk_ids: tuple[str, ...]
+    hunks: tuple[HunkRef, ...] = ()
     estimated_tokens: int
     truncated: bool
     dropped: tuple[str, ...]
@@ -189,9 +204,19 @@ def render(
 
     candidates: list[Candidate] = []
     blocks: list[str] = []
+    refs: dict[str, HunkRef] = {}
     for number, index in enumerate(kept_in_order, 1):
         item = inputs[index]
         cid = f"F{number}"
+        for h in item.hunks:
+            hid = hunk_id[(item.source, item.path, h.index)]
+            refs.setdefault(
+                hid,
+                HunkRef(
+                    id=hid, source=item.source, path=item.path, old_start=h.old_start,
+                    old_count=h.old_count, new_start=h.new_start, new_count=h.new_count,
+                ),
+            )  # fmt: skip
         candidates.append(
             Candidate(
                 id=cid,
@@ -222,4 +247,5 @@ def render(
         estimated_tokens=estimate(template.system) + estimate(user) + 2 * MESSAGE_OVERHEAD,
         truncated=bool(dropped),
         dropped=dropped,
+        hunks=tuple(sorted(refs.values(), key=lambda r: int(r.id[1:]))),
     )

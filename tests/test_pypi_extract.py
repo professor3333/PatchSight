@@ -114,6 +114,12 @@ def test_classes_compete_and_vulnerable_symbols_are_module_qualified(
     assert [s.qualified_name for s in result.vulnerable_symbols] == ["some_pkg.loader.FullLoader"]
     assert (result.vulnerable_symbols[0].kind, result.packages) == ("class", ("some-pkg",))
     assert result.outcome.vulnerable_locations == (("src/some_pkg/loader.py", "FullLoader"),)
+    (evidence,) = result.evidence
+    assert (evidence.qualified_name, evidence.rationale) == (
+        "some_pkg.loader.FullLoader",
+        "Because.",
+    )
+    assert [(h.commit, h.path) for h in evidence.hunks] == [(SHA_A, "src/some_pkg/loader.py")]
     assert [c.sha for c in result.fix_commits] == [SHA_A]
     assert (summary.status, summary.skipped) == ({"ok": 1}, {})
 

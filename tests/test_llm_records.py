@@ -10,7 +10,7 @@ from hypothesis import given
 from hypothesis import strategies as st
 
 from patchsight import db
-from patchsight.db import FixCommitRef, Record, Symbol
+from patchsight.db import FixCommitRef, HunkLocation, Record, Symbol, SymbolEvidence
 from patchsight.pipeline import llm_records
 from patchsight.pipeline.extract.extractor import ExtractionOutcome
 from patchsight.pipeline.pypi_extract import PyPIExtraction, qualify_entry_points
@@ -62,7 +62,15 @@ def _extraction(
         vulnerability="GHSA-xxxx-yyyy-zzzz", packages=("pkg",), input_hash=digest,
         fix_commits=(), vulnerable_symbols=tuple(_symbol(n) for n in vulnerable),
         entry_points=entry, outcome=ExtractionOutcome(**outcome),
+        evidence=tuple(_evidence(n, model) for n in vulnerable),
     )  # fmt: skip
+
+
+def _evidence(name: str, model: str) -> SymbolEvidence:
+    hunk = HunkLocation(commit="a" * 40, path="src/pkg/mod.py", old_start=10, old_count=3,
+                        new_start=10, new_count=4)  # fmt: skip
+    return SymbolEvidence(qualified_name=f"pkg.mod.{name}", rationale=f"{model} says so.",
+                          hunks=(hunk,))  # fmt: skip
 
 
 def _merge(primary: Any, secondary: Any = None, fallback: Record | None = None) -> Any:
@@ -197,3 +205,39 @@ def test_extraction_provenance_round_trips_and_old_files_still_read(tmp_path: Pa
     reader.close()
     assert old is not None
     assert (old.confidence, old.second_opinion_model, old.tier_reason) == ("high", None, None)
+
+
+def test_high_records_keep_evidence_for_the_agreed_symbols() -> None:
+    record, _ = _merge(_extraction(("load",)), _extraction(("load", "Loader.read"), model="g"))
+    assert [(e.qualified_name, e.rationale) for e in record.evidence] == [
+        ("pkg.mod.Loader.read", "g says so."),  # only the second model flagged it
+        ("pkg.mod.load", "qwen says so."),  # the extractor's own rationale comes first
+    ]
+
+
+def test_low_records_keep_the_models_picks_as_evidence() -> None:
+    record, _ = _merge(_extraction(("load",)))
+    assert record.confidence == "low"
+    assert [e.qualified_name for e in record.evidence] == ["pkg.mod.load"]
+    assert {e.qualified_name for e in record.evidence} <= {s.qualified_name for s in record.symbols}
+
+
+def test_evidence_round_trips_and_old_files_still_read(tmp_path: Path) -> None:
+    record, _ = _merge(_extraction(("load",)), _extraction(("load",), model="g"))
+    path = tmp_path / "db.sqlite"
+    db.write(path, [record], {}, {"db_version": "x"})
+    reader = db.SymbolDatabase(path)
+    stored = reader.record(record.vulnerability, record.package)
+    reader.close()
+    assert stored is not None
+    assert stored.evidence == record.evidence
+
+    connection = sqlite3.connect(path)
+    connection.execute("DROP TABLE evidence")
+    connection.commit()
+    connection.close()
+    reader = db.SymbolDatabase(path)
+    old = reader.record(record.vulnerability, record.package)
+    reader.close()
+    assert old is not None
+    assert old.evidence == ()

@@ -856,7 +856,11 @@ def package_db_command(
     (root / pointer).parent.mkdir(parents=True, exist_ok=True)
     (root / pointer).write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
     typer.echo(f"{asset.relative_to(root)}: {record['size']:,} bytes, sha256 {record['sha256']}")
-    typer.echo(f"wrote {pointer}; publish with: gh release create {tag} {asset.relative_to(root)}")
+    # --latest=false keeps the CLI release as the repository's "Latest" release.
+    typer.echo(
+        f"wrote {pointer}; publish with: "
+        f"gh release create {tag} {asset.relative_to(root)} --latest=false"
+    )
 
 
 if __name__ == "__main__":

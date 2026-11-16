@@ -10,6 +10,7 @@ Symbol-level vulnerability triage for Python. An LLM reads each security fix off
 your scan is a database lookup and static analysis, with no model and no server.
 
 [![ci](https://github.com/professor3333/PatchSight/actions/workflows/ci.yml/badge.svg)](https://github.com/professor3333/PatchSight/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/patchsight?color=4338CA&label=pypi)](https://pypi.org/project/patchsight/)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-3776AB?logo=python&logoColor=white)](pyproject.toml)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
 [![LLM at scan time: none](https://img.shields.io/badge/LLM_at_scan_time-none-2ea44f)](docs/adr/0002-no-llm-at-scan-time.md)
@@ -72,7 +73,7 @@ On the Go benchmark of [Dunlap et al. (DIMVA 2024)](https://www.enck.org/pubs/du
 ## Quick start
 
 ```bash
-pip install "patchsight @ git+https://github.com/professor3333/PatchSight"
+pip install patchsight
 
 patchsight db update                  # download the latest symbol database (SHA-256 verified)
 patchsight scan .                     # scan ./requirements.txt and the code under .
@@ -182,7 +183,8 @@ The offline pipeline is `python -m patchsight.pipeline <command>`.
 - [x] **First public database release:** [`db-2026.11.14`](https://github.com/professor3333/PatchSight/releases/tag/db-2026.11.14). Fallback records for **3,505** PyPI vulnerabilities across 989 packages, all low confidence
 - [ ] LLM-extracted records for PyPI, from the self-hosted backfill
 - [ ] Held-out test evaluation of the confidence rule (declared in advance; in progress)
-- [ ] `uv.lock` and `poetry.lock` support, a GitHub Action, OpenVEX output, and PyPI packaging
+- [x] **On PyPI:** [`pip install patchsight`](https://pypi.org/project/patchsight/) (0.1.0), published from CI with Trusted Publishing and a required approval
+- [ ] `uv.lock` and `poetry.lock` support, a GitHub Action, and OpenVEX output
 
 > [!WARNING]
 > **The confidence rule doesn't meet its safety target yet.** On the dev split, high-confidence records still miss the vulnerable symbol in 1 of 27 reports: 3.7%, against a target of 2% or less ([report](docs/reports/confidence-dunlap-dev-extract-v1-qwen3.8-27b-q4km-vs-extract-v1-gpt-oss-120b.md)). Until it does, treat **imported, not called** as a prioritisation hint, not a guarantee.

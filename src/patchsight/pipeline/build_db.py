@@ -7,7 +7,8 @@ to CALLED, but never lower it to IMPORTED_NOT_CALLED.
 
 Fix candidates are used only when they resolve on GitHub, sit on the package's declared
 repository (when one is declared), and change Python source. Tag comparisons are not yet
-resolved; the build report counts them.
+resolved; the build report counts them. A fix that touches more than ``MAX_SYMBOLS``
+definitions is reported as ``too_broad`` and gets no record.
 """
 
 import hashlib
@@ -28,6 +29,10 @@ from patchsight.pipeline.http import HttpError, NotFoundError, RateLimitError
 from patchsight.pipeline.ingest.aliases import AliasGroup
 from patchsight.pipeline.ingest.osv import Advisory
 from patchsight.pipeline.pypi import PyPIClient
+
+# Above this many changed definitions a fallback record carries no location signal.
+# Set well beyond the 99th percentile (214 in the first full build).
+MAX_SYMBOLS = 500
 
 
 class BuildOutcome(BaseModel):
@@ -146,6 +151,13 @@ def fallback_records(
         else:
             status = "no_python_fix" if commits else "no_resolvable_commit"
         return [], BuildOutcome(vulnerability=group.key, status=status, commits=len(commits))
+    if len(symbols) > MAX_SYMBOLS:
+        # A fix that touches thousands of functions (usually a refactor shipped with it)
+        # says nothing about where the bug is. Publishing it would make almost any use of
+        # the package CALLED; without a record the scanner says UNKNOWN, which is honest.
+        return [], BuildOutcome(
+            vulnerability=group.key, status="too_broad", symbols=len(symbols), commits=len(used)
+        )
     roots = tuple(sorted({s.module.split(".")[0] for s in symbols.values() if s.module}))
     modified = max(by_id[i].modified for i in group.advisory_ids)
     digest = input_hash(group, by_id)

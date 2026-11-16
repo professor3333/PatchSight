@@ -115,3 +115,13 @@ def test_module_level_only_fixes_are_reported_as_such(
     stub["mapping"] = mapping.model_copy(update={"files": (file,)})
     records, outcome = _build(make_advisory)
     assert (records, outcome.status) == ([], "module_level_only")
+
+
+def test_fixes_touching_too_many_functions_get_no_record(
+    stub: dict[str, Any], make_advisory: AdvisoryFactory
+) -> None:
+    names = [(f"f{i}", "function") for i in range(build_db.MAX_SYMBOLS + 1)]
+    stub["mapping"] = _mapping("example/some-pkg", {"src/some_pkg/big.py": names})
+    records, outcome = _build(make_advisory)
+    assert records == []
+    assert (outcome.status, outcome.symbols) == ("too_broad", build_db.MAX_SYMBOLS + 1)

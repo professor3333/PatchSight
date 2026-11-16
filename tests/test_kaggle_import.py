@@ -22,6 +22,7 @@ def test_import_places_responses_in_cache_and_the_rest_in_the_inbox(tmp_path: Pa
             ".cache/llm/usage/model.jsonl": '{"t": 1, "tokens": 5}\n',
             "docs/reports/extraction-dunlap-all-x.md": "# report",
             "run-info.json": "{}",
+            "pypi-run/pypi-extract-kaggle_extractor-shard1of4-summary.json": "{}",
         },
     )
     result = CliRunner().invoke(app, ["import-kaggle-run", str(archive), "--root", str(tmp_path)])

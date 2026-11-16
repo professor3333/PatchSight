@@ -119,3 +119,28 @@ def test_exhausted_retries_raise_a_catchable_http_error(tmp_path: Path) -> None:
     client = _client(tmp_path, httpx.MockTransport(lambda request: httpx.Response(502)))
     with pytest.raises(HttpError, match="gave up after 3 attempts"):
         client.get_json("/flaky")
+
+
+def test_offline_mode_serves_the_cache_and_never_uses_the_network(tmp_path: Path) -> None:
+    from patchsight.pipeline.http import CacheMissError
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json={"value": 1})
+
+    _client(tmp_path, httpx.MockTransport(handler)).get_json("/cached")
+
+    def refuse(request: httpx.Request) -> httpx.Response:
+        raise AssertionError("offline mode used the network")
+
+    offline = CachedJsonClient(
+        "https://api.example.org", tmp_path / "cache", transport=httpx.MockTransport(refuse),
+        offline=True,
+    )  # fmt: skip
+    assert offline.get_json("/cached") == {"value": 1}
+    with pytest.raises(CacheMissError):
+        offline.get_json("/missing")
+    assert offline.network_requests == 0
+    assert [p.name for p in offline.cache_files_used] == [
+        next((tmp_path / "cache").rglob("*.json")).name
+    ]
+    assert issubclass(CacheMissError, HttpError)

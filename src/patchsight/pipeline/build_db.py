@@ -26,7 +26,7 @@ from patchsight.pipeline.diffs.commits import CommitMapping, map_commit
 from patchsight.pipeline.diffs.github import GitHubClient
 from patchsight.pipeline.diffs.paths import classify_path
 from patchsight.pipeline.fix_sample import package_repos
-from patchsight.pipeline.http import HttpError, NotFoundError, RateLimitError
+from patchsight.pipeline.http import CacheMissError, HttpError, NotFoundError, RateLimitError
 from patchsight.pipeline.ingest.aliases import AliasGroup
 from patchsight.pipeline.ingest.osv import Advisory
 from patchsight.pipeline.pypi import PyPIClient
@@ -117,7 +117,8 @@ def fix_mappings(
     try:
         packages, repos = package_repos(group, by_id, github, pypi)
         commits, _ = _fix_commits(group, by_id, github)
-    except RateLimitError:
+    except (RateLimitError, CacheMissError):
+        # Never let a missing offline response pass as "no fix": it must stay visible.
         raise
     except (HttpError, KeyError, ValueError):
         return FixMappings(status="error")
@@ -127,7 +128,7 @@ def fix_mappings(
     for repo, sha in commits:
         try:
             mapping = map_commit(github, repo, sha, include=_python_source)
-        except RateLimitError:
+        except (RateLimitError, CacheMissError):
             raise
         except (NotFoundError, HttpError, KeyError, ValueError):
             continue

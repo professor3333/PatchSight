@@ -6,10 +6,13 @@ Python bugs can sit in a class body, so classes compete too; the Go benchmark st
 function-level.
 
 Every model answer is cached by request, so a stopped run resumes where it left off, and a
-Kaggle run can be imported and replayed here with no model calls. Turning outcomes into
-database records, with confidence tiers (ADR 0004), is a separate step.
+Kaggle run can be imported and replayed here with no model calls. A Kaggle session lasts at
+most 12 hours, so a run can be split into deterministic shards and given a time budget.
+Turning outcomes into database records, with confidence tiers (ADR 0004), is a separate step.
 """
 
+import hashlib
+import time
 from collections import Counter
 from collections.abc import Callable, Sequence
 
@@ -21,6 +24,7 @@ from patchsight.pipeline.benchmarks.extraction import candidate_inputs
 from patchsight.pipeline.diffs.github import GitHubClient
 from patchsight.pipeline.extract.extractor import ExtractionOutcome, extract
 from patchsight.pipeline.extract.prompt import AdvisoryText, PromptTemplate, render
+from patchsight.pipeline.http import CacheMissError
 from patchsight.pipeline.ingest.aliases import AliasGroup
 from patchsight.pipeline.ingest.osv import Advisory
 from patchsight.pipeline.llm.client import LLMClient
@@ -50,6 +54,8 @@ class PyPIExtractionRun(BaseModel):
     role: str
     prompt_version: str
     vulnerabilities: int
+    processed: int
+    complete: bool  # False when the time budget ran out first
     skipped: dict[str, int]
     status: dict[str, int]
     truncated: int
@@ -83,7 +89,10 @@ def plan_vulnerability(
     counter: TokenCounter,
 ) -> PromptPlan | str:
     """Render the prompt twice, unbounded and as it would be sent; no model call."""
-    fixes = build_db.fix_mappings(group, by_id, github, pypi)
+    try:
+        fixes = build_db.fix_mappings(group, by_id, github, pypi)
+    except CacheMissError:
+        return "cache_miss"
     if fixes.status != "mapped":
         return fixes.status
     if len(build_db.changed_symbols(fixes.mappings)) > build_db.MAX_SYMBOLS:
@@ -103,6 +112,14 @@ def plan_vulnerability(
         kept=len(sent.candidates),
         truncated=sent.truncated,
     )
+
+
+def in_shard(key: str, shard: int, shards: int) -> bool:
+    """Whether a vulnerability belongs to shard ``shard`` of ``shards`` (1-based), stably."""
+    if not 1 <= shard <= shards:
+        raise ValueError(f"shard {shard} is not between 1 and {shards}")
+    digest = int(hashlib.sha256(key.encode("utf-8")).hexdigest(), 16)
+    return digest % shards == shard - 1
 
 
 def advisory_text(group: AliasGroup, by_id: dict[str, Advisory]) -> AdvisoryText:
@@ -128,7 +145,10 @@ def extract_vulnerability(
     counter: TokenCounter,
 ) -> PyPIExtraction | str:
     """The extraction for one vulnerability, or why it has none (a build status)."""
-    fixes = build_db.fix_mappings(group, by_id, github, pypi)
+    try:
+        fixes = build_db.fix_mappings(group, by_id, github, pypi)
+    except CacheMissError:
+        return "cache_miss"  # offline run without this response: visible, never "no fix"
     if fixes.status != "mapped":
         return fixes.status
     if len(build_db.changed_symbols(fixes.mappings)) > build_db.MAX_SYMBOLS:
@@ -164,11 +184,19 @@ def run(
     template: PromptTemplate,
     counter: TokenCounter,
     progress: Callable[[int, int], None] | None = None,
+    deadline: float | None = None,
+    clock: Callable[[], float] = time.monotonic,
 ) -> tuple[list[PyPIExtraction], PyPIExtractionRun]:
+    """Extract in key order. With a ``deadline`` (a ``clock`` value), no new vulnerability
+    starts after it; the summary then says the run is incomplete."""
     results: list[PyPIExtraction] = []
     skipped: Counter[str] = Counter()
     ordered = sorted(groups, key=lambda g: g.key)
+    processed = 0
     for number, group in enumerate(ordered, 1):
+        if deadline is not None and clock() >= deadline:
+            break
+        processed = number
         result = extract_vulnerability(
             group, by_id, github, pypi, llm, config, role, template, counter
         )
@@ -184,6 +212,8 @@ def run(
         role=role,
         prompt_version=template.version,
         vulnerabilities=len(ordered),
+        processed=processed,
+        complete=processed == len(ordered),
         skipped=dict(sorted(skipped.items())),
         status=dict(sorted(Counter(o.status for o in outcomes).items())),
         truncated=sum(o.truncated for o in outcomes),

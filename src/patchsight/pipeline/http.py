@@ -34,6 +34,10 @@ class NotFoundError(HttpError):
     """The resource does not exist, or never will for this request."""
 
 
+class CacheMissError(HttpError):
+    """Offline mode: the response is not in the cache, and the network may not be used."""
+
+
 class RateLimitError(HttpError):
     """The server's rate limit is exhausted."""
 
@@ -58,10 +62,16 @@ class CachedJsonClient:
         wait_for_rate_limit: float = 0.0,
         sleep: Callable[[float], None] = time.sleep,
         clock: Callable[[], float] = time.time,
+        offline: bool = False,
     ) -> None:
         """``wait_for_rate_limit``: the longest wait, in seconds, for an exhausted rate
-        limit to reset before retrying. Zero raises ``RateLimitError`` at once."""
+        limit to reset before retrying. Zero raises ``RateLimitError`` at once.
+
+        ``offline``: answer only from the cache; a miss raises ``CacheMissError``."""
         self._cache_dir = cache_dir
+        self._offline = offline
+        # Every cache file a request used, so a run's exact inputs can be exported.
+        self.cache_files_used: set[Path] = set()
         self._max_attempts = max_attempts
         self._wait_for_rate_limit = wait_for_rate_limit
         self._sleep = sleep
@@ -95,10 +105,13 @@ class CachedJsonClient:
         cache_file = self._cache_path(path, params)
         if cache_file.exists():
             cached = json.loads(cache_file.read_text(encoding="utf-8"))
+        elif self._offline:
+            raise CacheMissError(f"{path}: not in the offline cache")
         else:
             cached = self._fetch(path, params)
             cache_file.parent.mkdir(parents=True, exist_ok=True)
             cache_file.write_text(json.dumps(cached), encoding="utf-8")
+        self.cache_files_used.add(cache_file)
         if cached["status"] != 200:
             raise NotFoundError(f"{path}: HTTP {cached['status']}")
         return cached["body"]

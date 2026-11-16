@@ -188,3 +188,45 @@ def test_plan_measures_prompts_without_a_model(
     assert not isinstance(plan, str)
     assert (plan.candidates, plan.kept, plan.truncated) == (6, 3, True)  # 1,500 // 500
     assert plan.full_prompt_tokens > 0
+
+
+def test_offline_cache_misses_are_reported_not_mistaken_for_no_fix(
+    monkeypatch: pytest.MonkeyPatch, make_advisory: AdvisoryFactory, tmp_path: Path
+) -> None:
+    from patchsight.pipeline.http import CacheMissError
+
+    def missing(*args: object, **kwargs: object) -> None:
+        raise CacheMissError("not in the offline cache")
+
+    monkeypatch.setattr(
+        build_db, "package_repos", lambda g, b, gh, p: (("some-pkg",), {"example/some-pkg"})
+    )
+    monkeypatch.setattr(build_db, "map_commit", missing)
+    client, seen = _client(tmp_path, {})
+    results, summary = _run(make_advisory, client)
+    assert (results, seen, summary.skipped) == ([], [], {"cache_miss": 1})
+
+
+def test_shards_partition_the_vulnerabilities() -> None:
+    keys = [f"GHSA-{i:04d}" for i in range(200)]
+    shards = [[k for k in keys if pypi_extract.in_shard(k, s, 4)] for s in (1, 2, 3, 4)]
+    assert sorted(k for shard in shards for k in shard) == sorted(keys)
+    assert all(shards)
+    with pytest.raises(ValueError, match="between 1 and 4"):
+        pypi_extract.in_shard("x", 5, 4)
+
+
+def test_time_budget_stops_starting_new_work(
+    stub: dict[str, Any], make_advisory: AdvisoryFactory, tmp_path: Path
+) -> None:
+    stub["mapping"] = _mapping({"src/some_pkg/a.py": [("f", "function")]})
+    answer = {"items": [_item("F1", False, [])], "public_entry_points": []}
+    client, _ = _client(tmp_path, answer)
+    records = [make_advisory(id=f"GHSA-aaaa-bbbb-{c}{c}{c}{c}", aliases=[]) for c in "wxyz"]
+    groups = alias_groups(records)
+    ticks = iter([0.0, 1.0, 5.0, 9.0, 99.0])
+    results, summary = pypi_extract.run(
+        groups, {r.id: r for r in records}, None, None, client, CONFIG, "m", TEMPLATE,  # type: ignore[arg-type]
+        CharEstimate(3.0), deadline=6.0, clock=lambda: next(ticks),
+    )  # fmt: skip
+    assert (summary.processed, summary.complete, len(results)) == (3, False, 3)

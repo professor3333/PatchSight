@@ -4,6 +4,7 @@ import json
 import os
 import subprocess
 import tarfile
+import time
 import zipfile
 from datetime import UTC, datetime
 from pathlib import Path
@@ -391,7 +392,10 @@ def dunlap_split_command(root: Root = Path()) -> None:
     )
 
 
-KAGGLE_RUN_PREFIXES = (".cache/llm/", "docs/reports/", "run-info.json", "llama-server.log")
+KAGGLE_RUN_PREFIXES = (
+    ".cache/llm/", "docs/reports/", "pypi-run/", "run-info.json", "llama-server.log",
+)  # fmt: skip
+KAGGLE_INPUTS_MANIFEST = "patchsight-pypi-inputs.json"
 
 
 @app.command("import-kaggle-run")
@@ -838,18 +842,36 @@ def pypi_extract_command(
     plan: Annotated[
         bool, typer.Option("--plan", help="Only measure prompt sizes; no model calls.")
     ] = False,
+    offline: Annotated[
+        bool, typer.Option("--offline", help="Use only cached GitHub and PyPI responses.")
+    ] = False,
+    shard: Annotated[str | None, typer.Option(help="Run one shard, as K/N (e.g. 2/4).")] = None,
+    max_minutes: Annotated[
+        float | None, typer.Option(help="Start no new vulnerability after this many minutes.")
+    ] = None,
 ) -> None:
-    """Run LLM extraction on PyPI vulnerabilities (needs GITHUB_TOKEN and the model's key)."""
+    """Run LLM extraction on PyPI vulnerabilities (needs the model's key, and GITHUB_TOKEN
+    unless --offline)."""
     from patchsight.pipeline import pypi_extract
 
-    token = _github_token()
+    started = time.monotonic()
+    token = None if offline else _github_token()
     _, dump = _load_verified(root)
     by_id, groups = _github_fix_groups(dump, ids, sample, seed)
+    suffix = ""
+    if shard is not None:
+        k, _, n = shard.partition("/")
+        if not (k.isdigit() and n.isdigit()):
+            raise typer.BadParameter(f"--shard must look like 2/4, not {shard!r}")
+        groups = [g for g in groups if pypi_extract.in_shard(g.key, int(k), int(n))]
+        suffix = f"-shard{k}of{n}"
     llm_config = load_config(root / config)
     template = load_template(root / prompt)
     counter = HfTokenizer(llm_config.tokenizer, root / cache / "tokenizer")
-    github = GitHubClient(root / cache / "http" / "github", token=token, wait_for_rate_limit=3900)
-    pypi = PyPIClient(root / cache / "http" / "pypi")
+    github = GitHubClient(
+        root / cache / "http" / "github", token=token, wait_for_rate_limit=3900, offline=offline
+    )
+    pypi = PyPIClient(root / cache / "http" / "pypi", offline=offline)
     if plan:
         try:
             plans = [
@@ -877,6 +899,7 @@ def pypi_extract_command(
         results, summary = pypi_extract.run(
             groups, by_id, github, pypi, llm, llm_config, role, template, counter,
             progress=lambda done, total: typer.echo(f"extracted {done}/{total}", err=True),
+            deadline=None if max_minutes is None else started + 60 * max_minutes,
         )  # fmt: skip
     except (QuotaExhaustedError, RateLimitedError) as stopped:
         typer.echo(f"stopped: {stopped}", err=True)
@@ -889,7 +912,7 @@ def pypi_extract_command(
         pypi.close()
     target = root / out
     target.parent.mkdir(parents=True, exist_ok=True)
-    stem = f"{target.name}-{role}"
+    stem = f"{target.name}-{role}{suffix}"
     target.with_name(stem + ".jsonl").write_text(
         "".join(r.model_dump_json() + "\n" for r in results), "utf-8"
     )
@@ -897,10 +920,73 @@ def pypi_extract_command(
         summary.model_dump_json(indent=2) + "\n", "utf-8"
     )
     typer.echo(
-        f"{model_id}: {len(results)} of {summary.vulnerabilities} vulnerabilities extracted; "
+        f"{model_id}: {len(results)} of {summary.vulnerabilities} vulnerabilities extracted"
+        f"{'' if summary.complete else f' (time budget reached after {summary.processed})'}; "
         f"status {summary.status}; skipped {summary.skipped}; truncated {summary.truncated}; "
         f"{llm.network_calls} model calls"
     )
+
+
+@app.command("export-kaggle-inputs")
+def export_kaggle_inputs_command(
+    root: Root = Path(),
+    cache: Annotated[Path, typer.Option(help="Cache root.")] = Path(".cache"),
+    out: Annotated[Path, typer.Option(help="Bundle to write.")] = Path(
+        "data/build/patchsight-pypi-inputs.zip"
+    ),
+) -> None:
+    """Bundle what the PyPI backfill reads, for an offline Kaggle run.
+
+    The bundle holds the pinned OSV dump and the cached GitHub and PyPI responses that
+    pypi-extract reads. Those responses include third-party source code: upload the bundle
+    only as a PRIVATE Kaggle dataset, never publicly (rule 13).
+    """
+    from patchsight.pipeline import kaggle_inputs
+
+    manifest, dump = _load_verified(root)
+    by_id, groups = _github_fix_groups(dump, None, None, 0)
+    github = GitHubClient(root / cache / "http" / "github", offline=True)
+    pypi = PyPIClient(root / cache / "http" / "pypi", offline=True)
+    try:
+        statuses = kaggle_inputs.walk(groups, by_id, github, pypi)
+    finally:
+        github.close()
+        pypi.close()
+    if statuses.get("cache_miss"):
+        raise typer.BadParameter(
+            f"{statuses['cache_miss']} vulnerabilities miss cached responses; run build-db first"
+        )
+    used = github.http.cache_files_used | pypi.http.cache_files_used
+    entry = manifest.file(DUMP)
+    info = kaggle_inputs.write_bundle(
+        root / out, dump, entry.sha256, used, root / cache / "http", statuses
+    )
+    typer.echo(
+        f"{root / out}: {info.files:,} cached responses, "
+        f"{(root / out).stat().st_size / 1e6:.0f} MB, "
+        f"sha256 {kaggle_inputs.sha256_file(root / out)}; vulnerabilities {statuses}"
+    )
+    typer.echo("Upload it as a PRIVATE Kaggle dataset: it contains third-party source code.")
+
+
+@app.command("restore-kaggle-inputs")
+def restore_kaggle_inputs_command(
+    source: Annotated[Path, typer.Argument(help="The bundle zip, or its extracted directory.")],
+    root: Root = Path(),
+    cache: Annotated[Path, typer.Option(help="Cache root.")] = Path(".cache"),
+) -> None:
+    """Restore an export-kaggle-inputs bundle (on Kaggle), then verify the OSV dump."""
+    from patchsight.pipeline import kaggle_inputs
+
+    entry = snapshot.load_manifest(root / MANIFEST).file(DUMP)
+    try:
+        info = kaggle_inputs.restore(source, root, entry.path, root / cache)
+    except ValueError as error:
+        raise typer.BadParameter(str(error)) from None
+    if info.dump_sha256 != entry.sha256:
+        raise typer.BadParameter("the bundle was made from a different OSV snapshot")
+    _load_verified(root)  # raises unless the restored dump matches the pinned SHA-256
+    typer.echo(f"restored {info.files:,} cached responses and the OSV dump (SHA-256 verified)")
 
 
 @app.command("package-db")

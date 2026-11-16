@@ -78,6 +78,7 @@ class GitHubClient:
         transport: httpx.BaseTransport | None = None,
         wait: wait_base | None = None,
         wait_for_rate_limit: float = 0.0,
+        offline: bool = False,
     ) -> None:
         headers = {
             "Accept": "application/vnd.github+json",
@@ -93,6 +94,7 @@ class GitHubClient:
             transport=transport,
             wait=wait,
             wait_for_rate_limit=wait_for_rate_limit,
+            offline=offline,
         )
 
     def close(self) -> None:

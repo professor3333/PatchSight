@@ -40,6 +40,7 @@ class PyPIClient:
         cache_dir: Path,
         transport: httpx.BaseTransport | None = None,
         wait: wait_base | None = None,
+        offline: bool = False,
     ) -> None:
         self.http = CachedJsonClient(
             PYPI,
@@ -47,6 +48,7 @@ class PyPIClient:
             headers={"Accept": "application/json", "User-Agent": "patchsight-pipeline"},
             transport=transport,
             wait=wait,
+            offline=offline,
         )
 
     def close(self) -> None:

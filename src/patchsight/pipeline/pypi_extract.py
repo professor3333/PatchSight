@@ -12,13 +12,16 @@ Turning outcomes into database records, with confidence tiers (ADR 0004), is a s
 """
 
 import hashlib
+import json
 import time
 from collections import Counter
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Mapping, Sequence
+from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict
 
 from patchsight.db import FixCommitRef, HunkLocation, Symbol, SymbolEvidence
+from patchsight.names import canonical_package_name
 from patchsight.pipeline import build_db
 from patchsight.pipeline.benchmarks.extraction import candidate_inputs
 from patchsight.pipeline.diffs.commits import CommitMapping
@@ -164,6 +167,32 @@ def qualify_entry_points(
     return tuple(sorted(qualified))
 
 
+def download_rank(path: Path) -> dict[str, int]:
+    """Package name (PEP 503) to rank, 0 being the most downloaded, from a
+    top-pypi-packages dump: ``{"rows": [{"project": ..., "download_count": ...}, ...]}``."""
+    rows = json.loads(path.read_text("utf-8"))["rows"]
+    ordered = sorted(rows, key=lambda row: (-int(row["download_count"]), row["project"]))
+    rank: dict[str, int] = {}
+    for position, row in enumerate(ordered):
+        rank.setdefault(canonical_package_name(row["project"]), position)
+    return rank
+
+
+def by_priority(
+    groups: Sequence[AliasGroup], by_id: dict[str, Advisory], rank: Mapping[str, int]
+) -> list[AliasGroup]:
+    """Most-downloaded affected package first, so a quota-limited run (the second opinion)
+    reaches the advisories most users meet first. Unlisted packages go last; ties by key.
+    The order changes when work happens, never what any record says."""
+    unlisted = len(rank)
+
+    def key(group: AliasGroup) -> tuple[int, str]:
+        names = {p.name for i in group.advisory_ids for p in by_id[i].packages}
+        return min((rank.get(n, unlisted) for n in names), default=unlisted), group.key
+
+    return sorted(groups, key=key)
+
+
 def in_shard(key: str, shard: int, shards: int) -> bool:
     """Whether a vulnerability belongs to shard ``shard`` of ``shards`` (1-based), stably."""
     if not 1 <= shard <= shards:
@@ -238,12 +267,14 @@ def run(
     progress: Callable[[int, int], None] | None = None,
     deadline: float | None = None,
     clock: Callable[[], float] = time.monotonic,
+    keep_order: bool = False,
 ) -> tuple[list[PyPIExtraction], PyPIExtractionRun]:
-    """Extract in key order. With a ``deadline`` (a ``clock`` value), no new vulnerability
-    starts after it; the summary then says the run is incomplete."""
+    """Extract in key order, or in the given order with ``keep_order`` (see by_priority).
+    With a ``deadline`` (a ``clock`` value), no new vulnerability starts after it; the
+    summary then says the run is incomplete."""
     results: list[PyPIExtraction] = []
     skipped: Counter[str] = Counter()
-    ordered = sorted(groups, key=lambda g: g.key)
+    ordered = list(groups) if keep_order else sorted(groups, key=lambda g: g.key)
     processed = 0
     for number, group in enumerate(ordered, 1):
         if deadline is not None and clock() >= deadline:

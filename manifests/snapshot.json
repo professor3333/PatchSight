@@ -35,6 +35,15 @@
       "size": 1155955,
       "last_modified": "Sat, 14 Nov 2026 07:47:49 GMT",
       "retrieved_at": "2026-11-14T08:36:36.252544Z"
+    },
+    {
+      "name": "top-pypi-packages",
+      "url": "https://hugovk.dev/top-pypi-packages/top-pypi-packages.min.json",
+      "path": "data/raw/top-pypi-packages/top-pypi-packages.min.json",
+      "sha256": "3e958a64ebe1de0b6a4ab4c6b465d481f350fd1dfa926c639add36eb34dabc1e",
+      "size": 789174,
+      "last_modified": "Sun, 01 Nov 2026 06:42:17 GMT",
+      "retrieved_at": "2026-11-16T15:31:09.210081Z"
     }
   ],
   "repos": [

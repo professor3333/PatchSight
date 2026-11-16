@@ -16,6 +16,9 @@ from pydantic import BaseModel, ConfigDict
 
 OSV_PYPI_DUMP_URL = "https://osv-vulnerabilities.storage.googleapis.com/PyPI/all.zip"
 OSV_PYPI_MODIFIED_URL = "https://osv-vulnerabilities.storage.googleapis.com/PyPI/modified_id.csv"
+# The 15,000 most-downloaded PyPI packages of the last calendar month (from the public
+# ClickHouse PyPI dataset). Used only to order work; nothing from it is published.
+TOP_PYPI_PACKAGES_URL = "https://hugovk.dev/top-pypi-packages/top-pypi-packages.min.json"
 
 _CHUNK = 1 << 20
 

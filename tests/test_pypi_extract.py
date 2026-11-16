@@ -236,3 +236,49 @@ def test_time_budget_stops_starting_new_work(
         CharEstimate(3.0), deadline=6.0, clock=lambda: next(ticks),
     )  # fmt: skip
     assert (summary.processed, summary.complete, len(results)) == (3, False, 3)
+
+
+def test_download_rank_normalises_names_and_orders_by_downloads(tmp_path: Path) -> None:
+    dump = tmp_path / "top.json"
+    dump.write_text(json.dumps({"last_update": "2026-11-01", "rows": [
+        {"download_count": 10, "project": "Small_Pkg"},
+        {"download_count": 900, "project": "boto3"},
+        {"download_count": 50, "project": "PyYAML"},
+    ]}))  # fmt: skip
+    assert pypi_extract.download_rank(dump) == {"boto3": 0, "pyyaml": 1, "small-pkg": 2}
+
+
+def test_priority_puts_the_most_downloaded_package_first(make_advisory: AdvisoryFactory) -> None:
+    def advisory(ghsa: str, package: str) -> Any:
+        record = make_advisory(id=ghsa, aliases=[])
+        affected = record.packages[0].model_copy(update={"name": package})
+        return record.model_copy(update={"packages": (affected,)})
+
+    records = [
+        advisory("GHSA-aaaa-aaaa-aaaa", "unlisted"),
+        advisory("GHSA-bbbb-bbbb-bbbb", "pyyaml"),
+        advisory("GHSA-cccc-cccc-cccc", "boto3"),
+        advisory("GHSA-dddd-dddd-dddd", "also-unlisted"),
+    ]
+    groups = alias_groups(records)
+    ordered = pypi_extract.by_priority(
+        groups, {r.id: r for r in records}, {"boto3": 0, "pyyaml": 1}
+    )
+    assert [g.key for g in ordered] == [
+        "GHSA-cccc-cccc-cccc", "GHSA-bbbb-bbbb-bbbb", "GHSA-aaaa-aaaa-aaaa", "GHSA-dddd-dddd-dddd",
+    ]  # fmt: skip
+
+
+def test_run_keeps_a_given_order(
+    stub: dict[str, Any], make_advisory: AdvisoryFactory, tmp_path: Path
+) -> None:
+    stub["mapping"] = _mapping({"src/some_pkg/a.py": [("f", "function")]})
+    client, _ = _client(tmp_path, {"items": [_item("F1", False, [])], "public_entry_points": []})
+    records = [make_advisory(id=f"GHSA-aaaa-bbbb-{c * 4}", aliases=[]) for c in "zyx"]
+    groups = alias_groups(records)
+    given = sorted(groups, key=lambda g: g.key, reverse=True)
+    results, _ = pypi_extract.run(
+        given, {r.id: r for r in records}, None, None, client, CONFIG, "m", TEMPLATE,  # type: ignore[arg-type]
+        CharEstimate(3.0), keep_order=True,
+    )  # fmt: skip
+    assert [r.vulnerability for r in results] == [g.key for g in given]

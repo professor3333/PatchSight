@@ -40,6 +40,7 @@ app = typer.Typer(name="patchsight-pipeline", no_args_is_help=True, add_completi
 Root = Annotated[Path, typer.Option(help="Repository root.")]
 DUMP = "osv-pypi-all"
 MODIFIED = "osv-pypi-modified-id"
+TOP_PACKAGES = "top-pypi-packages"
 GHSA = "github-advisory-database"
 MANIFEST = Path("manifests/snapshot.json")
 RAW = Path("data/raw")
@@ -64,6 +65,24 @@ def snapshot_command(root: Root = Path()) -> None:
             manifest = manifest.with_file(entry)
             typer.echo(f"{name}: {entry.size:,} bytes, sha256 {entry.sha256}")
     snapshot.save_manifest(manifest, root / MANIFEST)
+
+
+@app.command("fetch-top-packages")
+def fetch_top_packages_command(root: Root = Path()) -> None:
+    """Download the most-downloaded PyPI packages list and pin its hash.
+
+    Used only to order quota-limited work (pypi-extract --priority). The list is not
+    redistributed: it stays in data/raw, and the manifest records only its URL and hash.
+    """
+    manifest = snapshot.load_manifest(root / MANIFEST)
+    timeout = httpx.Timeout(60.0, connect=15.0)
+    with httpx.Client(timeout=timeout, follow_redirects=True) as client:
+        entry = snapshot.download(
+            client, TOP_PACKAGES, snapshot.TOP_PYPI_PACKAGES_URL,
+            root / RAW / "top-pypi-packages" / "top-pypi-packages.min.json", root,
+        )  # fmt: skip
+    snapshot.save_manifest(manifest.with_file(entry), root / MANIFEST)
+    typer.echo(f"{TOP_PACKAGES}: {entry.size:,} bytes, sha256 {entry.sha256}")
 
 
 @app.command("clone-ghsa")
@@ -874,6 +893,12 @@ def pypi_extract_command(
         Path | None,
         typer.Option(help="Extractor outcomes: run only where a second opinion can help."),
     ] = None,
+    priority: Annotated[
+        bool,
+        typer.Option(
+            "--priority", help="Most-downloaded packages first (needs fetch-top-packages)."
+        ),
+    ] = False,
 ) -> None:
     """Run LLM extraction on PyPI vulnerabilities (needs the model's key, and GITHUB_TOKEN
     unless --offline)."""
@@ -891,6 +916,9 @@ def pypi_extract_command(
         eligible = {k for k, e in primaries.items() if llm_records.needs_second_opinion(e)}
         groups = [g for g in groups if g.key in eligible]
         typer.echo(f"{len(groups)} of {len(primaries)} extractions can use a second opinion")
+    if priority:
+        top = snapshot.verify(snapshot.load_manifest(root / MANIFEST).file(TOP_PACKAGES), root)
+        groups = pypi_extract.by_priority(groups, by_id, pypi_extract.download_rank(top))
     if shard is not None:
         k, _, n = shard.partition("/")
         if not (k.isdigit() and n.isdigit()):
@@ -932,6 +960,7 @@ def pypi_extract_command(
             groups, by_id, github, pypi, llm, llm_config, role, template, counter,
             progress=lambda done, total: typer.echo(f"extracted {done}/{total}", err=True),
             deadline=None if max_minutes is None else started + 60 * max_minutes,
+            keep_order=priority,
         )  # fmt: skip
     except (QuotaExhaustedError, RateLimitedError) as stopped:
         typer.echo(f"stopped: {stopped}", err=True)

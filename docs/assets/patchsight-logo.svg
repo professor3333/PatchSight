@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="PatchSight logo">
+  <title>PatchSight</title>
+  <defs>
+    <linearGradient id="shield" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6366F1"/>
+      <stop offset="1" stop-color="#4338CA"/>
+    </linearGradient>
+  </defs>
+  <path d="M60 6 L102 21 V57 C102 85 83 104 60 114 C37 104 18 85 18 57 V21 Z" fill="url(#shield)"/>
+  <rect x="34" y="34" width="34" height="7" rx="3.5" fill="#E0E7FF"/>
+  <rect x="34" y="48" width="26" height="7" rx="3.5" fill="#FCA5A5"/>
+  <rect x="34" y="62" width="30" height="7" rx="3.5" fill="#6EE7B7"/>
+  <circle cx="72" cy="66" r="15" fill="none" stroke="#FFFFFF" stroke-width="6"/>
+  <line x1="83" y1="77" x2="93" y2="87" stroke="#FFFFFF" stroke-width="7" stroke-linecap="round"/>
+</svg>

@@ -1,60 +1,97 @@
+<div align="center">
+
+<img src="docs/assets/patchsight-logo.svg" width="104" alt="PatchSight logo">
+
 # PatchSight
 
+**Know which vulnerable dependencies your code actually calls.**
+
+Symbol-level vulnerability triage for Python. An LLM reads each security fix offline;<br>
+your scan is a database lookup and static analysis, with no model and no server.
+
 [![ci](https://github.com/professor3333/PatchSight/actions/workflows/ci.yml/badge.svg)](https://github.com/professor3333/PatchSight/actions/workflows/ci.yml)
+[![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-3776AB?logo=python&logoColor=white)](pyproject.toml)
+[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
+[![LLM at scan time: none](https://img.shields.io/badge/LLM_at_scan_time-none-2ea44f)](docs/adr/0002-no-llm-at-scan-time.md)
+[![Benchmark: reproducible](https://img.shields.io/badge/benchmark-reproducible-8957e5)](#results-at-a-glance)
 
-Symbol-level vulnerability triage for Python dependencies.
+[Quick start](#quick-start) · [Results](#results-at-a-glance) · [How it works](#how-it-works) · [Status](#project-status) · [Design](docs/proposal.md)
 
-```mermaid
-flowchart LR
-  subgraph OFFLINE["Offline pipeline: the only place an LLM runs"]
-    A["OSV PyPI advisories"] --> B["Fix commits from GitHub"]
-    B --> C["tree-sitter: diff hunks to functions"]
-    C --> D["LLM extractor: schema-checked, validated"]
-    C --> E["Fallback: every changed function, low confidence"]
-    D --> F[("Symbol database")]
-    E --> F
-  end
-  subgraph SCAN["patchsight scan: no LLM, no server"]
-    G["requirements.txt"] --> H["OSV batch query"]
-    I["Your code, parsed with ast"] --> J["Verdict per alert, with file:line evidence"]
-    H --> J
-  end
-  F -- "GitHub release + latest.json" --> J
-```
+</div>
 
-Dependency scanners flag a package version as vulnerable even when your code never touches the vulnerable function, so alerts can't be ranked. Fixing that needs to know *which functions* carry each bug. For PyPI that data barely exists: of **7,105** PyPI vulnerabilities in OSV on 2026-11-14, **2** say which functions are affected ([Week 1 report](docs/reports/week1-data-gate.md)).
+---
 
-PatchSight builds that data. Offline, an LLM reads each advisory's fix commit and picks out the vulnerable functions, fenced in by deterministic checks. Your scan then needs no model and no server: one OSV query, a database lookup, and static analysis of your code. Your code never leaves your machine; OSV receives only package names and versions.
+## Why PatchSight
 
-## Status
+Dependency scanners flag a package *version* as vulnerable, even when your code never touches the vulnerable function. Teams get dozens of alerts and no way to rank them. Ranking them needs to know **which functions carry each bug**, and for Python that data barely exists:
 
-Early development. This works today:
+> [!IMPORTANT]
+> Of **7,105** PyPI vulnerabilities in OSV (snapshot of 14 November 2026), only **2** record which functions are affected.
+> See the [Week 1 data report](docs/reports/week1-data-gate.md).
 
-- the offline pipeline from OSV ingestion to fix-commit mapping, the LLM extractor, and a database builder;
-- `patchsight scan` for `requirements.txt`, and `patchsight db` for downloading the database;
-- the benchmark harness, which reproduces the published baseline (see [Results](#results-so-far)).
+PatchSight builds that data, then uses it:
 
-Not done yet:
+<table>
+<tr>
+<td width="33%" valign="top">
 
-- **No database release is published yet.** `patchsight db update` will say so. The first release (fallback records for every PyPI vulnerability with a GitHub fix) comes next. LLM-extracted records follow.
-- No PyPI package yet, so install from GitHub.
-- No `uv.lock` or `poetry.lock` support, no GitHub Action, no VEX output.
+**Pinpoints the vulnerable code**<br>
+An open-weight LLM reads each advisory's fix commit and names the functions that carry the bug. Deterministic checks then validate every answer.
 
-## Install and use
+</td>
+<td width="33%" valign="top">
+
+**Keeps your code private**<br>
+Scans run locally with Python's `ast`. Your code is never sent anywhere; OSV only receives package names and versions.
+
+</td>
+<td width="33%" valign="top">
+
+**Measured, not claimed**<br>
+Every number below links to a generated report, and `make reproduce` rebuilds the benchmark tables offline, with no API key.
+
+</td>
+</tr>
+</table>
+
+## Results at a glance
+
+On the Go benchmark of [Dunlap et al. (DIMVA 2024)](https://www.enck.org/pubs/dunlap-dimva24.pdf): 280 vulnerability reports, scored on finding the vulnerable functions.
+
+| System | Precision | Recall | F1 |
+|:---|:---:|:---:|:---:|
+| Mark every changed function vulnerable (*ChangedFuncs*, reproduced) | 0.225 | 0.893 | 0.360 |
+| Best open model in the paper (Mixtral 8x7B) | 0.60 | 0.74 | 0.66 |
+| **PatchSight: Qwen3.8-27B, 4-bit, prompt not tuned** | **0.751** | **0.621** | **0.680** |
+
+<sub>The F1 95% interval for PatchSight is 0.62 to 0.74. 220 of the 280 reports form a held-out test split that has never been used for any decision; on it, F1 is 0.681. Reports: [baseline](docs/reports/changedfuncs-baseline.md) · [LLM run](docs/reports/extraction-dunlap-all-extract-v1-qwen3.8-27b-q4km.md) · [run provenance](docs/reports/kaggle-run-extract-v1-qwen3.8-27b-q4km.json)</sub>
+
+**Precision is three times the naive baseline's.** Recall is lower, so the model alone sometimes misses the vulnerable function. That is why PatchSight never trusts it alone to say "not called" (see [the safety rule](#reading-the-verdicts)).
+
+## Quick start
 
 ```bash
 pip install "patchsight @ git+https://github.com/professor3333/PatchSight"
 
-patchsight db update            # download the latest database release (none published yet)
-patchsight db info              # show which database a scan uses, and how old it is
-patchsight scan .               # scan ./requirements.txt and the code under .
-patchsight scan . --requirements requirements/prod.txt --format json
-patchsight scan . --fail-on called   # exit 1 if any alert is CALLED (for CI)
+patchsight db update                  # download the latest symbol database (SHA-256 verified)
+patchsight scan .                     # scan ./requirements.txt and the code under .
+```
+
+<details>
+<summary><b>More options</b></summary>
+
+```bash
+patchsight scan . --requirements requirements/prod.txt    # a different lockfile
+patchsight scan . --format json                           # machine-readable output
+patchsight scan . --fail-on called                        # exit 1 if any alert is CALLED (CI gate)
+patchsight db info                                        # which database a scan uses, and its age
 ```
 
 `--db PATH`, or the `PATCHSIGHT_DB` environment variable, selects a specific database file.
 
-Example output. This scan used a database built from a 100-vulnerability sample, so most alerts are still *unknown*:
+</details>
+
+Example output, from a scan that used a database built from a 100-vulnerability sample:
 
 ```text
 Lockfile: requirements.txt (3 pinned, 1 unpinned)   Alerts: 91 (95 advisory IDs)   DB: 2026.11.14 (fallback-v1)
@@ -64,105 +101,124 @@ CALLED (fix first)  2
     your code references a vulnerable symbol
     matched: bikeshed.InputSource.FileInputSource
     at: app/main.py:6
-    symbol data: low confidence
-  ...
+
 NOT IMPORTED (transitive only)  1
   GHSA-qvrw-v9rv-5rjx (also PYSEC-2023-251)  aiohttp 3.9.0rc0
     your code never imports aiohttp; transitive use is not analysed
-UNKNOWN (no symbol data, low confidence, or dynamic use)  88
-  ...
 ```
 
-## What the verdicts mean
+## Reading the verdicts
 
-| Verdict | Meaning |
-|---|---|
-| **CALLED** | A reference in your code resolves to a vulnerable function, its class, or an entry point that reaches it. Fix these first |
-| **IMPORTED, NOT CALLED** | The package is imported, but no vulnerable symbol is referenced. Only given for high-confidence symbol data |
-| **NOT IMPORTED** | Your code never imports the package directly. It may still be used through other dependencies, which is not analysed |
-| **UNKNOWN** | No symbol data, only low-confidence data, or dynamic code the scanner cannot follow |
+| | Verdict | Meaning |
+|:---:|:---|:---|
+| 🔴 | **CALLED** | A reference in your code resolves to a vulnerable function, its class, or an entry point that reaches it. **Fix these first.** |
+| 🟢 | **IMPORTED, NOT CALLED** | The package is imported, but no vulnerable symbol is referenced. Given only for high-confidence data. |
+| ⚪ | **NOT IMPORTED** | Your code never imports the package directly. It may still be used through other dependencies. |
+| 🟡 | **UNKNOWN** | No symbol data, only low-confidence data, or dynamic code the scanner can't follow. |
 
-The rule throughout is to **fail towards noise, never towards silence**. A wrong "not called" could hide a real vulnerability:
-
-- **Never hidden:** every alert OSV reports is shown.
-- **Static, direct use only:** "not called" means no direct use the scanner can resolve statically.
-- **Dynamic code is unknown:** `getattr` with a computed name, `importlib`, `__import__`, a module passed around as a value, and star imports all make an alert *unknown*.
-- **Low confidence only raises:** symbol data marked low confidence can make an alert *called*, never *not called*.
-
-PatchSight supports triage. It doesn't judge whether your deployment is vulnerable.
-
-## Results so far
-
-All numbers are measured. The reports are generated by the pipeline and committed under [`docs/reports/`](docs/reports/).
-
-**The data (2026-11-14 snapshot):**
-- **Fix commits:** 67.5% of PyPI vulnerabilities link a GitHub fix candidate. In a random sample of 100, 92 were real fixes on the package's own repository, which suggests about **62%** of all PyPI vulnerabilities have a usable fix commit (95% CI 57–65%) ([sample check](docs/reports/fix-candidate-sample.md)).
-- **Python code:** 80% of those fixes change Python code.
-
-**The benchmark harness.** On the Go benchmark of [Dunlap et al., DIMVA 2024](https://www.enck.org/pubs/dunlap-dimva24.pdf), marking every function a fix changes as vulnerable ("ChangedFuncs") reproduces the published baseline ([report](docs/reports/changedfuncs-baseline.md)):
-
-| ChangedFuncs | Candidates | True positives | Precision | Recall | F1 |
-|---|---|---|---|---|---|
-| Paper, as published | 2,370 | 528 | 0.22 | 0.90 | 0.35 |
-| PatchSight's pipeline | 2,330 | 525 | 0.225 | 0.893 | 0.360 |
-
-`make reproduce` recomputes this table in seconds from committed files, with no network or API key, and CI runs it on every push. It uses [`benchmarks/dunlap-v1/`](benchmarks/dunlap-v1/), which holds function names, paths and commit SHAs but no third-party code.
-
-**LLM extraction.** Qwen3.8-27B, 4-bit, self-hosted on a Kaggle notebook with two T4 GPUs. The prompt is `extract-v1`, which has not been tuned on any split ([report](docs/reports/extraction-dunlap-all-extract-v1-qwen3.8-27b-q4km.md)). The 220 test reports of the frozen split (`splits/dunlap-v1.json`) have never been used for any choice.
-
-| Split | Reports | Precision | Recall | F1 (95% CI) | Miss rate | ChangedFuncs F1 |
-|---|---|---|---|---|---|---|
-| dev | 60 | 0.710 | 0.644 | 0.676 (0.57–0.78) | 21.7% | 0.381 |
-| test | 220 | 0.763 | 0.615 | 0.681 (0.61–0.75) | 15.9% | 0.355 |
-| all | 280 | 0.751 | 0.621 | 0.680 (0.62–0.74) | 17.1% | 0.360 |
-
-The best open model in the paper, Mixtral 8x7B, reached P 0.60, R 0.74, F1 0.66.
-
-Precision is three times ChangedFuncs'. Recall is lower, though, and so is the **miss rate**: the share of reports where no true symbol was found, which is the safety metric. It's 17.1% against ChangedFuncs' 9.6%. That is why low-confidence extractions fall back to every changed function. The two-model agreement step that decides confidence comes next.
-
-Reliability:
-- 275 of 280 answers were valid at the first attempt, and none had invented IDs.
-- One report failed twice: its 24 candidates needed more than the 1,500-token answer limit.
-
-`make reproduce` replays these numbers from the model's committed answers, re-running the same validator.
+> [!NOTE]
+> **The safety rule: fail towards noise, never towards silence.** A wrong "not called" could hide a real vulnerability, so:
+> - every alert is shown;
+> - "not called" covers only direct use that can be resolved statically;
+> - dynamic code (`getattr` with a computed name, `importlib`, star imports, modules passed as values) gives **unknown**;
+> - low-confidence data can raise an alert to **called**, but never lower it.
+>
+> PatchSight supports triage. It doesn't judge whether your deployment is vulnerable.
 
 ## How it works
 
-The offline pipeline is `python -m patchsight.pipeline <command>`:
+```mermaid
+flowchart LR
+  subgraph OFFLINE["Offline pipeline: the only place an LLM runs"]
+    A["OSV PyPI advisories"] --> B["Fix commits from GitHub"]
+    B --> C["tree-sitter: diff hunks to functions"]
+    C --> D["LLM extractor + second opinion<br/>schema-checked, validated"]
+    C --> E["Fallback: every changed function<br/>low confidence"]
+    D --> F[("Symbol database")]
+    E --> F
+  end
+  subgraph SCAN["patchsight scan: no LLM, no server"]
+    G["requirements.txt"] --> H["OSV batch query"]
+    I["Your code, parsed with ast"] --> J["Verdict per alert<br/>with file:line evidence"]
+    H --> J
+  end
+  F -- "versioned release<br/>+ SHA-256 pointer" --> J
+```
 
-| Command | Does |
-|---|---|
-| `snapshot`, `normalise` | Download the OSV PyPI dump with its SHA-256 pinned; normalise records, excluding malicious-package reports and withdrawn advisories |
+1. **Find the fix.** Each PyPI advisory's fix commit is resolved on GitHub and kept only if it sits on the package's own repository. In a random sample, 92 of 100 candidate links were real fixes ([sample check](docs/reports/fix-candidate-sample.md)).
+2. **Map the change.** tree-sitter maps every diff hunk to the function it changes, on both sides of the fix.
+3. **Ask the model, then check it.** The model sees the advisory and the numbered candidate functions, and answers in a strict JSON schema with candidate IDs only. Code then rejects invented IDs, requires one verdict per candidate, and requires every "vulnerable" verdict to cite a change shown under that function.
+4. **Decide confidence.** A second model from another family must agree, and the agreed answer must include a public symbol. Anything else falls back to every changed function ([ADR 0004](docs/adr/0004-fall-back-to-the-baseline.md)).
+5. **Scan locally.** Your lockfile is matched against OSV, joined with the database, and checked against your code's syntax tree.
+
+<details>
+<summary><b>Pipeline command reference</b></summary>
+
+The offline pipeline is `python -m patchsight.pipeline <command>`.
+
+| Command | What it does |
+|:---|:---|
+| `snapshot`, `normalise` | Download the OSV PyPI dump with its SHA-256 pinned, and normalise it |
 | `week1-report`, `fix-sample` | Measure the data: fix-link coverage, existing symbol data, real-fix share |
-| `build-db`, `package-db` | Build the symbol database and package it as a release, with `releases/latest.json` |
-| `fetch-dunlap`, `dunlap-baseline`, `dunlap-extract`, `reproduce` | The Go benchmark: baseline, LLM extraction, offline reproduction |
+| `build-db`, `package-db` | Build the symbol database, and package a release with its pointer |
+| `fetch-dunlap`, `dunlap-baseline`, `dunlap-extract` | The Go benchmark: the baseline and LLM extraction |
+| `export-replay`, `confidence-report`, `reproduce` | Replay committed model answers offline, compare confidence rules, rebuild the tables |
 
-The LLM extractor sends the advisory and the fix's numbered changed functions to an open-weight model (Qwen3.8-27B):
-- The model answers in a strict JSON schema, with candidate IDs only.
-- Code checks every answer: one verdict per candidate, no invented IDs, and every "vulnerable" verdict must cite a change shown under that function. A failed answer gets one repair attempt, then goes to a dead-letter table.
-- Advisory text and code are treated as untrusted data.
+</details>
 
-Design decisions are recorded in [`docs/adr/`](docs/adr/), and the full design is in [`docs/proposal.md`](docs/proposal.md).
+## Project status
+
+- [x] OSV ingestion with pinned snapshots, and alias grouping across GHSA, PYSEC and CVE
+- [x] Fix-commit resolution, and tree-sitter hunk-to-function mapping for Python and Go
+- [x] LLM extractor: versioned prompt, strict schema, validators, one repair attempt, dead-letter table, response cache
+- [x] Benchmark harness that reproduces the published baseline, and `make reproduce` in CI
+- [x] `patchsight scan` for `requirements.txt`, with `patchsight db update` and `patchsight db info`
+- [x] Confidence tiers from two model families, chosen on the dev split ([ADR 0004](docs/adr/0004-fall-back-to-the-baseline.md))
+- [ ] **First public database release.** Fallback records for about 3,500 PyPI vulnerabilities are built and being released now
+- [ ] LLM-extracted records for PyPI, from the self-hosted backfill
+- [ ] Held-out test evaluation of the confidence rule (declared in advance; in progress)
+- [ ] `uv.lock` and `poetry.lock` support, a GitHub Action, OpenVEX output, and PyPI packaging
+
+> [!WARNING]
+> **The confidence rule doesn't meet its safety target yet.** On the dev split, high-confidence records still miss the vulnerable symbol in 1 of 27 reports: 3.7%, against a target of 2% or less ([report](docs/reports/confidence-dunlap-dev-extract-v1-qwen3.8-27b-q4km-vs-extract-v1-gpt-oss-120b.md)). Until it does, treat **imported, not called** as a prioritisation hint, not a guarantee.
 
 ## Development
 
 ```bash
-uv sync --all-extras   # the offline pipeline needs the 'pipeline' extra
-make check             # ruff, mypy (strict) and the offline tests; no network or keys
-make reproduce         # the benchmark table, from committed files
+uv sync --all-extras    # the offline pipeline needs the 'pipeline' extra
+make check              # ruff, mypy (strict) and the offline tests: no network, no keys
+make reproduce          # rebuild the benchmark tables from committed files
 ```
 
-Tests never call a model or a live API. Network and model tests are marked `live`, and run only on demand.
+Tests never call a model or a live API. Design decisions are recorded in [`docs/adr/`](docs/adr/), and the full design is in [`docs/proposal.md`](docs/proposal.md).
+
+<details>
+<summary><b>Project layout</b></summary>
+
+```text
+src/patchsight/
+├── cli.py              patchsight scan / db (no LLM, no pipeline imports)
+├── db.py               the symbol database (stdlib sqlite3)
+├── scan/               lockfiles, OSV client, AST scanner, verdicts, reports
+├── pipeline/           offline only: ingest, diffs, LLM client, extraction, benchmarks
+└── eval/               metrics, confidence tiers, the safety view
+benchmarks/dunlap-v1/   candidate metadata and model answers for offline replay (no code)
+docs/                   proposal, ADRs, generated reports
+```
+
+</details>
 
 ## Data and licences
 
-- **Code:** Apache License 2.0 ([LICENSE](LICENSE)).
-- **Advisory data:** from [OSV.dev](https://osv.dev), the [GitHub Advisory Database](https://github.com/github/advisory-database) and the [PyPA Advisory Database](https://github.com/pypa/advisory-database), all CC BY 4.0. Any database or dataset PatchSight publishes credits them and states what changed.
-- **Benchmark:** Dunlap et al. (Apache-2.0) and the Go vulnerability database (CC BY 4.0).
-- **Third-party source code:** never redistributed. Only commit SHAs, file paths, line ranges and function names are stored.
+| | |
+|:---|:---|
+| **Code** | Apache License 2.0 ([LICENSE](LICENSE)) |
+| **Advisory data** | [OSV.dev](https://osv.dev), the [GitHub Advisory Database](https://github.com/github/advisory-database) and the [PyPA Advisory Database](https://github.com/pypa/advisory-database), all CC BY 4.0. Published databases credit them and state what changed |
+| **Benchmark** | Dunlap et al. (Apache-2.0) and the Go vulnerability database (CC BY 4.0) |
+| **Third-party code** | Never redistributed. Only commit SHAs, file paths and function names are stored |
 
 ## Limitations
 
-- **Static analysis:** Python is dynamic, so "not called" is a claim about statically resolvable code only, and transitive use through other packages isn't analysed.
-- **Limited to the fix commit:** a vulnerable function that the fix left unchanged can't be found from the patch alone. PyYAML's CVE-2020-14343, whose fix only changes module-level registration calls, is one example.
-- **Only GitHub-hosted fixes** are used so far, and only `requirements.txt` is parsed.
+- **"Not called" is a static claim.** Python is dynamic, and use through other packages isn't analysed.
+- **Patch-based extraction has a ceiling.** A vulnerable function the fix left unchanged can't be found from the patch alone. PyYAML's CVE-2020-14343, whose fix only edits module-level registration calls, is one example.
+- **Narrow input for now.** Only fixes hosted on GitHub are used, and only `requirements.txt` is parsed.

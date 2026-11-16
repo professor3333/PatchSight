@@ -25,6 +25,8 @@ from patchsight.pipeline.llm.config import LLMConfig
 from patchsight.pipeline.llm.tokens import TokenCounter
 
 DUNLAP_ADVISORIES = "data/advisory-data/govulndb-2023-10-26.csv"
+# The benchmark is function-level (Dunlap et al.), so only functions and methods compete.
+FUNCTION_KINDS = frozenset({"function", "method"})
 BOOTSTRAP = 2000
 SEED = 20261114
 
@@ -62,8 +64,10 @@ def load_advisories(path: Path) -> dict[str, AdvisoryText]:
         }
 
 
-def candidate_inputs(mappings: Sequence[CommitMapping]) -> tuple[list[CandidateInput], set[str]]:
-    """Function and method candidates from mapped commits, and every known definition name."""
+def candidate_inputs(
+    mappings: Sequence[CommitMapping], kinds: frozenset[str] = FUNCTION_KINDS
+) -> tuple[list[CandidateInput], set[str]]:
+    """Candidates of the given kinds from mapped commits, and every known definition name."""
     inputs: list[CandidateInput] = []
     known: set[str] = set()
     for mapping in mappings:
@@ -71,7 +75,7 @@ def candidate_inputs(mappings: Sequence[CommitMapping]) -> tuple[list[CandidateI
             known.update(file.mapping.known_names)
             by_index = {h.index: h for h in file.hunks}
             for changed in file.mapping.changed:
-                if changed.kind not in ("function", "method"):
+                if changed.kind not in kinds:
                     continue
                 inputs.append(
                     CandidateInput(

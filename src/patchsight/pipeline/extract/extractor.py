@@ -45,6 +45,8 @@ class ExtractionOutcome(BaseModel):
     prompt_version: str
     candidates: int
     vulnerable: tuple[str, ...]
+    # (path, name) of each vulnerable candidate: a name can occur in several files.
+    vulnerable_locations: tuple[tuple[str, str], ...] = ()
     entry_points: tuple[str, ...]
     entry_points_dropped: int
     invented_ids_first_attempt: int
@@ -135,6 +137,7 @@ def extract(
             ]
 
     names = {c.id: c.name for c in prompt.candidates}
+    locations = {c.id: (c.path, c.name) for c in prompt.candidates}
     usage = {
         "prompt_tokens": sum(r.prompt_tokens for r in responses),
         "completion_tokens": sum(r.completion_tokens for r in responses),
@@ -153,6 +156,7 @@ def extract(
         **usage,
         status="ok" if len(responses) == 1 and not rejections else "repaired",
         vulnerable=tuple(sorted({names[cid] for cid in result.vulnerable_ids})),
+        vulnerable_locations=tuple(sorted({locations[cid] for cid in result.vulnerable_ids})),
         entry_points=result.entry_points,
         entry_points_dropped=len(result.entry_points_dropped),
         errors=tuple(errors) if len(responses) > 1 or rejections else (),

@@ -1,0 +1,195 @@
+"""LLM extraction for PyPI vulnerabilities: the backfill (proposal §6; Phase 2, step 3).
+
+Each vulnerability gets one extraction over the same definitions its fallback record lists:
+the functions, methods and classes that ``build_db.fix_mappings`` finds in its fix commits.
+Python bugs can sit in a class body, so classes compete too; the Go benchmark stays
+function-level.
+
+Every model answer is cached by request, so a stopped run resumes where it left off, and a
+Kaggle run can be imported and replayed here with no model calls. Turning outcomes into
+database records, with confidence tiers (ADR 0004), is a separate step.
+"""
+
+from collections import Counter
+from collections.abc import Callable, Sequence
+
+from pydantic import BaseModel, ConfigDict
+
+from patchsight.db import FixCommitRef, Symbol
+from patchsight.pipeline import build_db
+from patchsight.pipeline.benchmarks.extraction import candidate_inputs
+from patchsight.pipeline.diffs.github import GitHubClient
+from patchsight.pipeline.extract.extractor import ExtractionOutcome, extract
+from patchsight.pipeline.extract.prompt import AdvisoryText, PromptTemplate, render
+from patchsight.pipeline.ingest.aliases import AliasGroup
+from patchsight.pipeline.ingest.osv import Advisory
+from patchsight.pipeline.llm.client import LLMClient
+from patchsight.pipeline.llm.config import LLMConfig
+from patchsight.pipeline.llm.tokens import TokenCounter
+from patchsight.pipeline.pypi import PyPIClient
+
+PYTHON_KINDS = frozenset({"function", "method", "class"})
+
+
+class PyPIExtraction(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
+    vulnerability: str
+    packages: tuple[str, ...]
+    input_hash: str
+    fix_commits: tuple[FixCommitRef, ...]
+    # The vulnerable candidates as database symbols (module-qualified, with path and kind).
+    vulnerable_symbols: tuple[Symbol, ...]
+    outcome: ExtractionOutcome
+
+
+class PyPIExtractionRun(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
+    model: str
+    role: str
+    prompt_version: str
+    vulnerabilities: int
+    skipped: dict[str, int]
+    status: dict[str, int]
+    truncated: int
+    prompt_tokens: int
+    completion_tokens: int
+    calls: int
+    cached_calls: int
+    provider_rejections: int
+
+
+class PromptPlan(BaseModel):
+    """Prompt sizes for one vulnerability, measured without calling a model."""
+
+    model_config = ConfigDict(frozen=True)
+
+    vulnerability: str
+    candidates: int
+    full_prompt_tokens: int  # every candidate, no budget
+    kept: int  # candidates kept under the role's budget and candidate limit
+    truncated: bool
+
+
+def plan_vulnerability(
+    group: AliasGroup,
+    by_id: dict[str, Advisory],
+    github: GitHubClient,
+    pypi: PyPIClient,
+    config: LLMConfig,
+    role: str,
+    template: PromptTemplate,
+    counter: TokenCounter,
+) -> PromptPlan | str:
+    """Render the prompt twice, unbounded and as it would be sent; no model call."""
+    fixes = build_db.fix_mappings(group, by_id, github, pypi)
+    if fixes.status != "mapped":
+        return fixes.status
+    if len(build_db.changed_symbols(fixes.mappings)) > build_db.MAX_SYMBOLS:
+        return "too_broad"
+    inputs, _ = candidate_inputs(fixes.mappings, PYTHON_KINDS)
+    advisory = advisory_text(group, by_id)
+    lines = config.budget.max_hunk_lines
+    full = render(template, advisory, inputs, 10**9, counter, lines)
+    sent = render(
+        template, advisory, inputs, config.prompt_budget(role), counter, lines,
+        config.candidate_limit(role),
+    )  # fmt: skip
+    return PromptPlan(
+        vulnerability=group.key,
+        candidates=len(inputs),
+        full_prompt_tokens=full.estimated_tokens,
+        kept=len(sent.candidates),
+        truncated=sent.truncated,
+    )
+
+
+def advisory_text(group: AliasGroup, by_id: dict[str, Advisory]) -> AdvisoryText:
+    """One advisory text per vulnerability: the first summary and the longest details.
+
+    Aliases (GHSA, PYSEC, CVE) usually repeat one text; the longest details carry the most.
+    """
+    advisories = [by_id[i] for i in group.advisory_ids]
+    summary = next((a.summary for a in advisories if a.summary), "")
+    details = max((a.details for a in advisories), key=len, default="")
+    return AdvisoryText(id=group.key, summary=summary, details=details)
+
+
+def extract_vulnerability(
+    group: AliasGroup,
+    by_id: dict[str, Advisory],
+    github: GitHubClient,
+    pypi: PyPIClient,
+    llm: LLMClient,
+    config: LLMConfig,
+    role: str,
+    template: PromptTemplate,
+    counter: TokenCounter,
+) -> PyPIExtraction | str:
+    """The extraction for one vulnerability, or why it has none (a build status)."""
+    fixes = build_db.fix_mappings(group, by_id, github, pypi)
+    if fixes.status != "mapped":
+        return fixes.status
+    if len(build_db.changed_symbols(fixes.mappings)) > build_db.MAX_SYMBOLS:
+        return "too_broad"
+    inputs, known = candidate_inputs(fixes.mappings, PYTHON_KINDS)
+    outcome = extract(
+        llm, config.models[role], template, advisory_text(group, by_id), inputs, known,
+        config.prompt_budget(role), counter, config.budget.max_hunk_lines,
+        config.candidate_limit(role),
+    )  # fmt: skip
+    kinds = {(i.path, i.name): i.kind for i in inputs}
+    return PyPIExtraction(
+        vulnerability=group.key,
+        packages=fixes.packages,
+        input_hash=build_db.input_hash(group, by_id),
+        fix_commits=tuple(FixCommitRef(repo=m.repo, sha=m.sha) for m in fixes.mappings),
+        vulnerable_symbols=tuple(
+            build_db.symbol_for(path, name, kinds[(path, name)])
+            for path, name in outcome.vulnerable_locations
+        ),
+        outcome=outcome,
+    )
+
+
+def run(
+    groups: Sequence[AliasGroup],
+    by_id: dict[str, Advisory],
+    github: GitHubClient,
+    pypi: PyPIClient,
+    llm: LLMClient,
+    config: LLMConfig,
+    role: str,
+    template: PromptTemplate,
+    counter: TokenCounter,
+    progress: Callable[[int, int], None] | None = None,
+) -> tuple[list[PyPIExtraction], PyPIExtractionRun]:
+    results: list[PyPIExtraction] = []
+    skipped: Counter[str] = Counter()
+    ordered = sorted(groups, key=lambda g: g.key)
+    for number, group in enumerate(ordered, 1):
+        result = extract_vulnerability(
+            group, by_id, github, pypi, llm, config, role, template, counter
+        )
+        if isinstance(result, str):
+            skipped[result] += 1
+        else:
+            results.append(result)
+        if progress is not None and (number % 25 == 0 or number == len(ordered)):
+            progress(number, len(ordered))
+    outcomes = [r.outcome for r in results]
+    return results, PyPIExtractionRun(
+        model=config.models[role].model,
+        role=role,
+        prompt_version=template.version,
+        vulnerabilities=len(ordered),
+        skipped=dict(sorted(skipped.items())),
+        status=dict(sorted(Counter(o.status for o in outcomes).items())),
+        truncated=sum(o.truncated for o in outcomes),
+        prompt_tokens=sum(o.prompt_tokens for o in outcomes),
+        completion_tokens=sum(o.completion_tokens for o in outcomes),
+        calls=sum(o.calls for o in outcomes),
+        cached_calls=sum(o.cached_calls for o in outcomes),
+        provider_rejections=sum(o.provider_rejections for o in outcomes),
+    )

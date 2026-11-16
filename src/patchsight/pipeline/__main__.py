@@ -26,7 +26,7 @@ from patchsight.pipeline.benchmarks import (
 from patchsight.pipeline.diffs.github import GitHubClient
 from patchsight.pipeline.extract.prompt import load_template
 from patchsight.pipeline.ingest import ghsa_repo, snapshot
-from patchsight.pipeline.ingest.aliases import alias_groups
+from patchsight.pipeline.ingest.aliases import AliasGroup, alias_groups
 from patchsight.pipeline.ingest.osv import Advisory, Excluded, Quarantined, normalise_dump
 from patchsight.pipeline.llm.client import QuotaExhaustedError, RateLimitedError, client_for
 from patchsight.pipeline.llm.config import load_config
@@ -432,20 +432,10 @@ def import_kaggle_run_command(
     typer.echo(f"imported {responses} cached responses; run files in {inbox.relative_to(root)}")
 
 
-@app.command("build-db")
-def build_db_command(
-    root: Root = Path(),
-    ids: Annotated[str | None, typer.Option(help="Comma-separated advisory IDs.")] = None,
-    sample: Annotated[int | None, typer.Option(help="Seeded sample of N vulnerabilities.")] = None,
-    seed: Annotated[int, typer.Option(help="Sample seed.")] = 20261114,
-    cache: Annotated[Path, typer.Option(help="HTTP response cache.")] = Path(".cache/http"),
-    out: Annotated[Path, typer.Option(help="Output path, without extension.")] = Path(
-        "data/build/patchsight"
-    ),
-) -> None:
-    """Build a symbol database of fallback records (needs GITHUB_TOKEN)."""
-    token = _github_token()
-    manifest, dump = _load_verified(root)
+def _github_fix_groups(
+    dump: Path, ids: str | None, sample: int | None, seed: int
+) -> tuple[dict[str, Advisory], list[AliasGroup]]:
+    """Vulnerabilities with a GitHub fix candidate, optionally narrowed to IDs or a sample."""
     advisories = [r for r in normalise_dump(dump) if isinstance(r, Advisory)]
     by_id = {a.id: a for a in advisories}
     groups = [
@@ -460,6 +450,24 @@ def build_db_command(
         groups = [g for g in groups if wanted & set(g.identifiers)]
     elif sample is not None:
         groups = fix_sample.draw_sample(groups, sample, seed)
+    return by_id, groups
+
+
+@app.command("build-db")
+def build_db_command(
+    root: Root = Path(),
+    ids: Annotated[str | None, typer.Option(help="Comma-separated advisory IDs.")] = None,
+    sample: Annotated[int | None, typer.Option(help="Seeded sample of N vulnerabilities.")] = None,
+    seed: Annotated[int, typer.Option(help="Sample seed.")] = 20261114,
+    cache: Annotated[Path, typer.Option(help="HTTP response cache.")] = Path(".cache/http"),
+    out: Annotated[Path, typer.Option(help="Output path, without extension.")] = Path(
+        "data/build/patchsight"
+    ),
+) -> None:
+    """Build a symbol database of fallback records (needs GITHUB_TOKEN)."""
+    token = _github_token()
+    manifest, dump = _load_verified(root)
+    by_id, groups = _github_fix_groups(dump, ids, sample, seed)
     dump_entry = manifest.file(DUMP)
     version = dump_entry.retrieved_at.strftime("%Y.%m.%d")
     # A full build takes hours: wait out GitHub's hourly limit instead of failing.
@@ -812,6 +820,87 @@ def reproduce_command(root: Root = Path()) -> None:
                 typer.echo(f"MISMATCH with {report_path.relative_to(root)}", err=True)
                 raise typer.Exit(code=1)
         typer.echo(f"\nMatches docs/reports/extraction-dunlap-*-{tag}.json exactly.")
+
+
+@app.command("pypi-extract")
+def pypi_extract_command(
+    root: Root = Path(),
+    role: Annotated[str, typer.Option(help="Model role in the LLM config.")] = "extractor",
+    ids: Annotated[str | None, typer.Option(help="Comma-separated advisory IDs.")] = None,
+    sample: Annotated[int | None, typer.Option(help="Seeded sample of N vulnerabilities.")] = None,
+    seed: Annotated[int, typer.Option(help="Sample seed.")] = 20261114,
+    config: Annotated[Path, typer.Option(help="LLM config.")] = Path("configs/llm.toml"),
+    prompt: Annotated[Path, typer.Option(help="Prompt template.")] = Path("prompts/extract_v1.md"),
+    cache: Annotated[Path, typer.Option(help="Cache root (HTTP and LLM).")] = Path(".cache"),
+    out: Annotated[Path, typer.Option(help="Output path prefix; the role is appended.")] = Path(
+        "data/interim/pypi-extract"
+    ),
+    plan: Annotated[
+        bool, typer.Option("--plan", help="Only measure prompt sizes; no model calls.")
+    ] = False,
+) -> None:
+    """Run LLM extraction on PyPI vulnerabilities (needs GITHUB_TOKEN and the model's key)."""
+    from patchsight.pipeline import pypi_extract
+
+    token = _github_token()
+    _, dump = _load_verified(root)
+    by_id, groups = _github_fix_groups(dump, ids, sample, seed)
+    llm_config = load_config(root / config)
+    template = load_template(root / prompt)
+    counter = HfTokenizer(llm_config.tokenizer, root / cache / "tokenizer")
+    github = GitHubClient(root / cache / "http" / "github", token=token, wait_for_rate_limit=3900)
+    pypi = PyPIClient(root / cache / "http" / "pypi")
+    if plan:
+        try:
+            plans = [
+                pypi_extract.plan_vulnerability(
+                    g, by_id, github, pypi, llm_config, role, template, counter
+                )
+                for g in sorted(groups, key=lambda g: g.key)
+            ]
+        finally:
+            github.close()
+            pypi.close()
+        target = root / out
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.with_name(f"{target.name}-{role}-plan.jsonl").write_text(
+            "".join(p.model_dump_json() + "\n" for p in plans if not isinstance(p, str)), "utf-8"
+        )
+        sized = [p for p in plans if not isinstance(p, str)]
+        typer.echo(
+            f"{len(sized)} prompts; truncated under the {role} budget: "
+            f"{sum(p.truncated for p in sized)}"
+        )
+        return
+    llm, model_id = client_for(llm_config, role, root / cache / "llm", counter)
+    try:
+        results, summary = pypi_extract.run(
+            groups, by_id, github, pypi, llm, llm_config, role, template, counter,
+            progress=lambda done, total: typer.echo(f"extracted {done}/{total}", err=True),
+        )  # fmt: skip
+    except (QuotaExhaustedError, RateLimitedError) as stopped:
+        typer.echo(f"stopped: {stopped}", err=True)
+        typer.echo(
+            "Every answer so far is cached. Re-run the same command later to resume.", err=True
+        )
+        raise typer.Exit(code=2) from None
+    finally:
+        github.close()
+        pypi.close()
+    target = root / out
+    target.parent.mkdir(parents=True, exist_ok=True)
+    stem = f"{target.name}-{role}"
+    target.with_name(stem + ".jsonl").write_text(
+        "".join(r.model_dump_json() + "\n" for r in results), "utf-8"
+    )
+    target.with_name(stem + "-summary.json").write_text(
+        summary.model_dump_json(indent=2) + "\n", "utf-8"
+    )
+    typer.echo(
+        f"{model_id}: {len(results)} of {summary.vulnerabilities} vulnerabilities extracted; "
+        f"status {summary.status}; skipped {summary.skipped}; truncated {summary.truncated}; "
+        f"{llm.network_calls} model calls"
+    )
 
 
 @app.command("package-db")

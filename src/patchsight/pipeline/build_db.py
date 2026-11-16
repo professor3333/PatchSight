@@ -15,13 +15,14 @@ import hashlib
 import json
 from collections import Counter
 from collections.abc import Callable, Iterable, Sequence
+from dataclasses import dataclass
 from datetime import UTC, datetime
 
 from pydantic import BaseModel
 
 from patchsight.db import FixCommitRef, Record, Symbol
 from patchsight.names import module_for_path
-from patchsight.pipeline.diffs.commits import map_commit
+from patchsight.pipeline.diffs.commits import CommitMapping, map_commit
 from patchsight.pipeline.diffs.github import GitHubClient
 from patchsight.pipeline.diffs.paths import classify_path
 from patchsight.pipeline.fix_sample import package_repos
@@ -95,23 +96,33 @@ def _fix_commits(
     return list(found), comparisons
 
 
-def fallback_records(
-    group: AliasGroup,
-    by_id: dict[str, Advisory],
-    github: GitHubClient,
-    pypi: PyPIClient,
-    now: datetime,
-) -> tuple[list[Record], BuildOutcome]:
+@dataclass(frozen=True)
+class FixMappings:
+    """The mapped fix commits of one vulnerability that change Python definitions.
+
+    ``status`` is ``mapped`` when at least one commit qualifies; otherwise it says why not.
+    The fallback builder and LLM extraction both start here, so the model judges exactly
+    the definitions a fallback record would list.
+    """
+
+    status: str
+    packages: tuple[str, ...] = ()
+    mappings: tuple[CommitMapping, ...] = ()
+    commits: int = 0
+
+
+def fix_mappings(
+    group: AliasGroup, by_id: dict[str, Advisory], github: GitHubClient, pypi: PyPIClient
+) -> FixMappings:
     try:
         packages, repos = package_repos(group, by_id, github, pypi)
         commits, _ = _fix_commits(group, by_id, github)
     except RateLimitError:
         raise
     except (HttpError, KeyError, ValueError):
-        return [], BuildOutcome(vulnerability=group.key, status="error")
+        return FixMappings(status="error")
 
-    symbols: dict[str, Symbol] = {}
-    used: list[FixCommitRef] = []
+    used: list[CommitMapping] = []
     module_level_only = False
     for repo, sha in commits:
         try:
@@ -122,35 +133,56 @@ def fallback_records(
             continue
         if repos and mapping.repo not in repos:
             continue
-        changed = [(f.mapping.path, c) for f in mapping.files for c in f.mapping.changed]
-        if not changed:
+        if not any(f.mapping.changed for f in mapping.files):
             # Python changed, but only at module level (for example registration calls):
             # the paper's "vulnerable function unchanged" case.
             module_level_only = module_level_only or any(
                 f.mapping.module_level_hunks for f in mapping.files
             )
             continue
-        used.append(FixCommitRef(repo=mapping.repo, sha=mapping.sha))
-        for path, definition in changed:
-            module = module_for_path(path)
-            qualified = f"{module}.{definition.name}" if module else definition.name
-            symbols.setdefault(
-                qualified,
-                Symbol(
-                    qualified_name=qualified,
-                    module=module,
-                    name=definition.name,
-                    kind=definition.kind,
-                    path=path,
-                ),
-            )
-
+        used.append(mapping)
     if not used:
         if module_level_only:
             status = "module_level_only"
         else:
             status = "no_python_fix" if commits else "no_resolvable_commit"
-        return [], BuildOutcome(vulnerability=group.key, status=status, commits=len(commits))
+        return FixMappings(status=status, commits=len(commits))
+    return FixMappings(
+        status="mapped", packages=tuple(packages), mappings=tuple(used), commits=len(commits)
+    )
+
+
+def symbol_for(path: str, name: str, kind: str) -> Symbol:
+    """A database symbol for a definition, qualified by its importable module if any."""
+    module = module_for_path(path)
+    qualified = f"{module}.{name}" if module else name
+    return Symbol(qualified_name=qualified, module=module, name=name, kind=kind, path=path)
+
+
+def changed_symbols(mappings: Iterable[CommitMapping]) -> dict[str, Symbol]:
+    """Every changed definition, keyed by module-qualified name."""
+    symbols: dict[str, Symbol] = {}
+    for mapping in mappings:
+        for file in mapping.files:
+            for definition in file.mapping.changed:
+                symbol = symbol_for(file.mapping.path, definition.name, definition.kind)
+                symbols.setdefault(symbol.qualified_name, symbol)
+    return symbols
+
+
+def fallback_records(
+    group: AliasGroup,
+    by_id: dict[str, Advisory],
+    github: GitHubClient,
+    pypi: PyPIClient,
+    now: datetime,
+) -> tuple[list[Record], BuildOutcome]:
+    fixes = fix_mappings(group, by_id, github, pypi)
+    if fixes.status != "mapped":
+        return [], BuildOutcome(vulnerability=group.key, status=fixes.status, commits=fixes.commits)
+    symbols = changed_symbols(fixes.mappings)
+    used = [FixCommitRef(repo=m.repo, sha=m.sha) for m in fixes.mappings]
+    packages = fixes.packages
     if len(symbols) > MAX_SYMBOLS:
         # A fix that touches thousands of functions (usually a refactor shipped with it)
         # says nothing about where the bug is. Publishing it would make almost any use of

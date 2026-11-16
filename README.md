@@ -14,6 +14,7 @@ your scan is a database lookup and static analysis, with no model and no server.
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
 [![LLM at scan time: none](https://img.shields.io/badge/LLM_at_scan_time-none-2ea44f)](docs/adr/0002-no-llm-at-scan-time.md)
 [![Benchmark: reproducible](https://img.shields.io/badge/benchmark-reproducible-8957e5)](#results-at-a-glance)
+[![Symbol database](https://img.shields.io/github/v/release/professor3333/PatchSight?label=symbol%20database&color=4338CA)](https://github.com/professor3333/PatchSight/releases/latest)
 
 [Quick start](#quick-start) · [Results](#results-at-a-glance) · [How it works](#how-it-works) · [Status](#project-status) · [Design](docs/proposal.md)
 
@@ -91,20 +92,23 @@ patchsight db info                                        # which database a sca
 
 </details>
 
-Example output, from a scan that used a database built from a 100-vulnerability sample:
+Example output, using the published database [`db-2026.11.14`](https://github.com/professor3333/PatchSight/releases/tag/db-2026.11.14):
 
 ```text
-Lockfile: requirements.txt (3 pinned, 1 unpinned)   Alerts: 91 (95 advisory IDs)   DB: 2026.11.14 (fallback-v1)
+Lockfile: requirements.txt (3 pinned, 1 unpinned)   Alerts: 55 (95 advisory IDs)   DB: 2026.11.14 (fallback-v1)
 
 CALLED (fix first)  2
   GHSA-87cj-px37-rc3x (also PYSEC-2021-116)  bikeshed 2.4.7
     your code references a vulnerable symbol
     matched: bikeshed.InputSource.FileInputSource
     at: app/main.py:6
-
-NOT IMPORTED (transitive only)  1
-  GHSA-qvrw-v9rv-5rjx (also PYSEC-2023-251)  aiohttp 3.9.0rc0
+    symbol data: low confidence
+  ...
+NOT IMPORTED (transitive only)  45
+  GHSA-2fqr-mr3j-6wp8 (also PYSEC-2026-2112)  aiohttp 3.9.0rc0
     your code never imports aiohttp; transitive use is not analysed
+  ...
+UNKNOWN (no symbol data, low confidence, or dynamic use)  8
 ```
 
 ## Reading the verdicts
@@ -174,7 +178,7 @@ The offline pipeline is `python -m patchsight.pipeline <command>`.
 - [x] Benchmark harness that reproduces the published baseline, and `make reproduce` in CI
 - [x] `patchsight scan` for `requirements.txt`, with `patchsight db update` and `patchsight db info`
 - [x] Confidence tiers from two model families, chosen on the dev split ([ADR 0004](docs/adr/0004-fall-back-to-the-baseline.md))
-- [ ] **First public database release.** Fallback records for about 3,500 PyPI vulnerabilities are built and being released now
+- [x] **First public database release:** [`db-2026.11.14`](https://github.com/professor3333/PatchSight/releases/tag/db-2026.11.14). Fallback records for **3,505** PyPI vulnerabilities across 989 packages, all low confidence
 - [ ] LLM-extracted records for PyPI, from the self-hosted backfill
 - [ ] Held-out test evaluation of the confidence rule (declared in advance; in progress)
 - [ ] `uv.lock` and `poetry.lock` support, a GitHub Action, OpenVEX output, and PyPI packaging

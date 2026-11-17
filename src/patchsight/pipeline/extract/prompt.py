@@ -120,26 +120,37 @@ def terms(text: str) -> list[str]:
     return found
 
 
+# Scores are compared at this many decimal places, far below any meaningful difference.
+SCORE_DECIMALS = 9
+
+
 def bm25_rank(query: str, documents: Sequence[str], k1: float = 1.5, b: float = 0.75) -> list[int]:
-    """Document indices, best match first. Ties keep the original order."""
+    """Document indices, best match first. Ties keep the original order.
+
+    The ranking must not depend on the process or the platform (rule 12): it decides which
+    candidates a truncated prompt keeps, and so the prompt's cache key. Query terms are
+    visited in sorted order, each score is summed exactly (``math.fsum``), and scores are
+    compared after rounding, so a last-bit difference between platforms' ``math.log`` cannot
+    reorder a tie either.
+    """
     tokenised = [terms(doc) for doc in documents]
     count = len(tokenised)
     if not count:
         return []
     average = sum(len(t) for t in tokenised) / count or 1.0
     frequency = Counter(term for t in tokenised for term in set(t))
-    query_terms = set(terms(query))
+    query_terms = sorted(set(terms(query)))
     scores = []
     for index, tokens in enumerate(tokenised):
         counts = Counter(tokens)
-        score = 0.0
+        parts = []
         for term in query_terms:
             tf = counts.get(term, 0)
             if not tf:
                 continue
             idf = math.log(1 + (count - frequency[term] + 0.5) / (frequency[term] + 0.5))
-            score += idf * tf * (k1 + 1) / (tf + k1 * (1 - b + b * len(tokens) / average))
-        scores.append((-score, index))
+            parts.append(idf * tf * (k1 + 1) / (tf + k1 * (1 - b + b * len(tokens) / average)))
+        scores.append((-round(math.fsum(parts), SCORE_DECIMALS), index))
     return [index for _, index in sorted(scores)]
 
 

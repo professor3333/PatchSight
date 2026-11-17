@@ -288,3 +288,31 @@ def test_provider_rejection_is_retried(tmp_path: Path) -> None:
 def test_repeated_provider_rejection_is_dead_lettered(tmp_path: Path) -> None:
     outcome = _extract(_rejecting_client(tmp_path, [None, None]))
     assert (outcome.status, outcome.calls, outcome.provider_rejections) == ("dead_letter", 2, 2)
+
+
+TIE_SCRIPT = """
+from patchsight.pipeline.extract.prompt import bm25_rank
+words = ["alpha", "bravo", "charlie", "delta", "echo", "foxtrot", "golf", "hotel"]
+counts = [1, 2, 3, 4, 5, 6, 7, 8]
+first = " ".join(w for w, c in zip(words, counts) for _ in range(c))
+second = " ".join(w for w, c in zip(words, reversed(counts)) for _ in range(c))
+print(bm25_rank(" ".join(words), [first, second, "unrelated filler text"]))
+"""
+
+
+def test_bm25_ties_rank_the_same_in_every_process() -> None:
+    # The two documents score exactly the same, from the same per-term contributions on
+    # different terms. Summing in set order made the tie flip under some hash seeds (rule 12).
+    import os
+    import subprocess
+    import sys
+
+    results = {
+        subprocess.run(
+            [sys.executable, "-c", TIE_SCRIPT],
+            env={**os.environ, "PYTHONHASHSEED": str(seed)},
+            capture_output=True, text=True, check=True,
+        ).stdout.strip()
+        for seed in range(16)
+    }  # fmt: skip
+    assert results == {"[0, 1, 2]"}  # tied: the original order

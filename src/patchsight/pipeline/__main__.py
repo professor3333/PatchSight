@@ -540,7 +540,10 @@ def build_db_command(
     if llm is not None:
         meta["records_by_tier"] = json.dumps(dict(Counter(r.confidence for r in records)))
     target = root / out
-    db.write(target.with_name(target.name + ".sqlite"), records, aliases, meta)
+    db.write(
+        target.with_name(target.name + ".sqlite"), records, aliases, meta,
+        builds=build_db.ledger(report.outcomes),
+    )  # fmt: skip
     target.with_name(target.name + ".jsonl").write_text(build_db.jsonl(records), "utf-8")
     target.with_name(target.name + "-build.json").write_text(
         report.model_dump_json(indent=2) + "\n", "utf-8"
@@ -958,6 +961,78 @@ def reproduce_command(root: Root = Path()) -> None:
                 typer.echo(f"MISMATCH with {report_path.relative_to(root)}", err=True)
                 raise typer.Exit(code=1)
         typer.echo(f"\nMatches docs/reports/extraction-dunlap-*-{tag}.json exactly.")
+
+
+@app.command("update-db")
+def update_db_command(
+    previous: Annotated[Path, typer.Argument(help="The previous database (SQLite).")],
+    root: Root = Path(),
+    cache: Annotated[Path, typer.Option(help="HTTP response cache.")] = Path(".cache/http"),
+    out: Annotated[Path, typer.Option(help="Output path, without extension.")] = Path(
+        "data/build/patchsight-update"
+    ),
+    llm: Annotated[
+        Path | None, typer.Option(help="Extractor outcomes for the rebuilt vulnerabilities.")
+    ] = None,
+    second: Annotated[Path | None, typer.Option(help="Second-opinion outcomes for them.")] = None,
+) -> None:
+    """Update a database from the pinned snapshot, rebuilding only changed vulnerabilities
+    (needs GITHUB_TOKEN)."""
+    from patchsight.pipeline import llm_records, update_db
+
+    token = _github_token()
+    manifest, dump = _load_verified(root)
+    by_id, groups = _github_fix_groups(dump, None, None, 0)
+    dump_entry = manifest.file(DUMP)
+    version = dump_entry.retrieved_at.strftime("%Y.%m.%d")
+    prior = db.SymbolDatabase(root / previous)
+    prior_meta = dict(prior.meta)
+    github = GitHubClient(root / cache / "github", token=token, wait_for_rate_limit=3900)
+    pypi = PyPIClient(root / cache / "pypi")
+    try:
+        records, aliases, builds, report = update_db.update(
+            prior, groups, by_id, github, pypi, version,
+            progress=lambda done, total: typer.echo(f"rebuilt {done}/{total}", err=True),
+        )  # fmt: skip
+    except update_db.NoLedgerError as error:
+        raise typer.BadParameter(str(error)) from None
+    finally:
+        prior.close()
+        github.close()
+        pypi.close()
+    merged: dict[str, int] = {}
+    if llm is not None:
+        fresh = set(report.to_extract)
+        primaries = llm_records.load(root / llm)
+        secondaries = llm_records.load(root / second) if second is not None else {}
+        upgraded, merged = llm_records.apply(
+            [r for r in records if r.vulnerability in fresh], primaries, secondaries
+        )
+        records = [r for r in records if r.vulnerability not in fresh] + upgraded
+    commit = subprocess.run(  # noqa: S603 - fixed argv, no shell
+        ["git", "-C", str(root), "rev-parse", "HEAD"],  # noqa: S607
+        capture_output=True, text=True, check=False,
+    ).stdout.strip()  # fmt: skip
+    meta = {
+        "db_version": version,
+        "built_at": datetime.now(UTC).isoformat(),
+        "builder": prior_meta.get("builder", "fallback-v1") if llm is None else "llm-v1",
+        "snapshot_sha256": dump_entry.sha256,
+        "code_commit": commit,
+        "updated_from": prior_meta.get("db_version", "?"),
+    }
+    target = root / out
+    db.write(target.with_name(target.name + ".sqlite"), records, aliases, meta, builds=builds)
+    target.with_name(target.name + "-update.json").write_text(
+        report.model_dump_json(indent=2) + "\n", "utf-8"
+    )
+    typer.echo(
+        f"db {version} from {report.previous_version}: carried {report.carried}, "
+        f"rebuilt {report.rebuilt}, new {report.new}, removed {report.removed}; "
+        f"{len(records)} records; to extract {len(report.to_extract)}; {report.status}"
+    )
+    if merged:
+        typer.echo(f"LLM merge: {merged}")
 
 
 @app.command("pypi-extract")

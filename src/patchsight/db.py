@@ -10,11 +10,12 @@ its vulnerability, so the scanner can look up whatever ID OSV returns.
 
 Stdlib ``sqlite3`` only, so the scan path can read it without any pipeline dependency.
 
-Compatibility: the ``extraction`` table (second-opinion model and the reason for the tier)
-and the ``evidence`` table (each flagged symbol's rationale and cited hunk locations) were
-added within schema version 1. Readers that predate them never query them, so they keep
-working; this reader treats a database without them as having no such provenance. Evidence
-holds commit SHAs, paths and line ranges only, never code (rule 13).
+Compatibility: three tables were added within schema version 1. ``extraction`` holds the
+second-opinion model and the reason for the tier; ``evidence`` holds each flagged symbol's
+rationale and cited hunk locations; ``builds`` is the ledger of every vulnerability
+considered, with its input hash, for incremental updates. Readers that predate them never
+query them, so they keep working; this reader treats a database without them as having no
+such data. Evidence holds commit SHAs, paths and line ranges only, never code (rule 13).
 """
 
 import json
@@ -68,6 +69,11 @@ CREATE TABLE extraction (
     tier_reason TEXT,
     PRIMARY KEY (vulnerability, package)
 );
+CREATE TABLE builds (
+    vulnerability TEXT PRIMARY KEY,
+    input_hash TEXT NOT NULL,
+    status TEXT NOT NULL
+);
 CREATE TABLE evidence (
     vulnerability TEXT NOT NULL,
     package TEXT NOT NULL,
@@ -88,6 +94,17 @@ class FixCommitRef(BaseModel):
 
     repo: str
     sha: str
+
+
+class BuildEntry(BaseModel):
+    """One vulnerability the builder considered, with or without a record: the ledger an
+    incremental update compares against (ADR 0001: re-extract only when inputs change)."""
+
+    model_config = ConfigDict(frozen=True)
+
+    vulnerability: str
+    input_hash: str
+    status: str
 
 
 class HunkLocation(BaseModel):
@@ -152,7 +169,11 @@ class Record(BaseModel):
 
 
 def write(
-    path: Path, records: Iterable[Record], aliases: dict[str, str], meta: dict[str, str]
+    path: Path,
+    records: Iterable[Record],
+    aliases: dict[str, str],
+    meta: dict[str, str],
+    builds: Iterable[BuildEntry] = (),
 ) -> int:
     """Write a fresh database file. Returns the number of records written."""
     if path.exists():
@@ -167,6 +188,10 @@ def write(
             sorted({**meta, "schema_version": str(SCHEMA_VERSION)}.items()),
         )
         connection.executemany("INSERT INTO aliases VALUES (?, ?)", sorted(aliases.items()))
+        connection.executemany(
+            "INSERT INTO builds VALUES (?, ?, ?)",
+            sorted((b.vulnerability, b.input_hash, b.status) for b in builds),
+        )
         for record in records:
             count += 1
             connection.execute(
@@ -256,6 +281,7 @@ class SymbolDatabase:
         }
         self._has_extraction = "extraction" in tables
         self._has_evidence = "evidence" in tables
+        self._has_builds = "builds" in tables
 
     def close(self) -> None:
         self._connection.close()
@@ -268,6 +294,13 @@ class SymbolDatabase:
             "SELECT vulnerability FROM aliases WHERE identifier = ?", (identifier,)
         ).fetchone()
         return str(row[0]) if row else None
+
+    def build_ledger(self) -> dict[str, BuildEntry]:
+        """Every vulnerability the builder considered; empty for an older database."""
+        if not self._has_builds:
+            return {}
+        rows = self._connection.execute("SELECT vulnerability, input_hash, status FROM builds")
+        return {r[0]: BuildEntry(vulnerability=r[0], input_hash=r[1], status=r[2]) for r in rows}
 
     def identifiers_for(self, vulnerability: str) -> list[str]:
         """Every advisory ID and alias that points at this vulnerability."""

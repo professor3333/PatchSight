@@ -20,7 +20,7 @@ from datetime import UTC, datetime
 
 from pydantic import BaseModel
 
-from patchsight.db import FixCommitRef, Record, Symbol
+from patchsight.db import BuildEntry, FixCommitRef, Record, Symbol
 from patchsight.names import module_for_path
 from patchsight.pipeline.diffs.commits import CommitMapping, map_commit
 from patchsight.pipeline.diffs.github import GitHubClient
@@ -39,6 +39,7 @@ MAX_SYMBOLS = 500
 class BuildOutcome(BaseModel):
     vulnerability: str
     status: str
+    input_hash: str = ""
     records: int = 0
     symbols: int = 0
     commits: int = 0
@@ -178,9 +179,12 @@ def fallback_records(
     pypi: PyPIClient,
     now: datetime,
 ) -> tuple[list[Record], BuildOutcome]:
+    digest = input_hash(group, by_id)
     fixes = fix_mappings(group, by_id, github, pypi)
     if fixes.status != "mapped":
-        return [], BuildOutcome(vulnerability=group.key, status=fixes.status, commits=fixes.commits)
+        return [], BuildOutcome(
+            vulnerability=group.key, status=fixes.status, commits=fixes.commits, input_hash=digest
+        )
     symbols = changed_symbols(fixes.mappings)
     used = [FixCommitRef(repo=m.repo, sha=m.sha) for m in fixes.mappings]
     packages = fixes.packages
@@ -189,11 +193,11 @@ def fallback_records(
         # says nothing about where the bug is. Publishing it would make almost any use of
         # the package CALLED; without a record the scanner says UNKNOWN, which is honest.
         return [], BuildOutcome(
-            vulnerability=group.key, status="too_broad", symbols=len(symbols), commits=len(used)
-        )
+            vulnerability=group.key, status="too_broad", symbols=len(symbols),
+            commits=len(used), input_hash=digest,
+        )  # fmt: skip
     roots = tuple(sorted({s.module.split(".")[0] for s in symbols.values() if s.module}))
     modified = max(by_id[i].modified for i in group.advisory_ids)
-    digest = input_hash(group, by_id)
     records = [
         Record(
             vulnerability=group.key,
@@ -219,6 +223,7 @@ def fallback_records(
         records=len(records),
         symbols=len(symbols),
         commits=len(used),
+        input_hash=digest,
     )
 
 
@@ -258,3 +263,11 @@ def build(
 
 def jsonl(records: Iterable[Record]) -> str:
     return "".join(r.model_dump_json() + "\n" for r in records)
+
+
+def ledger(outcomes: Iterable[BuildOutcome]) -> list[BuildEntry]:
+    """The builds ledger: every vulnerability considered, with its input hash and status."""
+    return [
+        BuildEntry(vulnerability=o.vulnerability, input_hash=o.input_hash, status=o.status)
+        for o in outcomes
+    ]

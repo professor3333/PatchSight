@@ -55,7 +55,7 @@ The F1 95% interval is 0.62 to 0.74. The reports and a one-command offline repro
 ## Status: early release
 
 - Reads `requirements.txt` (exact `==` pins only), `uv.lock` and `poetry.lock`. Packages without a PyPI release version (unpinned requirements, git, URL or local sources) are listed, not guessed.
-- The current symbol database ([`db-2026.11.14`](https://github.com/professor3333/PatchSight/releases/tag/db-2026.11.14)) covers 3,505 PyPI vulnerabilities with **fallback records**: every function the fix changed, at low confidence. Expect many UNKNOWN verdicts until LLM-extracted, high-confidence records are published.
+- The [symbol database](https://github.com/professor3333/PatchSight/releases) is updated every night and covers about 3,500 PyPI vulnerabilities, all at **low confidence** so far: every function the fix changed, plus the model's picks where the backfill has reached. Expect many UNKNOWN verdicts until high-confidence records are published.
 - Transitive use and dynamic code (`getattr` with a computed name, `importlib`, star imports) aren't analysed. They give UNKNOWN or NOT IMPORTED, never a false "not called".
 
 ## Links

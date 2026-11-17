@@ -181,14 +181,21 @@ The offline pipeline is `python -m patchsight.pipeline <command>`.
 - [x] Benchmark harness that reproduces the published baseline, and `make reproduce` in CI
 - [x] `patchsight scan` for `requirements.txt`, `uv.lock` and `poetry.lock`, with `patchsight explain`, `db update` and `db info`
 - [x] Confidence tiers from two model families, chosen on the dev split ([ADR 0004](docs/adr/0004-fall-back-to-the-baseline.md))
-- [x] **First public database release:** [`db-2026.11.14`](https://github.com/professor3333/PatchSight/releases/tag/db-2026.11.14). Fallback records for **3,505** PyPI vulnerabilities across 989 packages, all low confidence
-- [ ] LLM-extracted records for PyPI: the pipeline, confidence tiers and per-symbol evidence are built; the self-hosted backfill is running on Kaggle
+- [x] **Public symbol database:** [releases](https://github.com/professor3333/PatchSight/releases), updated **every night** by the [nightly pipeline](.github/workflows/nightly.yml) after a release gate ([ADR 0006](docs/adr/0006-nightly-pipeline.md)). About 3,500 PyPI vulnerabilities, all low confidence so far
+- [ ] LLM-extracted records for PyPI: the pipeline, confidence tiers and per-symbol evidence are built; the self-hosted backfill is running on Kaggle (1 of 4 shards merged)
 - [ ] Held-out test evaluation of the confidence rule (declared in advance; in progress)
 - [x] **On PyPI:** [`pip install patchsight`](https://pypi.org/project/patchsight/) (0.1.0), published from CI with Trusted Publishing and a required approval
 - [ ] A GitHub Action, SARIF and OpenVEX output
 
 > [!WARNING]
 > **The confidence rule doesn't meet its safety target yet.** On the dev split, high-confidence records still miss the vulnerable symbol in 1 of 27 reports: 3.7%, against a target of 2% or less ([report](docs/reports/confidence-dunlap-dev-extract-v1-qwen3.8-27b-q4km-vs-extract-v1-gpt-oss-120b.md)). Until it does, treat **imported, not called** as a prioritisation hint, not a guarantee.
+
+## How database releases work
+
+- **Every night**, [`nightly.yml`](.github/workflows/nightly.yml) snapshots OSV, rebuilds only the advisories whose extraction inputs changed, and runs a [release gate](src/patchsight/pipeline/gate.py) against the previous release.
+- **A passing build** becomes a dated, immutable release (`db-YYYY.MM.DD`), and the pointer `latest.json` on the [`db-pointer`](https://github.com/professor3333/PatchSight/tree/db-pointer) branch moves to it. `patchsight db update` follows that pointer and verifies the download's SHA-256.
+- **A failing build** publishes nothing and opens an issue.
+- **Rollback** is one commit: revert the pointer move on `db-pointer`. Releases are never deleted.
 
 ## Development
 

@@ -18,6 +18,7 @@ Every controlled experiment on the extraction system, including the ones that lo
 | E2 | Extractor model family | Qwen3.8-27B; gpt-oss-120b | Qwen F1 0.676, gpt-oss 0.626 | Decided: Qwen extracts, gpt-oss is the second opinion |
 | E3 | Confidence rule | 3 agreement rules, with and without a public symbol | `subset` + public symbol | Decided on dev ([ADR 0004](adr/0004-fall-back-to-the-baseline.md)); test evaluation declared, in progress |
 | E4 | Output-capacity cap | none; 105 output tokens per candidate | F1 unchanged; 1 more truncated report | Measured; adopt after the test evaluation |
+| E5 | Run-to-run determinism (self-hosted) | two full Kaggle runs, two days apart | 277 of 277 answers identical | Confirmed |
 
 ## E1: 4-bit self-hosted against hosted serving
 
@@ -118,6 +119,26 @@ could no longer be high confidence.
 (`GO-2021-0053`, 24 candidates, both answers cut off at the output limit) at the cost of one
 more truncated dev report. It is switched on only after the declared test evaluation, so that
 evaluation keeps the setup it started with. In the PyPI backfill it changes 82 of 3,505 prompts.
+
+## E5: Run-to-run determinism of self-hosted extraction
+
+**Question.** Does the self-hosted pipeline give the same answers when run again (rule 12)?
+Temperature 0, a fixed seed and grammar-constrained decoding should make it deterministic, but
+GPU arithmetic does not guarantee that.
+
+**Factor.** Only time and code version: two full runs of all 280 Dunlap reports on Kaggle
+(Qwen3.8-27B Q4_K_M, llama.cpp `b12024`, two T4s). The first ran on 2026-11-15 at commit
+`319b753`, the second on 2026-11-17 at commit `9a002a1`. Between them the BM25 ranking was made
+deterministic, which changes no Dunlap prompt.
+
+**Result.** **277 of 277 model answers are byte-for-byte identical**, and every score matches:
+P 0.751, R 0.621, F1 0.680 and miss rate 17.1% on all reports, and the same on dev and test.
+
+Provenance: [first run](reports/kaggle-run-extract-v1-qwen3.8-27b-q4km.json),
+[second run](reports/kaggle-rerun-extract-v1-qwen3.8-27b-q4km.json).
+
+**Decision.** None needed: self-hosted extraction is reproducible, so cached answers and
+re-runs agree. Hosted serving (Groq) was not tested for this.
 
 ## Failure analysis
 

@@ -295,6 +295,10 @@ class SymbolDatabase:
         ).fetchone()
         return str(row[0]) if row else None
 
+    def all_records(self) -> list[Record]:
+        """Every record, ordered by vulnerability and package."""
+        return [r for v in self.vulnerabilities() for r in self.records_for(v)]
+
     def confidence_counts(self) -> dict[str, int]:
         """Records by confidence tier."""
         rows = self._connection.execute(

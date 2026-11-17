@@ -241,3 +241,52 @@ def test_evidence_round_trips_and_old_files_still_read(tmp_path: Path) -> None:
     reader.close()
     assert old is not None
     assert old.evidence == ()
+
+
+def test_a_high_record_is_never_re_merged() -> None:
+    high, _ = _merge(_extraction(("load",)), _extraction(("load",), model="g"))
+    again, outcome = llm_records.merge([high], _extraction(("dump",)), None)
+    assert (again, outcome) == ([high], "kept: already high confidence")
+
+
+def test_merge_llm_upgrades_a_published_database(tmp_path: Path) -> None:
+    from typer.testing import CliRunner
+
+    from patchsight.db import BuildEntry
+    from patchsight.pipeline.__main__ import app
+
+    other = _fallback().model_copy(update={"vulnerability": "GHSA-kept-high-0000",
+                                           "confidence": "high", "source": "llm"})  # fmt: skip
+    db.write(
+        tmp_path / "current.sqlite", [_fallback(), other],
+        {"GHSA-xxxx-yyyy-zzzz": "GHSA-xxxx-yyyy-zzzz", "CVE-1": "GHSA-xxxx-yyyy-zzzz",
+         "GHSA-kept-high-0000": "GHSA-kept-high-0000"},
+        {"db_version": "2026.11.17", "builder": "llm-v1"},
+        builds=[BuildEntry(vulnerability="GHSA-xxxx-yyyy-zzzz", input_hash="h1", status="built"),
+                BuildEntry(vulnerability="GHSA-kept-high-0000", input_hash="h1", status="built")],
+    )  # fmt: skip
+    (tmp_path / "shard.jsonl").write_text(_extraction(("load",)).model_dump_json() + "\n")
+    (tmp_path / "second.jsonl").write_text(
+        _extraction(("load",), model="gpt-oss").model_dump_json() + "\n"
+    )
+    result = CliRunner().invoke(app, [
+        "merge-llm", "current.sqlite", "--version", "2026.11.17.1", "--llm", "shard.jsonl",
+        "--second", "second.jsonl", "--root", str(tmp_path), "--out", "merged",
+    ])  # fmt: skip
+    assert result.exit_code == 0, result.output
+    merged = db.SymbolDatabase(tmp_path / "merged.sqlite")
+    try:
+        assert merged.meta["db_version"] == "2026.11.17.1"
+        assert merged.meta["merged_into"] == "2026.11.17"
+        upgraded = merged.record("GHSA-xxxx-yyyy-zzzz", "pkg")
+        assert upgraded is not None
+        assert (upgraded.confidence, upgraded.second_opinion_model) == ("high", "gpt-oss")
+        before = db.SymbolDatabase(tmp_path / "current.sqlite")
+        assert merged.record("GHSA-kept-high-0000", "pkg") == before.record(
+            "GHSA-kept-high-0000", "pkg"
+        )  # untouched
+        before.close()
+        assert merged.alias_map()["CVE-1"] == "GHSA-xxxx-yyyy-zzzz"
+        assert set(merged.build_ledger()) == {"GHSA-xxxx-yyyy-zzzz", "GHSA-kept-high-0000"}
+    finally:
+        merged.close()

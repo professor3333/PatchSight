@@ -1036,6 +1036,62 @@ def update_db_command(
         typer.echo(f"LLM merge: {merged}")
 
 
+@app.command("merge-llm")
+def merge_llm_command(
+    database: Annotated[Path, typer.Argument(help="The database to merge into.")],
+    version: Annotated[str, typer.Option(help="Version of the result, e.g. 2026.11.17.1.")],
+    llm: Annotated[
+        list[Path], typer.Option(help="Extractor outcomes (pypi-extract JSONL); repeatable.")
+    ],
+    second: Annotated[
+        list[Path] | None, typer.Option(help="Second-opinion outcomes; repeatable.")
+    ] = None,
+    root: Root = Path(),
+    out: Annotated[Path, typer.Option(help="Output path, without extension.")] = Path(
+        "data/build/patchsight-merged"
+    ),
+) -> None:
+    """Merge new LLM extractions into an existing database (the backfill, shard by shard)."""
+    from patchsight.pipeline import llm_records, pypi_extract
+
+    source = db.SymbolDatabase(root / database)
+    try:
+        records, aliases = source.all_records(), source.alias_map()
+        builds, meta = list(source.build_ledger().values()), dict(source.meta)
+    finally:
+        source.close()
+    if not builds:
+        raise typer.BadParameter("the database has no builds ledger; build it with build-db")
+    primaries: dict[str, pypi_extract.PyPIExtraction] = {}
+    for path in llm:
+        primaries.update(llm_records.load(root / path))
+    secondaries: dict[str, pypi_extract.PyPIExtraction] = {}
+    for path in second or []:
+        secondaries.update(llm_records.load(root / path))
+    merged, outcomes = llm_records.apply(records, primaries, secondaries)
+    commit = subprocess.run(  # noqa: S603 - fixed argv, no shell
+        ["git", "-C", str(root), "rev-parse", "HEAD"],  # noqa: S607
+        capture_output=True, text=True, check=False,
+    ).stdout.strip()  # fmt: skip
+    meta.update(
+        {
+            "db_version": version,
+            "built_at": datetime.now(UTC).isoformat(),
+            "builder": "llm-v1",
+            "code_commit": commit,
+            "merged_into": meta.get("db_version", "?"),
+            "records_by_tier": json.dumps(dict(Counter(r.confidence for r in merged))),
+        }
+    )
+    meta.pop("schema_version", None)  # db.write sets it
+    target = root / out
+    db.write(target.with_name(target.name + ".sqlite"), merged, aliases, meta, builds=builds)
+    typer.echo(
+        f"db {version} merged into {meta['merged_into']}: {len(merged)} records; "
+        f"{dict(Counter(r.confidence for r in merged))}; {outcomes}"
+    )
+
+
 @app.command("gate-db")
 def gate_db_command(
     candidate: Annotated[Path, typer.Argument(help="The candidate database.")],

@@ -11,6 +11,10 @@ extractor has a valid answer made from the same inputs:
 
 An extractor answer that failed validation, or was made from different inputs (its
 ``input_hash`` no longer matches the advisory), leaves the fallback record unchanged.
+
+A record that is already high confidence is never re-merged: it no longer stores every
+changed definition, so a lower tier could not be rebuilt from it. ``merge`` can therefore run
+again over a published database (``merge-llm``) as new extractions arrive.
 """
 
 from collections import Counter
@@ -62,6 +66,8 @@ def merge(
     secondary: PyPIExtraction | None,
 ) -> tuple[list[Record], str]:
     """The records for one vulnerability, and what happened (for the build report)."""
+    if any(r.confidence == "high" for r in fallback):
+        return list(fallback), "kept: already high confidence"
     if primary is None:
         return list(fallback), "fallback: no extraction"
     if any(r.input_hash != primary.input_hash for r in fallback):

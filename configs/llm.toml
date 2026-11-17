@@ -48,6 +48,15 @@ seed = 20261114
 # llama.cpp switches Qwen's thinking mode off through the chat template.
 extra = { chat_template_kwargs = { enable_thinking = false } }
 
+[models.kaggle_second_opinion]
+provider = "kaggle"
+# Proposed second opinion for the PyPI backfill (ADR 0007, under evaluation): the same family
+# as the Groq second opinion, small enough for two T4s (MXFP4, 12.1 GB).
+model = "ggml-org/gpt-oss-20b-GGUF@41e8a94d:MXFP4"
+max_output_tokens = 1500
+seed = 20261114
+extra = { chat_template_kwargs = { reasoning_effort = "low" } }
+
 [budget]
 # Exact tokens, counted with the model's tokenizer. The effective limit per role is also
 # capped so the repair round fits the provider's limits (see LLMConfig.prompt_budget):

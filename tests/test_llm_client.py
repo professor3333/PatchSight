@@ -101,7 +101,9 @@ def test_repository_config_loads_and_fits_one_request_per_window() -> None:
     config = load_config(ROOT / "configs" / "llm.toml")
     # Kaggle and Groq must see identical prompts for their results to compare.
     assert config.prompt_budget("kaggle_extractor") == config.prompt_budget("extractor")
-    for role in ("extractor", "second_opinion", "kaggle_extractor"):
+    # The self-hosted second opinion must see the same prompts as the hosted one (ADR 0007).
+    assert config.prompt_budget("kaggle_second_opinion") == config.prompt_budget("second_opinion")
+    for role in ("extractor", "second_opinion", "kaggle_extractor", "kaggle_second_opinion"):
         model = config.models[role]
         provider = config.providers[model.provider]
         budget = config.prompt_budget(role)

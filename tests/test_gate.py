@@ -122,7 +122,8 @@ def test_release_notes_carry_changes_gate_provenance_and_attribution(tmp_path: P
         "sha256": "f" * 64, "size": 1, "built_at": NOW.isoformat(), "records": 2,
     }))  # fmt: skip
     update = UpdateReport(previous_version="2026.11.17", db_version="2026.11.18", carried=1,
-                          rebuilt=1, new=0, removed=0, status={"built": 1},
+                          rebuilt=1, new=0, removed=0, aliases_added=2, aliases_removed=0,
+                          status={"built": 1},
                           to_extract=("GHSA-0002",))  # fmt: skip
     (tmp_path / "update.json").write_text(update.model_dump_json())
     gate_report = _run(tmp_path, records, records)
@@ -135,7 +136,7 @@ def test_release_notes_carry_changes_gate_provenance_and_attribution(tmp_path: P
     notes = (tmp_path / "notes.md").read_text()
     assert notes.startswith("Symbol database **2026.11.18**, updated from 2026.11.17.")
     assert "1 high confidence, 1 low confidence" in notes
-    assert "1 carried unchanged, 1 rebuilt, 0 new, 0 removed" in notes
+    assert "1 carried unchanged, 1 rebuilt, 0 new, 0 removed; 2 aliases added" in notes
     assert "## Release gate: passed" in notes
     assert f"Asset SHA-256: `{'f' * 64}`" in notes
     assert "CC BY 4.0" in notes

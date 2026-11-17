@@ -1124,7 +1124,9 @@ def release_notes_command(
         report = UpdateReport.model_validate_json((root / update).read_text("utf-8"))
         lines += [
             f"- **Changes since {report.previous_version}:** {report.carried:,} carried "
-            f"unchanged, {report.rebuilt} rebuilt, {report.new} new, {report.removed} removed",
+            f"unchanged, {report.rebuilt} rebuilt, {report.new} new, {report.removed} removed"
+            + (f"; {report.aliases_added} aliases added" if report.aliases_added else "")
+            + (f", {report.aliases_removed} removed" if report.aliases_removed else ""),
         ]
     if gate is not None:
         result = GateReport.model_validate_json((root / gate).read_text("utf-8"))

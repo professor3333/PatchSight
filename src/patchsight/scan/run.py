@@ -5,9 +5,8 @@ from pathlib import Path
 import httpx
 
 from patchsight.db import SymbolDatabase
-from patchsight.scan import osv_client
+from patchsight.scan import lockfiles, osv_client
 from patchsight.scan.ast_scanner import scan
-from patchsight.scan.lockfiles import requirements
 from patchsight.scan.verdicts import Alert, decide
 
 
@@ -16,8 +15,8 @@ def run_scan(
     lockfile: Path,
     database: Path,
     client: httpx.Client | None = None,
-) -> tuple[list[Alert], list[requirements.Dependency], dict[str, str]]:
-    dependencies = requirements.parse(lockfile)
+) -> tuple[list[Alert], list[lockfiles.Dependency], dict[str, str]]:
+    dependencies = lockfiles.parse(lockfile)
     pinned = [(d.name, d.version) for d in dependencies if d.version]
     matches = osv_client.query([(n, v) for n, v in pinned if v], client=client)
     usage = scan(code)

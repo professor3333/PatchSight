@@ -9,20 +9,11 @@ Environment markers are not evaluated, so a pin behind a marker is still checked
 from pathlib import Path
 
 from packaging.requirements import InvalidRequirement, Requirement
-from pydantic import BaseModel, ConfigDict
 
 from patchsight.names import canonical_package_name
+from patchsight.scan.lockfiles import Dependency
 
-
-class Dependency(BaseModel):
-    model_config = ConfigDict(frozen=True)
-
-    name: str
-    raw_name: str
-    version: str | None
-    source: str
-    line: int
-    unpinned_reason: str | None = None
+__all__ = ["Dependency", "parse"]
 
 
 def _logical_lines(text: str) -> list[tuple[int, str]]:

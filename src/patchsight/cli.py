@@ -89,8 +89,14 @@ def db_info(
 @app.command()
 def scan(
     path: Annotated[Path, typer.Argument(help="Project directory to scan.")] = Path(),
-    requirements_file: Annotated[
-        Path | None, typer.Option("--requirements", help="Lockfile (default: requirements.txt).")
+    lockfile_option: Annotated[
+        Path | None,
+        typer.Option(
+            "--lockfile",
+            "--requirements",
+            help="requirements.txt, uv.lock or poetry.lock (default: the first found, in "
+            "that order).",
+        ),
     ] = None,
     database: Annotated[
         Path | None,
@@ -104,20 +110,22 @@ def scan(
     """Label every dependency alert as called, imported but not called, not imported, or unknown."""
     from patchsight.db import DatabaseError
     from patchsight.scan.dbcache import default_db_path
+    from patchsight.scan.lockfiles import DISCOVERY_ORDER, find
     from patchsight.scan.osv_client import OsvError
     from patchsight.scan.report import render_json, render_text
     from patchsight.scan.run import run_scan
 
-    lockfile = requirements_file or path / "requirements.txt"
-    if not lockfile.exists():
-        typer.echo(f"error: no lockfile at {lockfile}; pass --requirements", err=True)
+    lockfile = lockfile_option or find(path)
+    if lockfile is None or not lockfile.is_file():
+        looked = lockfile if lockfile is not None else f"{path} ({', '.join(DISCOVERY_ORDER)})"
+        typer.echo(f"error: no lockfile at {looked}; pass --lockfile", err=True)
         raise typer.Exit(code=2)
     try:
         alerts, dependencies, meta = run_scan(path, lockfile, database or default_db_path())
     except DatabaseError as error:
         typer.echo(f"error: {error}; run 'patchsight db update' or pass --db", err=True)
         raise typer.Exit(code=2) from None
-    except OsvError as error:
+    except (OsvError, ValueError) as error:
         typer.echo(f"error: {error}", err=True)
         raise typer.Exit(code=2) from None
     shown = lockfile.as_posix()

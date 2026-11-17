@@ -4,7 +4,7 @@ import json
 from collections.abc import Sequence
 from datetime import UTC, datetime, timedelta
 
-from patchsight.scan.lockfiles.requirements import Dependency
+from patchsight.scan.lockfiles import Dependency
 from patchsight.scan.verdicts import DISPLAY_ORDER, Alert, order
 
 STALE_AFTER = timedelta(days=7)

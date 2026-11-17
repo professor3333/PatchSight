@@ -76,16 +76,17 @@ On the Go benchmark of [Dunlap et al. (DIMVA 2024)](https://www.enck.org/pubs/du
 pip install patchsight
 
 patchsight db update                  # download the latest symbol database (SHA-256 verified)
-patchsight scan .                     # scan ./requirements.txt and the code under .
+patchsight scan .                     # scan the lockfile and the code under .
 ```
 
 <details>
 <summary><b>More options</b></summary>
 
 ```bash
-patchsight scan . --requirements requirements/prod.txt    # a different lockfile
+patchsight scan . --lockfile requirements/prod.txt        # a specific lockfile
 patchsight scan . --format json                           # machine-readable output
 patchsight scan . --fail-on called                        # exit 1 if any alert is CALLED (CI gate)
+patchsight explain GHSA-87cj-px37-rc3x                    # why these symbols, with evidence
 patchsight db info                                        # which database a scan uses, and its age
 ```
 
@@ -143,7 +144,7 @@ flowchart LR
     E --> F
   end
   subgraph SCAN["patchsight scan: no LLM, no server"]
-    G["requirements.txt"] --> H["OSV batch query"]
+    G["Lockfile: requirements.txt,<br/>uv.lock or poetry.lock"] --> H["OSV batch query"]
     I["Your code, parsed with ast"] --> J["Verdict per alert<br/>with file:line evidence"]
     H --> J
   end
@@ -178,13 +179,13 @@ The offline pipeline is `python -m patchsight.pipeline <command>`.
 - [x] Fix-commit resolution, and tree-sitter hunk-to-function mapping for Python and Go
 - [x] LLM extractor: versioned prompt, strict schema, validators, one repair attempt, dead-letter table, response cache
 - [x] Benchmark harness that reproduces the published baseline, and `make reproduce` in CI
-- [x] `patchsight scan` for `requirements.txt`, with `patchsight db update` and `patchsight db info`
+- [x] `patchsight scan` for `requirements.txt`, `uv.lock` and `poetry.lock`, with `patchsight explain`, `db update` and `db info`
 - [x] Confidence tiers from two model families, chosen on the dev split ([ADR 0004](docs/adr/0004-fall-back-to-the-baseline.md))
 - [x] **First public database release:** [`db-2026.11.14`](https://github.com/professor3333/PatchSight/releases/tag/db-2026.11.14). Fallback records for **3,505** PyPI vulnerabilities across 989 packages, all low confidence
-- [ ] LLM-extracted records for PyPI, from the self-hosted backfill
+- [ ] LLM-extracted records for PyPI: the pipeline, confidence tiers and per-symbol evidence are built; the self-hosted backfill is running on Kaggle
 - [ ] Held-out test evaluation of the confidence rule (declared in advance; in progress)
 - [x] **On PyPI:** [`pip install patchsight`](https://pypi.org/project/patchsight/) (0.1.0), published from CI with Trusted Publishing and a required approval
-- [ ] `uv.lock` and `poetry.lock` support, a GitHub Action, and OpenVEX output
+- [ ] A GitHub Action, SARIF and OpenVEX output
 
 > [!WARNING]
 > **The confidence rule doesn't meet its safety target yet.** On the dev split, high-confidence records still miss the vulnerable symbol in 1 of 27 reports: 3.7%, against a target of 2% or less ([report](docs/reports/confidence-dunlap-dev-extract-v1-qwen3.8-27b-q4km-vs-extract-v1-gpt-oss-120b.md)). Until it does, treat **imported, not called** as a prioritisation hint, not a guarantee.
@@ -228,4 +229,4 @@ docs/                   proposal, ADRs, generated reports
 
 - **"Not called" is a static claim.** Python is dynamic, and use through other packages isn't analysed.
 - **Patch-based extraction has a ceiling.** A vulnerable function the fix left unchanged can't be found from the patch alone. PyYAML's CVE-2020-14343, whose fix only edits module-level registration calls, is one example.
-- **Narrow input for now.** Only fixes hosted on GitHub are used, and only `requirements.txt` is parsed.
+- **GitHub-hosted fixes only.** Advisories whose fix lives elsewhere get no symbol data, so their alerts stay UNKNOWN.

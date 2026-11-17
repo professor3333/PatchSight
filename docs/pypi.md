@@ -17,15 +17,16 @@ An LLM reads each PyPI security fix offline and records which functions carry th
 pip install patchsight
 
 patchsight db update      # download the latest symbol database (SHA-256 verified)
-patchsight scan .         # scan ./requirements.txt and the code under .
+patchsight scan .         # scan the lockfile and the code under .
 ```
 
 | Option | What it does |
 |:---|:---|
-| `--requirements PATH` | Scan a different lockfile |
+| `--lockfile PATH` | Scan a specific lockfile: `requirements.txt`, `uv.lock` or `poetry.lock` (default: the first found, in that order) |
 | `--format json` | Machine-readable output |
 | `--fail-on called` | Exit 1 if any alert is CALLED: a CI gate (`unknown` also fails on UNKNOWN) |
 | `--db PATH` | Use a specific database file (or set `PATCHSIGHT_DB`) |
+| `patchsight explain ID` | Why the database lists an advisory's symbols: confidence, models, rationale and the changed lines |
 | `patchsight db info` | Show which database a scan uses, and its age |
 
 ## Verdicts
@@ -53,7 +54,7 @@ The F1 95% interval is 0.62 to 0.74. The reports and a one-command offline repro
 
 ## Status: early release
 
-- Parses `requirements.txt`, using exact `==` pins only. Unpinned packages are listed, not guessed.
+- Reads `requirements.txt` (exact `==` pins only), `uv.lock` and `poetry.lock`. Packages without a PyPI release version (unpinned requirements, git, URL or local sources) are listed, not guessed.
 - The current symbol database ([`db-2026.11.14`](https://github.com/professor3333/PatchSight/releases/tag/db-2026.11.14)) covers 3,505 PyPI vulnerabilities with **fallback records**: every function the fix changed, at low confidence. Expect many UNKNOWN verdicts until LLM-extracted, high-confidence records are published.
 - Transitive use and dynamic code (`getattr` with a computed name, `importlib`, star imports) aren't analysed. They give UNKNOWN or NOT IMPORTED, never a false "not called".
 

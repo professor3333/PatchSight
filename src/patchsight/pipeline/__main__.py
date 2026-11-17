@@ -1035,6 +1035,36 @@ def update_db_command(
         typer.echo(f"LLM merge: {merged}")
 
 
+@app.command("gate-db")
+def gate_db_command(
+    candidate: Annotated[Path, typer.Argument(help="The candidate database.")],
+    previous: Annotated[Path, typer.Option(help="The previous release's database.")],
+    root: Root = Path(),
+    out: Annotated[Path, typer.Option(help="Report path, without extension.")] = Path(
+        "data/build/gate"
+    ),
+) -> None:
+    """Run the release gate on a candidate database; exit 1 if any check fails."""
+    from patchsight.pipeline import gate
+
+    new, old = db.SymbolDatabase(root / candidate), db.SymbolDatabase(root / previous)
+    try:
+        report = gate.run(new, old)
+    finally:
+        new.close()
+        old.close()
+    target = root / out
+    target.parent.mkdir(parents=True, exist_ok=True)
+    markdown = gate.render_markdown(report)
+    target.with_name(target.name + ".md").write_text(markdown, "utf-8")
+    target.with_name(target.name + ".json").write_text(
+        report.model_dump_json(indent=2) + "\n", "utf-8"
+    )
+    typer.echo(markdown)
+    if not report.passed:
+        raise typer.Exit(code=1)
+
+
 @app.command("pypi-extract")
 def pypi_extract_command(
     root: Root = Path(),

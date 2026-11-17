@@ -295,6 +295,18 @@ class SymbolDatabase:
         ).fetchone()
         return str(row[0]) if row else None
 
+    def vulnerabilities(self) -> list[str]:
+        """Every vulnerability that has at least one record."""
+        rows = self._connection.execute(
+            "SELECT DISTINCT vulnerability FROM records ORDER BY vulnerability"
+        )
+        return [str(r[0]) for r in rows]
+
+    def alias_map(self) -> dict[str, str]:
+        """Every advisory ID and alias, mapped to its vulnerability."""
+        rows = self._connection.execute("SELECT identifier, vulnerability FROM aliases")
+        return {str(r[0]): str(r[1]) for r in rows}
+
     def build_ledger(self) -> dict[str, BuildEntry]:
         """Every vulnerability the builder considered; empty for an older database."""
         if not self._has_builds:

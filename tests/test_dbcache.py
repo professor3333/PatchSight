@@ -122,3 +122,25 @@ def test_package_db_is_deterministic(tmp_path: Path) -> None:
         )
         hashes.append(pointer["sha256"])
     assert hashes[0] == hashes[1]
+
+
+def test_pointer_falls_back_only_when_the_first_is_not_found(tmp_path: Path) -> None:
+    client, hits = _server(tmp_path)
+    missing = "https://example.org/db-pointer/latest.json"  # the mock answers 404
+    target = tmp_path / "cache" / "patchsight.sqlite"
+    assert dbcache.update(client, (missing, POINTER), target)[0] == "updated"
+    assert hits["pointer"] == 1
+
+    def broken(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(500)
+
+    failing = httpx.Client(transport=httpx.MockTransport(broken))
+    with pytest.raises(httpx.HTTPStatusError):  # an error is never a silent fallback
+        dbcache.fetch_pointer(failing, (POINTER, missing))
+    with pytest.raises(db.DatabaseError, match="no database has been published"):
+        dbcache.fetch_pointer(client, (missing, missing))
+
+
+def test_the_cli_reads_the_pointer_branch_first() -> None:
+    assert dbcache.POINTER_URLS[0].endswith("/db-pointer/latest.json")
+    assert dbcache.POINTER_URLS[-1].endswith("/main/releases/latest.json")

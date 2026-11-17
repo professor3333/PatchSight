@@ -39,6 +39,7 @@ from patchsight.pipeline.llm.client import (
 from patchsight.pipeline.llm.config import load_config
 from patchsight.pipeline.llm.tokens import HfTokenizer
 from patchsight.pipeline.pypi import PyPIClient
+from patchsight.scan import dbcache
 
 app = typer.Typer(name="patchsight-pipeline", no_args_is_help=True, add_completion=False)
 
@@ -1063,6 +1064,91 @@ def gate_db_command(
     typer.echo(markdown)
     if not report.passed:
         raise typer.Exit(code=1)
+
+
+ATTRIBUTION = """## Attribution and licence
+
+Advisory identifiers and affected-package data come from [OSV.dev](https://osv.dev), which \
+aggregates the [GitHub Advisory Database](https://github.com/github/advisory-database) and the \
+[PyPA Advisory Database](https://github.com/pypa/advisory-database). All three are licensed \
+CC BY 4.0.
+
+**Changes made:** PatchSight resolved each advisory's fix commit on GitHub, mapped the changed \
+lines to function names with tree-sitter, and, where shown, had language models choose the \
+vulnerable ones. It stores those names with file paths, line ranges and commit SHAs. No \
+third-party source code is included.
+"""
+
+
+@app.command("release-notes")
+def release_notes_command(
+    database: Annotated[Path, typer.Argument(help="The database being released.")],
+    pointer: Annotated[Path, typer.Option(help="Its pointer (package-db output).")] = Path(
+        "releases/latest.json"
+    ),
+    update: Annotated[Path | None, typer.Option(help="The update-db report, if any.")] = None,
+    gate: Annotated[Path | None, typer.Option(help="The gate-db report, if any.")] = None,
+    root: Root = Path(),
+    out: Annotated[Path, typer.Option(help="Notes file to write.")] = Path(
+        "data/build/release-notes.md"
+    ),
+) -> None:
+    """Write release notes for a database release, with provenance and attribution."""
+    from patchsight.pipeline.gate import GateReport
+    from patchsight.pipeline.update_db import UpdateReport
+
+    opened = db.SymbolDatabase(root / database)
+    try:
+        meta, tiers, total = dict(opened.meta), opened.confidence_counts(), opened.record_count()
+        vulnerabilities = len(opened.vulnerabilities())
+    finally:
+        opened.close()
+    published = dbcache.Pointer.model_validate_json((root / pointer).read_text("utf-8"))
+    version = meta.get("db_version", "?")
+    origin = f", updated from {meta['updated_from']}" if "updated_from" in meta else ""
+    lines = [
+        f"Symbol database **{version}**{origin}.",
+        "",
+        "```bash",
+        "patchsight db update   # downloads this release and verifies its SHA-256",
+        "```",
+        "",
+        "## Contents",
+        "",
+        f"- **{vulnerabilities:,} PyPI vulnerabilities**, {total:,} records: "
+        + ", ".join(f"{n:,} {tier} confidence" for tier, n in sorted(tiers.items())),
+        "- Low-confidence records list every definition the fix changed; they can mark an "
+        "alert CALLED, never IMPORTED, NOT CALLED.",
+    ]
+    if update is not None:
+        report = UpdateReport.model_validate_json((root / update).read_text("utf-8"))
+        lines += [
+            f"- **Changes since {report.previous_version}:** {report.carried:,} carried "
+            f"unchanged, {report.rebuilt} rebuilt, {report.new} new, {report.removed} removed",
+        ]
+    if gate is not None:
+        result = GateReport.model_validate_json((root / gate).read_text("utf-8"))
+        lines += [
+            "",
+            f"## Release gate: {'passed' if result.passed else 'FAILED'}",
+            "",
+            *(f"- `{c.name}`: {c.detail}" for c in result.checks),
+        ]
+    lines += [
+        "",
+        "## Provenance",
+        "",
+        f"- OSV PyPI dump SHA-256: `{meta.get('snapshot_sha256', '?')}`",
+        f"- Built by PatchSight commit `{meta.get('code_commit', '?')}` "
+        f"(builder `{meta.get('builder', '?')}`, schema version {meta.get('schema_version', '?')})",
+        f"- Asset SHA-256: `{published.sha256}`",
+        "",
+        ATTRIBUTION,
+    ]
+    target = root / out
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text("\n".join(lines), "utf-8")
+    typer.echo(f"wrote {target}")
 
 
 @app.command("pypi-extract")

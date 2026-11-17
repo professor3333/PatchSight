@@ -105,3 +105,38 @@ def test_gate_db_exit_code_and_report(tmp_path: Path, lost: int, code: int) -> N
         .read_text()
         .startswith("# Release gate PASSED" if code == 0 else "# Release gate FAILED")
     )
+
+
+def test_release_notes_carry_changes_gate_provenance_and_attribution(tmp_path: Path) -> None:
+    import json
+
+    from patchsight.pipeline.update_db import UpdateReport
+
+    records = [_record("GHSA-0001", confidence="high"), _record("GHSA-0002")]
+    path = tmp_path / "db.sqlite"
+    db.write(path, records, {"GHSA-0001": "GHSA-0001", "GHSA-0002": "GHSA-0002"},
+             {"db_version": "2026.11.18", "updated_from": "2026.11.17", "builder": "llm-v1",
+              "code_commit": "abc", "snapshot_sha256": "def"})  # fmt: skip
+    (tmp_path / "latest.json").write_text(json.dumps({
+        "db_version": "2026.11.18", "schema_version": db.SCHEMA_VERSION, "url": "https://x/y.gz",
+        "sha256": "f" * 64, "size": 1, "built_at": NOW.isoformat(), "records": 2,
+    }))  # fmt: skip
+    update = UpdateReport(previous_version="2026.11.17", db_version="2026.11.18", carried=1,
+                          rebuilt=1, new=0, removed=0, status={"built": 1},
+                          to_extract=("GHSA-0002",))  # fmt: skip
+    (tmp_path / "update.json").write_text(update.model_dump_json())
+    gate_report = _run(tmp_path, records, records)
+    (tmp_path / "gate.json").write_text(gate_report.model_dump_json())
+    result = CliRunner().invoke(app, [
+        "release-notes", "db.sqlite", "--pointer", "latest.json", "--update", "update.json",
+        "--gate", "gate.json", "--root", str(tmp_path), "--out", "notes.md",
+    ])  # fmt: skip
+    assert result.exit_code == 0, result.output
+    notes = (tmp_path / "notes.md").read_text()
+    assert notes.startswith("Symbol database **2026.11.18**, updated from 2026.11.17.")
+    assert "1 high confidence, 1 low confidence" in notes
+    assert "1 carried unchanged, 1 rebuilt, 0 new, 0 removed" in notes
+    assert "## Release gate: passed" in notes
+    assert f"Asset SHA-256: `{'f' * 64}`" in notes
+    assert "CC BY 4.0" in notes
+    assert "No third-party source code is included." in notes

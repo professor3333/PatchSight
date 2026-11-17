@@ -114,6 +114,8 @@ def test_a_carried_vulnerability_gains_new_aliases(
     previous.close()
     assert report.carried == 3  # an alias is not an extraction input
     assert aliases["CVE-2099-0001"] == "GHSA-aaaa-aaaa-aaaa"
+    assert (report.aliases_added, report.aliases_removed) == (1, 0)
+    assert update_db.changed(report)  # a new alias is worth publishing
 
 
 def test_a_database_without_a_ledger_cannot_be_updated(

@@ -12,6 +12,8 @@ considered, with the hash of the inputs extraction reads (ADR 0001). Against a n
 
 Aliases are always recomputed from the new snapshot, so a carried vulnerability picks up any
 new alias. A database without a ledger cannot be updated; rebuild it with ``build-db``.
+
+``changed`` says whether anything users can see differs: records or aliases.
 """
 
 from collections import Counter
@@ -37,8 +39,18 @@ class UpdateReport(BaseModel):
     rebuilt: int
     new: int
     removed: int
+    aliases_added: int
+    aliases_removed: int
     status: dict[str, int]  # build statuses of the rebuilt and new vulnerabilities
     to_extract: tuple[str, ...]  # rebuilt or new vulnerabilities that have a record
+
+
+def changed(report: "UpdateReport") -> bool:
+    """Whether the update differs from the previous database in records or aliases."""
+    return bool(
+        report.rebuilt or report.new or report.removed
+        or report.aliases_added or report.aliases_removed
+    )  # fmt: skip
 
 
 class NoLedgerError(RuntimeError):
@@ -96,6 +108,7 @@ def update(
             records.extend(kept)
             aliases.update(dict.fromkeys(group.identifiers, group.key))
     current = {g.key for g in ordered}
+    before = previous.alias_map()
     report = UpdateReport(
         previous_version=previous.meta.get("db_version", "?"),
         db_version=db_version,
@@ -103,6 +116,8 @@ def update(
         rebuilt=counts["rebuilt"],
         new=counts["new"],
         removed=sum(1 for key in ledger if key not in current),
+        aliases_added=sum(1 for i, v in aliases.items() if before.get(i) != v),
+        aliases_removed=sum(1 for i in before if i not in aliases),
         status=dict(sorted(statuses.items())),
         to_extract=tuple(to_extract),
     )

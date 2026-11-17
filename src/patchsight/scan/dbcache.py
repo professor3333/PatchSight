@@ -1,8 +1,9 @@
 """Fetch and cache the published symbol database.
 
-Releases are immutable files attached to GitHub releases. A small pointer,
-``releases/latest.json`` in the repository, names the current one with its SHA-256, so
-rolling back is one commit that moves the pointer back.
+Releases are immutable files attached to GitHub releases. A small pointer, ``latest.json``,
+names the current one with its SHA-256, so rolling back is one commit that moves the pointer
+back (ADR 0006). The nightly pipeline keeps it on the ``db-pointer`` branch; the copy at
+``releases/latest.json`` on ``main`` is the fallback, and what CLIs before 0.3.0 read.
 
 ``update`` downloads over HTTPS only, verifies the SHA-256, checks the schema version by
 opening the file, and only then replaces the cached copy, so a failed or tampered download
@@ -13,6 +14,7 @@ import gzip
 import hashlib
 import os
 import shutil
+from collections.abc import Sequence
 from datetime import datetime
 from pathlib import Path
 from typing import Literal
@@ -22,7 +24,9 @@ from pydantic import BaseModel, ConfigDict
 
 from patchsight.db import SCHEMA_VERSION, DatabaseError, SymbolDatabase
 
-POINTER_URL = "https://raw.githubusercontent.com/professor3333/PatchSight/main/releases/latest.json"
+_RAW = "https://raw.githubusercontent.com/professor3333/PatchSight"
+POINTER_URLS = (f"{_RAW}/db-pointer/latest.json", f"{_RAW}/main/releases/latest.json")
+POINTER_URL = POINTER_URLS[-1]
 _CHUNK = 1 << 20
 
 
@@ -54,11 +58,17 @@ def _https(url: str) -> str:
     return url
 
 
-def fetch_pointer(client: httpx.Client, url: str = POINTER_URL) -> Pointer:
-    response = client.get(_https(url))
-    if response.status_code == 404:
+def fetch_pointer(client: httpx.Client, urls: str | Sequence[str] = POINTER_URLS) -> Pointer:
+    """The first published pointer among ``urls``. Only "not found" moves on to the next;
+    any other failure is an error, never a silent fallback."""
+    for url in (urls,) if isinstance(urls, str) else urls:
+        response = client.get(_https(url))
+        if response.status_code == 404:
+            continue
+        response.raise_for_status()
+        break
+    else:
         raise DatabaseError("no database has been published yet")
-    response.raise_for_status()
     pointer = Pointer.model_validate_json(response.content)
     if pointer.schema_version != SCHEMA_VERSION:
         raise DatabaseError(
@@ -70,7 +80,7 @@ def fetch_pointer(client: httpx.Client, url: str = POINTER_URL) -> Pointer:
 
 def update(
     client: httpx.Client | None = None,
-    pointer_url: str = POINTER_URL,
+    pointer_url: str | Sequence[str] = POINTER_URLS,
     target: Path | None = None,
 ) -> tuple[Literal["updated", "current"], Pointer]:
     owns = client is None

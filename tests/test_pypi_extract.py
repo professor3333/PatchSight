@@ -282,3 +282,24 @@ def test_run_keeps_a_given_order(
         CharEstimate(3.0), keep_order=True,
     )  # fmt: skip
     assert [r.vulnerability for r in results] == [g.key for g in given]
+
+
+def test_cache_only_replay_reports_misses_and_never_calls_a_model(
+    stub: dict[str, Any], make_advisory: AdvisoryFactory, tmp_path: Path
+) -> None:
+    from patchsight.pipeline.llm.client import cache_only_client
+
+    stub["mapping"] = _mapping({"src/some_pkg/a.py": [("f", "function")]})
+    answer = {"items": [_item("F1", True, ["H1"])], "public_entry_points": []}
+    live, seen = _client(tmp_path, answer)
+    first, _ = _run(make_advisory, live)  # answered once, so now cached
+    replay, model = cache_only_client(CONFIG, "m", tmp_path, CharEstimate(3.0))
+    again, summary = _run(make_advisory, replay)
+    assert (len(seen), model) == (1, "fake-model")
+    assert [(r.vulnerable_symbols, r.evidence, r.outcome.status) for r in again] == [
+        (r.vulnerable_symbols, r.evidence, r.outcome.status) for r in first
+    ]
+    assert again[0].outcome.cached_calls == 1  # served from the cache
+    other = cache_only_client(CONFIG, "m", tmp_path / "empty", CharEstimate(3.0))[0]
+    missing, summary = _run(make_advisory, other)
+    assert (missing, summary.skipped) == ([], {"not_cached": 1})

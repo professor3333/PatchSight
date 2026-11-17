@@ -30,7 +30,12 @@ from patchsight.pipeline.extract.prompt import load_template
 from patchsight.pipeline.ingest import ghsa_repo, snapshot
 from patchsight.pipeline.ingest.aliases import AliasGroup, alias_groups
 from patchsight.pipeline.ingest.osv import Advisory, Excluded, Quarantined, normalise_dump
-from patchsight.pipeline.llm.client import QuotaExhaustedError, RateLimitedError, client_for
+from patchsight.pipeline.llm.client import (
+    QuotaExhaustedError,
+    RateLimitedError,
+    cache_only_client,
+    client_for,
+)
 from patchsight.pipeline.llm.config import load_config
 from patchsight.pipeline.llm.tokens import HfTokenizer
 from patchsight.pipeline.pypi import PyPIClient
@@ -899,6 +904,12 @@ def pypi_extract_command(
             "--priority", help="Most-downloaded packages first (needs fetch-top-packages)."
         ),
     ] = False,
+    cache_only: Annotated[
+        bool,
+        typer.Option(
+            "--cache-only", help="Answer only from the response cache; never call a model."
+        ),
+    ] = False,
 ) -> None:
     """Run LLM extraction on PyPI vulnerabilities (needs the model's key, and GITHUB_TOKEN
     unless --offline)."""
@@ -954,7 +965,8 @@ def pypi_extract_command(
             f"{sum(p.truncated for p in sized)}"
         )
         return
-    llm, model_id = client_for(llm_config, role, root / cache / "llm", counter)
+    make_client = cache_only_client if cache_only else client_for
+    llm, model_id = make_client(llm_config, role, root / cache / "llm", counter)
     try:
         results, summary = pypi_extract.run(
             groups, by_id, github, pypi, llm, llm_config, role, template, counter,

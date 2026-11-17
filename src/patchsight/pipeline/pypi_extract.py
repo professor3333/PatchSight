@@ -31,7 +31,7 @@ from patchsight.pipeline.extract.prompt import AdvisoryText, PromptTemplate, ren
 from patchsight.pipeline.http import CacheMissError
 from patchsight.pipeline.ingest.aliases import AliasGroup
 from patchsight.pipeline.ingest.osv import Advisory
-from patchsight.pipeline.llm.client import LLMClient
+from patchsight.pipeline.llm.client import LLMClient, ResponseNotCachedError
 from patchsight.pipeline.llm.config import LLMConfig
 from patchsight.pipeline.llm.tokens import TokenCounter
 from patchsight.pipeline.pypi import PyPIClient
@@ -233,11 +233,14 @@ def extract_vulnerability(
     if len(build_db.changed_symbols(fixes.mappings)) > build_db.MAX_SYMBOLS:
         return "too_broad"
     inputs, known = candidate_inputs(fixes.mappings, PYTHON_KINDS)
-    outcome = extract(
-        llm, config.models[role], template, advisory_text(group, by_id), inputs, known,
-        config.prompt_budget(role), counter, config.budget.max_hunk_lines,
-        config.candidate_limit(role),
-    )  # fmt: skip
+    try:
+        outcome = extract(
+            llm, config.models[role], template, advisory_text(group, by_id), inputs, known,
+            config.prompt_budget(role), counter, config.budget.max_hunk_lines,
+            config.candidate_limit(role),
+        )  # fmt: skip
+    except ResponseNotCachedError:
+        return "not_cached"  # cache-only replay of a run made elsewhere: never a model call
     kinds = {(i.path, i.name): i.kind for i in inputs}
     return PyPIExtraction(
         entry_points=qualify_entry_points(outcome.entry_points, fixes.mappings),

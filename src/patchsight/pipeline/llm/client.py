@@ -268,6 +268,24 @@ class LLMClient:
         return LLMResponse(**record, cached=False, seconds=seconds)
 
 
+class ResponseNotCachedError(RuntimeError):
+    """Cache-only mode: the response is not in the cache, and no model may be called."""
+
+
+def cache_only_client(
+    config: LLMConfig, role: str, cache_dir: Path, counter: TokenCounter
+) -> tuple[LLMClient, str]:
+    """A client that answers only from the cache, for replaying a run made elsewhere (such as
+    on Kaggle) with no model server and no key. A miss raises ResponseNotCachedError."""
+
+    def refuse(request: LLMRequest) -> tuple[str, int, int]:
+        raise ResponseNotCachedError(f"no cached response for this {request.model} prompt")
+
+    return LLMClient(refuse, RateLimiter(10**9, 10**9), cache_dir, counter), config.models[
+        role
+    ].model
+
+
 def client_for(
     config: LLMConfig, role: str, cache_dir: Path, counter: TokenCounter
 ) -> tuple[LLMClient, str]:

@@ -1,0 +1,42 @@
+name: Wrong symbol data
+description: The database names the wrong functions for an advisory, misses one, or gives the wrong confidence.
+labels: ["symbol-data"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks: corrections like this become test cases and database overrides. Low-confidence data can raise an alert but never hide one, so this is a data-quality report, not a security issue.
+  - type: input
+    id: advisory
+    attributes:
+      label: Advisory ID
+      description: GHSA, PYSEC or CVE.
+      placeholder: GHSA-xxxx-xxxx-xxxx
+    validations:
+      required: true
+  - type: dropdown
+    id: problem
+    attributes:
+      label: What is wrong
+      options:
+        - A vulnerable function or class is missing
+        - A listed symbol is not vulnerable
+        - An entry point is missing or wrong
+        - The confidence tier looks wrong
+        - Something else
+    validations:
+      required: true
+  - type: textarea
+    id: explain
+    attributes:
+      label: Output of `patchsight explain <advisory-id>`
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Which symbols are right, and why. Links to the fix commit or the advisory help most.
+    validations:
+      required: true

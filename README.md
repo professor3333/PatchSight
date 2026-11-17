@@ -223,6 +223,12 @@ docs/                   proposal, ADRs, generated reports
 
 </details>
 
+## Contributing and security
+
+- **Wrong symbols for an advisory?** Open a [wrong symbol data](https://github.com/professor3333/PatchSight/issues/new?template=wrong_symbols.yml) report with the output of `patchsight explain`.
+- **Found a bug?** Use the [bug report](https://github.com/professor3333/PatchSight/issues/new?template=bug_report.yml) form. To contribute code, see [CONTRIBUTING.md](CONTRIBUTING.md).
+- **Security problem?** Report it privately, as described in [SECURITY.md](SECURITY.md).
+
 ## Data and licences
 
 | | |

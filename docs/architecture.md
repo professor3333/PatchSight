@@ -54,7 +54,7 @@ Each stage is plain Python under `src/patchsight/pipeline/`, run through `python
 | Classify references | A commit or pull-request URL on the package's own GitHub repository is a candidate fix. The repository comes from PyPI's project URLs. | `ingest/references.py`, `pypi.py` |
 | Fetch | Commits, pull-request commits and file contents at the fix and its parent, through a cached HTTP client that waits out rate limits. An offline mode serves only from the cache. | `diffs/github.py`, `diffs/commits.py`, `http.py` |
 | Map | Drops tests, docs, changelogs and vendored code by path, then maps every hunk, on both sides, to its innermost function, method or class with tree-sitter. | `diffs/paths.py`, `diffs/hunks.py`, `diffs/mapping.py` |
-| Fallback record | Every changed definition, at low confidence. Fixes that change more than 500 definitions get no record (`too_broad`). | `build_db.py` |
+| Fallback record | Every changed definition, at low confidence. A fix that changes only module-level code (registration calls, a pattern list) lists the definitions those lines name or use instead. Fixes that change more than 500 definitions get no record (`too_broad`). | `build_db.py`, `diffs/mapping.py` |
 | Render | Numbers the candidates (`F1`…) and hunks (`H1`…), delimits untrusted text, and ranks candidates with BM25 against the advisory text when they exceed the 4,600-token budget. Truncation is recorded. | `extract/prompt.py`, `prompts/extract_v1.md` |
 | Extract | One call per vulnerability through one OpenAI-compatible client, with a strict JSON schema (grammar-constrained on llama.cpp), temperature 0, a fixed seed and a response cache keyed by model, parameters, prompt version and prompt. | `llm/client.py`, `llm/config.py`, `extract/schema.py` |
 | Validate | Candidate and hunk IDs must exist, every cited hunk must lie inside its symbol, and every entry point must resolve to a known definition. On failure, one repair attempt with the errors appended, then the dead-letter table. | `extract/validate.py`, `extract/extractor.py` |
@@ -79,7 +79,7 @@ One SQLite file, schema version 1. Tables added since the first release are addi
 | `evidence` | model-picked symbol | the one-sentence rationale and the cited hunks: commit, path and line ranges |
 | `extraction` | LLM record | the second-opinion model and why the tier was chosen |
 | `aliases` | identifier | the vulnerability it belongs to, for every vulnerability the builder considered, with or without a record, so a scan shows one alert per vulnerability |
-| `builds` | vulnerability | its input hash and build status (`built`, `no_python_fix`, `module_level_only`, `no_github_fix`, …). A scan uses the status to say why an alert has no symbol data |
+| `builds` | vulnerability | its input hash and build status (`built`, `module_level_references`, `no_python_fix`, `module_level_only`, `no_github_fix`, …). A scan uses the status to say why an alert has no symbol data |
 | `import_names` | package | the top-level import names in its wheels on PyPI, and which wheels were read ([ADR 0009](adr/0009-import-names-from-wheels.md)) |
 | `meta` | key | database version, schema version, builder, code commit, snapshot SHA-256 |
 

@@ -547,6 +547,7 @@ def build_db_command(
         "db_version": version,
         "built_at": datetime.now(UTC).isoformat(),
         "builder": "llm-v1" if llm is not None else "fallback-v1",
+        "builder_revision": str(build_db.BUILDER_REVISION),
         "snapshot_sha256": dump_entry.sha256,
         "code_commit": commit,
     }
@@ -1159,6 +1160,13 @@ def update_db_command(
         Path | None, typer.Option(help="Extractor outcomes for the rebuilt vulnerabilities.")
     ] = None,
     second: Annotated[Path | None, typer.Option(help="Second-opinion outcomes for them.")] = None,
+    rebuild_status: Annotated[
+        list[str] | None,
+        typer.Option(
+            help="Build again the vulnerabilities with this ledger status, although their "
+            "inputs are unchanged (after a builder change); repeatable."
+        ),
+    ] = None,
 ) -> None:
     """Update a database from the pinned snapshot, rebuilding only changed vulnerabilities
     (needs GITHUB_TOKEN)."""
@@ -1177,7 +1185,7 @@ def update_db_command(
         records, aliases, builds, report = update_db.update(
             prior, groups, by_id, github, pypi, version,
             progress=lambda done, total: typer.echo(f"rebuilt {done}/{total}", err=True),
-            unfixed=unfixed,
+            unfixed=unfixed, rebuild=frozenset(rebuild_status or ()),
         )  # fmt: skip
     except update_db.NoLedgerError as error:
         raise typer.BadParameter(str(error)) from None
@@ -1202,6 +1210,7 @@ def update_db_command(
         "db_version": version,
         "built_at": datetime.now(UTC).isoformat(),
         "builder": prior_meta.get("builder", "fallback-v1") if llm is None else "llm-v1",
+        "builder_revision": str(build_db.BUILDER_REVISION),
         "snapshot_sha256": dump_entry.sha256,
         "code_commit": commit,
         "updated_from": prior_meta.get("db_version", "?"),

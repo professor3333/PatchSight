@@ -37,6 +37,12 @@ The nightly queue is ordered: new advisories first, then changed inputs, then ev
 - A change in a field outside the hash cannot change the extracted symbols. If a new field later starts to matter, it must be added to the hash, and that addition is itself a versioned change that triggers re-extraction.
 - The hash is computed from the normalised advisory, so it relies on normalisation being deterministic. The ingest tests already check this.
 
+## Amendment (2026-11-18): builder revisions
+
+A builder change can make a vulnerability buildable without any input changing. Builder revision 2 builds fixes that change only module-level code, from the definitions those changes name or use. So each database records the `builder_revision` that made it, and `build_db.REBUILT_AT_REVISION` names the ledger statuses each revision handles better. An update from an older revision rebuilds the vulnerabilities with those statuses **once**; the next update carries them as usual.
+
+This rebuilds fallback records only. Records from LLM extraction still follow the rules above, and `pypi-extract` gives the same prompts as before.
+
 ## Alternatives considered
 
 - **Re-extract on every `modified` change.** Simple, but at about 26 modifications a day plus new arrivals it exceeds one model's budget. It would also spend most of the quota on no-op changes.

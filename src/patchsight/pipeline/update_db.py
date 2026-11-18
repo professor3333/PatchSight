@@ -27,6 +27,7 @@ from patchsight.pipeline.build_db import (
     NO_GITHUB_FIX,
     fallback_records,
     input_hash,
+    statuses_to_rebuild,
     unfixed_outcome,
 )
 from patchsight.pipeline.diffs.github import GitHubClient
@@ -74,10 +75,15 @@ def update(
     now: datetime | None = None,
     progress: Callable[[int, int], None] | None = None,
     unfixed: Sequence[AliasGroup] = (),
+    rebuild: frozenset[str] = frozenset(),
 ) -> tuple[list[Record], dict[str, str], list[BuildEntry], UpdateReport]:
+    """``rebuild``: ledger statuses to build again although their inputs are unchanged, after
+    the builder learned to handle them (a one-off; the nightly never passes it)."""
     ledger = previous.build_ledger()
     if not ledger:
         raise NoLedgerError("the previous database has no builds ledger; run build-db instead")
+    revision = int(previous.meta.get("builder_revision", "1"))
+    rebuild = rebuild | statuses_to_rebuild(revision)
     now = now or datetime.now(UTC)
     records: list[Record] = []
     aliases: dict[str, str] = {}
@@ -89,7 +95,9 @@ def update(
     changed = {
         g.key
         for g in ordered
-        if (entry := ledger.get(g.key)) is None or entry.input_hash != input_hash(g, by_id)
+        if (entry := ledger.get(g.key)) is None
+        or entry.input_hash != input_hash(g, by_id)
+        or entry.status in rebuild
     }
     done = 0
     for group in ordered:

@@ -180,3 +180,63 @@ def test_vulnerabilities_without_a_record_or_a_github_fix_keep_their_ids(
     assert update.rebuilt == 1  # only GHSA-eeee: ledgered before, now with a fix
     assert again["PYSEC-2099-1"] == "GHSA-eeee-eeee-eeee"
     assert {e.vulnerability: e.status for e in ledger}["GHSA-eeee-eeee-eeee"] == "built"
+
+
+def _referencing() -> CommitMapping:
+    path = "src/some_pkg/registry.py"
+    referenced = (ChangedDefinition(path=path, name="Registry.load", kind="method",
+                                    sides=("pre",), hunks=(0,)),)  # fmt: skip
+    file = MappedFile(
+        mapping=FileMapping(path=path, changed=(), module_level_hunks=(0,), parse_errors=False,
+                            referenced=referenced),
+        status="modified", previous_path=None, diff_source="github_patch",
+    )  # fmt: skip
+    return CommitMapping(repo="example/some-pkg", sha=SHA_A, parent="p", files=(file,),
+                         skipped=(), truncated=False)  # fmt: skip
+
+
+def test_a_module_level_only_fix_is_built_from_the_definitions_it_names(
+    tmp_path: Path, make_advisory: AdvisoryFactory, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(
+        build_db, "package_repos", lambda g, b, gh, p: (("some-pkg",), {"example/some-pkg"})
+    )
+    monkeypatch.setattr(build_db, "map_commit", lambda gh, repo, sha, include: _referencing())
+    advisories = [make_advisory(id="GHSA-aaaa-aaaa-aaaa", aliases=[])]
+    by_id = {a.id: a for a in advisories}
+    group = alias_groups(advisories)[0]
+    fixes = build_db.fix_mappings(group, by_id, None, None)  # type: ignore[arg-type]
+    assert fixes.status == "module_level_only"  # what extraction sees: no candidates
+    assert fixes.mappings == ()
+    assert len(fixes.referenced) == 1
+    records, outcome = build_db.fallback_records(group, by_id, None, None, NOW)  # type: ignore[arg-type]
+    assert outcome.status == build_db.MODULE_LEVEL_REFERENCES
+    assert [s.qualified_name for s in records[0].symbols] == ["some_pkg.registry.Registry.load"]
+    assert records[0].confidence == "low"
+
+    # A database from before the builder could do this rebuilds those vulnerabilities once.
+    old = tmp_path / "old.sqlite"
+    ledger = [db.BuildEntry(vulnerability=group.key, input_hash=outcome.input_hash,
+                            status="module_level_only")]  # fmt: skip
+    db.write(old, [], {group.key: group.key}, {"db_version": "v1"}, builds=ledger)
+    previous = db.SymbolDatabase(old)
+    rebuilt, _, entries, report = update_db.update(
+        previous, [group], by_id, None, None, "v2", NOW,  # type: ignore[arg-type]
+    )  # fmt: skip
+    previous.close()
+    assert (report.rebuilt, len(rebuilt)) == (1, 1)
+    assert entries[0].status == build_db.MODULE_LEVEL_REFERENCES
+    current = tmp_path / "current.sqlite"
+    meta = {"db_version": "v2", "builder_revision": str(build_db.BUILDER_REVISION)}
+    db.write(current, [], {group.key: group.key}, meta, builds=ledger)
+    previous = db.SymbolDatabase(current)
+    _, _, _, again = update_db.update(
+        previous, [group], by_id, None, None, "v3", NOW,  # type: ignore[arg-type]
+    )  # fmt: skip
+    previous.close()
+    assert (again.rebuilt, again.carried) == (0, 1)  # at the current revision: not again
+
+
+def test_statuses_to_rebuild_follow_the_revision() -> None:
+    assert build_db.statuses_to_rebuild(1) == {"module_level_only"}
+    assert build_db.statuses_to_rebuild(build_db.BUILDER_REVISION) == frozenset()

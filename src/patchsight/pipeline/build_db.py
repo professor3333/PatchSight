@@ -37,6 +37,23 @@ MAX_SYMBOLS = 500
 # A vulnerability whose advisories name no fix candidate on GitHub. It is never built, but
 # it is ledgered and its IDs are mapped, so a scan shows one alert for it, not one per ID.
 NO_GITHUB_FIX = "no_github_fix"
+# A fix that changes only module-level code: its records list the definitions those
+# changes name (for example registration calls), not a changed definition.
+MODULE_LEVEL_REFERENCES = "module_level_references"
+# The builder's revision, kept in each database's meta. When the builder learns to build a
+# status it could not, the next update rebuilds the vulnerabilities with that status once,
+# although their inputs are unchanged (ADR 0001 rebuilds only on input changes otherwise).
+BUILDER_REVISION = 2
+REBUILT_AT_REVISION: dict[int, frozenset[str]] = {
+    2: frozenset({"module_level_only"}),  # records from the definitions a fix names
+}
+
+
+def statuses_to_rebuild(previous_revision: int) -> frozenset[str]:
+    """Ledger statuses the builder handles better than at ``previous_revision``."""
+    return frozenset().union(
+        *(s for r, s in REBUILT_AT_REVISION.items() if previous_revision < r <= BUILDER_REVISION)
+    )
 
 
 class BuildOutcome(BaseModel):
@@ -113,6 +130,9 @@ class FixMappings:
     packages: tuple[str, ...] = ()
     mappings: tuple[CommitMapping, ...] = ()
     commits: int = 0
+    # A module_level_only fix: the commits whose module-level changes name definitions.
+    # Only a fallback record uses them; extraction never sees them as candidates.
+    referenced: tuple[CommitMapping, ...] = ()
 
 
 def fix_mappings(
@@ -128,6 +148,7 @@ def fix_mappings(
         return FixMappings(status="error")
 
     used: list[CommitMapping] = []
+    referencing: list[CommitMapping] = []
     module_level_only = False
     for repo, sha in commits:
         try:
@@ -144,13 +165,17 @@ def fix_mappings(
             module_level_only = module_level_only or any(
                 f.mapping.module_level_hunks for f in mapping.files
             )
+            if any(f.mapping.referenced for f in mapping.files):
+                referencing.append(mapping)
             continue
         used.append(mapping)
     if not used:
         if module_level_only:
-            status = "module_level_only"
-        else:
-            status = "no_python_fix" if commits else "no_resolvable_commit"
+            return FixMappings(
+                status="module_level_only", packages=tuple(packages), commits=len(commits),
+                referenced=tuple(referencing),
+            )  # fmt: skip
+        status = "no_python_fix" if commits else "no_resolvable_commit"
         return FixMappings(status=status, commits=len(commits))
     return FixMappings(
         status="mapped", packages=tuple(packages), mappings=tuple(used), commits=len(commits)
@@ -164,12 +189,16 @@ def symbol_for(path: str, name: str, kind: str) -> Symbol:
     return Symbol(qualified_name=qualified, module=module, name=name, kind=kind, path=path)
 
 
-def changed_symbols(mappings: Iterable[CommitMapping]) -> dict[str, Symbol]:
-    """Every changed definition, keyed by module-qualified name."""
+def changed_symbols(
+    mappings: Iterable[CommitMapping], referenced: bool = False
+) -> dict[str, Symbol]:
+    """Every changed definition, keyed by module-qualified name; with ``referenced``, the
+    definitions that changed module-level lines name instead."""
     symbols: dict[str, Symbol] = {}
     for mapping in mappings:
         for file in mapping.files:
-            for definition in file.mapping.changed:
+            found = file.mapping.referenced if referenced else file.mapping.changed
+            for definition in found:
                 symbol = symbol_for(file.mapping.path, definition.name, definition.kind)
                 symbols.setdefault(symbol.qualified_name, symbol)
     return symbols
@@ -184,12 +213,14 @@ def fallback_records(
 ) -> tuple[list[Record], BuildOutcome]:
     digest = input_hash(group, by_id)
     fixes = fix_mappings(group, by_id, github, pypi)
-    if fixes.status != "mapped":
+    from_references = fixes.status == "module_level_only" and bool(fixes.referenced)
+    if fixes.status != "mapped" and not from_references:
         return [], BuildOutcome(
             vulnerability=group.key, status=fixes.status, commits=fixes.commits, input_hash=digest
         )
-    symbols = changed_symbols(fixes.mappings)
-    used = [FixCommitRef(repo=m.repo, sha=m.sha) for m in fixes.mappings]
+    mappings = fixes.referenced if from_references else fixes.mappings
+    symbols = changed_symbols(mappings, referenced=from_references)
+    used = [FixCommitRef(repo=m.repo, sha=m.sha) for m in mappings]
     packages = fixes.packages
     if len(symbols) > MAX_SYMBOLS:
         # A fix that touches thousands of functions (usually a refactor shipped with it)
@@ -222,7 +253,8 @@ def fallback_records(
     ]
     return records, BuildOutcome(
         vulnerability=group.key,
-        status="built",
+        # Records built from the definitions a module-level fix names say so in the ledger.
+        status=MODULE_LEVEL_REFERENCES if from_references else "built",
         records=len(records),
         symbols=len(symbols),
         commits=len(used),

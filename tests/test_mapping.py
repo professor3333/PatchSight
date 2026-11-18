@@ -151,3 +151,66 @@ def test_every_changed_line_is_accounted_for(lines: set[int]) -> None:
             assert min(inside, key=lambda d: d.end_line - d.start_line).name in names
         else:
             assert hunk.index in mapping.module_level_hunks
+
+
+REGISTRATION = b"""class Constructor:
+    def construct_object(self, node):
+        return node
+
+    def construct_safe(self, node):
+        return node
+
+
+Constructor.add("tag:object", Constructor.construct_safe)
+"""
+
+PATTERNS = b"""import re
+
+PATTERNS = [
+    re.compile(r"a+"),
+]
+__version__ = "1.0"
+
+
+def check(text):
+    return any(p.match(text) for p in PATTERNS)
+
+
+def unrelated(text):
+    return text.upper()
+
+
+class Guard:
+    def scan(self, text):
+        if check(text):
+            return [p for p in PATTERNS if p.search(text)]
+        return []
+"""
+
+
+def test_module_level_changes_reference_the_definitions_they_name() -> None:
+    fixed = REGISTRATION.replace(b"construct_safe)", b"construct_object)  # 'Constructor.x'")
+    mapping = map_hunks("lib/c.py", "python", REGISTRATION, fixed, diff_hunks(REGISTRATION, fixed))
+    assert mapping.changed == ()  # the paper's "vulnerable function unchanged" case
+    assert mapping.module_level_hunks
+    assert [d.name for d in mapping.referenced] == [
+        "Constructor", "Constructor.construct_object", "Constructor.construct_safe",
+    ]  # fmt: skip
+
+
+def test_a_changed_constant_references_the_definitions_that_use_it() -> None:
+    fixed = PATTERNS.replace(b'r"a+"', b'r"a{1,10}"').replace(b'"1.0"', b'"1.1"')
+    mapping = map_hunks("pkg/guard.py", "python", PATTERNS, fixed, diff_hunks(PATTERNS, fixed))
+    assert mapping.changed == ()
+    assert sorted(d.name for d in mapping.referenced) == ["Guard.scan", "check"]
+    assert {d.kind for d in mapping.referenced} == {"function", "method"}
+    bump = PATTERNS.replace(b'"1.0"', b'"1.1"')  # __version__ names nothing
+    assert (
+        map_hunks("pkg/guard.py", "python", PATTERNS, bump, diff_hunks(PATTERNS, bump)).referenced
+        == ()
+    )
+
+
+def test_go_module_level_changes_reference_nothing() -> None:
+    fixed = GO.replace(b"r io.Reader", b"r io.ReadCloser")
+    assert map_hunks("p.go", "go", GO, fixed, diff_hunks(GO, fixed)).referenced == ()

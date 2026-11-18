@@ -108,7 +108,7 @@ The scan makes two kinds of network call: the OSV query, and the database downlo
 
 - **Release gate** (`gate-db`): the builds ledger covers every vulnerability with a record; every record has between 1 and 500 symbols; every record is found by its own ID and every alias points at a record; no more than 2% of vulnerabilities (at least 10 allowed) lose their records at once; a high-confidence record whose inputs did not change stays high.
 - **Releases are immutable.** Rollback is one commit that moves `latest.json` on `db-pointer` back ([ADR 0006](adr/0006-nightly-pipeline.md)). A timed rehearsal is *planned* ([#59](https://github.com/professor3333/PatchSight/issues/59)).
-- **Planned:** tracing and token dashboards ([#60](https://github.com/professor3333/PatchSight/issues/60)), the Hugging Face dataset, OpenVEX output, and the injection and robustness suites with a threat model ([#55](https://github.com/professor3333/PatchSight/issues/55)).
+- **Planned:** tracing and token dashboards ([#60](https://github.com/professor3333/PatchSight/issues/60)), the Hugging Face dataset, OpenVEX output, and the injection and robustness suites ([#55](https://github.com/professor3333/PatchSight/issues/55)). The attacks they will measure are described in the [threat model](threat-model.md).
 
 ## Design rules and where they are enforced
 

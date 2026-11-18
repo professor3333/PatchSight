@@ -22,7 +22,8 @@ Include what you found, how to reproduce it, and which version you used
   database is verified (HTTPS only, SHA-256 checked, schema checked, then swapped in).
 - **Untrusted text in the offline pipeline:** advisory text, commit messages, code comments and
   diffs can contain instructions aimed at the model. A way to make the pipeline mark a used,
-  vulnerable symbol as safe is a security problem.
+  vulnerable symbol as safe is a security problem. The [threat model](docs/threat-model.md)
+  describes the known paths and their defences.
 - **The published database and its pointer:** anything that could make users download a
   database other than the one the pointer names.
 

@@ -233,7 +233,7 @@ docs/                   proposal, ADRs, generated reports
 
 - **Wrong symbols for an advisory?** Open a [wrong symbol data](https://github.com/professor3333/PatchSight/issues/new?template=wrong_symbols.yml) report with the output of `patchsight explain`.
 - **Found a bug?** Use the [bug report](https://github.com/professor3333/PatchSight/issues/new?template=bug_report.yml) form. To contribute code, see [CONTRIBUTING.md](CONTRIBUTING.md).
-- **Security problem?** Report it privately, as described in [SECURITY.md](SECURITY.md).
+- **Security problem?** Report it privately, as described in [SECURITY.md](SECURITY.md). The [threat model](docs/threat-model.md) lists the attacks PatchSight is built to withstand, and which ones aren't covered yet.
 
 ## Data and licences
 

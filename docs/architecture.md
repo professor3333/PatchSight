@@ -91,7 +91,7 @@ No third-party source code is stored: only names, paths, line ranges and commit 
 1. **Parse the lockfile.** `requirements.txt` (with `-r` includes, markers and hashes), `uv.lock` and `poetry.lock`. Only exact pins give a version; anything else is reported as unpinned (`scan/lockfiles/`).
 2. **Ask OSV.** One `querybatch` request to `api.osv.dev` with package names and versions only (`scan/osv_client.py`).
 3. **Join with the database.** Through the alias table, so all IDs of one vulnerability become one alert.
-4. **Scan your code.** The standard library `ast` module finds imports and references: aliases, from-imports, attribute chains, names passed as arguments, and dynamic use such as `getattr` with a computed name or `importlib` (`scan/ast_scanner.py`).
+4. **Scan your code.** The standard library `ast` module finds imports and references: aliases, from-imports, attribute chains, names passed as arguments, and dynamic use such as `getattr` with a computed name or `importlib` (`scan/ast_scanner.py`). It also records what could reach vulnerable code unseen, each of which withholds "not called": unused from-imports (possible re-exports), attributes of objects it cannot type, and names inside template tags, in Python strings and template files.
 5. **Decide and report.** One verdict per alert with file-and-line evidence (`scan/verdicts.py`), as text, JSON or SARIF 2.1.0 for code scanning (`scan/report.py`, `scan/sarif.py`). Every alert is shown; in SARIF, CALLED is an error, UNKNOWN a warning and the rest notes. A low-confidence record can raise an alert to CALLED but never lower it.
 
 The scan makes two kinds of network call: the OSV query, and the database download when the cache is empty or `patchsight db update` is run. The download follows `latest.json` on the `db-pointer` branch (falling back to `main` only if that file is missing), verifies the SHA-256 and schema version, and swaps the file in atomically (`scan/dbcache.py`). The scan warns when the database is more than 7 days old. There is no telemetry.
@@ -117,7 +117,7 @@ The scan makes two kinds of network call: the OSV query, and the database downlo
 | No LLM at scan time ([ADR 0002](adr/0002-no-llm-at-scan-time.md)) | `tests/test_import_boundary.py`; optional `pipeline` extra |
 | The model answers with IDs, not names | the JSON schema and `extract/validate.py` |
 | Every vulnerable symbol cites a hunk inside it | `extract/validate.py` |
-| Fail towards noise ([ADR 0004](adr/0004-fall-back-to-the-baseline.md), [ADR 0008](adr/0008-withhold-high-confidence.md)) | `llm_records.py`, `scan/verdicts.py`, a property test that a low-confidence record is never worse than the fallback, and the gate's `high_withheld` check |
+| Fail towards noise ([ADR 0004](adr/0004-fall-back-to-the-baseline.md), [ADR 0008](adr/0008-withhold-high-confidence.md)) | `llm_records.py`, `scan/verdicts.py`, a property test that a low-confidence record is never worse than the fallback, the gate's `high_withheld` check, and the [reachability fixtures](../tests/fixtures/reachability/) (0 false suppressions, checked in CI) |
 | Re-extract only when inputs change ([ADR 0001](adr/0001-re-extract-only-when-inputs-change.md)) | input hashes, the response cache and the `builds` ledger |
 | No vector database ([ADR 0003](adr/0003-no-vector-database.md)) | BM25 only, in `extract/prompt.py` |
 | Two model families for high confidence ([ADR 0005](adr/0005-two-model-families.md)) | `eval/confidence.py` |

@@ -1,0 +1,602 @@
+# Reachability fixtures: small programs whose direct use of a vulnerable symbol is
+# known. See README.md. Advisory text is not copied here: IDs, package versions and
+# symbol names only. Symbols are written module:qualname.
+
+[[advisory]]
+id = "GHSA-8q59-q68h-6hv4"
+package = "pyyaml"
+version = "5.3.1"
+import_roots = ["yaml"]
+symbols = ["yaml.constructor:FullConstructor"]
+entry_points = [
+    "yaml.full_load",
+    "yaml.full_load_all",
+    "yaml.FullLoader",
+    "yaml.load",
+    "yaml.load_all",
+]
+note = "FullLoader constructs arbitrary Python objects. In 5.3.1, load() without a Loader uses FullLoader."
+
+[[advisory]]
+id = "GHSA-8vj2-vxx3-667w"
+package = "pillow"
+version = "8.4.0"
+import_roots = ["PIL"]
+symbols = ["PIL.ImageMath:eval"]
+entry_points = []
+note = "ImageMath.eval evaluates its expression."
+
+[[advisory]]
+id = "GHSA-g3rq-g295-4j3m"
+package = "jinja2"
+version = "2.11.2"
+import_roots = ["jinja2"]
+symbols = ["jinja2.utils:urlize"]
+entry_points = ["jinja2.filters.do_urlize"]
+note = "ReDoS in urlize, reached directly or through the urlize template filter."
+
+[[advisory]]
+id = "GHSA-f9vj-2wh5-fj8j"
+package = "werkzeug"
+version = "3.0.5"
+import_roots = ["werkzeug"]
+symbols = ["werkzeug.security:safe_join"]
+entry_points = ["werkzeug.utils.send_from_directory"]
+note = "safe_join accepts UNC paths on Windows."
+
+[[advisory]]
+id = "GHSA-j8r2-6x86-q33q"
+package = "requests"
+version = "2.30.0"
+import_roots = ["requests"]
+symbols = ["requests.sessions:SessionRedirectMixin.rebuild_proxies"]
+entry_points = [
+    "requests.request",
+    "requests.get",
+    "requests.head",
+    "requests.post",
+    "requests.put",
+    "requests.patch",
+    "requests.delete",
+    "requests.options",
+    "requests.Session",
+    "requests.sessions.Session",
+]
+note = "Proxy-Authorization leaks on redirects; any request through a proxy can follow one."
+
+[[advisory]]
+id = "GHSA-v845-jxx5-vc9f"
+package = "urllib3"
+version = "2.0.5"
+import_roots = ["urllib3"]
+symbols = ["urllib3.util.retry:Retry"]
+entry_points = [
+    "urllib3.PoolManager",
+    "urllib3.ProxyManager",
+    "urllib3.HTTPConnectionPool",
+    "urllib3.HTTPSConnectionPool",
+    "urllib3.request",
+    "urllib3.connectionpool.HTTPConnectionPool.urlopen",
+    "urllib3.poolmanager.PoolManager.urlopen",
+]
+note = "The Cookie header is kept on cross-origin redirects."
+
+[[advisory]]
+id = "GHSA-55x5-fj6c-h6m8"
+package = "lxml"
+version = "4.6.4"
+import_roots = ["lxml"]
+symbols = ["lxml.html.clean:Cleaner"]
+entry_points = ["lxml.html.clean.clean_html", "lxml.html.clean.Cleaner.clean_html"]
+note = "The HTML Cleaner lets crafted scripts through."
+
+[[advisory]]
+id = "GHSA-vm8q-m57g-pff3"
+package = "django"
+version = "4.2.10"
+import_roots = ["django"]
+symbols = [
+    "django.utils.text:Truncator.words",
+    "django.utils.text:Truncator._truncate_html",
+]
+entry_points = [
+    "django.utils.text.Truncator",
+    "django.template.defaultfilters.truncatewords_html",
+]
+note = "ReDoS in Truncator.words(html=True) and the truncatewords_html filter."
+
+[[advisory]]
+id = "GHSA-hcpj-qp55-gfph"
+package = "gitpython"
+version = "3.1.29"
+import_roots = ["git"]
+symbols = ["git.repo.base:Repo.clone_from", "git.repo.base:Repo.clone"]
+entry_points = ["git.Repo.clone_from", "git.Repo.clone"]
+note = "Clone options are passed to git unchecked. The import name is git."
+
+[[advisory]]
+id = "GHSA-hj3f-6gcp-jg8j"
+package = "tornado"
+version = "6.3.1"
+import_roots = ["tornado"]
+symbols = ["tornado.web:StaticFileHandler.validate_absolute_path"]
+entry_points = ["tornado.web.StaticFileHandler"]
+note = "Open redirect in StaticFileHandler."
+
+[[advisory]]
+id = "GHSA-5h86-8mv2-jq9f"
+package = "aiohttp"
+version = "3.9.1"
+import_roots = ["aiohttp"]
+symbols = ["aiohttp.web_urldispatcher:StaticResource._handle"]
+entry_points = [
+    "aiohttp.web.static",
+    "aiohttp.web_urldispatcher.UrlDispatcher.add_static",
+    "aiohttp.web_urldispatcher.StaticResource",
+]
+note = "Static routes with follow_symlinks=True allow directory traversal."
+
+[[advisory]]
+id = "GHSA-f8q4-jwww-x3wv"
+package = "paramiko"
+version = "2.10.0"
+import_roots = ["paramiko"]
+symbols = ["paramiko.pkey:PKey._write_private_key_file"]
+entry_points = ["paramiko.pkey.PKey.write_private_key_file"]
+note = "Race between creating a private key file and restricting its mode."
+
+[[advisory]]
+id = "GHSA-2m57-hf25-phgg"
+package = "sqlparse"
+version = "0.4.4"
+import_roots = ["sqlparse"]
+symbols = ["sqlparse.sql:TokenList.flatten"]
+entry_points = [
+    "sqlparse.parse",
+    "sqlparse.parsestream",
+    "sqlparse.format",
+    "sqlparse.split",
+]
+note = "Deeply nested input exhausts the recursion limit."
+
+[[advisory]]
+id = "GHSA-5rjg-fvgr-3xxf"
+package = "setuptools"
+version = "78.1.0"
+import_roots = ["setuptools"]
+symbols = ["setuptools.package_index:PackageIndex._download_url"]
+entry_points = [
+    "setuptools.package_index.PackageIndex.download",
+    "setuptools.package_index.PackageIndex.fetch_distribution",
+]
+note = "Path traversal in PackageIndex.download."
+
+[[advisory]]
+id = "GHSA-7p73-8jqx-23r8"
+package = "langgraph-checkpoint-sqlite"
+version = "2.0.10"
+import_roots = ["langgraph"]
+symbols = [
+    "langgraph.store.sqlite.base:SqliteStore._get_filter_condition",
+    "langgraph.store.sqlite.base:BaseSqliteStore._prepare_batch_search_queries",
+]
+entry_points = [
+    "langgraph.store.sqlite.SqliteStore",
+    "langgraph.store.sqlite.SqliteStore.search",
+]
+note = "SQL injection through filter keys. The distribution lives in a monorepo and imports as langgraph."
+
+[[advisory]]
+id = "GHSA-74m6-m3xx-3vmj"
+package = "keras"
+version = "3.8.0"
+import_roots = ["keras"]
+symbols = ["keras.src.saving.saving_lib:H5IOStore.__getitem__"]
+entry_points = ["keras.models.load_model", "keras.saving.load_model"]
+note = "HDF5 shape bombs when loading a model file."
+
+[[case]]
+name = "pyyaml-full-load"
+advisory = "GHSA-8q59-q68h-6hv4"
+calls = true
+form = "module attribute"
+expected = "CALLED"
+
+[[case]]
+name = "pyyaml-alias-loader-argument"
+advisory = "GHSA-8q59-q68h-6hv4"
+calls = true
+form = "import alias, class passed as an argument"
+expected = "CALLED"
+
+[[case]]
+name = "pyyaml-safe-load"
+advisory = "GHSA-8q59-q68h-6hv4"
+calls = false
+form = "safe function of the same package"
+expected = "IMPORTED_NOT_CALLED"
+
+[[case]]
+name = "pyyaml-star-import"
+advisory = "GHSA-8q59-q68h-6hv4"
+calls = true
+form = "star import"
+expected = "UNKNOWN"
+
+[[case]]
+name = "pyyaml-importlib"
+advisory = "GHSA-8q59-q68h-6hv4"
+calls = true
+form = "importlib"
+expected = "UNKNOWN"
+
+[[case]]
+name = "pyyaml-getattr-constant"
+advisory = "GHSA-8q59-q68h-6hv4"
+calls = true
+form = "getattr with a constant name"
+expected = "CALLED"
+
+[[case]]
+name = "pyyaml-getattr-computed"
+advisory = "GHSA-8q59-q68h-6hv4"
+calls = true
+form = "getattr with a computed name"
+expected = "UNKNOWN"
+
+[[case]]
+name = "pyyaml-mentioned-only"
+advisory = "GHSA-8q59-q68h-6hv4"
+calls = false
+form = "named only in a comment and a docstring"
+expected = "IMPORTED_NOT_CALLED"
+
+[[case]]
+name = "pyyaml-shadowed-name"
+advisory = "GHSA-8q59-q68h-6hv4"
+calls = false
+form = "own function with the same name"
+expected = "IMPORTED_NOT_CALLED"
+
+[[case]]
+name = "pyyaml-unparsable"
+advisory = "GHSA-8q59-q68h-6hv4"
+calls = true
+form = "file the scanner cannot parse (Python 2)"
+expected = "UNKNOWN"
+
+[[case]]
+name = "pyyaml-reexport"
+advisory = "GHSA-8q59-q68h-6hv4"
+calls = true
+form = "re-exported through the project's own module"
+expected = "CALLED"
+
+[[case]]
+name = "pyyaml-relative-reexport"
+advisory = "GHSA-8q59-q68h-6hv4"
+calls = true
+form = "re-exported, then imported relatively"
+expected = "CALLED"
+
+[[case]]
+name = "pyyaml-annotation-only"
+advisory = "GHSA-8q59-q68h-6hv4"
+calls = false
+form = "named only in a type annotation"
+expected = "CALLED"
+
+[[case]]
+name = "pillow-imagemath-eval"
+advisory = "GHSA-8vj2-vxx3-667w"
+calls = true
+form = "from-imported module"
+expected = "CALLED"
+
+[[case]]
+name = "pillow-dotted-import"
+advisory = "GHSA-8vj2-vxx3-667w"
+calls = true
+form = "dotted import"
+expected = "CALLED"
+
+[[case]]
+name = "pillow-function-alias"
+advisory = "GHSA-8vj2-vxx3-667w"
+calls = true
+form = "from-import with an alias"
+expected = "CALLED"
+
+[[case]]
+name = "pillow-image-only"
+advisory = "GHSA-8vj2-vxx3-667w"
+calls = false
+form = "other modules of the same package"
+expected = "IMPORTED_NOT_CALLED"
+
+[[case]]
+name = "pillow-not-imported"
+advisory = "GHSA-8vj2-vxx3-667w"
+calls = false
+form = "package never imported"
+expected = "NOT_IMPORTED"
+
+[[case]]
+name = "jinja2-urlize-direct"
+advisory = "GHSA-g3rq-g295-4j3m"
+calls = true
+form = "from-imported function"
+expected = "CALLED"
+
+[[case]]
+name = "jinja2-urlize-inline-template"
+advisory = "GHSA-g3rq-g295-4j3m"
+calls = true
+form = "filter named in a template string"
+expected = "UNKNOWN"
+
+[[case]]
+name = "jinja2-exceptions-only"
+advisory = "GHSA-g3rq-g295-4j3m"
+calls = false
+form = "exception class only"
+expected = "IMPORTED_NOT_CALLED"
+
+[[case]]
+name = "werkzeug-safe-join"
+advisory = "GHSA-f9vj-2wh5-fj8j"
+calls = true
+form = "from-imported function"
+expected = "CALLED"
+
+[[case]]
+name = "werkzeug-send-from-directory"
+advisory = "GHSA-f9vj-2wh5-fj8j"
+calls = true
+form = "public entry point"
+expected = "CALLED"
+
+[[case]]
+name = "werkzeug-password-hash"
+advisory = "GHSA-f9vj-2wh5-fj8j"
+calls = false
+form = "other functions of the same module"
+expected = "IMPORTED_NOT_CALLED"
+
+[[case]]
+name = "werkzeug-module-reexport"
+advisory = "GHSA-f9vj-2wh5-fj8j"
+calls = true
+form = "module re-exported through the project's own module"
+expected = "CALLED"
+
+[[case]]
+name = "requests-get-with-proxies"
+advisory = "GHSA-j8r2-6x86-q33q"
+calls = true
+form = "public entry point"
+expected = "CALLED"
+
+[[case]]
+name = "requests-session"
+advisory = "GHSA-j8r2-6x86-q33q"
+calls = true
+form = "class of a public entry point"
+expected = "CALLED"
+
+[[case]]
+name = "requests-structures-only"
+advisory = "GHSA-j8r2-6x86-q33q"
+calls = false
+form = "data structure only"
+expected = "IMPORTED_NOT_CALLED"
+
+[[case]]
+name = "urllib3-poolmanager"
+advisory = "GHSA-v845-jxx5-vc9f"
+calls = true
+form = "public entry point"
+expected = "CALLED"
+
+[[case]]
+name = "urllib3-retry-reexport"
+advisory = "GHSA-v845-jxx5-vc9f"
+calls = true
+form = "name re-exported by the package"
+expected = "CALLED"
+
+[[case]]
+name = "urllib3-parse-url"
+advisory = "GHSA-v845-jxx5-vc9f"
+calls = false
+form = "unrelated helper"
+expected = "IMPORTED_NOT_CALLED"
+
+[[case]]
+name = "urllib3-transitive-only"
+advisory = "GHSA-v845-jxx5-vc9f"
+calls = false
+form = "used only through another package"
+expected = "NOT_IMPORTED"
+
+[[case]]
+name = "lxml-cleaner"
+advisory = "GHSA-55x5-fj6c-h6m8"
+calls = true
+form = "class instantiated and used"
+expected = "CALLED"
+
+[[case]]
+name = "lxml-clean-module"
+advisory = "GHSA-55x5-fj6c-h6m8"
+calls = true
+form = "function called through a from-imported module"
+expected = "CALLED"
+
+[[case]]
+name = "lxml-etree-only"
+advisory = "GHSA-55x5-fj6c-h6m8"
+calls = false
+form = "other module of the same package"
+expected = "IMPORTED_NOT_CALLED"
+
+[[case]]
+name = "django-truncator"
+advisory = "GHSA-vm8q-m57g-pff3"
+calls = true
+form = "class instantiated and used"
+expected = "CALLED"
+
+[[case]]
+name = "django-slugify"
+advisory = "GHSA-vm8q-m57g-pff3"
+calls = false
+form = "other function of the same module"
+expected = "IMPORTED_NOT_CALLED"
+
+[[case]]
+name = "django-template-filter"
+advisory = "GHSA-vm8q-m57g-pff3"
+calls = true
+form = "filter named in a template file"
+expected = "UNKNOWN"
+
+[[case]]
+name = "gitpython-clone-from"
+advisory = "GHSA-hcpj-qp55-gfph"
+calls = true
+form = "import name differs from the distribution name"
+expected = "CALLED"
+
+[[case]]
+name = "gitpython-repo-read-only"
+advisory = "GHSA-hcpj-qp55-gfph"
+calls = false
+form = "class used, vulnerable methods not called"
+expected = "CALLED"
+
+[[case]]
+name = "gitpython-exceptions-only"
+advisory = "GHSA-hcpj-qp55-gfph"
+calls = false
+form = "exception class only"
+expected = "IMPORTED_NOT_CALLED"
+
+[[case]]
+name = "tornado-static-subclass"
+advisory = "GHSA-hj3f-6gcp-jg8j"
+calls = true
+form = "subclass"
+expected = "CALLED"
+
+[[case]]
+name = "tornado-request-handler-only"
+advisory = "GHSA-hj3f-6gcp-jg8j"
+calls = false
+form = "other classes of the same module"
+expected = "IMPORTED_NOT_CALLED"
+
+[[case]]
+name = "aiohttp-web-static"
+advisory = "GHSA-5h86-8mv2-jq9f"
+calls = true
+form = "public entry point"
+expected = "CALLED"
+
+[[case]]
+name = "aiohttp-router-add-static"
+advisory = "GHSA-5h86-8mv2-jq9f"
+calls = true
+form = "method of an object the scanner cannot type"
+expected = "UNKNOWN"
+
+[[case]]
+name = "aiohttp-client-only"
+advisory = "GHSA-5h86-8mv2-jq9f"
+calls = false
+form = "client side of the package only"
+expected = "IMPORTED_NOT_CALLED"
+
+[[case]]
+name = "paramiko-write-key-instance"
+advisory = "GHSA-f8q4-jwww-x3wv"
+calls = true
+form = "method of an object the scanner cannot type"
+expected = "UNKNOWN"
+
+[[case]]
+name = "paramiko-write-key-subclass"
+advisory = "GHSA-f8q4-jwww-x3wv"
+calls = true
+form = "inherited method through a subclass"
+expected = "CALLED"
+
+[[case]]
+name = "paramiko-ssh-client"
+advisory = "GHSA-f8q4-jwww-x3wv"
+calls = false
+form = "other classes of the same package"
+expected = "IMPORTED_NOT_CALLED"
+
+[[case]]
+name = "sqlparse-parse"
+advisory = "GHSA-2m57-hf25-phgg"
+calls = true
+form = "public entry point"
+expected = "CALLED"
+
+[[case]]
+name = "sqlparse-format-alias"
+advisory = "GHSA-2m57-hf25-phgg"
+calls = true
+form = "import alias"
+expected = "CALLED"
+
+[[case]]
+name = "sqlparse-tokens-only"
+advisory = "GHSA-2m57-hf25-phgg"
+calls = false
+form = "token types only"
+expected = "IMPORTED_NOT_CALLED"
+
+[[case]]
+name = "setuptools-package-index"
+advisory = "GHSA-5rjg-fvgr-3xxf"
+calls = true
+form = "class instantiated and used"
+expected = "CALLED"
+
+[[case]]
+name = "setuptools-find-packages"
+advisory = "GHSA-5rjg-fvgr-3xxf"
+calls = false
+form = "other function of the same package"
+expected = "IMPORTED_NOT_CALLED"
+
+[[case]]
+name = "langgraph-store-search"
+advisory = "GHSA-7p73-8jqx-23r8"
+calls = true
+form = "import name differs; package in a monorepo"
+expected = "CALLED"
+
+[[case]]
+name = "langgraph-saver-only"
+advisory = "GHSA-7p73-8jqx-23r8"
+calls = false
+form = "other class of the same distribution"
+expected = "IMPORTED_NOT_CALLED"
+
+[[case]]
+name = "keras-load-model"
+advisory = "GHSA-74m6-m3xx-3vmj"
+calls = true
+form = "public entry point"
+expected = "CALLED"
+
+[[case]]
+name = "keras-build-only"
+advisory = "GHSA-74m6-m3xx-3vmj"
+calls = false
+form = "model built, never loaded"
+expected = "IMPORTED_NOT_CALLED"

@@ -182,6 +182,62 @@ def test_matching_rules() -> None:
     assert not matches("yaml.safe_load", "yaml.full_load")
 
 
+def test_an_unused_from_import_counts_as_a_reexported_reference(tmp_path: Path) -> None:
+    usage = ast_scanner.scan(_write(tmp_path, {
+        "helpers.py": "from yaml import full_load\nfrom yaml import safe_load\nsafe_load(s)\n",
+        "main.py": "from helpers import full_load\nfull_load(s)\n",
+    }))  # fmt: skip
+    found = sorted((r.name, r.location.path, r.location.line) for r in usage.references)
+    assert ("yaml.full_load", "helpers.py", 1) in found  # at the import: never used there
+    assert [n for n, *_ in found].count("yaml.safe_load") == 1  # used: only the use counts
+    assert _verdict(tmp_path / "v", "from yaml import full_load as fl\n") == "CALLED"
+
+
+def test_a_vulnerable_name_on_an_untyped_object_withholds_not_called(tmp_path: Path) -> None:
+    record = _record(entry_points=("yaml.full_load", "yaml.Loader.__init__"))
+    instance = _verdict(tmp_path / "a", "import yaml\nloader.full_load(s)\n", record)
+    project = _write(tmp_path / "b", {
+        "helpers.py": "import yaml\n",
+        "main.py": "import yaml\nimport helpers\nhelpers.yaml.full_load(s)\n",
+    })  # fmt: skip
+    own_module = decide("A", "pyyaml", "1", record, ast_scanner.scan(project)).verdict
+    assert (instance, own_module) == ("UNKNOWN", "UNKNOWN")
+    usage = ast_scanner.scan(_write(tmp_path / "c", {"m.py": "import yaml\nx.__init__(s)\n"}))
+    alert = decide("A", "pyyaml", "1", record, usage)
+    assert alert.verdict == "IMPORTED_NOT_CALLED"  # dunders are not called by name
+    assert "loader" not in usage.attributes  # the receiver is a name, not an attribute
+
+
+def test_a_vulnerable_name_in_a_template_withholds_not_called(tmp_path: Path) -> None:
+    record = _record(entry_points=("yaml.full_load",))
+    inline = "import yaml\nT = '<p>{{ text|construct_object }}</p>'\n"
+    assert _verdict(tmp_path / "a", inline, record) == "UNKNOWN"
+    plain = "import yaml\nT = 'construct_object, but not in a template tag'\n"
+    assert _verdict(tmp_path / "b", plain, record) == "IMPORTED_NOT_CALLED"
+    project = _write(tmp_path / "c", {
+        "app.py": "import yaml\n",
+        "templates/page.html": "<p>\n{% if x %}\n  {{ x|full_load }}\n{% endif %}\n</p>\n",
+        ".venv/t.html": "{{ x|construct_object }}",
+    })  # fmt: skip
+    usage = ast_scanner.scan(project)
+    assert usage.template_names["full_load"] == ast_scanner.Location(
+        path="templates/page.html", line=3
+    )
+    assert "construct_object" not in usage.template_names  # virtualenvs are skipped
+    assert decide("A", "pyyaml", "1", record, usage).verdict == "UNKNOWN"
+
+
+def test_an_unknown_import_name_is_never_not_imported(tmp_path: Path) -> None:
+    unmapped = _record().model_copy(update={"package": "langgraph-checkpoint-sqlite",
+                                            "import_roots": ()})  # fmt: skip
+    usage = ast_scanner.scan(_write(tmp_path, {"a.py": "from langgraph.store import x\n"}))
+    alert = decide("A", "langgraph-checkpoint-sqlite", "1", unmapped, usage)
+    assert alert.verdict == "UNKNOWN"
+    assert "import name of langgraph-checkpoint-sqlite is not known" in alert.reason
+    known = _record().model_copy(update={"import_roots": ()})  # pyyaml -> yaml is known
+    assert decide("A", "pyyaml", "1", known, usage).verdict == "NOT_IMPORTED"
+
+
 # --- end to end ------------------------------------------------------------------------
 
 

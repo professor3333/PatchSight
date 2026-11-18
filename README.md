@@ -152,16 +152,20 @@ Outputs: `sarif-file`, `alerts`, `called` and `unknown`.
 | 🔴 | **CALLED** | A reference in your code resolves to a vulnerable function, its class, or an entry point that reaches it. **Fix these first.** |
 | 🟢 | **IMPORTED, NOT CALLED** | The package is imported, but no vulnerable symbol is referenced. Given only for high-confidence data, which is [withheld for now](docs/adr/0008-withhold-high-confidence.md). |
 | ⚪ | **NOT IMPORTED** | Your code never imports the package directly. It may still be used through other dependencies. |
-| 🟡 | **UNKNOWN** | No symbol data, only low-confidence data, or dynamic code the scanner can't follow. |
+| 🟡 | **UNKNOWN** | No symbol data, only low-confidence data, or code the scanner can't follow: dynamic imports, a vulnerable method called on an object of unknown type, a template filter, or a package whose import name isn't known. |
 
 > [!NOTE]
 > **The safety rule: fail towards noise, never towards silence.** A wrong "not called" could hide a real vulnerability, so:
 > - every alert is shown;
 > - "not called" covers only direct use that can be resolved statically;
 > - dynamic code (`getattr` with a computed name, `importlib`, star imports, modules passed as values) gives **unknown**;
+> - so does a vulnerable symbol's name used where the scanner can't tell what it belongs to: a method of an untyped object, or a filter in a template;
+> - a package whose import name isn't known is never **not imported**;
 > - low-confidence data can raise an alert to **called**, but never lower it.
 >
 > PatchSight supports triage. It doesn't judge whether your deployment is vulnerable.
+
+**Tested on 58 [reachability fixtures](tests/fixtures/reachability/):** small programs for 16 advisories, 36 of which use the vulnerable code, through aliases, re-exports, subclasses, templates and dynamic imports. **No program that uses the vulnerable code is labelled "not called" or "not imported"**, either with correct high-confidence records ([report](docs/reports/reachability-fixtures-labelled.md)) or with the published database ([report](docs/reports/reachability-fixtures-db-2026.11.18.md)). The fixtures found the cases that needed fixing: the 0.4.0 scanner gives 7 such false suppressions with correct high-confidence records, and 1 with the published database. The fixes are on `main` and ship in the next release.
 
 ## How it works
 
@@ -205,6 +209,7 @@ The offline pipeline is `python -m patchsight.pipeline <command>`.
 | `export-replay`, `confidence-report`, `reproduce` | Replay committed model answers offline, compare confidence rules, rebuild the tables |
 | `parity-report` | Compare two runs of the same prompt, such as the self-hosted 4-bit model against the hosted one |
 | `failure-report` | Break benchmark misses down by cause |
+| `reachability-report` | Score the reachability fixtures, with labelled records or a published database |
 | `update-db`, `gate-db`, `release-notes` | The nightly: rebuild only what changed, run the release gate, write the notes |
 | `pypi-extract`, `merge-llm` | LLM extraction for PyPI advisories, and merging it into a published database |
 | `export-kaggle-inputs`, `restore-kaggle-inputs`, `import-kaggle-run` | Move the backfill's inputs to Kaggle and its answers back |
@@ -222,6 +227,7 @@ The offline pipeline is `python -m patchsight.pipeline <command>`.
 - [x] **Public symbol database:** [releases](https://github.com/professor3333/PatchSight/releases), updated **every night** by the [nightly pipeline](.github/workflows/nightly.yml) after a release gate ([ADR 0006](docs/adr/0006-nightly-pipeline.md)). About 3,500 PyPI vulnerabilities, all low confidence so far
 - [ ] LLM-extracted records for PyPI: the pipeline, confidence tiers and per-symbol evidence are built; the self-hosted backfill is running on Kaggle (2 of 4 shards merged)
 - [x] Held-out test evaluation of the confidence rule, declared in advance and run once: the safety target is **not met** ([ADR 0004](docs/adr/0004-fall-back-to-the-baseline.md#test-result-2026-11-18))
+- [x] Reachability fixtures: 58 programs, 0 false suppressions ([report](docs/reports/reachability-fixtures-labelled.md))
 - [x] **On PyPI:** [`pip install patchsight`](https://pypi.org/project/patchsight/), published from CI with Trusted Publishing and a required approval
 - [x] **SARIF output and a GitHub Action** (`professor3333/PatchSight@v0.4.0`), with a [smoke test](.github/workflows/action-smoke.yml) on every change
 - [ ] OpenVEX output and a pull-request comment
@@ -280,6 +286,6 @@ docs/                   proposal, ADRs, generated reports
 
 ## Limitations
 
-- **"Not called" is a static claim.** Python is dynamic, and use through other packages isn't analysed.
+- **"Not called" is a static claim.** Python is dynamic, and use through other packages isn't analysed. Templates are read only inside the scanned directory, and only for names in their tags.
 - **Patch-based extraction has a ceiling.** A vulnerable function the fix left unchanged can't be found from the patch alone. PyYAML's CVE-2020-14343, whose fix only edits module-level registration calls, is one example.
 - **GitHub-hosted fixes only.** Advisories whose fix lives elsewhere get no symbol data, so their alerts stay UNKNOWN.

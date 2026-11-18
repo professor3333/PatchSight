@@ -6,12 +6,18 @@ Rules, in order:
 2. A reference in user code matches a vulnerable symbol or entry point: CALLED. This holds
    at any confidence; low-confidence data may raise an alert's priority.
 3. The package is never imported: NOT_IMPORTED (transitive use is not analysed), unless an
-   unparsable file mentions it or a dynamic import has a computed name: UNKNOWN.
+   unparsable file mentions it, a dynamic import has a computed name, or the package's
+   import name is not known (the record has no import roots and the package is not a
+   known exception): UNKNOWN.
 4. Dynamic use of the package (``getattr`` with a computed name, ``importlib``, a module
    used as a value, a star import): UNKNOWN.
 5. Low-confidence symbol data, no symbols, or an unparsable file that mentions the
    package: UNKNOWN. Low confidence can never lower an alert.
-6. Otherwise: IMPORTED_NOT_CALLED, a claim about statically resolvable use only.
+6. A vulnerable symbol's name is used where the scanner cannot tell what it belongs to:
+   an attribute of an untyped object (``key.write_private_key_file()``), a name reached
+   through the project's own modules, or a name inside a template tag
+   (``{{ text|urlize }}``): UNKNOWN.
+7. Otherwise: IMPORTED_NOT_CALLED, a claim about statically resolvable use only.
 
 A reference matches a symbol when it is the same name; when it names the class or module
 that directly contains the symbol; when it reaches into the symbol (``yaml.Loader.x`` for
@@ -27,7 +33,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict
 
 from patchsight.db import Record
-from patchsight.names import import_names
+from patchsight.names import KNOWN_IMPORT_NAMES, canonical_package_name, import_names
 from patchsight.scan.ast_scanner import Location, Usage
 
 Verdict = Literal["CALLED", "IMPORTED_NOT_CALLED", "NOT_IMPORTED", "UNKNOWN"]
@@ -107,7 +113,8 @@ def decide(advisory: str, package: str, version: str, record: Record | None, usa
                 **base,
                 **context,
                 verdict="UNKNOWN",
-                reason=f"could not parse {', '.join(unparsable)}, which mention {package}",
+                reason=f"could not parse {', '.join(unparsable)}, which "
+                f"{'mentions' if len(unparsable) == 1 else 'mention'} {package}",
             )
         if computed:
             return Alert(
@@ -116,6 +123,14 @@ def decide(advisory: str, package: str, version: str, record: Record | None, usa
                 verdict="UNKNOWN",
                 reason="a dynamic import with a computed name could load it",
                 evidence=tuple(d.location for d in computed),
+            )
+        if not record.import_roots and canonical_package_name(package) not in KNOWN_IMPORT_NAMES:
+            return Alert(
+                **base,
+                **context,
+                verdict="UNKNOWN",
+                reason=f"the import name of {package} is not known; your code never imports "
+                f"{' or '.join(names)}, but it may import the package under another name",
             )
         return Alert(
             **base,
@@ -159,8 +174,33 @@ def decide(advisory: str, package: str, version: str, record: Record | None, usa
             **base,
             **context,
             verdict="UNKNOWN",
-            reason=f"could not parse {', '.join(unparsable)}, which mention {package}",
+            reason=f"could not parse {', '.join(unparsable)}, which "
+            f"{'mentions' if len(unparsable) == 1 else 'mention'} {package}",
             evidence=tuple(imported),
+            referenced=referenced,
+        )
+    leaves = sorted({t.split(".")[-1] for t in targets} | set(bare))
+    leaves = [n for n in leaves if not (n.startswith("__") and n.endswith("__"))]
+    untyped = [n for n in leaves if n in usage.attributes]
+    if untyped:
+        return Alert(
+            **base,
+            **context,
+            verdict="UNKNOWN",
+            reason=f"your code uses .{untyped[0]} on an object the scanner cannot type; it "
+            "may be the vulnerable symbol",
+            evidence=tuple(usage.attributes[n] for n in untyped),
+            referenced=referenced,
+        )
+    templated = [n for n in leaves if n in usage.template_names]
+    if templated:
+        return Alert(
+            **base,
+            **context,
+            verdict="UNKNOWN",
+            reason=f"a template uses {templated[0]}, the name of a vulnerable symbol; "
+            "template calls cannot be followed",
+            evidence=tuple(usage.template_names[n] for n in templated),
             referenced=referenced,
         )
     return Alert(

@@ -921,6 +921,43 @@ def failure_report_command(
     typer.echo("\n".join(lines[10:36]))
 
 
+@app.command("reachability-report")
+def reachability_report_command(
+    database: Annotated[
+        Path | None,
+        typer.Option(
+            "--db",
+            help="Score a symbol database (a published release) instead of the labelled data.",
+        ),
+    ] = None,
+    root: Root = Path(),
+) -> None:
+    """Score the reachability fixtures, offline: false suppressions and verdicts per case."""
+    from patchsight.eval import reachability
+
+    directory = root / reachability.FIXTURES
+    fixtures = reachability.load(directory)
+    labelled = reachability.run_labelled(fixtures, directory)
+    if database is None:
+        result, stem, beside = labelled, "labelled", None
+    else:
+        result = reachability.run_database(fixtures, directory, database)
+        stem, beside = f"db-{result.data.removeprefix('database ')}", labelled
+    target = root / "docs" / "reports" / f"reachability-fixtures-{stem}"
+    text = reachability.render_markdown(fixtures, result, beside)
+    target.with_name(target.name + ".md").write_text(text, "utf-8")
+    target.with_name(target.name + ".json").write_text(
+        result.model_dump_json(indent=2) + "\n", "utf-8"
+    )
+    suppressed = result.false_suppressions
+    typer.echo(
+        f"{result.data}: {len(result.outcomes)} programs, {len(suppressed)} false suppressions, "
+        f"{sum(o.as_expected for o in result.outcomes)} as expected -> {target}.md"
+    )
+    if suppressed:
+        raise typer.Exit(1)
+
+
 @app.command("reproduce")
 def reproduce_command(root: Root = Path()) -> None:
     """Recompute the benchmark tables offline from committed files. No network, no API key."""

@@ -57,7 +57,7 @@ A reference is a fix candidate when it is a commit or pull-request URL on GitHub
 
 ## Fields
 
-Each record carries: vulnerability ID and aliases, package (PEP 503 name) and its import names, fix commits (repository and SHA), symbols (qualified name, module, name, kind, file path), entry points, confidence, source (`llm`, `fallback` or `override`), model and second-opinion model, prompt version, input hash, the advisory's `modified` time, truncation flag and extraction time. Model picks add their rationale and cited hunk locations (commit, path and line ranges). The full schema is in the [architecture doc](architecture.md#the-symbol-database).
+Each record carries: vulnerability ID and aliases, package (PEP 503 name) and its import names (read from its wheels on PyPI when possible, [ADR 0009](adr/0009-import-names-from-wheels.md)), fix commits (repository and SHA), symbols (qualified name, module, name, kind, file path), entry points, confidence, source (`llm`, `fallback` or `override`), model and second-opinion model, prompt version, input hash, the advisory's `modified` time, truncation flag and extraction time. Model picks add their rationale and cited hunk locations (commit, path and line ranges). The full schema is in the [architecture doc](architecture.md#the-symbol-database).
 
 **Not included:**
 

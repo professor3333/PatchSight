@@ -1150,6 +1150,60 @@ def merge_llm_command(
     )
 
 
+@app.command("import-names")
+def import_names_command(
+    database: Annotated[Path, typer.Argument(help="The database to annotate, in place.")],
+    previous: Annotated[
+        Path | None,
+        typer.Option(help="The previous release, whose import names are reused."),
+    ] = None,
+    root: Root = Path(),
+    cache: Annotated[Path, typer.Option(help="HTTP response cache.")] = Path(".cache/http"),
+    offline: Annotated[bool, typer.Option(help="Answer only from the cache.")] = False,
+) -> None:
+    """Read each package's import names from its wheels, and relabel its records with them.
+    Run after build-db, update-db or merge-llm, before gate-db."""
+    from patchsight.pipeline import import_names
+
+    target = root / database
+    source = db.SymbolDatabase(target)
+    try:
+        records, aliases = source.all_records(), source.alias_map()
+        builds, meta = list(source.build_ledger().values()), dict(source.meta)
+    finally:
+        source.close()
+    earlier: dict[str, db.ImportNames] = {}
+    if previous is not None:
+        prior = db.SymbolDatabase(root / previous)
+        try:
+            earlier = prior.import_names()
+        finally:
+            prior.close()
+    pypi = PyPIClient(root / cache / "pypi", offline=offline)
+    index = import_names.WheelIndex(pypi, root / cache / "wheels", offline=offline)
+    try:
+        relabelled, names, report = import_names.annotate(records, index, earlier)
+    finally:
+        index.close()
+        pypi.close()
+    meta.pop("schema_version", None)  # db.write sets it
+    meta["import_names"] = json.dumps(
+        {"packages": report.packages, "with_names": report.packages - len(report.without_names)}
+    )
+    staged = target.with_name(target.name + ".tmp")
+    db.write(staged, relabelled, aliases, meta, builds=builds, import_names=names)
+    staged.replace(target)
+    target.with_name(target.stem + "-import-names.json").write_text(
+        report.model_dump_json(indent=2) + "\n", "utf-8"
+    )
+    typer.echo(
+        f"{report.packages} packages: {report.reused} reused, {report.read} read from wheels, "
+        f"{len(report.without_names)} without names; {report.records_relabelled} records "
+        f"relabelled, {report.symbols_moved} symbols moved ({index.network_requests} range "
+        f"requests, {pypi.http.network_requests} PyPI requests)"
+    )
+
+
 @app.command("gate-db")
 def gate_db_command(
     candidate: Annotated[Path, typer.Argument(help="The candidate database.")],
@@ -1276,6 +1330,16 @@ def release_notes_command(
         "- Low-confidence records list every definition the fix changed; they can mark an "
         "alert CALLED, never IMPORTED, NOT CALLED.",
     ]
+    if "import_names" in meta:
+        counts = json.loads(meta["import_names"])
+        lines.append(
+            f"- **Import names** come from the packages' wheels on PyPI for "
+            f"{counts['with_names']:,} of {counts['packages']:,} packages. The rest keep names "
+            "derived from the fix commit's paths."
+            if counts["with_names"] < counts["packages"]
+            else f"- **Import names** come from the packages' wheels on PyPI, for all "
+            f"{counts['packages']:,} packages."
+        )
     if update is not None:
         report = UpdateReport.model_validate_json((root / update).read_text("utf-8"))
         lines += [

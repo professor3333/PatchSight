@@ -55,6 +55,12 @@ jobs:
           echo "changed=$changed" >> "$GITHUB_OUTPUT"
           echo "changed: $changed"
 
+      - name: Read import names from wheels
+        if: steps.changes.outputs.changed == 'true'
+        run: >
+          uv run python -m patchsight.pipeline import-names data/build/nightly.sqlite
+          --previous "$RUNNER_TEMP/previous/patchsight.sqlite"
+
       - name: Release gate
         if: steps.changes.outputs.changed == 'true'
         run: >
@@ -109,6 +115,7 @@ jobs:
           name: nightly-reports
           path: |
             data/build/nightly-update.json
+            data/build/nightly-import-names.json
             data/build/gate.md
             data/build/gate.json
             data/build/release-notes.md

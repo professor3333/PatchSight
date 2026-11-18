@@ -15,6 +15,9 @@ workflow then opens an issue with this report instead.
 * ``high_kept``: a high-confidence record whose extraction inputs did not change stays high.
 * ``high_withheld``: no record is high confidence while ADR 0008 withholds the tier, however
   the database was built.
+* ``import_names``: every package with a record has import names read from its wheels (or
+  a recorded reason why none could be read), and its records use them as import roots. A
+  build that skipped ``import-names`` fails here.
 """
 
 from pydantic import BaseModel, ConfigDict
@@ -144,6 +147,28 @@ def run(candidate: SymbolDatabase, previous: SymbolDatabase) -> GateReport:
                 if not high
                 else f" while ADR 0008 withholds the tier: {_sample(high)}"
             ),
+        )
+    )
+    names = candidate.import_names()
+    packages = sorted({r.package for rs in records.values() for r in rs})
+    unread = [p for p in packages if p not in names]
+    stale = sorted(
+        {
+            f"{r.vulnerability}/{r.package}"
+            for rs in records.values()
+            for r in rs
+            if r.package in names and names[r.package].names
+            and r.import_roots != names[r.package].names
+        }
+    )  # fmt: skip
+    with_names = sum(1 for p in packages if p in names and names[p].names)
+    checks.append(
+        Check(
+            name="import_names",
+            passed=not unread and not stale,
+            detail=f"{with_names} of {len(packages)} packages have import names from a wheel"
+            + (f"; never looked up: {_sample(unread)}" if unread else "")
+            + (f"; records not using them: {_sample(stale)}" if stale else ""),
         )
     )
     return GateReport(

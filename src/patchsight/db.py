@@ -82,6 +82,11 @@ CREATE TABLE evidence (
     hunks TEXT NOT NULL,
     PRIMARY KEY (vulnerability, package, qualified_name)
 );
+CREATE TABLE import_names (
+    package TEXT PRIMARY KEY,
+    names TEXT NOT NULL,
+    source TEXT NOT NULL
+);
 """
 
 
@@ -118,6 +123,17 @@ class HunkLocation(BaseModel):
     old_count: int
     new_start: int
     new_count: int
+
+
+class ImportNames(BaseModel):
+    """A distribution's top-level import names, read from its wheels' file lists, and the
+    wheels read. Empty ``names`` means none could be read; ``source`` says why."""
+
+    model_config = ConfigDict(frozen=True)
+
+    package: str
+    names: tuple[str, ...]
+    source: str
 
 
 class SymbolEvidence(BaseModel):
@@ -174,6 +190,7 @@ def write(
     aliases: dict[str, str],
     meta: dict[str, str],
     builds: Iterable[BuildEntry] = (),
+    import_names: Iterable[ImportNames] = (),
 ) -> int:
     """Write a fresh database file. Returns the number of records written."""
     if path.exists():
@@ -191,6 +208,10 @@ def write(
         connection.executemany(
             "INSERT INTO builds VALUES (?, ?, ?)",
             sorted((b.vulnerability, b.input_hash, b.status) for b in builds),
+        )
+        connection.executemany(
+            "INSERT INTO import_names VALUES (?, ?, ?)",
+            sorted((n.package, json.dumps(list(n.names)), n.source) for n in import_names),
         )
         for record in records:
             count += 1
@@ -282,6 +303,7 @@ class SymbolDatabase:
         self._has_extraction = "extraction" in tables
         self._has_evidence = "evidence" in tables
         self._has_builds = "builds" in tables
+        self._has_import_names = "import_names" in tables
 
     def close(self) -> None:
         self._connection.close()
@@ -324,6 +346,16 @@ class SymbolDatabase:
             return {}
         rows = self._connection.execute("SELECT vulnerability, input_hash, status FROM builds")
         return {r[0]: BuildEntry(vulnerability=r[0], input_hash=r[1], status=r[2]) for r in rows}
+
+    def import_names(self) -> dict[str, ImportNames]:
+        """Import names read from wheels, by package; empty for an older database."""
+        if not self._has_import_names:
+            return {}
+        rows = self._connection.execute("SELECT package, names, source FROM import_names")
+        return {
+            r[0]: ImportNames(package=r[0], names=tuple(json.loads(r[1])), source=r[2])
+            for r in rows
+        }
 
     def identifiers_for(self, vulnerability: str) -> list[str]:
         """Every advisory ID and alias that points at this vulnerability."""

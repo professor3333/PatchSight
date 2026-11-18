@@ -29,15 +29,18 @@ def _record(vulnerability: str, confidence: str = "low", symbols: int = 1) -> Re
 
 def _write(
     path: Path, records: list[Record], hashes: dict[str, str] | None = None,
-    aliases: dict[str, str] | None = None, ledger: bool = True,
+    aliases: dict[str, str] | None = None, ledger: bool = True, names: bool = True,
 ) -> Path:  # fmt: skip
     keys = {r.vulnerability for r in records}
     builds = [
         BuildEntry(vulnerability=k, input_hash=(hashes or {}).get(k, "h"), status="built")
         for k in sorted(keys)
     ]
+    looked_up = [db.ImportNames(package=p, names=("pkg",), source="pkg-1.0-py3-none-any.whl")
+                 for p in sorted({r.package for r in records})] if names else []  # fmt: skip
     db.write(path, records, aliases if aliases is not None else {k: k for k in keys},
-             {"db_version": path.stem}, builds=builds if ledger else ())  # fmt: skip
+             {"db_version": path.stem}, builds=builds if ledger else (),
+             import_names=looked_up)  # fmt: skip
     return path
 
 
@@ -126,7 +129,8 @@ def test_release_notes_carry_changes_gate_provenance_and_attribution(tmp_path: P
     path = tmp_path / "db.sqlite"
     db.write(path, records, {"GHSA-0001": "GHSA-0001", "GHSA-0002": "GHSA-0002"},
              {"db_version": "2026.11.18", "updated_from": "2026.11.17", "builder": "llm-v1",
-              "code_commit": "abc", "snapshot_sha256": "def"})  # fmt: skip
+              "code_commit": "abc", "snapshot_sha256": "def",
+              "import_names": json.dumps({"packages": 4, "with_names": 3})})  # fmt: skip
     (tmp_path / "latest.json").write_text(json.dumps({
         "db_version": "2026.11.18", "schema_version": db.SCHEMA_VERSION, "url": "https://x/y.gz",
         "sha256": "f" * 64, "size": 1, "built_at": NOW.isoformat(), "records": 2,
@@ -149,6 +153,7 @@ def test_release_notes_carry_changes_gate_provenance_and_attribution(tmp_path: P
     assert "1 high confidence, 1 low confidence" in notes
     assert "1 carried unchanged, 1 rebuilt, 0 new, 0 removed; 2 aliases added" in notes
     assert "## Release gate: passed" in notes
+    assert "wheels on PyPI for 3 of 4 packages. The rest keep names derived" in notes
     assert f"Asset SHA-256: `{'f' * 64}`" in notes
     assert "CC BY 4.0" in notes
     assert "No third-party source code is included." in notes
@@ -194,3 +199,24 @@ def test_release_notes_describe_a_merge(tmp_path: Path, high: int) -> None:
     assert ("second opinion `gpt-oss`" in notes) == bool(high)
     assert ("No record is high confidence yet" in notes) == (not high)
     assert ("1 record is high confidence" in notes) == bool(high)
+
+
+def test_a_build_that_skipped_import_names_fails(tmp_path: Path) -> None:
+    records = [_record("GHSA-0001")]
+    assert _failed(_run(tmp_path / "a", records, records, names=False)) == {"import_names"}
+    stale = [_record("GHSA-0001").model_copy(update={"import_roots": ("libs",)})]
+    report = _run(tmp_path / "b", stale, records)
+    assert _failed(report) == {"import_names"}
+    detail = next(c.detail for c in report.checks if c.name == "import_names")
+    assert "records not using them: GHSA-0001/pkg" in detail
+    unread = db.ImportNames(package="pkg", names=(), source="no wheel on PyPI")
+    path = tmp_path / "c.sqlite"
+    db.write(path, stale, {"GHSA-0001": "GHSA-0001"}, {"db_version": "c"},
+             builds=[BuildEntry(vulnerability="GHSA-0001", input_hash="h", status="built")],
+             import_names=[unread])  # fmt: skip
+    candidate, previous = db.SymbolDatabase(path), db.SymbolDatabase(path)
+    try:
+        assert gate.run(candidate, previous).passed  # no wheel: the path-derived roots stay
+    finally:
+        candidate.close()
+        previous.close()

@@ -74,12 +74,13 @@ One SQLite file, schema version 1. Tables added since the first release are addi
 
 | Table | One row per | Holds |
 |---|---|---|
-| `records` | vulnerability and package | confidence, source (`llm`, `fallback`, `override`), import roots, entry points, fix commits, model, prompt version, input hash, advisory `modified`, truncation flag, extraction time |
+| `records` | vulnerability and package | confidence, source (`llm`, `fallback`, `override`), import roots (from the package's wheels when they can be read), entry points, fix commits, model, prompt version, input hash, advisory `modified`, truncation flag, extraction time |
 | `symbols` | symbol of a record | qualified name, module, name, kind (function, method, class), file path |
 | `evidence` | model-picked symbol | the one-sentence rationale and the cited hunks: commit, path and line ranges |
 | `extraction` | LLM record | the second-opinion model and why the tier was chosen |
 | `aliases` | identifier | the vulnerability it belongs to, so a scan can match GHSA, PYSEC or CVE IDs |
 | `builds` | vulnerability | its input hash and build status (`built`, `no_python_fix`, `module_level_only`, …) |
+| `import_names` | package | the top-level import names in its wheels on PyPI, and which wheels were read ([ADR 0009](adr/0009-import-names-from-wheels.md)) |
 | `meta` | key | database version, schema version, builder, code commit, snapshot SHA-256 |
 
 No third-party source code is stored: only names, paths, line ranges and commit SHAs (rule 13 of the design).

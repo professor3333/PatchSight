@@ -33,7 +33,7 @@ patchsight scan .         # scan the lockfile and the code under .
 In GitHub Actions, the [PatchSight action](https://github.com/professor3333/PatchSight#in-ci-the-github-action) scans and uploads the SARIF report to code scanning:
 
 ```yaml
-- uses: professor3333/PatchSight@v0.4.0
+- uses: professor3333/PatchSight@v0.5.0
   with:
     fail-on: called
 ```
@@ -45,7 +45,7 @@ In GitHub Actions, the [PatchSight action](https://github.com/professor3333/Patc
 | 🔴 | **CALLED** | A reference in your code resolves to a vulnerable function, its class, or an entry point that reaches it. **Fix these first.** |
 | 🟢 | **IMPORTED, NOT CALLED** | The package is imported, but no vulnerable symbol is referenced. Given only for high-confidence data, which is [withheld for now](https://github.com/professor3333/PatchSight/blob/main/docs/adr/0008-withhold-high-confidence.md). |
 | ⚪ | **NOT IMPORTED** | Your code never imports the package directly. It may still be used through other dependencies. |
-| 🟡 | **UNKNOWN** | No symbol data, only low-confidence data, or dynamic code the scanner can't follow. |
+| 🟡 | **UNKNOWN** | No symbol data, only low-confidence data, or code the scanner can't follow: dynamic imports, a vulnerable method called on an object of unknown type, a template filter, or a package whose import name isn't known. |
 
 **Fail towards noise, never towards silence.** Every alert is shown. Low-confidence data can raise an alert to CALLED but never lower it, and "not called" covers only direct use that can be resolved statically. PatchSight supports triage; it doesn't judge whether your deployment is vulnerable.
 
@@ -60,6 +60,8 @@ On the Go benchmark of Dunlap et al. (DIMVA 2024), 280 vulnerability reports:
 | **PatchSight: Qwen3.8-27B, 4-bit** | **0.751** | **0.621** | **0.680** |
 
 The F1 95% interval is 0.62 to 0.74. The reports and a one-command offline reproduction are [in the repository](https://github.com/professor3333/PatchSight#results-at-a-glance).
+
+On 20 real projects pinned to their May 2024 lockfiles, **62.3% of 4,224 alerts have symbol data**, and a scan of a project with 200 or more dependencies takes **2.05 s at the median and 5.17 s at p95**, OSV query included ([report](https://github.com/professor3333/PatchSight/blob/main/docs/reports/panel-db-2026.11.18.1.md)). On 58 small programs with a known answer, no program that uses the vulnerable code is labelled "not called" or "not imported" ([fixtures](https://github.com/professor3333/PatchSight/blob/main/docs/reports/reachability-fixtures-labelled.md)).
 
 ## Status: early release
 

@@ -1,0 +1,54 @@
+name: action-smoke
+
+# Runs the composite action from this checkout on a small project pinned to old releases.
+# It needs the network (OSV and the published database), so it is kept out of ci.yml and runs
+# only when the action or the scanner changes. No secrets; nothing is uploaded.
+
+on:
+  push:
+    branches: [main]
+    paths: [action.yml, .github/workflows/action-smoke.yml, src/patchsight/cli.py, "src/patchsight/scan/**"]
+  pull_request:
+    paths: [action.yml, .github/workflows/action-smoke.yml, src/patchsight/cli.py, "src/patchsight/scan/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Write a project pinned to old releases
+        run: |
+          mkdir -p smoke/app
+          printf 'PyYAML==5.3.1\nrequests==2.19.0\nDjango==2.2.0\nPillow==6.0.0\n' > smoke/requirements.txt
+          printf 'import yaml\nimport requests\n\nyaml.full_load(open("c.yml"))\nrequests.get("https://example.org", timeout=5)\n' > smoke/app/main.py
+
+      - name: Run the action
+        id: patchsight
+        uses: ./
+        with:
+          path: smoke
+          upload-sarif: "false"
+          sarif-file: smoke.sarif
+
+      - name: Check the outputs
+        env:
+          ALERTS: ${{ steps.patchsight.outputs.alerts }}
+          SARIF: ${{ steps.patchsight.outputs.sarif-file }}
+        run: |
+          test "$ALERTS" -gt 0
+          python3 -I - "$SARIF" "$ALERTS" <<'PY'
+          import json, sys
+          log = json.load(open(sys.argv[1]))
+          results = log["runs"][0]["results"]
+          assert log["version"] == "2.1.0"
+          assert len(results) == int(sys.argv[2]), "every alert must be a result"
+          uris = {r["locations"][0]["physicalLocation"]["artifactLocation"]["uri"] for r in results}
+          assert all(u.startswith("smoke/") for u in uris), uris
+          print(f"{len(results)} results; locations: {sorted(uris)}")
+          PY

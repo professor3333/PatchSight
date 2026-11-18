@@ -623,26 +623,36 @@ def injection_suite_command(
                 json.dumps([p.model_dump() for p in plans], indent=1) + "\n", "utf-8"
             )
         typer.echo(f"{len(plans)} attackable reports", err=True)
+        # Each model has its own quota: one stopping does not stop the other.
+        unfinished: list[str] = []
         for role, tag in ((primary_role, primary_tag), (secondary_role, secondary_tag)):
             llm, model_id = client_for(llm_config, role, root / cache / "llm", counter)
 
             def progress(done: int, total: int, role: str = role) -> None:
                 typer.echo(f"{role}: {done}/{total}", err=True)
 
-            run, entry = injection.run(
-                github, llm, root / cache / "llm", llm_config, role, template, counter, chosen,
-                advisories, plans, f"{frozen.split.name}:{split}", progress=progress,
-            )  # fmt: skip
+            try:
+                run, entry = injection.run(
+                    github, llm, root / cache / "llm", llm_config, role, template, counter,
+                    chosen, advisories, plans, f"{frozen.split.name}:{split}", progress=progress,
+                )  # fmt: skip
+            except (QuotaExhaustedError, RateLimitedError) as stopped:
+                typer.echo(f"{role} stopped: {stopped}", err=True)
+                unfinished.append(role)
+                continue
             answers_path, entry_path = _injection_paths(root, split, tag)
             replay.save(run, answers_path)
             injection.save_entry_points(entry, entry_path)
             typer.echo(f"{model_id}: {llm.network_calls} model calls", err=True)
-    except (QuotaExhaustedError, RateLimitedError) as stopped:
-        typer.echo(f"stopped: {stopped}", err=True)
-        typer.echo("Every answer so far is cached. Re-run the same command to resume.", err=True)
-        raise typer.Exit(code=2) from None
     finally:
         github.close()
+    if unfinished:
+        typer.echo(
+            f"unfinished: {', '.join(unfinished)}. Every answer so far is cached; re-run the "
+            "same command to resume.",
+            err=True,
+        )
+        raise typer.Exit(code=2)
     typer.echo(_write_injection_report(root, split, primary_tag, secondary_tag))
 
 

@@ -16,7 +16,7 @@ Every controlled experiment on the extraction system, including the ones that lo
 |---|---|---|---|---|
 | E1 | Serving: 4-bit self-hosted against hosted | Qwen3.8-27B Q4_K_M on Kaggle; `qwen/qwen3.8-27b` on Groq | Kaggle not worse; Groq less reliable | Decided: Kaggle for the backfill |
 | E2 | Extractor model family | Qwen3.8-27B; gpt-oss-120b | Qwen F1 0.676, gpt-oss 0.626 | Decided: Qwen extracts, gpt-oss is the second opinion |
-| E3 | Confidence rule | 3 agreement rules, with and without a public symbol | `subset` + public symbol | Decided on dev ([ADR 0004](adr/0004-fall-back-to-the-baseline.md)); test evaluation declared, in progress |
+| E3 | Confidence rule | 3 agreement rules, with and without a public symbol | `subset` + public symbol | Decided on dev; declared test evaluation: high-confidence miss 7.0%, target 2% **not met** ([ADR 0004](adr/0004-fall-back-to-the-baseline.md)) |
 | E4 | Output-capacity cap | none; 105 output tokens per candidate | F1 unchanged; 1 more truncated report | Measured; adopt after the test evaluation |
 | E5 | Run-to-run determinism (self-hosted) | two full Kaggle runs, two days apart | 277 of 277 answers identical | Confirmed |
 
@@ -65,6 +65,17 @@ Reports: [Qwen](reports/extraction-dunlap-dev-extract-v1-qwen3.8-27b-q4km.md),
 gpt-oss lost as an extractor but, as a different family, is the second opinion
 ([ADR 0005](adr/0005-two-model-families.md)).
 
+**On test.** Both models later ran the 220 test reports, for the confidence evaluation (E3). The
+ordering held:
+
+| Test, 220 reports | Precision | Recall | F1 (95% CI) | Miss rate | Output tokens per report |
+|---|---|---|---|---|---|
+| Qwen3.8-27B | 0.763 | 0.615 | **0.681** (0.61 to 0.75) | 15.9% | 289 |
+| gpt-oss-120b | 0.691 | 0.589 | 0.636 (0.57 to 0.71) | 16.8% | 357 |
+
+Reports: [Qwen](reports/extraction-dunlap-test-extract-v1-qwen3.8-27b-q4km.md),
+[gpt-oss](reports/extraction-dunlap-test-extract-v1-gpt-oss-120b.md).
+
 ## E3: Confidence rule
 
 **Question.** When may a record be high confidence, so that "imported, not called" can be
@@ -92,6 +103,14 @@ highest recall. Agreement alone is not safe: both families often agree on a priv
 fix changed while the true symbol is its exported caller. The 2% target is **not met**
 (3.7%; Wilson 95% interval 0.7% to 18.3%). The rule is frozen, and its single test evaluation is
 declared in ADR 0004.
+
+**Test result (declared, run once).** On the 220 test reports the chosen rule makes 115 reports
+(52%) high confidence, and 8 of them miss: **7.0%** (Wilson 95% interval 3.6% to 13.1%), so
+the target is not met. Six of the eight are patch-ceiling cases (the labelled symbol is not
+among the changed definitions), one is a model error and one is a label that differs only in
+letter case. The public-symbol condition again halves the misses (16 of 183 without it). Report:
+[confidence tiers, test](reports/confidence-dunlap-test-extract-v1-qwen3.8-27b-q4km-vs-extract-v1-gpt-oss-120b.md);
+every miss is listed in ADR 0004.
 
 ## E4: Output-capacity cap
 

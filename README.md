@@ -182,13 +182,13 @@ The offline pipeline is `python -m patchsight.pipeline <command>`.
 - [x] `patchsight scan` for `requirements.txt`, `uv.lock` and `poetry.lock`, with `patchsight explain`, `db update` and `db info`
 - [x] Confidence tiers from two model families, chosen on the dev split ([ADR 0004](docs/adr/0004-fall-back-to-the-baseline.md))
 - [x] **Public symbol database:** [releases](https://github.com/professor3333/PatchSight/releases), updated **every night** by the [nightly pipeline](.github/workflows/nightly.yml) after a release gate ([ADR 0006](docs/adr/0006-nightly-pipeline.md)). About 3,500 PyPI vulnerabilities, all low confidence so far
-- [ ] LLM-extracted records for PyPI: the pipeline, confidence tiers and per-symbol evidence are built; the self-hosted backfill is running on Kaggle (1 of 4 shards merged)
-- [ ] Held-out test evaluation of the confidence rule (declared in advance; in progress)
-- [x] **On PyPI:** [`pip install patchsight`](https://pypi.org/project/patchsight/) (0.1.0), published from CI with Trusted Publishing and a required approval
+- [ ] LLM-extracted records for PyPI: the pipeline, confidence tiers and per-symbol evidence are built; the self-hosted backfill is running on Kaggle (2 of 4 shards merged)
+- [x] Held-out test evaluation of the confidence rule, declared in advance and run once: the safety target is **not met** ([ADR 0004](docs/adr/0004-fall-back-to-the-baseline.md#test-result-2026-11-18))
+- [x] **On PyPI:** [`pip install patchsight`](https://pypi.org/project/patchsight/), published from CI with Trusted Publishing and a required approval
 - [ ] A GitHub Action, SARIF and OpenVEX output
 
 > [!WARNING]
-> **The confidence rule doesn't meet its safety target yet.** On the dev split, high-confidence records still miss the vulnerable symbol in 1 of 27 reports: 3.7%, against a target of 2% or less ([report](docs/reports/confidence-dunlap-dev-extract-v1-qwen3.8-27b-q4km-vs-extract-v1-gpt-oss-120b.md)). Until it does, treat **imported, not called** as a prioritisation hint, not a guarantee.
+> **The confidence rule doesn't meet its safety target.** In its one declared evaluation on the held-out test split, high-confidence records missed the vulnerable symbol in 8 of 115 reports: 7.0% (95% interval 3.6% to 13.1%), against a target of 2% or less ([report](docs/reports/confidence-dunlap-test-extract-v1-qwen3.8-27b-q4km-vs-extract-v1-gpt-oss-120b.md)). In six of the eight, the fix never touched the labelled symbol, which no agreement between models can detect. The published database has no high-confidence records yet. If it gains some before a better rule is measured, treat **imported, not called** as a prioritisation hint, not a guarantee.
 
 ## How database releases work
 

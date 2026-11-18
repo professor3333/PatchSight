@@ -1,0 +1,335 @@
+[
+  {
+    "rule": "identical",
+    "require_public": false,
+    "fallback": true,
+    "overall": {
+      "reports": 220,
+      "true_positives": 406,
+      "false_positives": 1462,
+      "false_negatives": 64,
+      "precision": 0.21734475374732334,
+      "recall": 0.8638297872340426,
+      "f1": 0.34730538922155685,
+      "miss_rate": 0.09545454545454546,
+      "exact_match": 0.5318181818181819,
+      "precision_ci95": null,
+      "recall_ci95": null,
+      "f1_ci95": null
+    },
+    "high_reports": 151,
+    "high_share": 0.6863636363636364,
+    "high": {
+      "reports": 151,
+      "true_positives": 193,
+      "false_positives": 31,
+      "false_negatives": 48,
+      "precision": 0.8616071428571429,
+      "recall": 0.8008298755186722,
+      "f1": 0.8301075268817204,
+      "miss_rate": 0.10596026490066225,
+      "exact_match": 0.7284768211920529,
+      "precision_ci95": null,
+      "recall_ci95": null,
+      "f1_ci95": null
+    },
+    "safety_overall": {
+      "reports": 220,
+      "truth_symbols": 470,
+      "truth_found": 411,
+      "recall": 0.874468085106383,
+      "miss_rate": 0.08636363636363636
+    },
+    "safety_high": {
+      "reports": 151,
+      "truth_symbols": 241,
+      "truth_found": 198,
+      "recall": 0.8215767634854771,
+      "miss_rate": 0.09271523178807947
+    },
+    "low_reasons": {
+      "the two models disagree": 34,
+      "prompt truncated to the token budget": 24,
+      "an empty symbol set": 7,
+      "extractor answer failed validation": 4
+    }
+  },
+  {
+    "rule": "subset",
+    "require_public": false,
+    "fallback": true,
+    "overall": {
+      "reports": 220,
+      "true_positives": 398,
+      "false_positives": 1435,
+      "false_negatives": 72,
+      "precision": 0.2171303873431533,
+      "recall": 0.8468085106382979,
+      "f1": 0.3456361267911419,
+      "miss_rate": 0.1,
+      "exact_match": 0.5409090909090909,
+      "precision_ci95": null,
+      "recall_ci95": null,
+      "f1_ci95": null
+    },
+    "high_reports": 183,
+    "high_share": 0.8318181818181818,
+    "high": {
+      "reports": 183,
+      "true_positives": 266,
+      "false_positives": 77,
+      "false_negatives": 57,
+      "precision": 0.7755102040816326,
+      "recall": 0.8235294117647058,
+      "f1": 0.7987987987987988,
+      "miss_rate": 0.09836065573770492,
+      "exact_match": 0.6338797814207651,
+      "precision_ci95": null,
+      "recall_ci95": null,
+      "f1_ci95": null
+    },
+    "safety_overall": {
+      "reports": 220,
+      "truth_symbols": 470,
+      "truth_found": 403,
+      "recall": 0.8574468085106383,
+      "miss_rate": 0.09090909090909091
+    },
+    "safety_high": {
+      "reports": 183,
+      "truth_symbols": 323,
+      "truth_found": 271,
+      "recall": 0.8390092879256966,
+      "miss_rate": 0.08743169398907104
+    },
+    "low_reasons": {
+      "prompt truncated to the token budget": 24,
+      "an empty symbol set": 7,
+      "extractor answer failed validation": 4,
+      "the two models disagree": 2
+    }
+  },
+  {
+    "rule": "overlap",
+    "require_public": false,
+    "fallback": true,
+    "overall": {
+      "reports": 220,
+      "true_positives": 402,
+      "false_positives": 1442,
+      "false_negatives": 68,
+      "precision": 0.21800433839479394,
+      "recall": 0.8553191489361702,
+      "f1": 0.34745030250648223,
+      "miss_rate": 0.09545454545454546,
+      "exact_match": 0.5409090909090909,
+      "precision_ci95": null,
+      "recall_ci95": null,
+      "f1_ci95": null
+    },
+    "high_reports": 173,
+    "high_share": 0.7863636363636364,
+    "high": {
+      "reports": 173,
+      "true_positives": 239,
+      "false_positives": 52,
+      "false_negatives": 52,
+      "precision": 0.8213058419243986,
+      "recall": 0.8213058419243986,
+      "f1": 0.8213058419243987,
+      "miss_rate": 0.09248554913294797,
+      "exact_match": 0.6589595375722543,
+      "precision_ci95": null,
+      "recall_ci95": null,
+      "f1_ci95": null
+    },
+    "safety_overall": {
+      "reports": 220,
+      "truth_symbols": 470,
+      "truth_found": 407,
+      "recall": 0.8659574468085106,
+      "miss_rate": 0.08636363636363636
+    },
+    "safety_high": {
+      "reports": 173,
+      "truth_symbols": 291,
+      "truth_found": 244,
+      "recall": 0.8384879725085911,
+      "miss_rate": 0.08092485549132948
+    },
+    "low_reasons": {
+      "prompt truncated to the token budget": 24,
+      "the two models disagree": 12,
+      "an empty symbol set": 7,
+      "extractor answer failed validation": 4
+    }
+  },
+  {
+    "rule": "identical",
+    "require_public": true,
+    "fallback": true,
+    "overall": {
+      "reports": 220,
+      "true_positives": 420,
+      "false_positives": 1476,
+      "false_negatives": 50,
+      "precision": 0.22151898734177214,
+      "recall": 0.8936170212765957,
+      "f1": 0.3550295857988165,
+      "miss_rate": 0.08181818181818182,
+      "exact_match": 0.5272727272727272,
+      "precision_ci95": null,
+      "recall_ci95": null,
+      "f1_ci95": null
+    },
+    "high_reports": 89,
+    "high_share": 0.40454545454545454,
+    "high": {
+      "reports": 89,
+      "true_positives": 132,
+      "false_positives": 19,
+      "false_negatives": 24,
+      "precision": 0.8741721854304636,
+      "recall": 0.8461538461538461,
+      "f1": 0.8599348534201954,
+      "miss_rate": 0.07865168539325842,
+      "exact_match": 0.7640449438202247,
+      "precision_ci95": null,
+      "recall_ci95": null,
+      "f1_ci95": null
+    },
+    "safety_overall": {
+      "reports": 220,
+      "truth_symbols": 470,
+      "truth_found": 423,
+      "recall": 0.9,
+      "miss_rate": 0.07727272727272727
+    },
+    "safety_high": {
+      "reports": 89,
+      "truth_symbols": 156,
+      "truth_found": 135,
+      "recall": 0.8653846153846154,
+      "miss_rate": 0.06741573033707865
+    },
+    "low_reasons": {
+      "no public symbol among the agreed answers": 62,
+      "the two models disagree": 34,
+      "prompt truncated to the token budget": 24,
+      "an empty symbol set": 7,
+      "extractor answer failed validation": 4
+    }
+  },
+  {
+    "rule": "subset",
+    "require_public": true,
+    "fallback": true,
+    "overall": {
+      "reports": 220,
+      "true_positives": 414,
+      "false_positives": 1450,
+      "false_negatives": 56,
+      "precision": 0.22210300429184548,
+      "recall": 0.8808510638297873,
+      "f1": 0.35475578406169667,
+      "miss_rate": 0.08636363636363636,
+      "exact_match": 0.5363636363636364,
+      "precision_ci95": null,
+      "recall_ci95": null,
+      "f1_ci95": null
+    },
+    "high_reports": 115,
+    "high_share": 0.5227272727272727,
+    "high": {
+      "reports": 115,
+      "true_positives": 191,
+      "false_positives": 60,
+      "false_negatives": 31,
+      "precision": 0.7609561752988048,
+      "recall": 0.8603603603603603,
+      "f1": 0.8076109936575052,
+      "miss_rate": 0.0782608695652174,
+      "exact_match": 0.6260869565217392,
+      "precision_ci95": null,
+      "recall_ci95": null,
+      "f1_ci95": null
+    },
+    "safety_overall": {
+      "reports": 220,
+      "truth_symbols": 470,
+      "truth_found": 417,
+      "recall": 0.8872340425531915,
+      "miss_rate": 0.08181818181818182
+    },
+    "safety_high": {
+      "reports": 115,
+      "truth_symbols": 222,
+      "truth_found": 194,
+      "recall": 0.8738738738738738,
+      "miss_rate": 0.06956521739130435
+    },
+    "low_reasons": {
+      "no public symbol among the agreed answers": 68,
+      "prompt truncated to the token budget": 24,
+      "an empty symbol set": 7,
+      "extractor answer failed validation": 4,
+      "the two models disagree": 2
+    }
+  },
+  {
+    "rule": "overlap",
+    "require_public": true,
+    "fallback": true,
+    "overall": {
+      "reports": 220,
+      "true_positives": 418,
+      "false_positives": 1457,
+      "false_negatives": 52,
+      "precision": 0.22293333333333334,
+      "recall": 0.8893617021276595,
+      "f1": 0.3565031982942431,
+      "miss_rate": 0.08181818181818182,
+      "exact_match": 0.5363636363636364,
+      "precision_ci95": null,
+      "recall_ci95": null,
+      "f1_ci95": null
+    },
+    "high_reports": 108,
+    "high_share": 0.4909090909090909,
+    "high": {
+      "reports": 108,
+      "true_positives": 173,
+      "false_positives": 38,
+      "false_negatives": 26,
+      "precision": 0.8199052132701422,
+      "recall": 0.8693467336683417,
+      "f1": 0.8439024390243902,
+      "miss_rate": 0.06481481481481481,
+      "exact_match": 0.6574074074074074,
+      "precision_ci95": null,
+      "recall_ci95": null,
+      "f1_ci95": null
+    },
+    "safety_overall": {
+      "reports": 220,
+      "truth_symbols": 470,
+      "truth_found": 421,
+      "recall": 0.8957446808510638,
+      "miss_rate": 0.07727272727272727
+    },
+    "safety_high": {
+      "reports": 108,
+      "truth_symbols": 199,
+      "truth_found": 176,
+      "recall": 0.8844221105527639,
+      "miss_rate": 0.05555555555555555
+    },
+    "low_reasons": {
+      "no public symbol among the agreed answers": 65,
+      "prompt truncated to the token budget": 24,
+      "the two models disagree": 12,
+      "an empty symbol set": 7,
+      "extractor answer failed validation": 4
+    }
+  }
+]

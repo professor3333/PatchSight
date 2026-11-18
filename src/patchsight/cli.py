@@ -102,7 +102,9 @@ def scan(
         Path | None,
         typer.Option("--db", help="Symbol database (default: the one 'db update' downloaded)."),
     ] = None,
-    output: Annotated[str, typer.Option("--format", help="text or json.")] = "text",
+    output: Annotated[
+        str, typer.Option("--format", help="text, json, or sarif (for code scanning).")
+    ] = "text",
     fail_on: Annotated[
         str, typer.Option(help="Exit 1 when an alert is: called, unknown (or called), or never.")
     ] = "never",
@@ -131,6 +133,16 @@ def scan(
     shown = lockfile.as_posix()
     if output == "json":
         typer.echo(render_json(alerts, dependencies, shown, meta))
+    elif output == "sarif":
+        import os
+
+        from patchsight.scan.sarif import render_sarif
+
+        # Code locations are relative to the scanned directory; SARIF wants them relative to
+        # where the scan runs (the repository root, in CI).
+        root = path if path.is_dir() else path.parent
+        base = os.path.relpath(root.resolve(), Path.cwd().resolve())
+        typer.echo(render_sarif(alerts, dependencies, shown, meta, base))
     else:
         typer.echo(render_text(alerts, dependencies, shown, meta))
     failing = {"called": {"CALLED"}, "unknown": {"CALLED", "UNKNOWN"}}.get(fail_on, set())

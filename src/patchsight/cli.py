@@ -180,3 +180,42 @@ def explain(
     typer.echo(render(canonical, vulnerability, identifiers, records, meta, status))
     if not records:
         raise typer.Exit(code=1)
+
+
+@app.command()
+def report(
+    identifier: Annotated[str, typer.Argument(help="Advisory ID: GHSA, PYSEC or CVE.")],
+    database: Annotated[
+        Path | None,
+        typer.Option("--db", help="Symbol database (default: the one 'db update' downloaded)."),
+    ] = None,
+    open_browser: Annotated[
+        bool, typer.Option("--open/--no-open", help="Open the draft issue in a browser.")
+    ] = True,
+) -> None:
+    """Draft a GitHub issue saying an advisory's symbol data is wrong. Nothing is sent: the
+    browser opens a pre-filled form you review, complete and submit."""
+    import webbrowser
+
+    from patchsight.db import DatabaseError, SymbolDatabase
+    from patchsight.scan import explain as explaining
+    from patchsight.scan.dbcache import default_db_path
+    from patchsight.scan.feedback import issue_url
+
+    try:
+        opened = SymbolDatabase(database or default_db_path())
+    except DatabaseError as error:
+        typer.echo(f"error: {error}; run 'patchsight db update' or pass --db", err=True)
+        raise typer.Exit(code=2) from None
+    try:
+        vulnerability, identifiers, records = explaining.lookup(opened, identifier)
+        status = opened.build_status(vulnerability)
+        meta = opened.meta
+    finally:
+        opened.close()
+    canonical = explaining.normalise_identifier(identifier)
+    text = explaining.render_text(canonical, vulnerability, identifiers, records, meta, status)
+    url = issue_url(canonical, text)
+    typer.echo(f"Draft issue for {canonical} (review it before submitting):\n{url}")
+    if open_browser:
+        webbrowser.open(url)

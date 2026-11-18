@@ -3,6 +3,7 @@
 import json
 from datetime import UTC, datetime
 from pathlib import Path
+from urllib.parse import parse_qs, urlparse
 
 import pytest
 from typer.testing import CliRunner
@@ -11,6 +12,7 @@ from patchsight import db
 from patchsight.cli import app
 from patchsight.db import FixCommitRef, HunkLocation, Record, Symbol, SymbolEvidence
 from patchsight.scan.explain import normalise_identifier
+from patchsight.scan.feedback import MAX_URL, issue_url
 
 NOW = datetime(2026, 11, 16, tzinfo=UTC)
 SHA = "5cd4f1a" + "0" * 33
@@ -127,3 +129,47 @@ def test_missing_database_exits_2(tmp_path: Path) -> None:
 )  # fmt: skip
 def test_identifiers_are_normalised(raw: str, canonical: str) -> None:
     assert normalise_identifier(raw) == canonical
+
+
+# --- patchsight report -----------------------------------------------------------------
+
+
+def test_report_drafts_a_prefilled_issue_and_opens_it(
+    database: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    opened: list[str] = []
+    monkeypatch.setattr("webbrowser.open", opened.append)
+    result = CliRunner().invoke(app, ["report", "cve-2020-14343", "--db", str(database)])
+    assert result.exit_code == 0, result.output
+    url = result.output.strip().splitlines()[-1]
+    assert opened == [url]
+    fields = parse_qs(urlparse(url).query)
+    assert url.startswith("https://github.com/professor3333/PatchSight/issues/new?")
+    assert fields["template"] == ["wrong_symbols.yml"]
+    assert fields["advisory"] == ["CVE-2020-14343"]
+    assert fields["title"] == ["Wrong symbol data: CVE-2020-14343"]
+    assert "FullConstructor.find_python_name" in fields["explain"][0]  # the explain output
+    assert "review it before submitting" in result.output
+
+
+def test_report_can_only_print_the_link(database: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    opened: list[str] = []
+    monkeypatch.setattr("webbrowser.open", opened.append)
+    args = ["report", "GHSA-0000-0000-0000", "--db", str(database), "--no-open"]
+    result = CliRunner().invoke(app, args)
+    assert result.exit_code == 0  # data that is missing can be reported too
+    assert opened == []
+    assert "no symbol data" in parse_qs(urlparse(result.output.split()[-1]).query)["explain"][0]
+    missing = CliRunner().invoke(app, ["report", "X", "--db", str(database) + ".none"])
+    assert missing.exit_code == 2
+
+
+def test_a_long_explanation_is_shortened_to_fit_a_url() -> None:
+    text = "symbol line\n" * 2_000
+    url = issue_url("GHSA-aaaa-bbbb-cccc", text)
+    assert len(url) <= MAX_URL
+    explain = parse_qs(urlparse(url).query)["explain"][0]
+    assert explain.endswith("run `patchsight explain GHSA-aaaa-bbbb-cccc` for the rest]")
+    assert text.startswith(explain.split("\n[... truncated")[0])
+    assert issue_url("A", "short") == issue_url("A", "short")  # short text is kept whole
+    assert "short" in parse_qs(urlparse(issue_url("A", "short")).query)["explain"][0]

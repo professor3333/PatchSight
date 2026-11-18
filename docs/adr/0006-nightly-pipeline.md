@@ -55,7 +55,10 @@ already exists is not created again, and the pointer is only committed when it c
 
 Revert the pointer commit on `db-pointer`: one commit, after which every CLI from 0.3.0
 downloads the previous release on its next `patchsight db update`. Releases are never deleted
-or overwritten. The rollback is to be rehearsed and timed once (Definition of Done).
+or overwritten. Rehearsed and timed on 2026-11-18: each move took one commit, pushed within
+2 seconds, and a user's `db update` followed within 11 seconds and 4 minutes 50 seconds,
+bounded by the pointer's 300-second CDN cache
+([report](../reports/rollback-rehearsal-2026-11-18.md)).
 
 ## Consequences
 

@@ -34,10 +34,11 @@ can over-report references, which only raises an alert's priority.
 import ast
 import os
 import re
+import warnings
 from collections.abc import Iterator
 from pathlib import Path
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, PrivateAttr
 
 from patchsight.names import module_for_path
 
@@ -99,6 +100,17 @@ class Usage(BaseModel):
     # Name -> the first place it is seen. Used only to withhold "not called".
     attributes: dict[str, Location] = {}
     template_names: dict[str, Location] = {}
+    _by_root: dict[str, list[Reference]] | None = PrivateAttr(default=None)
+
+    def references_into(self, roots: set[str]) -> list[Reference]:
+        """References whose top-level name is one of ``roots``. Indexed once, because a
+        scan asks for every alert."""
+        if self._by_root is None:
+            index: dict[str, list[Reference]] = {}
+            for reference in self.references:
+                index.setdefault(reference.name.split(".", 1)[0], []).append(reference)
+            self._by_root = index
+        return [r for root in sorted(roots) for r in self._by_root.get(root, ())]
 
     def imported(self, names: tuple[str, ...]) -> list[Location]:
         """Where any of ``names``, or a submodule of one, is imported."""
@@ -146,6 +158,7 @@ class _File:
         self.references: list[Reference] = []
         self.dynamic: list[DynamicUse] = []
         self.from_imports: dict[str, tuple[str, Location]] = {}
+        self.used: set[str] = set()  # every name the file reads or binds
         self.attributes: dict[str, Location] = {}
         self.template_names: dict[str, Location] = {}
 
@@ -153,7 +166,7 @@ class _File:
         return Location(path=self.display, line=getattr(node, "lineno", 0))
 
     def collect_imports(self, tree: ast.AST) -> None:
-        for node in ast.walk(tree):
+        for node in _statements(tree):
             if isinstance(node, ast.Import):
                 for alias in node.names:
                     self.imports.setdefault(alias.name, []).append(self.loc(node))
@@ -176,12 +189,28 @@ class _File:
                         self.aliases[local] = f"{node.module}.{alias.name}"
                         self.from_imports[local] = (self.aliases[local], self.loc(node))
 
-    def add_reexports(self, tree: ast.AST) -> None:
-        """A from-import the file never uses may be re-exported: count it as a reference."""
-        used = {n.id for n in ast.walk(tree) if isinstance(n, ast.Name)}
+    def add_reexports(self) -> None:
+        """A from-import the file never uses may be re-exported: count it as a reference.
+        Run after the references pass, which records every name the file uses."""
         for local, (target, location) in self.from_imports.items():
-            if local not in used:
+            if local not in self.used:
                 self.references.append(Reference(name=target, location=location))
+
+
+_BODIES = ("body", "orelse", "finalbody", "handlers", "cases")
+
+
+def _statements(tree: ast.AST) -> Iterator[ast.AST]:
+    """Every statement, at any depth, without visiting expressions: imports are
+    statements, so this finds them all at a fraction of ``ast.walk``'s cost."""
+    stack = [tree]
+    while stack:
+        node = stack.pop()
+        yield node
+        for field in _BODIES:
+            children = getattr(node, field, None)
+            if isinstance(children, list):
+                stack.extend(reversed(children))
 
 
 class _References(ast.NodeVisitor):
@@ -231,6 +260,7 @@ class _References(ast.NodeVisitor):
                 self.state.template_names.setdefault(word, self.state.loc(node))
 
     def visit_Name(self, node: ast.Name) -> None:
+        self.state.used.add(node.id)
         if id(node) in self.covered or not isinstance(node.ctx, ast.Load):
             return
         target = self.state.aliases.get(node.id)
@@ -311,14 +341,17 @@ def scan(root: Path) -> Usage:
             first_party.add(module.split(".")[0])
         source = path.read_text(encoding="utf-8", errors="replace")
         try:
-            tree = ast.parse(source, filename=display)
+            with warnings.catch_warnings():
+                # Invalid escapes in the user's strings are their business, not the scan's.
+                warnings.simplefilter("ignore", SyntaxWarning)
+                tree = ast.parse(source, filename=display)
         except (SyntaxError, ValueError):
             unparsable[display] = source[:200_000]
             continue
         state = _File(display)
         state.collect_imports(tree)
         _References(state).visit(tree)
-        state.add_reexports(tree)
+        state.add_reexports()
         for module, locations in state.imports.items():
             imports.setdefault(module, []).extend(locations)
         references.extend(state.references)

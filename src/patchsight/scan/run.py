@@ -1,5 +1,6 @@
 """One scan: lockfile, then OSV, then the database, then the code. No LLM and no server."""
 
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import httpx
@@ -18,8 +19,11 @@ def run_scan(
 ) -> tuple[list[Alert], list[lockfiles.Dependency], dict[str, str]]:
     dependencies = lockfiles.parse(lockfile)
     pinned = [(d.name, d.version) for d in dependencies if d.version]
-    matches = osv_client.query([(n, v) for n, v in pinned if v], client=client)
-    usage = scan(code)
+    # The OSV query waits on the network while the code scan uses the CPU: overlap them.
+    with ThreadPoolExecutor(max_workers=1) as pool:
+        asked = pool.submit(osv_client.query, [(n, v) for n, v in pinned if v], client=client)
+        usage = scan(code)
+        matches = asked.result()
     symbols = SymbolDatabase(database)
     try:
         alerts: list[Alert] = []

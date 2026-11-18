@@ -70,6 +70,16 @@ On the Go benchmark of [Dunlap et al. (DIMVA 2024)](https://www.enck.org/pubs/du
 
 **Precision is three times the naive baseline's.** Recall is lower, so the model alone sometimes misses the vulnerable function. That is why PatchSight never trusts it alone to say "not called" (see [the safety rule](#reading-the-verdicts)).
 
+**On 20 real projects**, each pinned to its lockfile from May 2024 ([panel](benchmarks/panel-v1.toml), [report](docs/reports/panel-db-2026.11.18.1.md)):
+
+| Metric | Measured | Target |
+|:---|:---:|:---:|
+| Alerts with symbol data | **62.3%** of 4,224 | 50% or more |
+| Scan time, projects with 200+ dependencies (p50 / p95) | **2.05 s / 5.17 s** | under 5 s / under 15 s |
+| LLM tokens per scan | **0** | 0 |
+
+<sub>Scan time includes the OSV query, on an 8-core arm64 Mac with the database already downloaded. Since every record is low confidence for now, most alerts are UNKNOWN: the report breaks down why.</sub>
+
 ## Quick start
 
 ```bash
@@ -210,6 +220,7 @@ The offline pipeline is `python -m patchsight.pipeline <command>`.
 | `parity-report` | Compare two runs of the same prompt, such as the self-hosted 4-bit model against the hosted one |
 | `failure-report` | Break benchmark misses down by cause |
 | `reachability-report` | Score the reachability fixtures, with labelled records or a published database |
+| `panel-report` | Scan the 20-project panel: symbol-data coverage, verdicts and scan time |
 | `update-db`, `gate-db`, `release-notes` | The nightly: rebuild only what changed, run the release gate, write the notes |
 | `pypi-extract`, `merge-llm` | LLM extraction for PyPI advisories, and merging it into a published database |
 | `export-kaggle-inputs`, `restore-kaggle-inputs`, `import-kaggle-run` | Move the backfill's inputs to Kaggle and its answers back |
@@ -228,6 +239,7 @@ The offline pipeline is `python -m patchsight.pipeline <command>`.
 - [ ] LLM-extracted records for PyPI: the pipeline, confidence tiers and per-symbol evidence are built; the self-hosted backfill is running on Kaggle (2 of 4 shards merged)
 - [x] Held-out test evaluation of the confidence rule, declared in advance and run once: the safety target is **not met** ([ADR 0004](docs/adr/0004-fall-back-to-the-baseline.md#test-result-2026-11-18))
 - [x] Reachability fixtures: 58 programs, 0 false suppressions ([report](docs/reports/reachability-fixtures-labelled.md))
+- [x] A panel of 20 real projects: 62.3% of alerts with symbol data, and scan time within target ([report](docs/reports/panel-db-2026.11.18.1.md))
 - [x] **On PyPI:** [`pip install patchsight`](https://pypi.org/project/patchsight/), published from CI with Trusted Publishing and a required approval
 - [x] **SARIF output and a GitHub Action** (`professor3333/PatchSight@v0.4.0`), with a [smoke test](.github/workflows/action-smoke.yml) on every change
 - [ ] OpenVEX output and a pull-request comment

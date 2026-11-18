@@ -182,6 +182,25 @@ def test_matching_rules() -> None:
     assert not matches("yaml.safe_load", "yaml.full_load")
 
 
+def test_parser_warnings_in_scanned_code_are_not_printed(
+    tmp_path: Path, recwarn: pytest.WarningsRecorder
+) -> None:
+    usage = ast_scanner.scan(_write(tmp_path, {"m.py": "import yaml\nP = '\\d+ \\ '\n"}))
+    assert usage.files == 1
+    assert not [w for w in recwarn if issubclass(w.category, SyntaxWarning)]
+
+
+def test_references_are_indexed_by_their_top_level_name(tmp_path: Path) -> None:
+    usage = ast_scanner.scan(_write(tmp_path, {"m.py": (
+        "import yaml\nimport requests as r\nimport yamlish\n"
+        "yaml.load(s)\nr.get(u)\nyamlish.x(s)\nyaml.dump(s)\n"
+    )}))  # fmt: skip
+    assert sorted(x.name for x in usage.references_into({"yaml"})) == ["yaml.dump", "yaml.load"]
+    both = usage.references_into({"yaml", "requests"})
+    assert sorted(x.name for x in both) == ["requests.get", "yaml.dump", "yaml.load"]
+    assert usage.references_into({"absent"}) == []
+
+
 def test_an_unused_from_import_counts_as_a_reexported_reference(tmp_path: Path) -> None:
     usage = ast_scanner.scan(_write(tmp_path, {
         "helpers.py": "from yaml import full_load\nfrom yaml import safe_load\nsafe_load(s)\n",

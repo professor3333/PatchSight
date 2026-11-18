@@ -86,7 +86,7 @@ def decide(advisory: str, package: str, version: str, record: Record | None, usa
     bare = [s.name.split(".")[-1] for s in record.symbols if not s.module]
     context = {"confidence": record.confidence, "vulnerable": tuple(sorted(set(targets + bare)))}
 
-    into_package = [r for r in usage.references if r.name.split(".")[0] in roots]
+    into_package = usage.references_into(roots)
     hits = [
         r
         for r in into_package

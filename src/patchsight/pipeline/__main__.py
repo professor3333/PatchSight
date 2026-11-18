@@ -958,6 +958,57 @@ def reachability_report_command(
         raise typer.Exit(1)
 
 
+@app.command("panel-report")
+def panel_report_command(
+    database: Annotated[Path, typer.Option("--db", help="The symbol database to scan with.")],
+    runs: Annotated[int, typer.Option(help="Timed scans per repository.")] = 5,
+    only: Annotated[
+        list[str] | None, typer.Option(help="Scan only these repositories; repeatable.")
+    ] = None,
+    root: Root = Path(),
+    cache: Annotated[Path, typer.Option(help="Where the projects are fetched.")] = Path(
+        ".cache/panel"
+    ),
+) -> None:
+    """Scan the repository panel: coverage of symbol data and scan time (network)."""
+    from patchsight.eval import panel
+
+    repos = [r for r in panel.load(root / panel.PANEL) if not only or r.name in only]
+    opened = db.SymbolDatabase(root / database)
+    try:
+        version = opened.meta.get("db_version", "?")
+    finally:
+        opened.close()
+    results = []
+    for repo in repos:
+        path = panel.checkout(repo, root / cache)
+        result = panel.measure(repo, path, root / database, runs)
+        results.append(result)
+        typer.echo(
+            f"{repo.name}: {result.dependencies} dependencies, {result.alerts} alerts, "
+            f"{result.with_data} with data, median {sorted(result.seconds)[runs // 2]:.2f} s",
+            err=True,
+        )
+    report = panel.PanelReport(
+        panel=panel.PANEL.as_posix(),
+        db_version=version,
+        machine=panel.machine(),
+        measured_at=datetime.now(UTC).strftime("%Y-%m-%d"),
+        runs=runs,
+        results=tuple(results),
+    )
+    target = root / "docs" / "reports" / f"panel-db-{version}"
+    target.with_name(target.name + ".md").write_text(panel.render_markdown(report), "utf-8")
+    target.with_name(target.name + ".json").write_text(
+        report.model_dump_json(indent=2) + "\n", "utf-8"
+    )
+    p50, p95, _ = report.latency()
+    typer.echo(
+        f"{report.with_data} of {report.alerts} alerts with symbol data; scan p50 {p50:.2f} s, "
+        f"p95 {p95:.2f} s -> {target}.md"
+    )
+
+
 @app.command("reproduce")
 def reproduce_command(root: Root = Path()) -> None:
     """Recompute the benchmark tables offline from committed files. No network, no API key."""

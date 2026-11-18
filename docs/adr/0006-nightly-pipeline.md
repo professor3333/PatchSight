@@ -59,6 +59,9 @@ or overwritten. The rollback is to be rehearsed and timed once (Definition of Do
 
 ## Consequences
 
+- **The gate blocks bad builds.** Rehearsed on 2026-11-18 with a deliberately damaged copy of a
+  real release: three faults, three failed checks, exit status 1
+  ([report](../reports/gate-rehearsal-2026-11-18.md)).
 - **Bootstrap.** Databases published before the `builds` ledger cannot be updated
   incrementally. The first ledgered release is built locally, where the full HTTP cache
   exists, and the nightly starts from it.

@@ -200,7 +200,7 @@ The offline pipeline is `python -m patchsight.pipeline <command>`.
 
 - **Every night**, [`nightly.yml`](.github/workflows/nightly.yml) snapshots OSV, rebuilds only the advisories whose extraction inputs changed, and runs a [release gate](src/patchsight/pipeline/gate.py) against the previous release.
 - **A passing build** becomes a dated, immutable release (`db-YYYY.MM.DD`), and the pointer `latest.json` on the [`db-pointer`](https://github.com/professor3333/PatchSight/tree/db-pointer) branch moves to it. `patchsight db update` follows that pointer and verifies the download's SHA-256.
-- **A failing build** publishes nothing and opens an issue.
+- **A failing build** publishes nothing and opens an issue. A deliberately damaged build was blocked in a [recorded rehearsal](docs/reports/gate-rehearsal-2026-11-18.md).
 - **Rollback** is one commit: revert the pointer move on `db-pointer`. Releases are never deleted.
 
 ## Development

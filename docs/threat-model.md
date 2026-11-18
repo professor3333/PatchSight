@@ -72,5 +72,10 @@ Anything short of condition 1 gives a low-confidence record. That holds every ch
 ## Not covered yet
 
 - **The injection suite** ([#55](https://github.com/professor3333/PatchSight/issues/55)): plant instructions in advisory text, code comments and identifiers, and check that the extracted set is unchanged from the clean version. This is the measurement behind the decoy risk above.
-- **The robustness suite** ([#55](https://github.com/professor3333/PatchSight/issues/55)): very large diffs, squashed fix-plus-refactor commits, fixes that only add a function, renamed files and non-English text.
+- **The robustness suite, model side** ([#55](https://github.com/professor3333/PatchSight/issues/55)): how the extractor answers on these inputs. The deterministic side runs in CI (`tests/test_robustness.py`):
+  - **Very large diffs:** a commit beyond the API's file pages is marked truncated; a fix of more than 500 definitions gets no record; an over-budget prompt is cut by rank and marked truncated, so its record is low confidence at best.
+  - **Squashed fixes:** a fix squashed with a refactor keeps every changed definition in the fallback.
+  - **Add-only fixes:** a fix that adds a helper also changes its caller.
+  - **Renamed files:** a renamed file's old side is read from its old path, and its old code keeps the old module.
+  - **Commit messages:** no message, in any language, reaches a prompt or a record, and non-ASCII advisory text and code render as written.
 - **The fix-commit agent's bounds** ([#56](https://github.com/professor3333/PatchSight/issues/56)): the agent is not built. Its design limits it to four read-only tools, two hosts and eight steps, with a verifier that discards out-of-range or test-only commits.

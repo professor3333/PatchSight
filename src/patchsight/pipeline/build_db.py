@@ -193,13 +193,19 @@ def changed_symbols(
     mappings: Iterable[CommitMapping], referenced: bool = False
 ) -> dict[str, Symbol]:
     """Every changed definition, keyed by module-qualified name; with ``referenced``, the
-    definitions that changed module-level lines name instead."""
+    definitions that changed module-level lines name instead.
+
+    Vulnerable code lives in the pre-fix version, so a definition that existed before the
+    fix in a file the fix renamed keeps the old path, and the module users of the
+    vulnerable release import."""
     symbols: dict[str, Symbol] = {}
     for mapping in mappings:
         for file in mapping.files:
             found = file.mapping.referenced if referenced else file.mapping.changed
             for definition in found:
-                symbol = symbol_for(file.mapping.path, definition.name, definition.kind)
+                before = file.previous_path and "pre" in definition.sides
+                path = file.previous_path if before and file.previous_path else file.mapping.path
+                symbol = symbol_for(path, definition.name, definition.kind)
                 symbols.setdefault(symbol.qualified_name, symbol)
     return symbols
 

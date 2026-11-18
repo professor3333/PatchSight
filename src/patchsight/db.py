@@ -357,6 +357,15 @@ class SymbolDatabase:
             for r in rows
         }
 
+    def build_status(self, vulnerability: str) -> str | None:
+        """Why the builder made a vulnerability's records, or none: its ledger status."""
+        if not self._has_builds:
+            return None
+        row = self._connection.execute(
+            "SELECT status FROM builds WHERE vulnerability = ?", (vulnerability,)
+        ).fetchone()
+        return str(row[0]) if row else None
+
     def identifiers_for(self, vulnerability: str) -> list[str]:
         """Every advisory ID and alias that points at this vulnerability."""
         rows = self._connection.execute(

@@ -171,11 +171,12 @@ def explain(
         raise typer.Exit(code=2) from None
     try:
         vulnerability, identifiers, records = explaining.lookup(opened, identifier)
+        status = opened.build_status(vulnerability)
         meta = opened.meta
     finally:
         opened.close()
     canonical = explaining.normalise_identifier(identifier)
     render = explaining.render_json if output == "json" else explaining.render_text
-    typer.echo(render(canonical, vulnerability, identifiers, records, meta))
+    typer.echo(render(canonical, vulnerability, identifiers, records, meta, status))
     if not records:
         raise typer.Exit(code=1)

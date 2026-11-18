@@ -154,6 +154,7 @@ def test_release_notes_carry_changes_gate_provenance_and_attribution(tmp_path: P
     assert "1 carried unchanged, 1 rebuilt, 0 new, 0 removed; 2 aliases added" in notes
     assert "## Release gate: passed" in notes
     assert "wheels on PyPI for 3 of 4 packages. The rest keep names derived" in notes
+    assert "IDs**" not in notes  # every vulnerability here has a record
     assert f"Asset SHA-256: `{'f' * 64}`" in notes
     assert "CC BY 4.0" in notes
     assert "No third-party source code is included." in notes
@@ -220,3 +221,29 @@ def test_a_build_that_skipped_import_names_fails(tmp_path: Path) -> None:
     finally:
         candidate.close()
         previous.close()
+
+
+def test_aliases_may_point_at_ledgered_vulnerabilities_without_records(tmp_path: Path) -> None:
+    records = [_record("GHSA-0001")]
+    path = tmp_path / "c.sqlite"
+    builds = [
+        BuildEntry(vulnerability="GHSA-0001", input_hash="h", status="built"),
+        BuildEntry(vulnerability="GHSA-0002", input_hash="h", status="no_python_fix"),
+    ]
+    aliases = {"GHSA-0001": "GHSA-0001", "GHSA-0002": "GHSA-0002", "PYSEC-1": "GHSA-0002"}
+    names = [db.ImportNames(package="pkg", names=("pkg",), source="w.whl")]
+    db.write(path, records, aliases, {"db_version": "c"}, builds=builds, import_names=names)
+    unknown = tmp_path / "d.sqlite"
+    db.write(unknown, records, {**aliases, "PYSEC-2": "GHSA-0009"}, {"db_version": "d"},
+             builds=builds, import_names=names)  # fmt: skip
+    good, bad = db.SymbolDatabase(path), db.SymbolDatabase(unknown)
+    try:
+        assert gate.run(good, good).passed
+        report = gate.run(bad, good)
+        assert _failed(report) == {"aliases"}
+        assert "aliases of no known vulnerability: PYSEC-2" in next(
+            c.detail for c in report.checks if c.name == "aliases"
+        )
+    finally:
+        good.close()
+        bad.close()

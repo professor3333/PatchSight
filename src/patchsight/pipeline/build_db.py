@@ -34,6 +34,9 @@ from patchsight.pipeline.pypi import PyPIClient
 # Above this many changed definitions a fallback record carries no location signal.
 # Set well beyond the 99th percentile (214 in the first full build).
 MAX_SYMBOLS = 500
+# A vulnerability whose advisories name no fix candidate on GitHub. It is never built, but
+# it is ledgered and its IDs are mapped, so a scan shows one alert for it, not one per ID.
+NO_GITHUB_FIX = "no_github_fix"
 
 
 class BuildOutcome(BaseModel):
@@ -227,6 +230,14 @@ def fallback_records(
     )
 
 
+def unfixed_outcome(group: AliasGroup, by_id: dict[str, Advisory]) -> BuildOutcome:
+    """The ledger entry of a vulnerability with no GitHub fix candidate. Its input hash
+    changes when an advisory gains one, so the next update builds it."""
+    return BuildOutcome(
+        vulnerability=group.key, status=NO_GITHUB_FIX, input_hash=input_hash(group, by_id)
+    )
+
+
 def build(
     groups: Sequence[AliasGroup],
     by_id: dict[str, Advisory],
@@ -234,7 +245,10 @@ def build(
     pypi: PyPIClient,
     db_version: str,
     progress: Callable[[int, int], None] | None = None,
+    unfixed: Sequence[AliasGroup] = (),
 ) -> tuple[list[Record], dict[str, str], BuildReport]:
+    """Build ``groups``; ledger ``unfixed`` (no GitHub fix candidate) without building.
+    Every vulnerability considered gets its IDs mapped, with or without a record."""
     now = datetime.now(UTC)
     records: list[Record] = []
     aliases: dict[str, str] = {}
@@ -244,15 +258,17 @@ def build(
         if progress is not None and (number % 100 == 0 or number == len(groups)):
             progress(number, len(groups))
         outcomes.append(outcome)
-        if built:
-            records.extend(built)
-            aliases.update(dict.fromkeys(group.identifiers, group.key))
+        records.extend(built)
+        aliases.update(dict.fromkeys(group.identifiers, group.key))
+    for group in unfixed:
+        outcomes.append(unfixed_outcome(group, by_id))
+        aliases.update(dict.fromkeys(group.identifiers, group.key))
     return (
         records,
         aliases,
         BuildReport(
             db_version=db_version,
-            groups=len(groups),
+            groups=len(groups) + len(unfixed),
             records=len(records),
             symbols=sum(len(r.symbols) for r in records),
             status=dict(sorted(Counter(o.status for o in outcomes).items())),

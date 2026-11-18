@@ -100,6 +100,21 @@ def test_unknown_advisory_exits_1_without_claiming_safety(database: Path) -> Non
     assert "not evidence of safety" in result.output
 
 
+def test_a_vulnerability_without_a_record_says_why(tmp_path: Path) -> None:
+    path = tmp_path / "db.sqlite"
+    key = "GHSA-2222-2222-2222"
+    ledger = [db.BuildEntry(vulnerability=key, input_hash="h", status="no_github_fix")]
+    db.write(path, [], {key: key, "PYSEC-2": key}, {"db_version": "2026.11.19"}, builds=ledger)
+    result = CliRunner().invoke(app, ["explain", "pysec-2", "--db", str(path)])
+    assert result.exit_code == 1
+    assert "PYSEC-2: no symbol data in database 2026.11.19" in result.output
+    assert "(also GHSA-2222-2222-2222)" in result.output
+    assert "Why: the advisory links no fix commit on GitHub." in result.output
+    assert "not evidence of safety" in result.output
+    as_json = CliRunner().invoke(app, ["explain", "PYSEC-2", "--db", str(path), "--format", "json"])
+    assert '"build_status": "no_github_fix"' in as_json.output
+
+
 def test_missing_database_exits_2(tmp_path: Path) -> None:
     result = CliRunner().invoke(app, ["explain", "CVE-1", "--db", str(tmp_path / "none")])
     assert result.exit_code == 2

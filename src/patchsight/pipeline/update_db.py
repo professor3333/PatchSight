@@ -23,7 +23,12 @@ from datetime import UTC, datetime
 from pydantic import BaseModel, ConfigDict
 
 from patchsight.db import BuildEntry, Record, SymbolDatabase
-from patchsight.pipeline.build_db import fallback_records, input_hash
+from patchsight.pipeline.build_db import (
+    NO_GITHUB_FIX,
+    fallback_records,
+    input_hash,
+    unfixed_outcome,
+)
 from patchsight.pipeline.diffs.github import GitHubClient
 from patchsight.pipeline.ingest.aliases import AliasGroup
 from patchsight.pipeline.ingest.osv import Advisory
@@ -43,6 +48,8 @@ class UpdateReport(BaseModel):
     aliases_removed: int
     status: dict[str, int]  # build statuses of the rebuilt and new vulnerabilities
     to_extract: tuple[str, ...]  # rebuilt or new vulnerabilities that have a record
+    # Vulnerabilities with no GitHub fix candidate: ledgered and mapped, never built.
+    without_fix: int = 0
 
 
 def changed(report: "UpdateReport") -> bool:
@@ -66,6 +73,7 @@ def update(
     db_version: str,
     now: datetime | None = None,
     progress: Callable[[int, int], None] | None = None,
+    unfixed: Sequence[AliasGroup] = (),
 ) -> tuple[list[Record], dict[str, str], list[BuildEntry], UpdateReport]:
     ledger = previous.build_ledger()
     if not ledger:
@@ -104,10 +112,16 @@ def update(
             done += 1
             if progress is not None:
                 progress(done, len(changed))
-        if kept:
-            records.extend(kept)
-            aliases.update(dict.fromkeys(group.identifiers, group.key))
-    current = {g.key for g in ordered}
+        records.extend(kept)
+        aliases.update(dict.fromkeys(group.identifiers, group.key))
+    for group in sorted(unfixed, key=lambda g: g.key):
+        # Never built, so nothing to carry: only the ledger entry and the IDs.
+        outcome = unfixed_outcome(group, by_id)
+        builds.append(
+            BuildEntry(vulnerability=group.key, input_hash=outcome.input_hash, status=NO_GITHUB_FIX)
+        )
+        aliases.update(dict.fromkeys(group.identifiers, group.key))
+    current = {g.key for g in ordered} | {g.key for g in unfixed}
     before = previous.alias_map()
     report = UpdateReport(
         previous_version=previous.meta.get("db_version", "?"),
@@ -120,5 +134,6 @@ def update(
         aliases_removed=sum(1 for i in before if i not in aliases),
         status=dict(sorted(statuses.items())),
         to_extract=tuple(to_extract),
+        without_fix=len(unfixed),
     )
     return records, aliases, builds, report

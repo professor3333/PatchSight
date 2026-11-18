@@ -167,6 +167,33 @@ def test_not_imported_and_its_exceptions(tmp_path: Path) -> None:
     assert decide("A", "pyyaml", "1", _record(), usage).verdict == "UNKNOWN"
 
 
+def test_a_vulnerability_without_a_record_is_one_alert_that_says_why(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    project = _write(
+        tmp_path / "p", {"requirements.txt": "PyYAML==5.3.1\n", "a.py": "import yaml\n"}
+    )
+    database = tmp_path / "db.sqlite"
+    db.write(database, [_record()],
+             {"GHSA-0001-0001-0001": "GHSA-0001-0001-0001", "GHSA-0002": "GHSA-0002",
+              "PYSEC-2": "GHSA-0002"},
+             {"built_at": datetime.now(UTC).isoformat()},
+             builds=[db.BuildEntry(vulnerability="GHSA-0002", input_hash="h",
+                                   status="no_python_fix")])  # fmt: skip
+    ids = ["GHSA-0002", "PYSEC-2", "MAL-2099-1", "GHSA-other"]
+    monkeypatch.setattr(
+        run.osv_client, "query", lambda packages, client=None: dict.fromkeys(packages, ids)
+    )
+    alerts, _, _ = run.run_scan(project, project / "requirements.txt", database)
+    by_id = {a.advisory: a for a in alerts}
+    assert set(by_id) == {"GHSA-0002", "MAL-2099-1", "GHSA-other"}  # PYSEC-2 joined GHSA-0002
+    assert by_id["GHSA-0002"].aliases == ("PYSEC-2",)
+    assert by_id["GHSA-0002"].reason == "no symbol data: the fix changes no Python code"
+    assert by_id["MAL-2099-1"].reason.startswith("no symbol data: a malicious-package report")
+    assert by_id["GHSA-other"].reason == "no symbol data for this advisory"
+    assert {a.verdict for a in alerts} == {"UNKNOWN"}
+
+
 def test_no_record_is_unknown(tmp_path: Path) -> None:
     usage = ast_scanner.scan(_write(tmp_path, {"x.py": "import yaml\n"}))
     alert = decide("A", "pyyaml", "1", None, usage)

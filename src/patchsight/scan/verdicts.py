@@ -37,6 +37,28 @@ from patchsight.names import KNOWN_IMPORT_NAMES, canonical_package_name, import_
 from patchsight.scan.ast_scanner import Location, Usage
 
 Verdict = Literal["CALLED", "IMPORTED_NOT_CALLED", "NOT_IMPORTED", "UNKNOWN"]
+
+# Why a vulnerability has no record, by the builder's ledger status.
+NO_DATA = {
+    "no_python_fix": "the fix changes no Python code",
+    "module_level_only": "the fix changes only module-level code, so no function can be named",
+    "no_github_fix": "the advisory links no fix commit on GitHub",
+    "no_resolvable_commit": "the fix commit could not be found",
+    "too_broad": "the fix changes too many definitions to single any out",
+    "error": "building the record failed",
+    "built": "the record covers another affected package",
+}
+
+
+def no_data_reason(advisory: str, status: str | None) -> str:
+    """Why an alert has no symbol data. Every reason starts "no symbol data"."""
+    if advisory.startswith("MAL-"):
+        return "no symbol data: a malicious-package report, so the whole package is the problem"
+    if status is None:
+        return "no symbol data for this advisory"
+    return f"no symbol data: {NO_DATA.get(status, status.replace('_', ' '))}"
+
+
 DISPLAY_ORDER: tuple[Verdict, ...] = ("CALLED", "IMPORTED_NOT_CALLED", "NOT_IMPORTED", "UNKNOWN")
 
 
@@ -75,10 +97,18 @@ def _mentions(sources: dict[str, str], roots: set[str]) -> list[str]:
     )
 
 
-def decide(advisory: str, package: str, version: str, record: Record | None, usage: Usage) -> Alert:
+def decide(
+    advisory: str,
+    package: str,
+    version: str,
+    record: Record | None,
+    usage: Usage,
+    status: str | None = None,
+) -> Alert:
+    """``status``: the vulnerability's ledger status, which says why ``record`` is missing."""
     base = {"advisory": advisory, "package": package, "version": version}
     if record is None:
-        return Alert(**base, verdict="UNKNOWN", reason="no symbol data for this advisory")
+        return Alert(**base, verdict="UNKNOWN", reason=no_data_reason(advisory, status))
 
     names = import_names(package, record.import_roots)
     roots = {n.split(".")[0] for n in names}

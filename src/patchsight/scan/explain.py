@@ -10,6 +10,7 @@ never holds.
 import json
 
 from patchsight.db import HunkLocation, Record, SymbolDatabase
+from patchsight.scan.verdicts import no_data_reason
 
 LOW_NOTE = "A low-confidence record can mark an alert CALLED, but never IMPORTED, NOT CALLED."
 
@@ -85,13 +86,19 @@ def _record_text(record: Record) -> list[str]:
 
 def render_text(
     identifier: str, vulnerability: str, identifiers: list[str], records: list[Record],
-    meta: dict[str, str],
+    meta: dict[str, str], status: str | None = None,
 ) -> str:  # fmt: skip
     db = f"database {meta.get('db_version', '?')} ({meta.get('builder', '?')})"
     if not records:
+        why = no_data_reason(identifier, status).removeprefix("no symbol data")
+        why = why.removeprefix(" for this advisory").removeprefix(": ")
+        also = [i for i in identifiers if i != identifier]
         return (
-            f"{identifier}: no symbol data in {db}. A scan reports its alerts as UNKNOWN; "
-            "missing data is not evidence of safety."
+            f"{identifier}: no symbol data in {db}"
+            + (f" (also {', '.join(also)})" if also else "")
+            + "."
+            + (f" Why: {why}." if why else "")
+            + " A scan reports its alerts as UNKNOWN; missing data is not evidence of safety."
         )
     also = [i for i in identifiers if i != vulnerability]
     header = f"{vulnerability}" + (f" (also {', '.join(also)})" if also else "")
@@ -103,12 +110,13 @@ def render_text(
 
 def render_json(
     identifier: str, vulnerability: str, identifiers: list[str], records: list[Record],
-    meta: dict[str, str],
+    meta: dict[str, str], status: str | None = None,
 ) -> str:  # fmt: skip
     payload = {
         "identifier": identifier,
         "vulnerability": vulnerability if records else None,
         "identifiers": identifiers,
+        "build_status": status,
         "database": {k: meta.get(k) for k in ("db_version", "builder", "schema_version")},
         "records": [r.model_dump(mode="json") for r in records],
     }

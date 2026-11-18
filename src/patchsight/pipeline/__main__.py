@@ -462,19 +462,27 @@ def import_kaggle_run_command(
     typer.echo(f"imported {responses} cached responses; run files in {inbox.relative_to(root)}")
 
 
+def _fix_groups(
+    dump: Path,
+) -> tuple[dict[str, Advisory], list[AliasGroup], list[AliasGroup]]:
+    """Every vulnerability, split into those with a GitHub fix candidate and the rest."""
+    advisories = [r for r in normalise_dump(dump) if isinstance(r, Advisory)]
+    by_id = {a.id: a for a in advisories}
+    fixed: list[AliasGroup] = []
+    unfixed: list[AliasGroup] = []
+    for g in alias_groups(advisories):
+        has_fix = any(
+            c.kind in week1.GITHUB_KINDS for i in g.advisory_ids for c in by_id[i].fix_candidates
+        )
+        (fixed if has_fix else unfixed).append(g)
+    return by_id, fixed, unfixed
+
+
 def _github_fix_groups(
     dump: Path, ids: str | None, sample: int | None, seed: int
 ) -> tuple[dict[str, Advisory], list[AliasGroup]]:
     """Vulnerabilities with a GitHub fix candidate, optionally narrowed to IDs or a sample."""
-    advisories = [r for r in normalise_dump(dump) if isinstance(r, Advisory)]
-    by_id = {a.id: a for a in advisories}
-    groups = [
-        g
-        for g in alias_groups(advisories)
-        if any(
-            c.kind in week1.GITHUB_KINDS for i in g.advisory_ids for c in by_id[i].fix_candidates
-        )
-    ]
+    by_id, groups, _ = _fix_groups(dump)
     if ids:
         wanted = {i.strip() for i in ids.split(",") if i.strip()}
         groups = [g for g in groups if wanted & set(g.identifiers)]
@@ -509,6 +517,9 @@ def build_db_command(
     token = _github_token()
     manifest, dump = _load_verified(root)
     by_id, groups = _github_fix_groups(dump, ids, sample, seed)
+    # A full build also ledgers the vulnerabilities with no GitHub fix candidate, so their
+    # IDs are mapped too. A narrowed build (IDs or a sample) leaves them out.
+    unfixed = _fix_groups(dump)[2] if ids is None and sample is None else []
     dump_entry = manifest.file(DUMP)
     version = dump_entry.retrieved_at.strftime("%Y.%m.%d")
     # A full build takes hours: wait out GitHub's hourly limit instead of failing.
@@ -518,6 +529,7 @@ def build_db_command(
         records, aliases, report = build_db.build(
             groups, by_id, github, pypi, version,
             progress=lambda done, total: typer.echo(f"built {done}/{total}", err=True),
+            unfixed=unfixed,
         )  # fmt: skip
     finally:
         github.close()
@@ -1085,7 +1097,7 @@ def update_db_command(
 
     token = _github_token()
     manifest, dump = _load_verified(root)
-    by_id, groups = _github_fix_groups(dump, None, None, 0)
+    by_id, groups, unfixed = _fix_groups(dump)
     dump_entry = manifest.file(DUMP)
     version = dump_entry.retrieved_at.strftime("%Y.%m.%d")
     prior = db.SymbolDatabase(root / previous)
@@ -1096,6 +1108,7 @@ def update_db_command(
         records, aliases, builds, report = update_db.update(
             prior, groups, by_id, github, pypi, version,
             progress=lambda done, total: typer.echo(f"rebuilt {done}/{total}", err=True),
+            unfixed=unfixed,
         )  # fmt: skip
     except update_db.NoLedgerError as error:
         raise typer.BadParameter(str(error)) from None
@@ -1327,6 +1340,7 @@ def release_notes_command(
     try:
         meta, tiers, total = dict(opened.meta), opened.confidence_counts(), opened.record_count()
         vulnerabilities = len(opened.vulnerabilities())
+        considered = len(opened.build_ledger())
     finally:
         opened.close()
     published = dbcache.Pointer.model_validate_json((root / pointer).read_text("utf-8"))
@@ -1381,6 +1395,12 @@ def release_notes_command(
         "- Low-confidence records list every definition the fix changed; they can mark an "
         "alert CALLED, never IMPORTED, NOT CALLED.",
     ]
+    if considered > vulnerabilities:
+        lines.append(
+            f"- **{considered:,} vulnerabilities' IDs**, including the "
+            f"{considered - vulnerabilities:,} without symbol data, so a scan shows one alert per "
+            "vulnerability, with or without symbol data."
+        )
     if "import_names" in meta:
         counts = json.loads(meta["import_names"])
         lines.append(
@@ -1396,8 +1416,8 @@ def release_notes_command(
         lines += [
             f"- **Changes since {report.previous_version}:** {report.carried:,} carried "
             f"unchanged, {report.rebuilt} rebuilt, {report.new} new, {report.removed} removed"
-            + (f"; {report.aliases_added} aliases added" if report.aliases_added else "")
-            + (f", {report.aliases_removed} removed" if report.aliases_removed else ""),
+            + (f"; {report.aliases_added:,} aliases added" if report.aliases_added else "")
+            + (f", {report.aliases_removed:,} removed" if report.aliases_removed else ""),
         ]
     if gate is not None:
         result = GateReport.model_validate_json((root / gate).read_text("utf-8"))

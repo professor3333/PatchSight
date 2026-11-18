@@ -8,7 +8,8 @@ workflow then opens an issue with this report instead.
   next incremental update can run.
 * ``symbols``: every record names at least one symbol and no more than ``MAX_SYMBOLS``.
 * ``aliases``: every vulnerability with a record is found by its own ID, and every alias
-  points at a vulnerability with a record.
+  points at a vulnerability in the ledger (with or without a record, so a scan groups the
+  IDs of a vulnerability without symbol data into one alert).
 * ``no_mass_loss``: few vulnerabilities lose their records at once (at most
   ``MAX_LOST_SHARE`` of the previous ones, or ``MIN_LOST_ALLOWED``, whichever is larger).
   A bigger drop means a broken snapshot or builder, not real withdrawals.
@@ -87,7 +88,7 @@ def run(candidate: SymbolDatabase, previous: SymbolDatabase) -> GateReport:
 
     aliases = candidate.alias_map()
     unreachable = [v for v in vulnerabilities if aliases.get(v) != v]
-    dangling = sorted(i for i, v in aliases.items() if v not in records)
+    dangling = sorted(i for i, v in aliases.items() if v not in records and v not in ledger)
     checks.append(
         Check(
             name="aliases",
@@ -98,7 +99,7 @@ def run(candidate: SymbolDatabase, previous: SymbolDatabase) -> GateReport:
                 if unreachable
                 else ""
             )
-            + (f"; aliases without a record: {_sample(dangling)}" if dangling else ""),
+            + (f"; aliases of no known vulnerability: {_sample(dangling)}" if dangling else ""),
         )
     )
 

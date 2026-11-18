@@ -78,8 +78,8 @@ One SQLite file, schema version 1. Tables added since the first release are addi
 | `symbols` | symbol of a record | qualified name, module, name, kind (function, method, class), file path |
 | `evidence` | model-picked symbol | the one-sentence rationale and the cited hunks: commit, path and line ranges |
 | `extraction` | LLM record | the second-opinion model and why the tier was chosen |
-| `aliases` | identifier | the vulnerability it belongs to, so a scan can match GHSA, PYSEC or CVE IDs |
-| `builds` | vulnerability | its input hash and build status (`built`, `no_python_fix`, `module_level_only`, …) |
+| `aliases` | identifier | the vulnerability it belongs to, for every vulnerability the builder considered, with or without a record, so a scan shows one alert per vulnerability |
+| `builds` | vulnerability | its input hash and build status (`built`, `no_python_fix`, `module_level_only`, `no_github_fix`, …). A scan uses the status to say why an alert has no symbol data |
 | `import_names` | package | the top-level import names in its wheels on PyPI, and which wheels were read ([ADR 0009](adr/0009-import-names-from-wheels.md)) |
 | `meta` | key | database version, schema version, builder, code commit, snapshot SHA-256 |
 

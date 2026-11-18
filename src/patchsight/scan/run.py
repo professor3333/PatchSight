@@ -39,7 +39,8 @@ def run_scan(
                 ordered = sorted(ids, key=lambda i: (not i.startswith("GHSA-"), i))
                 known = symbols.vulnerability_for(ids[0]) is not None
                 record = symbols.record(key, package) if known else None
-                alert = decide(ordered[0], package, version, record, usage)
+                status = symbols.build_status(key) if known and record is None else None
+                alert = decide(ordered[0], package, version, record, usage, status)
                 alerts.append(alert.model_copy(update={"aliases": tuple(ordered[1:])}))
         return alerts, dependencies, symbols.meta
     finally:

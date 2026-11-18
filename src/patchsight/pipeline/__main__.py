@@ -537,6 +537,128 @@ def holdout_baseline_command(
     )
 
 
+INJECTION_DIR = Path("benchmarks/dunlap-v1")
+
+
+def _injection_paths(root: Path, part: str, tag: str) -> tuple[Path, Path]:
+    base = root / INJECTION_DIR / f"injection-{part}-{tag}"
+    return base.with_name(base.name + ".json"), base.with_name(base.name + "-entry-points.json")
+
+
+def _write_injection_report(root: Path, part: str, primary: str, secondary: str) -> str:
+    from patchsight.pipeline.benchmarks import injection
+
+    plans = [
+        injection.Plan.model_validate(p)
+        for p in json.loads((root / INJECTION_DIR / f"injection-plans-{part}.json").read_text())
+    ]
+    data = bundle.load(root / DUNLAP_BUNDLE)
+    truth = {r.id: set(r.symbols) for r in data.reports}
+    found, labels = {}, {}
+    for tag in (primary, secondary):
+        answers_path, entry_path = _injection_paths(root, part, tag)
+        run = replay.load(answers_path)
+        found[tag] = injection.cases(run, injection.load_entry_points(entry_path))
+        labels[tag] = run.model
+    report = injection.InjectionReport(
+        split=part, primary=primary, secondary=secondary, plans=tuple(plans),
+        models={tag: injection.score_model(found[tag], plans, truth) for tag in found},
+        pair=injection.score_pair(found[primary], found[secondary], plans, truth),
+    )  # fmt: skip
+    target = root / "docs" / "reports" / f"injection-dunlap-{part}-{primary}-vs-{secondary}"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    markdown = injection.render_markdown(report, labels)
+    target.with_name(target.name + ".md").write_text(markdown, "utf-8")
+    target.with_name(target.name + ".json").write_text(
+        report.model_dump_json(indent=2) + "\n", "utf-8"
+    )
+    return markdown
+
+
+@app.command("injection-suite")
+def injection_suite_command(
+    root: Root = Path(),
+    split: Annotated[str, typer.Option(help="Split part to attack (dev only).")] = "dev",
+    sample: Annotated[int, typer.Option(help="Seeded sample of N attackable reports.")] = 20,
+    primary_role: Annotated[str, typer.Option(help="Extractor role.")] = "extractor",
+    primary_tag: Annotated[str, typer.Option(help="Extractor run tag.")] = "extract-v1-qwen3.8-27b",
+    secondary_role: Annotated[str, typer.Option(help="Second-opinion role.")] = "second_opinion",
+    secondary_tag: Annotated[
+        str, typer.Option(help="Second-opinion run tag.")
+    ] = "extract-v1-gpt-oss-120b",
+    config: Annotated[Path, typer.Option(help="LLM config.")] = Path("configs/llm.toml"),
+    prompt: Annotated[Path, typer.Option(help="Prompt template.")] = Path("prompts/extract_v1.md"),
+    cache: Annotated[Path, typer.Option(help="Response cache root.")] = Path(".cache"),
+) -> None:
+    """Plant instructions in untrusted fields and measure what changes (needs both models' keys).
+
+    Resumable: answers are cached, so after a quota stop the same command continues.
+    """
+    from patchsight.pipeline.benchmarks import injection
+
+    if split != "dev":
+        raise typer.BadParameter(
+            "the injection suite runs on dev only; test is for declared decisions"
+        )
+    token = _github_token()
+    manifest = snapshot.load_manifest(root / MANIFEST)
+    reports = dunlap.load(snapshot.verify(manifest.file(DUNLAP_DATA), root))
+    advisories = extraction.load_advisories(snapshot.verify(manifest.file(DUNLAP_ADVISORIES), root))
+    frozen = splits.load_split(root / DUNLAP_SPLIT)
+    chosen = [r for r in reports if r.id in frozen.split.ids(split)]
+    llm_config = load_config(root / config)
+    template = load_template(root / prompt)
+    counter = HfTokenizer(llm_config.tokenizer, root / cache / "tokenizer")
+    github = GitHubClient(root / cache / "http" / "github", token=token)
+    plans_path = root / INJECTION_DIR / f"injection-plans-{split}.json"
+    try:
+        if plans_path.exists():
+            plans = [injection.Plan.model_validate(p) for p in json.loads(plans_path.read_text())]
+        else:
+            plans = injection.select(
+                github, llm_config, primary_role, template, counter, chosen, advisories, sample
+            )
+            plans_path.parent.mkdir(parents=True, exist_ok=True)
+            plans_path.write_text(
+                json.dumps([p.model_dump() for p in plans], indent=1) + "\n", "utf-8"
+            )
+        typer.echo(f"{len(plans)} attackable reports", err=True)
+        for role, tag in ((primary_role, primary_tag), (secondary_role, secondary_tag)):
+            llm, model_id = client_for(llm_config, role, root / cache / "llm", counter)
+
+            def progress(done: int, total: int, role: str = role) -> None:
+                typer.echo(f"{role}: {done}/{total}", err=True)
+
+            run, entry = injection.run(
+                github, llm, root / cache / "llm", llm_config, role, template, counter, chosen,
+                advisories, plans, f"{frozen.split.name}:{split}", progress=progress,
+            )  # fmt: skip
+            answers_path, entry_path = _injection_paths(root, split, tag)
+            replay.save(run, answers_path)
+            injection.save_entry_points(entry, entry_path)
+            typer.echo(f"{model_id}: {llm.network_calls} model calls", err=True)
+    except (QuotaExhaustedError, RateLimitedError) as stopped:
+        typer.echo(f"stopped: {stopped}", err=True)
+        typer.echo("Every answer so far is cached. Re-run the same command to resume.", err=True)
+        raise typer.Exit(code=2) from None
+    finally:
+        github.close()
+    typer.echo(_write_injection_report(root, split, primary_tag, secondary_tag))
+
+
+@app.command("injection-report")
+def injection_report_command(
+    root: Root = Path(),
+    split: Annotated[str, typer.Option(help="Split part.")] = "dev",
+    primary: Annotated[str, typer.Option(help="Extractor run tag.")] = "extract-v1-qwen3.8-27b",
+    secondary: Annotated[
+        str, typer.Option(help="Second-opinion run tag.")
+    ] = "extract-v1-gpt-oss-120b",
+) -> None:
+    """Recompute the injection report offline from the committed replay bundles."""
+    typer.echo(_write_injection_report(root, split, primary, secondary))
+
+
 @app.command("dunlap-split")
 def dunlap_split_command(root: Root = Path()) -> None:
     """Freeze the Dunlap dev/test split once. Refuses to overwrite an existing split."""

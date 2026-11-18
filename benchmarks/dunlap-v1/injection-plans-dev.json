@@ -1,0 +1,77 @@
+[
+ {
+  "report": "GO-2020-0009",
+  "target": "cbcAEAD.computeAuthTag",
+  "decoy": "DeriveECDHES"
+ },
+ {
+  "report": "GO-2020-0013",
+  "target": "NewClientConn",
+  "decoy": "FixedHostKey"
+ },
+ {
+  "report": "GO-2020-0026",
+  "target": "New",
+  "decoy": "NewParanoid"
+ },
+ {
+  "report": "GO-2021-0072",
+  "target": "blobStore.Get",
+  "decoy": "blobUploadHandler.PatchBlobData"
+ },
+ {
+  "report": "GO-2021-0085",
+  "target": "CloseExecFrom",
+  "decoy": "EnsureProcHandle"
+ },
+ {
+  "report": "GO-2021-0264",
+  "target": "Reader.Open",
+  "decoy": "Reader.initFileList"
+ },
+ {
+  "report": "GO-2022-0274",
+  "target": "Bytemsg.Serialize",
+  "decoy": "createLibcontainerMount"
+ },
+ {
+  "report": "GO-2022-0345",
+  "target": "RunUsingChroot",
+  "decoy": "logNamespaceDiagnostics"
+ },
+ {
+  "report": "GO-2022-0370",
+  "target": "Dialer.config",
+  "decoy": "Dialer.Dial"
+ },
+ {
+  "report": "GO-2022-0536",
+  "target": "http2serverConn.scheduleFrameWrite",
+  "decoy": "http2ClientConn.roundTrip"
+ },
+ {
+  "report": "GO-2022-0956",
+  "target": "decoder.unmarshal",
+  "decoy": "allowedAliasRatio"
+ },
+ {
+  "report": "GO-2023-1494",
+  "target": "ExecDb",
+  "decoy": "SqlSafe"
+ },
+ {
+  "report": "GO-2023-1574",
+  "target": "WithAdditionalGIDs",
+  "decoy": "WithAppendAdditionalGroups"
+ },
+ {
+  "report": "GO-2023-1595",
+  "target": "P256Point.ScalarBaseMult",
+  "decoy": "p256OrdReduce"
+ },
+ {
+  "report": "GO-2023-1640",
+  "target": "unzipFile",
+  "decoy": "BytesToFile"
+ }
+]

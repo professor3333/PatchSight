@@ -1069,10 +1069,14 @@ def merge_llm_command(
     for path in second or []:
         secondaries.update(llm_records.load(root / path))
     merged, outcomes = llm_records.apply(records, primaries, secondaries)
+    report = llm_records.merge_report(
+        records, merged, primaries, secondaries, outcomes, meta.get("db_version", "?"), version
+    )
     commit = subprocess.run(  # noqa: S603 - fixed argv, no shell
         ["git", "-C", str(root), "rev-parse", "HEAD"],  # noqa: S607
         capture_output=True, text=True, check=False,
     ).stdout.strip()  # fmt: skip
+    meta.pop("updated_from", None)  # the source's own origin; this build is a merge
     meta.update(
         {
             "db_version": version,
@@ -1086,6 +1090,9 @@ def merge_llm_command(
     meta.pop("schema_version", None)  # db.write sets it
     target = root / out
     db.write(target.with_name(target.name + ".sqlite"), merged, aliases, meta, builds=builds)
+    target.with_name(target.name + "-merge.json").write_text(
+        report.model_dump_json(indent=2) + "\n", "utf-8"
+    )
     typer.echo(
         f"db {version} merged into {meta['merged_into']}: {len(merged)} records; "
         f"{dict(Counter(r.confidence for r in merged))}; {outcomes}"
@@ -1143,6 +1150,7 @@ def release_notes_command(
         "releases/latest.json"
     ),
     update: Annotated[Path | None, typer.Option(help="The update-db report, if any.")] = None,
+    merge: Annotated[Path | None, typer.Option(help="The merge-llm report, if any.")] = None,
     gate: Annotated[Path | None, typer.Option(help="The gate-db report, if any.")] = None,
     root: Root = Path(),
     out: Annotated[Path, typer.Option(help="Notes file to write.")] = Path(
@@ -1151,6 +1159,7 @@ def release_notes_command(
 ) -> None:
     """Write release notes for a database release, with provenance and attribution."""
     from patchsight.pipeline.gate import GateReport
+    from patchsight.pipeline.llm_records import MergeReport
     from patchsight.pipeline.update_db import UpdateReport
 
     opened = db.SymbolDatabase(root / database)
@@ -1161,7 +1170,13 @@ def release_notes_command(
         opened.close()
     published = dbcache.Pointer.model_validate_json((root / pointer).read_text("utf-8"))
     version = meta.get("db_version", "?")
-    origin = f", updated from {meta['updated_from']}" if "updated_from" in meta else ""
+    origin = (
+        f", updated from {meta['updated_from']}"
+        if "updated_from" in meta
+        else f", {meta['merged_into']} with new model picks"
+        if "merged_into" in meta
+        else ""
+    )
     lines = [
         f"Symbol database **{version}**{origin}.",
         "",
@@ -1169,6 +1184,35 @@ def release_notes_command(
         "patchsight db update   # downloads this release and verifies its SHA-256",
         "```",
         "",
+    ]
+    if merge is not None:
+        merged = MergeReport.model_validate_json((root / merge).read_text("utf-8"))
+        second = (
+            "; second opinion " + ", ".join(f"`{m}`" for m in merged.second_opinion_models)
+            if merged.second_opinion_models
+            else ""
+        )
+        lines += [
+            f"## Changes since {merged.previous_version}",
+            "",
+            "- Merges model picks from "
+            + ", ".join(f"`{m}`" for m in merged.models)
+            + " (prompt "
+            + ", ".join(f"`{p}`" for p in merged.prompt_versions)
+            + f"){second}.",
+            f"- {merged.after.vulnerabilities:,} vulnerabilities ({merged.after.records:,} "
+            "records) now carry model picks with a rationale and cited hunks, up from "
+            f"{merged.before.vulnerabilities:,} ({merged.before.records:,} records).",
+            "- No record is high confidence yet, so matching still uses every changed "
+            "definition. `patchsight explain <id>` shows the picks."
+            if not merged.tiers.get("high")
+            else f"- {merged.tiers['high']:,} "
+            + ("record is" if merged.tiers["high"] == 1 else "records are")
+            + " high confidence. `patchsight explain <id>` shows the picks and why each tier "
+            "was chosen.",
+            "",
+        ]
+    lines += [
         "## Contents",
         "",
         f"- **{vulnerabilities:,} PyPI vulnerabilities**, {total:,} records: "

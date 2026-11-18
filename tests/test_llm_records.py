@@ -261,7 +261,7 @@ def test_merge_llm_upgrades_a_published_database(tmp_path: Path) -> None:
         tmp_path / "current.sqlite", [_fallback(), other],
         {"GHSA-xxxx-yyyy-zzzz": "GHSA-xxxx-yyyy-zzzz", "CVE-1": "GHSA-xxxx-yyyy-zzzz",
          "GHSA-kept-high-0000": "GHSA-kept-high-0000"},
-        {"db_version": "2026.11.17", "builder": "llm-v1"},
+        {"db_version": "2026.11.17", "builder": "llm-v1", "updated_from": "2026.11.16"},
         builds=[BuildEntry(vulnerability="GHSA-xxxx-yyyy-zzzz", input_hash="h1", status="built"),
                 BuildEntry(vulnerability="GHSA-kept-high-0000", input_hash="h1", status="built")],
     )  # fmt: skip
@@ -278,6 +278,7 @@ def test_merge_llm_upgrades_a_published_database(tmp_path: Path) -> None:
     try:
         assert merged.meta["db_version"] == "2026.11.17.1"
         assert merged.meta["merged_into"] == "2026.11.17"
+        assert "updated_from" not in merged.meta  # the source's origin, not this build's
         upgraded = merged.record("GHSA-xxxx-yyyy-zzzz", "pkg")
         assert upgraded is not None
         assert (upgraded.confidence, upgraded.second_opinion_model) == ("high", "gpt-oss")
@@ -290,3 +291,13 @@ def test_merge_llm_upgrades_a_published_database(tmp_path: Path) -> None:
         assert set(merged.build_ledger()) == {"GHSA-xxxx-yyyy-zzzz", "GHSA-kept-high-0000"}
     finally:
         merged.close()
+    report = llm_records.MergeReport.model_validate_json(
+        (tmp_path / "merged-merge.json").read_text()
+    )
+    assert (report.previous_version, report.db_version) == ("2026.11.17", "2026.11.17.1")
+    assert (report.models, report.second_opinion_models) == (("qwen",), ("gpt-oss",))
+    assert report.prompt_versions == ("extract-v1",)
+    assert report.before == llm_records.Picks(vulnerabilities=1, records=1)
+    assert report.after == llm_records.Picks(vulnerabilities=2, records=2)
+    assert report.tiers == {"high": 2}
+    assert sum(report.outcomes.values()) == 2  # one outcome per vulnerability

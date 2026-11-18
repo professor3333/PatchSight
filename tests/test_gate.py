@@ -141,3 +141,41 @@ def test_release_notes_carry_changes_gate_provenance_and_attribution(tmp_path: P
     assert f"Asset SHA-256: `{'f' * 64}`" in notes
     assert "CC BY 4.0" in notes
     assert "No third-party source code is included." in notes
+
+
+@pytest.mark.parametrize("high", [0, 1])
+def test_release_notes_describe_a_merge(tmp_path: Path, high: int) -> None:
+    import json
+
+    from patchsight.pipeline.llm_records import MergeReport, Picks
+
+    records = [_record("GHSA-0001", confidence="high" if high else "low"), _record("GHSA-0002")]
+    meta = {"db_version": "2026.11.17.1", "merged_into": "2026.11.17", "builder": "llm-v1"}
+    db.write(tmp_path / "db.sqlite", records, {k: k for k in ("GHSA-0001", "GHSA-0002")}, meta)
+    (tmp_path / "latest.json").write_text(json.dumps({
+        "db_version": "2026.11.17.1", "schema_version": db.SCHEMA_VERSION, "url": "https://x/y.gz",
+        "sha256": "f" * 64, "size": 1, "built_at": NOW.isoformat(), "records": 2,
+    }))  # fmt: skip
+    report = MergeReport(
+        previous_version="2026.11.17", db_version="2026.11.17.1", models=("qwen",),
+        second_opinion_models=("gpt-oss",) if high else (), prompt_versions=("extract-v1",),
+        before=Picks(vulnerabilities=895, records=934),
+        after=Picks(vulnerabilities=1770, records=1855),
+        tiers={"high": high, "low": 2 - high}, outcomes={"low: no valid second opinion": 2},
+    )  # fmt: skip
+    (tmp_path / "merge.json").write_text(report.model_dump_json())
+    result = CliRunner().invoke(app, [
+        "release-notes", "db.sqlite", "--pointer", "latest.json", "--merge", "merge.json",
+        "--root", str(tmp_path), "--out", "notes.md",
+    ])  # fmt: skip
+    assert result.exit_code == 0, result.output
+    notes = (tmp_path / "notes.md").read_text()
+    assert notes.startswith("Symbol database **2026.11.17.1**, 2026.11.17 with new model picks.")
+    assert "## Changes since 2026.11.17" in notes
+    assert notes.index("## Changes since") < notes.index("## Contents")
+    assert "Merges model picks from `qwen` (prompt `extract-v1`)" in notes
+    assert "1,770 vulnerabilities (1,855 records) now carry model picks" in notes
+    assert "up from 895 (934 records)" in notes
+    assert ("second opinion `gpt-oss`" in notes) == bool(high)
+    assert ("No record is high confidence yet" in notes) == (not high)
+    assert ("1 record is high confidence" in notes) == bool(high)

@@ -21,6 +21,8 @@ from collections import Counter
 from collections.abc import Iterable, Mapping, Sequence
 from pathlib import Path
 
+from pydantic import BaseModel, ConfigDict
+
 from patchsight.db import Record, Symbol, SymbolEvidence
 from patchsight.eval.confidence import VALID, Answer, Decision, decide, is_public
 from patchsight.pipeline.pypi_extract import PyPIExtraction
@@ -137,3 +139,56 @@ def apply(
         merged.extend(result)
         outcomes[outcome] += 1
     return merged, dict(sorted(outcomes.items()))
+
+
+class Picks(BaseModel):
+    """How much of a database carries model picks (records whose source is the LLM)."""
+
+    model_config = ConfigDict(frozen=True)
+
+    vulnerabilities: int
+    records: int
+
+
+def picks(records: Iterable[Record]) -> Picks:
+    chosen = [r for r in records if r.source == "llm"]
+    return Picks(vulnerabilities=len({r.vulnerability for r in chosen}), records=len(chosen))
+
+
+class MergeReport(BaseModel):
+    """What one ``merge-llm`` run changed, for the release notes."""
+
+    model_config = ConfigDict(frozen=True)
+
+    previous_version: str
+    db_version: str
+    models: tuple[str, ...]  # extractor models whose answers were offered
+    second_opinion_models: tuple[str, ...]
+    prompt_versions: tuple[str, ...]
+    before: Picks
+    after: Picks
+    tiers: dict[str, int]  # records by confidence, after the merge
+    outcomes: dict[str, int]  # per vulnerability, as returned by apply
+
+
+def merge_report(
+    before: Sequence[Record],
+    after: Sequence[Record],
+    primaries: Mapping[str, PyPIExtraction],
+    secondaries: Mapping[str, PyPIExtraction],
+    outcomes: Mapping[str, int],
+    previous_version: str,
+    db_version: str,
+) -> MergeReport:
+    offered = [*primaries.values(), *secondaries.values()]
+    return MergeReport(
+        previous_version=previous_version,
+        db_version=db_version,
+        models=tuple(sorted({e.outcome.model for e in primaries.values()})),
+        second_opinion_models=tuple(sorted({e.outcome.model for e in secondaries.values()})),
+        prompt_versions=tuple(sorted({e.outcome.prompt_version for e in offered})),
+        before=picks(before),
+        after=picks(after),
+        tiers=dict(sorted(Counter(r.confidence for r in after).items())),
+        outcomes=dict(sorted(outcomes.items())),
+    )

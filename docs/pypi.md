@@ -24,10 +24,19 @@ patchsight scan .         # scan the lockfile and the code under .
 |:---|:---|
 | `--lockfile PATH` | Scan a specific lockfile: `requirements.txt`, `uv.lock` or `poetry.lock` (default: the first found, in that order) |
 | `--format json` | Machine-readable output |
+| `--format sarif` | SARIF 2.1.0 for GitHub code scanning and other SARIF readers |
 | `--fail-on called` | Exit 1 if any alert is CALLED: a CI gate (`unknown` also fails on UNKNOWN) |
 | `--db PATH` | Use a specific database file (or set `PATCHSIGHT_DB`) |
 | `patchsight explain ID` | Why the database lists an advisory's symbols: confidence, models, rationale and the changed lines |
 | `patchsight db info` | Show which database a scan uses, and its age |
+
+In GitHub Actions, the [PatchSight action](https://github.com/professor3333/PatchSight#in-ci-the-github-action) scans and uploads the SARIF report to code scanning:
+
+```yaml
+- uses: professor3333/PatchSight@v0.4.0
+  with:
+    fail-on: called
+```
 
 ## Verdicts
 

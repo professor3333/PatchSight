@@ -1,9 +1,9 @@
 {
-  "db_version": "2026.11.17",
+  "db_version": "2026.11.18",
   "schema_version": 1,
-  "url": "https://github.com/professor3333/PatchSight/releases/download/db-2026.11.17/patchsight-db-2026.11.17.sqlite.gz",
-  "sha256": "bf696b7c6487b03917cb439b99295150ec593716902d495db8e12554a5a2bc54",
-  "size": 2832316,
-  "built_at": "2026-11-17T07:15:41.741423+00:00",
-  "records": 3685
+  "url": "https://github.com/professor3333/PatchSight/releases/download/db-2026.11.18/patchsight-db-2026.11.18.sqlite.gz",
+  "sha256": "792a5a2c2a3b5f8a5aaa0e07fa6f20769874882dcea6b7047f194be2c35c78cf",
+  "size": 3080539,
+  "built_at": "2026-11-18T06:22:54.392969+00:00",
+  "records": 3687
 }

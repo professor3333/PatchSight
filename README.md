@@ -85,6 +85,7 @@ patchsight scan .                     # scan the lockfile and the code under .
 ```bash
 patchsight scan . --lockfile requirements/prod.txt        # a specific lockfile
 patchsight scan . --format json                           # machine-readable output
+patchsight scan . --format sarif > patchsight.sarif       # SARIF 2.1.0, for code scanning
 patchsight scan . --fail-on called                        # exit 1 if any alert is CALLED (CI gate)
 patchsight explain GHSA-87cj-px37-rc3x                    # why these symbols, with evidence
 patchsight db info                                        # which database a scan uses, and its age
@@ -112,6 +113,37 @@ NOT IMPORTED (transitive only)  45
   ...
 UNKNOWN (no symbol data, low confidence, or dynamic use)  8
 ```
+
+## In CI: the GitHub Action
+
+The action installs PatchSight in its own environment, downloads the database, scans, writes a verdict table to the job summary and uploads a SARIF report to GitHub code scanning. CALLED alerts appear as errors at the line that references the vulnerable code; the rest appear as warnings or notes on the lockfile.
+
+```yaml
+# .github/workflows/patchsight.yml
+name: patchsight
+on: [push, pull_request]
+permissions:
+  contents: read
+  security-events: write   # to upload the SARIF report to code scanning
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: professor3333/PatchSight@v0.4.0
+        with:
+          fail-on: called   # fail the job if any alert is CALLED
+```
+
+| Input | Default | What it does |
+|:---|:---|:---|
+| `path` | `.` | Project directory to scan |
+| `lockfile` | the first found | `requirements.txt`, `uv.lock` or `poetry.lock` |
+| `fail-on` | `never` | `called`, or `unknown` (unknown or called) |
+| `sarif-file` | `patchsight.sarif` | Where to write the report |
+| `upload-sarif` | `true` | Upload to code scanning; set `false` to keep the file only |
+
+Outputs: `sarif-file`, `alerts`, `called` and `unknown`.
 
 ## Reading the verdicts
 
@@ -191,7 +223,8 @@ The offline pipeline is `python -m patchsight.pipeline <command>`.
 - [ ] LLM-extracted records for PyPI: the pipeline, confidence tiers and per-symbol evidence are built; the self-hosted backfill is running on Kaggle (2 of 4 shards merged)
 - [x] Held-out test evaluation of the confidence rule, declared in advance and run once: the safety target is **not met** ([ADR 0004](docs/adr/0004-fall-back-to-the-baseline.md#test-result-2026-11-18))
 - [x] **On PyPI:** [`pip install patchsight`](https://pypi.org/project/patchsight/), published from CI with Trusted Publishing and a required approval
-- [ ] A GitHub Action, SARIF and OpenVEX output
+- [x] **SARIF output and a GitHub Action** (`professor3333/PatchSight@v0.4.0`), with a [smoke test](.github/workflows/action-smoke.yml) on every change
+- [ ] OpenVEX output and a pull-request comment
 
 > [!WARNING]
 > **The confidence rule doesn't meet its safety target.** In its one declared evaluation on the held-out test split, high-confidence records missed the vulnerable symbol in 8 of 115 reports: 7.0% (95% interval 3.6% to 13.1%), against a target of 2% or less ([report](docs/reports/confidence-dunlap-test-extract-v1-qwen3.8-27b-q4km-vs-extract-v1-gpt-oss-120b.md)). In six of the eight, the fix never touched the labelled symbol, which no agreement between models can detect. So high-confidence records are **withheld from releases** until a rule meets the target on data it wasn't chosen on ([ADR 0008](docs/adr/0008-withhold-high-confidence.md)). Until then the scanner never says **imported, not called**.

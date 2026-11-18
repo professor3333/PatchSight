@@ -152,6 +152,10 @@ def test_release_notes_carry_changes_gate_provenance_and_attribution(tmp_path: P
     assert f"Asset SHA-256: `{'f' * 64}`" in notes
     assert "CC BY 4.0" in notes
     assert "No third-party source code is included." in notes
+    assert (
+        "symbol database is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)"
+        in notes
+    )
 
 
 @pytest.mark.parametrize("high", [0, 1])

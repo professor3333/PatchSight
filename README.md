@@ -241,6 +241,7 @@ docs/                   proposal, ADRs, generated reports
 |:---|:---|
 | **Code** | Apache License 2.0 ([LICENSE](LICENSE)) |
 | **Advisory data** | [OSV.dev](https://osv.dev), the [GitHub Advisory Database](https://github.com/github/advisory-database) and the [PyPA Advisory Database](https://github.com/pypa/advisory-database), all CC BY 4.0. Published databases credit them and state what changed |
+| **Symbol database** | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), like the advisory data it derives from. Credit "PatchSight symbol database" with the release, and keep the attribution in its release notes |
 | **Benchmark** | Dunlap et al. (Apache-2.0) and the Go vulnerability database (CC BY 4.0) |
 | **Third-party code** | Never redistributed. Only commit SHAs, file paths and function names are stored |
 

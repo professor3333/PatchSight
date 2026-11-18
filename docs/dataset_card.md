@@ -83,4 +83,6 @@ Advisory identifiers and affected-package data come from [OSV.dev](https://osv.d
 
 **Changes made:** PatchSight resolved each advisory's fix commit on GitHub, mapped the changed lines to function names with tree-sitter, and, where shown, had language models choose the vulnerable ones. It stores those names with file paths, line ranges and commit SHAs. No third-party source code is included.
 
-Every release repeats this notice in its release notes.
+**Licence:** the PatchSight symbol database is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). If you share it, or data derived from it, credit "PatchSight symbol database" with the release, keep the attribution above, and say what you changed.
+
+Every release repeats this notice and the licence in its release notes. The repository's code is licensed separately, under Apache 2.0.

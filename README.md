@@ -157,6 +157,8 @@ flowchart LR
 4. **Decide confidence.** A second model from another family must agree, and the agreed answer must include a public symbol. Anything else falls back to every changed function ([ADR 0004](docs/adr/0004-fall-back-to-the-baseline.md)).
 5. **Scan locally.** Your lockfile is matched against OSV, joined with the database, and checked against your code's syntax tree.
 
+Every stage and table is described in the [architecture doc](docs/architecture.md). The [model card](docs/model_card.md) covers the extractor and its measured accuracy, and the [dataset card](docs/dataset_card.md) covers the database.
+
 <details>
 <summary><b>Pipeline command reference</b></summary>
 
@@ -170,6 +172,10 @@ The offline pipeline is `python -m patchsight.pipeline <command>`.
 | `fetch-dunlap`, `dunlap-baseline`, `dunlap-extract` | The Go benchmark: the baseline and LLM extraction |
 | `export-replay`, `confidence-report`, `reproduce` | Replay committed model answers offline, compare confidence rules, rebuild the tables |
 | `parity-report` | Compare two runs of the same prompt, such as the self-hosted 4-bit model against the hosted one |
+| `failure-report` | Break benchmark misses down by cause |
+| `update-db`, `gate-db`, `release-notes` | The nightly: rebuild only what changed, run the release gate, write the notes |
+| `pypi-extract`, `merge-llm` | LLM extraction for PyPI advisories, and merging it into a published database |
+| `export-kaggle-inputs`, `restore-kaggle-inputs`, `import-kaggle-run` | Move the backfill's inputs to Kaggle and its answers back |
 
 </details>
 

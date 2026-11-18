@@ -34,7 +34,7 @@ Anything short of condition 1 gives a low-confidence record. That holds every ch
 | Attack | What happens today | Held by |
 |---|---|---|
 | Text in the advisory or a code comment tells the model that nothing is vulnerable | An empty set is low confidence, so the record keeps every changed definition. | `test_conditions_that_force_low_confidence`, `test_low_confidence_never_lowers_an_alert` |
-| Text steers the model towards a harmless decoy function | **Possible residual risk.** If both families pick the same public decoy, the record is high confidence without the real symbol. Both models read the same injected text, so their agreement is not independent evidence against injection. Not measured yet. | the injection suite, [#55](https://github.com/professor3333/PatchSight/issues/55) |
+| Text steers the model towards a harmless decoy function | **Residual risk once high confidence is published.** If both families pick the same public decoy, the rule makes the record high confidence without the real symbol. Both models read the same injected text, so their agreement is not independent evidence against injection. **Closed for now:** releases withhold high confidence ([ADR 0008](adr/0008-withhold-high-confidence.md)). | the injection suite, [#55](https://github.com/professor3333/PatchSight/issues/55) |
 | Untrusted text closes its delimiter tag to escape the data block | A closing tag inside untrusted text is escaped (`<\/advisory>`) before rendering, and the prompt says that everything inside the tags is data. | `test_untrusted_text_cannot_close_its_tag` |
 | The answer names functions instead of IDs, invents candidates or skips some | Rejected by the strict schema and the validator, then one repair attempt, then the dead-letter table. Either failure leaves the fallback record. | `test_invalid_answers_are_rejected`, `test_extract_dead_letters_after_a_failed_repair`, `test_unusable_extractions_keep_the_fallback` |
 | The answer cites a hunk from another function to justify its pick | Rejected: every citation must be a hunk shown under that candidate. | `test_invalid_answers_are_rejected` |
@@ -45,7 +45,7 @@ Anything short of condition 1 gives a low-confidence record. That holds every ch
 
 **A sharply reduced set.** The design asks for the fallback whenever the model's set is empty or sharply reduced. Today every result that is not high keeps every changed definition, so a reduction matters only at high confidence. There is no separate reduction threshold (open question 2 of the design).
 
-**Measured weakness, unrelated to attackers.** On the Go benchmark's test split, 7.0% of high-confidence reports missed the labelled symbol, mostly because the fix never touched it. Honest data already defeats the 2% target, so no published record is high confidence yet.
+**Measured weakness, unrelated to attackers.** On the Go benchmark's test split, 7.0% of high-confidence reports missed the labelled symbol, mostly because the fix never touched it. Honest data already defeats the 2% target, so releases withhold high confidence ([ADR 0008](adr/0008-withhold-high-confidence.md)), enforced in the merge code and by the release gate's `high_withheld` check.
 
 ## Release channel
 

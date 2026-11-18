@@ -1,6 +1,6 @@
 # ADR 0004: Fall back to every changed function unless confidence is high
 
-- **Status:** accepted. The rule was chosen on the dev split and evaluated once on the test split, as declared below. **It does not meet the safety target** (see Test result).
+- **Status:** accepted. The rule was chosen on the dev split and evaluated once on the test split, as declared below. **It does not meet the safety target** (see Test result), so its high tier is withheld from releases ([ADR 0008](0008-withhold-high-confidence.md)).
 - **Date:** 2026-11-16
 
 ## Context

@@ -53,7 +53,7 @@ A reference is a fix candidate when it is a commit or pull-request URL on GitHub
 | **low** | every changed definition, plus any entry points and model picks | CALLED on a match; otherwise UNKNOWN, never "imported, not called" |
 | **high** | only the symbols two model families agree on, including a public one, from an untruncated prompt | CALLED on a match; otherwise IMPORTED_NOT_CALLED |
 
-**Every record in the current release is low confidence.** No second opinion has been merged yet. On the Go benchmark's test split, the high-confidence rule missed the vulnerable symbol in 7.0% of high-confidence reports, against a target of 2% or less ([ADR 0004](adr/0004-fall-back-to-the-baseline.md#test-result-2026-11-18)).
+**Every published record is low confidence, by policy.** On the Go benchmark's test split, the high-confidence rule missed the vulnerable symbol in 7.0% of high-confidence reports, against a target of 2% or less ([ADR 0004](adr/0004-fall-back-to-the-baseline.md#test-result-2026-11-18)). So the tier is withheld from releases until a rule meets the target on unseen data ([ADR 0008](adr/0008-withhold-high-confidence.md)). A record the rule would have made high stays low, and its tier reason says so.
 
 ## Fields
 

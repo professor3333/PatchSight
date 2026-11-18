@@ -58,7 +58,7 @@ Each stage is plain Python under `src/patchsight/pipeline/`, run through `python
 | Render | Numbers the candidates (`F1`…) and hunks (`H1`…), delimits untrusted text, and ranks candidates with BM25 against the advisory text when they exceed the 4,600-token budget. Truncation is recorded. | `extract/prompt.py`, `prompts/extract_v1.md` |
 | Extract | One call per vulnerability through one OpenAI-compatible client, with a strict JSON schema (grammar-constrained on llama.cpp), temperature 0, a fixed seed and a response cache keyed by model, parameters, prompt version and prompt. | `llm/client.py`, `llm/config.py`, `extract/schema.py` |
 | Validate | Candidate and hunk IDs must exist, every cited hunk must lie inside its symbol, and every entry point must resolve to a known definition. On failure, one repair attempt with the errors appended, then the dead-letter table. | `extract/validate.py`, `extract/extractor.py` |
-| Tier | High confidence needs both families valid, an untruncated prompt, `subset` agreement and a public symbol. Anything else keeps every changed definition. | `eval/confidence.py`, `llm_records.py` |
+| Tier | High confidence needs both families valid, an untruncated prompt, `subset` agreement and a public symbol. Anything else keeps every changed definition. Releases withhold the high tier for now ([ADR 0008](adr/0008-withhold-high-confidence.md)). | `eval/confidence.py`, `llm_records.py` |
 | Write | One SQLite file, plus a `builds` ledger of input hashes so later runs rebuild only what changed. | `db.py`, `build_db.py`, `update_db.py` |
 
 The LLM stages run in two places today:
@@ -106,7 +106,7 @@ The scan makes two kinds of network call: the OSV query, and the database downlo
 | [`nightly.yml`](../.github/workflows/nightly.yml) | 03:17 UTC daily, or by hand | snapshot, `update-db`, release gate, dated release, pointer move by `github-actions[bot]`; an issue on failure |
 | [`release.yml`](../.github/workflows/release.yml) | a `v*` tag | full tests, `reproduce`, build, clean-install smoke test, then PyPI through Trusted Publishing after the owner approves, and the GitHub Release |
 
-- **Release gate** (`gate-db`): the builds ledger covers every vulnerability with a record; every record has between 1 and 500 symbols; every record is found by its own ID and every alias points at a record; no more than 2% of vulnerabilities (at least 10 allowed) lose their records at once; a high-confidence record whose inputs did not change stays high.
+- **Release gate** (`gate-db`): the builds ledger covers every vulnerability with a record; every record has between 1 and 500 symbols; every record is found by its own ID and every alias points at a record; no more than 2% of vulnerabilities (at least 10 allowed) lose their records at once; a high-confidence record whose inputs did not change stays high; and no record is high confidence while ADR 0008 withholds the tier.
 - **Releases are immutable.** Rollback is one commit that moves `latest.json` on `db-pointer` back ([ADR 0006](adr/0006-nightly-pipeline.md)). It was rehearsed and timed: users followed within 5 minutes ([report](reports/rollback-rehearsal-2026-11-18.md)).
 - **Planned:** tracing and token dashboards ([#60](https://github.com/professor3333/PatchSight/issues/60)), the Hugging Face dataset, OpenVEX output, and the injection and robustness suites ([#55](https://github.com/professor3333/PatchSight/issues/55)). The attacks they will measure are described in the [threat model](threat-model.md).
 
@@ -117,7 +117,7 @@ The scan makes two kinds of network call: the OSV query, and the database downlo
 | No LLM at scan time ([ADR 0002](adr/0002-no-llm-at-scan-time.md)) | `tests/test_import_boundary.py`; optional `pipeline` extra |
 | The model answers with IDs, not names | the JSON schema and `extract/validate.py` |
 | Every vulnerable symbol cites a hunk inside it | `extract/validate.py` |
-| Fail towards noise ([ADR 0004](adr/0004-fall-back-to-the-baseline.md)) | `llm_records.py`, `scan/verdicts.py`, and a property test that a low-confidence record is never worse than the fallback |
+| Fail towards noise ([ADR 0004](adr/0004-fall-back-to-the-baseline.md), [ADR 0008](adr/0008-withhold-high-confidence.md)) | `llm_records.py`, `scan/verdicts.py`, a property test that a low-confidence record is never worse than the fallback, and the gate's `high_withheld` check |
 | Re-extract only when inputs change ([ADR 0001](adr/0001-re-extract-only-when-inputs-change.md)) | input hashes, the response cache and the `builds` ledger |
 | No vector database ([ADR 0003](adr/0003-no-vector-database.md)) | BM25 only, in `extract/prompt.py` |
 | Two model families for high confidence ([ADR 0005](adr/0005-two-model-families.md)) | `eval/confidence.py` |

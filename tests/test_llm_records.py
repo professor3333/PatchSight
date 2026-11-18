@@ -73,9 +73,32 @@ def _evidence(name: str, model: str) -> SymbolEvidence:
                           hunks=(hunk,))  # fmt: skip
 
 
-def _merge(primary: Any, secondary: Any = None, fallback: Record | None = None) -> Any:
-    records, outcome = llm_records.merge([fallback or _fallback()], primary, secondary)
+def _merge(
+    primary: Any, secondary: Any = None, fallback: Record | None = None, publish_high: bool = True
+) -> Any:
+    """The rule's own mechanics, with the tier published (ADR 0008 withholds it by default)."""
+    records, outcome = llm_records.merge(
+        [fallback or _fallback()], primary, secondary, publish_high=publish_high
+    )
     return records[0], outcome
+
+
+def test_high_confidence_is_withheld_by_default() -> None:
+    assert llm_records.PUBLISH_HIGH is False  # changing this needs a new ADR (ADR 0008)
+    primary = _extraction(("load",), entry=("pkg.full_load",))
+    secondary = _extraction(("load", "Loader.read"), model="gpt-oss")
+    records, outcome = llm_records.merge([_fallback()], primary, secondary)
+    (record,) = records
+    reason = f"{llm_records.WITHHELD}: both models agree (subset)"
+    assert outcome == f"low: {reason}"
+    assert (record.confidence, record.source, record.tier_reason) == ("low", "llm", reason)
+    assert record.symbols == _fallback().symbols  # every changed definition, as for any low
+    assert record.second_opinion_model == "gpt-oss"
+    assert record.entry_points == ("pkg.full_load",)
+    merged, outcomes = llm_records.apply([_fallback()], {primary.vulnerability: primary},
+                                         {secondary.vulnerability: secondary})  # fmt: skip
+    assert [r.confidence for r in merged] == ["low"]
+    assert outcomes == {f"low: {reason}": 1}
 
 
 def test_no_extraction_keeps_the_fallback() -> None:
@@ -281,7 +304,9 @@ def test_merge_llm_upgrades_a_published_database(tmp_path: Path) -> None:
         assert "updated_from" not in merged.meta  # the source's origin, not this build's
         upgraded = merged.record("GHSA-xxxx-yyyy-zzzz", "pkg")
         assert upgraded is not None
-        assert (upgraded.confidence, upgraded.second_opinion_model) == ("high", "gpt-oss")
+        # The pair agrees, but ADR 0008 withholds the tier: low, with the second opinion kept.
+        assert (upgraded.confidence, upgraded.second_opinion_model) == ("low", "gpt-oss")
+        assert (upgraded.tier_reason or "").startswith(llm_records.WITHHELD)
         before = db.SymbolDatabase(tmp_path / "current.sqlite")
         assert merged.record("GHSA-kept-high-0000", "pkg") == before.record(
             "GHSA-kept-high-0000", "pkg"
@@ -299,5 +324,5 @@ def test_merge_llm_upgrades_a_published_database(tmp_path: Path) -> None:
     assert report.prompt_versions == ("extract-v1",)
     assert report.before == llm_records.Picks(vulnerabilities=1, records=1)
     assert report.after == llm_records.Picks(vulnerabilities=2, records=2)
-    assert report.tiers == {"high": 2}
+    assert report.tiers == {"high": 1, "low": 1}  # only the record that was already high
     assert sum(report.outcomes.values()) == 2  # one outcome per vulnerability

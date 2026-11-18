@@ -13,12 +13,15 @@ workflow then opens an issue with this report instead.
   ``MAX_LOST_SHARE`` of the previous ones, or ``MIN_LOST_ALLOWED``, whichever is larger).
   A bigger drop means a broken snapshot or builder, not real withdrawals.
 * ``high_kept``: a high-confidence record whose extraction inputs did not change stays high.
+* ``high_withheld``: no record is high confidence while ADR 0008 withholds the tier, however
+  the database was built.
 """
 
 from pydantic import BaseModel, ConfigDict
 
 from patchsight.db import SymbolDatabase
 from patchsight.pipeline.build_db import MAX_SYMBOLS
+from patchsight.pipeline.llm_records import PUBLISH_HIGH
 
 MAX_LOST_SHARE = 0.02
 MIN_LOST_ALLOWED = 10
@@ -124,6 +127,23 @@ def run(candidate: SymbolDatabase, previous: SymbolDatabase) -> GateReport:
             passed=not demoted,
             detail="unchanged high-confidence records stay high"
             + (f"; demoted: {_sample(demoted)}" if demoted else ""),
+        )
+    )
+
+    high = [f"{r.vulnerability}/{r.package}" for rs in records.values() for r in rs
+            if r.confidence == "high"]  # fmt: skip
+    checks.append(
+        Check(
+            name="high_withheld",
+            passed=PUBLISH_HIGH or not high,
+            detail=f"{len(high)} high-confidence records"
+            + (
+                ""
+                if PUBLISH_HIGH
+                else " (ADR 0008 withholds the tier)"
+                if not high
+                else f" while ADR 0008 withholds the tier: {_sample(high)}"
+            ),
         )
     )
     return GateReport(

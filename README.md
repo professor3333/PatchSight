@@ -118,7 +118,7 @@ UNKNOWN (no symbol data, low confidence, or dynamic use)  8
 | | Verdict | Meaning |
 |:---:|:---|:---|
 | 🔴 | **CALLED** | A reference in your code resolves to a vulnerable function, its class, or an entry point that reaches it. **Fix these first.** |
-| 🟢 | **IMPORTED, NOT CALLED** | The package is imported, but no vulnerable symbol is referenced. Given only for high-confidence data. |
+| 🟢 | **IMPORTED, NOT CALLED** | The package is imported, but no vulnerable symbol is referenced. Given only for high-confidence data, which is [withheld for now](docs/adr/0008-withhold-high-confidence.md). |
 | ⚪ | **NOT IMPORTED** | Your code never imports the package directly. It may still be used through other dependencies. |
 | 🟡 | **UNKNOWN** | No symbol data, only low-confidence data, or dynamic code the scanner can't follow. |
 
@@ -194,7 +194,7 @@ The offline pipeline is `python -m patchsight.pipeline <command>`.
 - [ ] A GitHub Action, SARIF and OpenVEX output
 
 > [!WARNING]
-> **The confidence rule doesn't meet its safety target.** In its one declared evaluation on the held-out test split, high-confidence records missed the vulnerable symbol in 8 of 115 reports: 7.0% (95% interval 3.6% to 13.1%), against a target of 2% or less ([report](docs/reports/confidence-dunlap-test-extract-v1-qwen3.8-27b-q4km-vs-extract-v1-gpt-oss-120b.md)). In six of the eight, the fix never touched the labelled symbol, which no agreement between models can detect. The published database has no high-confidence records yet. If it gains some before a better rule is measured, treat **imported, not called** as a prioritisation hint, not a guarantee.
+> **The confidence rule doesn't meet its safety target.** In its one declared evaluation on the held-out test split, high-confidence records missed the vulnerable symbol in 8 of 115 reports: 7.0% (95% interval 3.6% to 13.1%), against a target of 2% or less ([report](docs/reports/confidence-dunlap-test-extract-v1-qwen3.8-27b-q4km-vs-extract-v1-gpt-oss-120b.md)). In six of the eight, the fix never touched the labelled symbol, which no agreement between models can detect. So high-confidence records are **withheld from releases** until a rule meets the target on data it wasn't chosen on ([ADR 0008](docs/adr/0008-withhold-high-confidence.md)). Until then the scanner never says **imported, not called**.
 
 ## How database releases work
 

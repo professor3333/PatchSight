@@ -34,7 +34,7 @@ patchsight scan .         # scan the lockfile and the code under .
 | | Verdict | Meaning |
 |:---:|:---|:---|
 | 🔴 | **CALLED** | A reference in your code resolves to a vulnerable function, its class, or an entry point that reaches it. **Fix these first.** |
-| 🟢 | **IMPORTED, NOT CALLED** | The package is imported, but no vulnerable symbol is referenced. Given only for high-confidence data. |
+| 🟢 | **IMPORTED, NOT CALLED** | The package is imported, but no vulnerable symbol is referenced. Given only for high-confidence data, which is [withheld for now](https://github.com/professor3333/PatchSight/blob/main/docs/adr/0008-withhold-high-confidence.md). |
 | ⚪ | **NOT IMPORTED** | Your code never imports the package directly. It may still be used through other dependencies. |
 | 🟡 | **UNKNOWN** | No symbol data, only low-confidence data, or dynamic code the scanner can't follow. |
 
@@ -55,7 +55,7 @@ The F1 95% interval is 0.62 to 0.74. The reports and a one-command offline repro
 ## Status: early release
 
 - Reads `requirements.txt` (exact `==` pins only), `uv.lock` and `poetry.lock`. Packages without a PyPI release version (unpinned requirements, git, URL or local sources) are listed, not guessed.
-- The [symbol database](https://github.com/professor3333/PatchSight/releases) is updated every night and covers about 3,500 PyPI vulnerabilities, all at **low confidence** so far: every function the fix changed, plus the model's picks where the backfill has reached. Expect many UNKNOWN verdicts until high-confidence records are published.
+- The [symbol database](https://github.com/professor3333/PatchSight/releases) is updated every night and covers about 3,500 PyPI vulnerabilities, all at **low confidence** so far: every function the fix changed, plus the model's picks where the backfill has reached. High-confidence records are withheld until the confidence rule meets its safety target, so expect UNKNOWN where a later release may say IMPORTED, NOT CALLED.
 - Transitive use and dynamic code (`getattr` with a computed name, `importlib`, star imports) aren't analysed. They give UNKNOWN or NOT IMPORTED, never a false "not called".
 
 ## Links

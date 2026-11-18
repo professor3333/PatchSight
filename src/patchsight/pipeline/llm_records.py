@@ -12,6 +12,10 @@ extractor has a valid answer made from the same inputs:
 An extractor answer that failed validation, or was made from different inputs (its
 ``input_hash`` no longer matches the advisory), leaves the fallback record unchanged.
 
+**High confidence is withheld** (ADR 0008): the rule missed its safety target in its declared
+test evaluation, so a record the rule would make high is kept low, with every changed
+definition, and its tier reason says so. Lifting this takes a new ADR, not a flag.
+
 A record that is already high confidence is never re-merged: it no longer stores every
 changed definition, so a lower tier could not be rebuilt from it. ``merge`` can therefore run
 again over a published database (``merge-llm``) as new extractions arrive.
@@ -26,6 +30,12 @@ from pydantic import BaseModel, ConfigDict
 from patchsight.db import Record, Symbol, SymbolEvidence
 from patchsight.eval.confidence import VALID, Answer, Decision, decide, is_public
 from patchsight.pipeline.pypi_extract import PyPIExtraction
+
+# ADR 0008: in the declared test evaluation (ADR 0004), 7.0% of high-confidence reports missed
+# the vulnerable symbol, against a target of 2% or less. Until a revised rule meets the target
+# on data not used to choose it, published databases hold no high-confidence records.
+PUBLISH_HIGH = False
+WITHHELD = "high confidence withheld (ADR 0008)"
 
 
 def load(path: Path) -> dict[str, PyPIExtraction]:
@@ -66,6 +76,7 @@ def merge(
     fallback: Sequence[Record],
     primary: PyPIExtraction | None,
     secondary: PyPIExtraction | None,
+    publish_high: bool = PUBLISH_HIGH,
 ) -> tuple[list[Record], str]:
     """The records for one vulnerability, and what happened (for the build report)."""
     if any(r.confidence == "high" for r in fallback):
@@ -81,6 +92,8 @@ def merge(
     decision: Decision = decide(
         answer(primary), answer(secondary) if secondary else None, language="python"
     )
+    if decision.tier == "high" and not publish_high:
+        decision = Decision(tier="low", reason=f"{WITHHELD}: {decision.reason}", agreed=frozenset())
     valid_second = secondary is not None and secondary.outcome.status in VALID
     entry_points = set(primary.entry_points)
     if valid_second and secondary is not None:
@@ -123,6 +136,7 @@ def apply(
     records: Iterable[Record],
     primaries: Mapping[str, PyPIExtraction],
     secondaries: Mapping[str, PyPIExtraction],
+    publish_high: bool = PUBLISH_HIGH,
 ) -> tuple[list[Record], dict[str, int]]:
     """Merge extraction into fallback records. Returns the records and outcome counts."""
     by_vulnerability: dict[str, list[Record]] = {}
@@ -135,6 +149,7 @@ def apply(
             by_vulnerability[vulnerability],
             primaries.get(vulnerability),
             secondaries.get(vulnerability),
+            publish_high,
         )
         merged.extend(result)
         outcomes[outcome] += 1

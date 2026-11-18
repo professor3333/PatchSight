@@ -70,7 +70,7 @@ High confidence needs both families valid, an untruncated prompt, `subset` agree
 | dev | 27 of 60 (45%) | 3.7% (1 of 27; Wilson 95% 0.7% to 18.3%) | 2% or less |
 | test | 115 of 220 (52%) | **7.0%** (8 of 115; Wilson 95% 3.6% to 13.1%) | 2% or less |
 
-**The target is not met.** Six of the eight test misses are fixes that never touched the labelled symbol. Reports: [dev](reports/confidence-dunlap-dev-extract-v1-qwen3.8-27b-q4km-vs-extract-v1-gpt-oss-120b.md), [test](reports/confidence-dunlap-test-extract-v1-qwen3.8-27b-q4km-vs-extract-v1-gpt-oss-120b.md).
+**The target is not met.** Six of the eight test misses are fixes that never touched the labelled symbol. Releases therefore withhold the high tier until a rule meets the target on unseen data ([ADR 0008](adr/0008-withhold-high-confidence.md)). Reports: [dev](reports/confidence-dunlap-dev-extract-v1-qwen3.8-27b-q4km-vs-extract-v1-gpt-oss-120b.md), [test](reports/confidence-dunlap-test-extract-v1-qwen3.8-27b-q4km-vs-extract-v1-gpt-oss-120b.md).
 
 ### Cost
 

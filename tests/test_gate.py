@@ -90,6 +90,16 @@ def test_an_unchanged_high_record_must_stay_high(tmp_path: Path) -> None:
     assert changed.passed  # its inputs changed, so a fallback record is expected
 
 
+def test_no_high_confidence_record_is_released_while_adr_0008_withholds_it(
+    tmp_path: Path,
+) -> None:
+    report = _run(tmp_path, [_record("GHSA-0001", confidence="high")], [_record("GHSA-0001")])
+    assert _failed(report) == {"high_withheld"}
+    detail = next(c.detail for c in report.checks if c.name == "high_withheld")
+    assert "GHSA-0001/pkg" in detail
+    assert _run(tmp_path, [_record("GHSA-0001")], [_record("GHSA-0001")]).passed
+
+
 @pytest.mark.parametrize(("lost", "code"), [(0, 0), (20, 1)])
 def test_gate_db_exit_code_and_report(tmp_path: Path, lost: int, code: int) -> None:
     before = [_record(f"GHSA-{i:04d}") for i in range(30)]
@@ -126,7 +136,8 @@ def test_release_notes_carry_changes_gate_provenance_and_attribution(tmp_path: P
                           status={"built": 1},
                           to_extract=("GHSA-0002",))  # fmt: skip
     (tmp_path / "update.json").write_text(update.model_dump_json())
-    gate_report = _run(tmp_path, records, records)
+    passing = [_record("GHSA-0001"), _record("GHSA-0002")]
+    gate_report = _run(tmp_path, passing, passing)
     (tmp_path / "gate.json").write_text(gate_report.model_dump_json())
     result = CliRunner().invoke(app, [
         "release-notes", "db.sqlite", "--pointer", "latest.json", "--update", "update.json",

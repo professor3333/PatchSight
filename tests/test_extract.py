@@ -316,3 +316,33 @@ def test_bm25_ties_rank_the_same_in_every_process() -> None:
         for seed in range(16)
     }  # fmt: skip
     assert results == {"[0, 1, 2]"}  # tied: the original order
+
+
+@pytest.mark.parametrize(
+    ("name", "dotted", "expected"),
+    [
+        ("Paved.SetValue", False, "Paved.SetValue"),  # exact names always resolve
+        ("SetValue", False, None),  # off: the old, exact-only rule
+        ("SetValue", True, "Paved.SetValue"),  # the model left out the receiver
+        ("fieldpath.Paved.SetValue", True, "Paved.SetValue"),  # the model added a package
+        ("Get", True, None),  # ambiguous: Cache.Get and Store.Get
+        ("Value", True, None),  # not on a dotted boundary of anything
+    ],
+)
+def test_entry_points_resolve_on_a_dotted_boundary_only_when_unambiguous(
+    name: str, dotted: bool, expected: str | None
+) -> None:
+    from patchsight.pipeline.extract.validate import resolve_entry_point
+
+    known = {"Paved.SetValue", "Paved.setValue", "Cache.Get", "Store.Get"}
+    assert resolve_entry_point(name, known, dotted) == expected
+
+
+def test_dotted_entry_points_keep_the_definition_name() -> None:
+    answer = _answer(public_entry_points=["SetValue", "Get", "ParseHeader"])
+    known = {"Paved.SetValue", "Cache.Get", "Store.Get"}
+    off = validate(answer, _render(), known)
+    assert (off.entry_points, off.entry_points_dropped) == (("ParseHeader",), ("Get", "SetValue"))
+    on = validate(answer, _render(), known, dotted_entry_points=True)
+    assert on.entry_points == ("ParseHeader", "Paved.SetValue")
+    assert on.entry_points_dropped == ("Get",)

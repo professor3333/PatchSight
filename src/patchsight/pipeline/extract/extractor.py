@@ -118,6 +118,7 @@ def extract(
     counter: TokenCounter,
     max_hunk_lines: int,
     max_candidates: int | None = None,
+    dotted_entry_points: bool = False,
 ) -> ExtractionOutcome:
     prompt = render(
         template, advisory, inputs, budget_tokens, counter, max_hunk_lines, max_candidates
@@ -156,7 +157,7 @@ def extract(
             continue
         responses.append(response)
         try:
-            result = validate(response.content, prompt, known_names)
+            result = validate(response.content, prompt, known_names, dotted_entry_points)
             break
         except ValidationFailedError as failure:
             if attempt == 0:

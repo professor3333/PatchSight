@@ -143,6 +143,7 @@ def run(
             counter,
             config.budget.max_hunk_lines,
             limit,
+            config.validation.dotted_entry_points,
         )
         outcomes.append(outcome)
         truth[report.id] = set(report.symbols)

@@ -1,0 +1,80 @@
+# Experiment E6 (docs/experiments.md): configs/llm.toml plus entry points resolved by a unique
+# dotted-boundary match (SetValue names Paved.SetValue). Validation only: prompts, and so
+# cached answers, are unchanged.
+# LLM providers and models for the offline pipeline. Changing a model here is a routine
+# change, but it must be followed by a full evaluation run before any release.
+
+[providers.groq]
+base_url = "https://api.groq.com/openai/v1"
+api_key_env = "GROQ_API_KEY"
+# Per model. Requests per day and tokens per minute measured 2026-11-14 from response
+# headers; tokens per day read from the Groq console by the owner on 2026-11-15.
+tokens_per_minute = 8000
+requests_per_day = 1000
+tokens_per_day = 200000
+# Found in a 413 response on 2026-11-15: input tokens per minute, which one request must fit.
+input_tokens_per_minute = 7000
+
+[models.extractor]
+provider = "groq"
+model = "qwen/qwen3.8-27b"
+max_output_tokens = 1500
+seed = 20261114
+# No chain-of-thought: Dunlap et al. found it about 13x slower for similar F1.
+extra = { reasoning_effort = "none" }
+
+[models.second_opinion]
+provider = "groq"
+model = "openai/gpt-oss-120b"
+# gpt-oss cannot disable reasoning, and its reasoning counts as output tokens. The same
+# output allowance as the extractor keeps every role's prompt budget, and so its prompts, equal.
+max_output_tokens = 1500
+seed = 20261114
+extra = { reasoning_effort = "low" }
+
+[providers.kaggle]
+# llama.cpp's llama-server on a Kaggle notebook with two T4 GPUs (notebooks/kaggle_full_run.ipynb).
+base_url = "http://127.0.0.1:8080/v1"
+api_key_env = "LLAMA_SERVER_KEY"
+# A local server has no provider quota. These values only bound one request; the budget
+# below then gives Kaggle and Groq identical prompts, so their results compare directly.
+tokens_per_minute = 1000000
+requests_per_day = 100000
+
+[models.kaggle_extractor]
+provider = "kaggle"
+# Model identity for caching and reports: weights repository, revision and quantisation.
+# Same base model as the Groq extractor, quantised to 4 bits (Q4_K_M, 19.4 GB).
+model = "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M"
+max_output_tokens = 1500
+seed = 20261114
+# llama.cpp switches Qwen's thinking mode off through the chat template.
+extra = { chat_template_kwargs = { enable_thinking = false } }
+
+[models.kaggle_second_opinion]
+provider = "kaggle"
+# Proposed second opinion for the PyPI backfill (ADR 0007, under evaluation): the same family
+# as the Groq second opinion, small enough for two T4s (MXFP4, 12.1 GB).
+model = "ggml-org/gpt-oss-20b-GGUF@41e8a94d:MXFP4"
+max_output_tokens = 1500
+seed = 20261114
+extra = { chat_template_kwargs = { reasoning_effort = "low" } }
+
+[budget]
+# Exact tokens, counted with the model's tokenizer. The effective limit per role is also
+# capped so the repair round fits the provider's limits (see LLMConfig.prompt_budget):
+# 8,000 - 2 x 1,500 - 400 = 4,600 on Groq. Kaggle uses the same value, so all roles and
+# both hosts see identical prompts.
+max_prompt_tokens = 4600
+# Longest hunk shown to the model; longer hunks are cut with a marker.
+max_hunk_lines = 80
+
+[tokenizer]
+# Qwen3.8's own tokenizer (shared by the Groq model and the Kaggle GGUF), pinned and
+# verified by SHA-256.
+repo = "Qwen/Qwen3.8-27B"
+revision = "37561816e66b5b9153b1b64c10968c18c1e6f4a0"
+sha256 = "0997f410c57a1f4e53b09e4be8f4a172d90edd9564368fb0847030937229b9f3"
+
+[validation]
+dotted_entry_points = true

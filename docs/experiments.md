@@ -17,8 +17,9 @@ Every controlled experiment on the extraction system, including the ones that lo
 | E1 | Serving: 4-bit self-hosted against hosted | Qwen3.8-27B Q4_K_M on Kaggle; `qwen/qwen3.8-27b` on Groq | Kaggle not worse; Groq less reliable | Decided: Kaggle for the backfill |
 | E2 | Extractor model family | Qwen3.8-27B; gpt-oss-120b | Qwen F1 0.676, gpt-oss 0.626 | Decided: Qwen extracts, gpt-oss is the second opinion |
 | E3 | Confidence rule | 3 agreement rules, with and without a public symbol | `subset` + public symbol | Decided on dev; declared test evaluation: high-confidence miss 7.0%, target 2% **not met** ([ADR 0004](adr/0004-fall-back-to-the-baseline.md)) |
-| E4 | Output-capacity cap | none; 105 output tokens per candidate | F1 unchanged; 1 more truncated report | Measured; adopt after the test evaluation |
+| E4 | Output-capacity cap | none; 105 output tokens per candidate | F1 unchanged; 1 more truncated report | Measured; switch on after the gpt-oss-20b evaluation ([#52](https://github.com/professor3333/PatchSight/issues/52)) |
 | E5 | Run-to-run determinism (self-hosted) | two full Kaggle runs, two days apart | 277 of 277 answers identical | Confirmed |
+| E6 | Entry-point name matching | exact names; a unique dotted-boundary match | dev high-confidence misses 1 of 27 to 0 of 27; F1 unchanged | Measured; switch on after the gpt-oss-20b evaluation, then evaluate on unseen data |
 
 ## E1: 4-bit self-hosted against hosted serving
 
@@ -136,8 +137,9 @@ could no longer be high confidence.
 
 **Decision.** Adopt it: it removes the failure behind the Kaggle run's only dead letter
 (`GO-2021-0053`, 24 candidates, both answers cut off at the output limit) at the cost of one
-more truncated dev report. It is switched on only after the declared test evaluation, so that
-evaluation keeps the setup it started with. In the PyPI backfill it changes 82 of 3,505 prompts.
+more truncated dev report. It is switched on only after the declared test evaluation (done) and
+the gpt-oss-20b evaluation (#50), so each keeps the setup it was declared with: the cap would
+truncate two dev reports there. In the PyPI backfill it changes 82 of 3,505 prompts.
 
 ## E5: Run-to-run determinism of self-hosted extraction
 
@@ -158,6 +160,46 @@ Provenance: [first run](reports/kaggle-run-extract-v1-qwen3.8-27b-q4km.json),
 
 **Decision.** None needed: self-hosted extraction is reproducible, so cached answers and
 re-runs agree. Hosted serving (Groq) was not tested for this.
+
+## E6: Entry points resolved on a dotted boundary
+
+**Question.** The validator keeps an entry point only when it names a definition exactly.
+Models often leave out the receiver (`SetValue` for `Paved.SetValue`) or add a package
+(`syscall.ForkExec`), and such names are dropped, so records lose the public names that reach
+the vulnerable code. Does accepting a name that matches exactly one definition on a dotted
+boundary help, and what does it cost?
+
+**Factor.** `validation.dotted_entry_points`
+([`configs/experiments/llm-dotted-entry-points.toml`](../configs/experiments/llm-dotted-entry-points.toml)).
+A name that matches several definitions is still dropped, and a resolved name is kept as the
+definition's own name. Only validation changes, not prompts, so both models' cached dev
+answers were re-validated with 0 model calls.
+
+| Dev, 60 reports, chosen rule | Entry points kept (Qwen, gpt-oss) | Recall (safety view) | Miss rate | High-confidence reports | High-confidence miss rate |
+|---|---|---|---|---|---|
+| Exact names only | 57, 48 | 0.864 | 8.3% | 27 (45%) | 3.7% (1 of 27) |
+| Unique dotted match | 59, 52 | 0.873 | 6.7% | 27 (45%) | **0.0%** (0 of 27; Wilson 95% 0.0% to 12.5%) |
+
+Six names were newly kept. From Qwen: `Parse` (`GO-2020-0014`) and `ForkExec` (`GO-2022-0289`).
+From gpt-oss: `Provider.Render` (`GO-2021-0086`), `linuxContainer.bootstrapData`
+(`GO-2022-0274`), `JsonWebSignature.Verify` (`GO-2022-0945`) and `Paved.SetValue`
+(`GO-2023-1623`). The last turns dev's only high-confidence miss into a hit. Benchmark-view F1
+is unchanged, because entry points don't count there (Qwen 0.676, gpt-oss 0.626).
+
+Reports: [Qwen](reports/extraction-dunlap-dev-extract-v1-qwen3.8-27b-q4km-dotted.md),
+[gpt-oss](reports/extraction-dunlap-dev-extract-v1-gpt-oss-120b-dotted.md),
+[confidence tiers](reports/confidence-dunlap-dev-extract-v1-qwen3.8-27b-q4km-vs-extract-v1-gpt-oss-120b-dotted.md)
+(`confidence-report --split dev --variant dotted`).
+
+**Caveat.** The change was designed around `GO-2023-1623`, a dev report, so fixing it on dev
+says little about other data.
+
+**Decision.** Adopt, in two steps. Switch it on together with the output cap (E4) after the
+gpt-oss-20b evaluation ([#50](https://github.com/professor3333/PatchSight/issues/50)), whose
+declared criteria compare against the 120b pairing measured with exact names. Then evaluate its
+effect on high confidence on data not used yet, the Go temporal holdout, as ADR 0004 requires of
+any change to the rule. For low-confidence records the change can only add names, which can only
+raise an alert's priority.
 
 ## Failure analysis
 

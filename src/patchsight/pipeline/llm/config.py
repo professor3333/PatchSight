@@ -42,6 +42,14 @@ class BudgetConfig(BaseModel):
     output_tokens_per_candidate: int | None = None
 
 
+class ValidationConfig(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
+    # Accept an entry point that matches no definition exactly but exactly one on a dotted
+    # boundary (``SetValue`` for ``Paved.SetValue``), kept as that definition's name.
+    dotted_entry_points: bool = False
+
+
 class LLMConfig(BaseModel):
     model_config = ConfigDict(frozen=True)
 
@@ -49,6 +57,7 @@ class LLMConfig(BaseModel):
     models: dict[str, ModelConfig]
     budget: BudgetConfig
     tokenizer: TokenizerConfig
+    validation: ValidationConfig = ValidationConfig()
 
     def prompt_budget(self, role: str) -> int:
         """Largest prompt, in exact tokens, that still fits the repair round under the caps.

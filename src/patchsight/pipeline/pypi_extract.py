@@ -237,7 +237,7 @@ def extract_vulnerability(
         outcome = extract(
             llm, config.models[role], template, advisory_text(group, by_id), inputs, known,
             config.prompt_budget(role), counter, config.budget.max_hunk_lines,
-            config.candidate_limit(role),
+            config.candidate_limit(role), config.validation.dotted_entry_points,
         )  # fmt: skip
     except ResponseNotCachedError:
         return "not_cached"  # cache-only replay of a run made elsewhere: never a model call

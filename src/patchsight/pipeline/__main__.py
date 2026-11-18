@@ -619,6 +619,13 @@ def confidence_report_command(
     primary: Annotated[str, typer.Option(help="Extractor run tag (replay bundle).")],
     secondary: Annotated[str, typer.Option(help="Second-opinion run tag (replay bundle).")],
     part: Annotated[str, typer.Option("--split", help="Split part: dev, test or all.")] = "dev",
+    variant: Annotated[
+        str | None,
+        typer.Option(
+            help="Experiment variant: read entry points from the reports ending in -VARIANT, "
+            "and write the report under that suffix."
+        ),
+    ] = None,
     root: Root = Path(),
 ) -> None:
     """Compare confidence rules, in the benchmark and safety views, from committed files."""
@@ -635,8 +642,9 @@ def confidence_report_command(
     for tag in (primary, secondary):
         run = replay.load(root / DUNLAP_BUNDLE.parent / f"extraction-{tag}.json")
         # Validated entry points come from the run's committed report (any part that has them).
+        suffix = f"{tag}-{variant}" if variant else tag
         entry: dict[str, frozenset[str]] = {}
-        for source in sorted(reports_dir.glob(f"extraction-dunlap-*-{tag}.json")):
+        for source in sorted(reports_dir.glob(f"extraction-dunlap-*-{suffix}.json")):
             for outcome in extraction.ExtractionRun.model_validate_json(
                 source.read_text("utf-8")
             ).outcomes:
@@ -678,6 +686,11 @@ def confidence_report_command(
         f"- Extractor: `{runs[primary][0]}` (`{primary}`)",
         f"- Second opinion: `{runs[secondary][0]}` (`{secondary}`)",
         f"- Split `{frozen.split.name}:{part}` (SHA-256 `{frozen.sha256}`), {len(first)} reports",
+        *(
+            [f"- Variant `{variant}`: entry points from the `-{variant}` extraction reports"]
+            if variant
+            else []
+        ),
         "",
         "Two views. The **benchmark view** compares function names exactly and ignores entry "
         "points, so it stays comparable with Dunlap et al. The **safety view** scores what the "
@@ -727,12 +740,13 @@ def confidence_report_command(
         reasons = ", ".join(f"{k} {v}" for k, v in r.low_reasons.items())
         lines.append(f"- `{r.rule}`{', public' if r.require_public else ''}: {reasons}")
     lines.append("")
-    target = reports_dir / f"confidence-dunlap-{part}-{primary}-vs-{secondary}"
+    name = f"confidence-dunlap-{part}-{primary}-vs-{secondary}" + (f"-{variant}" if variant else "")
+    target = reports_dir / name
     target.with_name(target.name + ".md").write_text("\n".join(lines), "utf-8")
     target.with_name(target.name + ".json").write_text(
         json.dumps([r.model_dump(mode="json") for r in results], indent=2) + "\n", "utf-8"
     )
-    typer.echo("\n".join(lines[10:]))
+    typer.echo("\n".join(lines[10 + bool(variant) :]))
 
 
 @app.command("parity-report")

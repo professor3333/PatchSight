@@ -4,7 +4,10 @@
 * Every candidate gets exactly one judgement. Unknown IDs are counted as invented.
 * Every vulnerable judgement cites at least one hunk, and every cited hunk must be shown
   under that candidate.
-* Entry points survive only if they name a definition known from the fetched source.
+* Entry points survive only if they name a definition known from the fetched source:
+  exactly, or, when ``dotted`` is on, by matching exactly one definition on a dotted boundary
+  (``SetValue`` names ``Paved.SetValue``; ``yaml.load`` names ``load``). An ambiguous name is
+  dropped. A resolved entry point is kept as the definition's own name.
 """
 
 import json
@@ -13,6 +16,7 @@ from collections.abc import Set
 
 from pydantic import BaseModel, ConfigDict, ValidationError
 
+from patchsight.eval.safety import lenient_match
 from patchsight.pipeline.extract.prompt import RenderedPrompt
 from patchsight.pipeline.extract.schema import Extraction
 
@@ -34,7 +38,19 @@ class ValidatedExtraction(BaseModel):
     entry_points_dropped: tuple[str, ...]
 
 
-def validate(content: str, prompt: RenderedPrompt, known_names: Set[str]) -> ValidatedExtraction:
+def resolve_entry_point(name: str, allowed: Set[str], dotted: bool) -> str | None:
+    """The definition an entry point names, or None when it names none (or several)."""
+    if name in allowed:
+        return name
+    if not dotted:
+        return None
+    matches = [d for d in allowed if lenient_match(name, d)]
+    return matches[0] if len(matches) == 1 else None
+
+
+def validate(
+    content: str, prompt: RenderedPrompt, known_names: Set[str], dotted_entry_points: bool = False
+) -> ValidatedExtraction:
     try:
         extraction = Extraction.model_validate(json.loads(content))
     except (json.JSONDecodeError, ValidationError) as error:
@@ -69,8 +85,12 @@ def validate(content: str, prompt: RenderedPrompt, known_names: Set[str]) -> Val
         raise ValidationFailedError(errors, len(invented))
 
     allowed = set(known_names) | {c.name for c in prompt.candidates}
-    kept = tuple(sorted({e for e in extraction.public_entry_points if e in allowed}))
-    dropped = tuple(sorted({e for e in extraction.public_entry_points if e not in allowed}))
+    resolved = {
+        e: resolve_entry_point(e, allowed, dotted_entry_points)
+        for e in extraction.public_entry_points
+    }
+    kept = tuple(sorted({d for d in resolved.values() if d is not None}))
+    dropped = tuple(sorted({e for e, d in resolved.items() if d is None}))
     judged = {item.candidate_id: item for item in extraction.items}
     return ValidatedExtraction(
         vulnerable_ids=tuple(c.id for c in prompt.candidates if judged[c.id].is_vulnerable),

@@ -1,0 +1,3111 @@
+{
+  "name": "masked-v1",
+  "seed": 20261118,
+  "snapshot_sha256": "1de5d3c1dfe3e61366562dc984b533325d23b992b25f0840f3fbdd0d60050bf2",
+  "eligible": 4416,
+  "cases": [
+    {
+      "vulnerability": "GHSA-p5w8-wqhj-9hhf",
+      "advisory_ids": [
+        "GHSA-p5w8-wqhj-9hhf",
+        "PYSEC-2021-333"
+      ],
+      "package": "sqlparse",
+      "repo": "andialbrecht/sqlparse",
+      "fixed": [
+        "0.4.2"
+      ],
+      "truth": [
+        "8238a9e450ed1524e40cb3a8b0b3c00606903aeb"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-2g87-pp6c-29x5",
+      "advisory_ids": [
+        "GHSA-2g87-pp6c-29x5"
+      ],
+      "package": "aiohttp",
+      "repo": "aio-libs/aiohttp",
+      "fixed": [
+        "3.14.4"
+      ],
+      "truth": [
+        "09bcaa73ff084a0c539bbf16a0a78743acb7141f",
+        "0ae507423f681161efa77d20052b4054397c7fb6",
+        "3d850ee9b92573c7e913821cbcb96005beb3f4df",
+        "47babd8c23ca79e2bae6cc8dcb5752b61e369fc7",
+        "615fec3d4f088f30d2ee72cad760152e92aa1c53",
+        "6963ee0befec1502b6bb7b4db6c72d044c08f4fa",
+        "6a4f6682817839313b04b8e5cea2b39c1a88ab4f",
+        "8cfbe9abe5e11b84006a10f9bdf82bf607671dab",
+        "a555ab698e08e9baea7386d5b4c0761cb8956fdd",
+        "c6ac0e44c3c573ff9616f4a6a532992538b31e43",
+        "d925a80539ffd227da1d93ab4a5bff123cc777db"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-cpcw-p965-wpqx",
+      "advisory_ids": [
+        "GHSA-cpcw-p965-wpqx",
+        "PYSEC-2020-250"
+      ],
+      "package": "rtslib-fb",
+      "repo": "open-iscsi/rtslib-fb",
+      "fixed": [
+        "2.1.73"
+      ],
+      "truth": [
+        "b23d061ee0fa7924d2cdce6194c313b9ee06c468"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-59qj-jcjv-662j",
+      "advisory_ids": [
+        "GHSA-59qj-jcjv-662j",
+        "PYSEC-2024-125"
+      ],
+      "package": "dirac",
+      "repo": "diracgrid/dirac",
+      "fixed": [
+        "8.0.37"
+      ],
+      "truth": [
+        "9487921684e2925b4cf72d6c423718cf4950f3fe",
+        "f9ddab755b9a69acb85e14d2db851d8ac0c9648c"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-55x5-fj6c-h6m8",
+      "advisory_ids": [
+        "GHSA-55x5-fj6c-h6m8",
+        "PYSEC-2021-852"
+      ],
+      "package": "lxml",
+      "repo": "lxml/lxml",
+      "fixed": [
+        "4.6.5"
+      ],
+      "truth": [
+        "12fa9669007180a7bb87d990c375cf91ca5b664a",
+        "a3eacbc0dcf1de1c822ec29fb7d090a4b1712a9c",
+        "f2330237440df7e8f39c3ad1b1aa8852be3b27c0"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-3gf5-cxq9-w223",
+      "advisory_ids": [
+        "GHSA-3gf5-cxq9-w223"
+      ],
+      "package": "picklescan",
+      "repo": "mmaitre314/picklescan",
+      "fixed": [
+        "0.0.30"
+      ],
+      "truth": [
+        "1931c2d04eaca8d20597705ff39cab78ba364e4b"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-m6h2-jx9v-58w6",
+      "advisory_ids": [
+        "GHSA-m6h2-jx9v-58w6",
+        "PYSEC-2021-122"
+      ],
+      "package": "apache-airflow",
+      "repo": "apache/airflow",
+      "fixed": [
+        "2.1.2"
+      ],
+      "truth": [
+        "27265516d2b897585f5019ecd820cfe5471fd351",
+        "7a5bb88ad78d600fbb1676a55752597928115bd8",
+        "d772f38f843b9add5319a01cf51a844145b01f63"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-8m59-7xv8-735h",
+      "advisory_ids": [
+        "GHSA-8m59-7xv8-735h",
+        "PYSEC-2026-2619"
+      ],
+      "package": "marimo",
+      "repo": "marimo-team/marimo",
+      "fixed": [
+        "0.23.9"
+      ],
+      "truth": [
+        "fdd55c8cf6260ae23bb411dc9d9269def5cf75d6"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-vxmm-cwh2-q762",
+      "advisory_ids": [
+        "GHSA-vxmm-cwh2-q762",
+        "PYSEC-2023-80"
+      ],
+      "package": "vyper",
+      "repo": "vyperlang/vyper",
+      "fixed": [
+        "0.3.8"
+      ],
+      "truth": [
+        "02339dfda0f3caabad142060d511d10bfe93c520",
+        "903727006c1e5ebef99fa9fd5d51d62bd33d72a9"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-hf3c-wxg2-49q9",
+      "advisory_ids": [
+        "GHSA-hf3c-wxg2-49q9"
+      ],
+      "package": "vllm",
+      "repo": "vllm-project/vllm",
+      "fixed": [
+        "0.8.4"
+      ],
+      "truth": [
+        "cb84e45ac75b42ba6795145923e8eb323bb825ad"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-vv4j-m4vr-f3g6",
+      "advisory_ids": [
+        "GHSA-vv4j-m4vr-f3g6",
+        "PYSEC-2026-3834"
+      ],
+      "package": "esphome-device-builder",
+      "repo": "esphome/device-builder",
+      "fixed": [
+        "1.0.10"
+      ],
+      "truth": [
+        "b6387db3f8bf1d3df5771f40e9856b959ae4f6a1"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-45c4-8wx5-qw6w",
+      "advisory_ids": [
+        "GHSA-45c4-8wx5-qw6w",
+        "PYSEC-2023-120"
+      ],
+      "package": "aiohttp",
+      "repo": "aio-libs/aiohttp",
+      "fixed": [
+        "3.8.5"
+      ],
+      "truth": [
+        "9337fb3f2ab2b5f38d7e98a194bde6f7e3d16c40",
+        "9c13a52c21c23dfdb49ed89418d28a5b116d0681"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-wr9v-g9vf-c74v",
+      "advisory_ids": [
+        "GHSA-wr9v-g9vf-c74v",
+        "PYSEC-2026-938"
+      ],
+      "package": "tensorflow",
+      "repo": "tensorflow/tensorflow",
+      "fixed": [
+        "2.7.2",
+        "2.8.1",
+        "2.9.1"
+      ],
+      "truth": [
+        "7a4591fd4f065f4fa903593bc39b2f79530a74b8"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-mf9w-mj56-hr94",
+      "advisory_ids": [
+        "GHSA-mf9w-mj56-hr94",
+        "PYSEC-2026-2270"
+      ],
+      "package": "python-dotenv",
+      "repo": "theskumar/python-dotenv",
+      "fixed": [
+        "1.2.2"
+      ],
+      "truth": [
+        "790c5c02991100aa1bf41ee5330aca75edc51311"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-gfw2-4jvh-wgfg",
+      "advisory_ids": [
+        "GHSA-gfw2-4jvh-wgfg",
+        "PYSEC-2023-246"
+      ],
+      "package": "aiohttp",
+      "repo": "aio-libs/aiohttp",
+      "fixed": [
+        "3.8.6"
+      ],
+      "truth": [
+        "d5c12ba890557a575c313bb3017910d7616fce3d"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-9c4x-gm8v-wgc4",
+      "advisory_ids": [
+        "GHSA-9c4x-gm8v-wgc4"
+      ],
+      "package": "filelock",
+      "repo": "tox-dev/filelock",
+      "fixed": [
+        "4.2.1"
+      ],
+      "truth": [
+        "bfa066d65a1ba9106f86ee9d027f7588b9c77e03"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-j92p-c242-7hfx",
+      "advisory_ids": [
+        "GHSA-j92p-c242-7hfx",
+        "PYSEC-2026-4292"
+      ],
+      "package": "pyload-ng",
+      "repo": "pyload/pyload",
+      "fixed": [
+        "0.5.0b3.dev101"
+      ],
+      "truth": [
+        "e80c940cd604e60d93e3164429d4fc4aac54468d"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-pqhf-p39g-3x64",
+      "advisory_ids": [
+        "GHSA-pqhf-p39g-3x64",
+        "PYSEC-2026-2295"
+      ],
+      "package": "uv",
+      "repo": "astral-sh/uv",
+      "fixed": [
+        "0.9.6"
+      ],
+      "truth": [
+        "da659fee4898a73dbc75070f3e82d49f745e4628"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-x88j-93vc-wpmp",
+      "advisory_ids": [
+        "GHSA-x88j-93vc-wpmp",
+        "PYSEC-2011-1"
+      ],
+      "package": "django",
+      "repo": "django/django",
+      "fixed": [
+        "1.2.7",
+        "1.3.1"
+      ],
+      "truth": [
+        "ac7c3a110f906e4dfed3a17451bf7fd9fcb81296",
+        "fbe2eead2fa9d808658ca582241bcacb02618840"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-w7rv-gfp4-j9j3",
+      "advisory_ids": [
+        "GHSA-w7rv-gfp4-j9j3",
+        "PYSEC-2026-2279"
+      ],
+      "package": "slippers",
+      "repo": "mixxorz/slippers",
+      "fixed": [
+        "0.6.3"
+      ],
+      "truth": [
+        "16cc4ef4fa8ad2f7aee30798f16c3e7b653423b2"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-vmhf-c436-hxj4",
+      "advisory_ids": [
+        "GHSA-vmhf-c436-hxj4"
+      ],
+      "package": "jupyterlab",
+      "repo": "jupyterlab/jupyterlab",
+      "fixed": [
+        "4.5.9"
+      ],
+      "truth": [
+        "4e61e07d0a91145b53fbf96ac74b0387f6bc51f6",
+        "d5d961f6e10a6442dddbf94d9a976b3897055a12"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-qqcv-vg9f-5rr3",
+      "advisory_ids": [
+        "GHSA-qqcv-vg9f-5rr3",
+        "PYSEC-2026-1551"
+      ],
+      "package": "litellm",
+      "repo": "berriai/litellm",
+      "fixed": [
+        "1.40.15"
+      ],
+      "truth": [
+        "da3ae00bd68f451ed8ddf0bc0a9fd34bde5554d6"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-69w3-r845-3855",
+      "advisory_ids": [
+        "GHSA-69w3-r845-3855",
+        "PYSEC-2026-2288"
+      ],
+      "package": "transformers",
+      "repo": "huggingface/transformers",
+      "fixed": [
+        "5.0.0",
+        "5.0.0rc3"
+      ],
+      "truth": [
+        "03c8082ba4594c9b8d6fe190ca9bed0e5f8ca396"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-mq26-g339-26xf",
+      "advisory_ids": [
+        "GHSA-mq26-g339-26xf",
+        "PYSEC-2023-228"
+      ],
+      "package": "pip",
+      "repo": "pypa/pip",
+      "fixed": [
+        "23.3"
+      ],
+      "truth": [
+        "389cb799d0da9a840749fcd14878928467ed49b4"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-vqxf-v2gg-x3hc",
+      "advisory_ids": [
+        "GHSA-vqxf-v2gg-x3hc",
+        "PYSEC-2026-1313"
+      ],
+      "package": "docling-core",
+      "repo": "docling-project/docling-core",
+      "fixed": [
+        "2.48.4"
+      ],
+      "truth": [
+        "3e8d628eeeae50f0f8f239c8c7fea773d065d80c"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-f3h9-8phc-6gvh",
+      "advisory_ids": [
+        "GHSA-f3h9-8phc-6gvh",
+        "PYSEC-2024-261"
+      ],
+      "package": "gradio",
+      "repo": "gradio-app/gradio",
+      "fixed": [
+        "4.9.0"
+      ],
+      "truth": [
+        "d76bcaaaf0734aaf49a680f94ea9d4d22a602e70"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-jg86-v3jv-hrpm",
+      "advisory_ids": [
+        "GHSA-jg86-v3jv-hrpm"
+      ],
+      "package": "pillow",
+      "repo": "python-pillow/pillow",
+      "fixed": [
+        "13.0.0"
+      ],
+      "truth": [
+        "f6a852555f1a1bdff7781abf25f1a3b8bd6ce6cb"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-47wv-vhj2-g66m",
+      "advisory_ids": [
+        "GHSA-47wv-vhj2-g66m",
+        "PYSEC-2022-175"
+      ],
+      "package": "horovod",
+      "repo": "horovod/horovod",
+      "fixed": [
+        "0.24.0"
+      ],
+      "truth": [
+        "b96ecae4dc69fc0a83c7c2d3f1dde600c20a1b41"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-8j24-cjrq-gr2m",
+      "advisory_ids": [
+        "GHSA-8j24-cjrq-gr2m",
+        "PYSEC-2025-37"
+      ],
+      "package": "django",
+      "repo": "django/django",
+      "fixed": [
+        "4.2.21",
+        "5.1.9",
+        "5.2.1"
+      ],
+      "truth": [
+        "9f3419b519799d69f2aba70b9d25abe2e70d03e0"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-fvww-7h3r-vfhp",
+      "advisory_ids": [
+        "GHSA-fvww-7h3r-vfhp",
+        "PYSEC-2026-4240"
+      ],
+      "package": "langgraph-sdk",
+      "repo": "langchain-ai/langgraph",
+      "fixed": [
+        "0.4.4"
+      ],
+      "truth": [
+        "5a77be5e8bec1600ad0a865638d88c1368497559"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-vx5f-957p-qpvm",
+      "advisory_ids": [
+        "GHSA-vx5f-957p-qpvm",
+        "PYSEC-2026-2172"
+      ],
+      "package": "glances",
+      "repo": "nicolargo/glances",
+      "fixed": [
+        "4.5.2"
+      ],
+      "truth": [
+        "61d38eec521703e41e4933d18d5a5ef6f854abd5"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-gv5h-5655-h4mv",
+      "advisory_ids": [
+        "GHSA-gv5h-5655-h4mv"
+      ],
+      "package": "django-cms",
+      "repo": "django-cms/django-cms",
+      "fixed": [
+        "3.11.9",
+        "4.1.4"
+      ],
+      "truth": [
+        "241d1cbe47a68f5d271ce4d27ad5e32e2c360ec3"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-j47q-rc62-w448",
+      "advisory_ids": [
+        "GHSA-j47q-rc62-w448",
+        "PYSEC-2026-1359"
+      ],
+      "package": "fastapi-guard",
+      "repo": "guard-core/fastapi-guard",
+      "fixed": [
+        "3.0.1"
+      ],
+      "truth": [
+        "d9d50e8130b7b434cdc1b001b8cfd03a06729f7f"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-rcrv-228c-gprj",
+      "advisory_ids": [
+        "GHSA-rcrv-228c-gprj"
+      ],
+      "package": "bitlyshortener",
+      "repo": "impredicative/bitlyshortener",
+      "fixed": [
+        "0.6.0"
+      ],
+      "truth": [
+        "b307d70bedf745305fa0dd3c5c600d8cb88d09b5"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-74xw-82v7-hmrm",
+      "advisory_ids": [
+        "GHSA-74xw-82v7-hmrm",
+        "PYSEC-2019-155"
+      ],
+      "package": "python-dbusmock",
+      "repo": "martinpitt/python-dbusmock",
+      "fixed": [
+        "0.15.1"
+      ],
+      "truth": [
+        "4e7d0df9093"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-cxfr-5q3r-2rc2",
+      "advisory_ids": [
+        "GHSA-cxfr-5q3r-2rc2",
+        "PYSEC-2023-281"
+      ],
+      "package": "mlflow",
+      "repo": "mlflow/mlflow",
+      "fixed": [
+        "2.9.2"
+      ],
+      "truth": [
+        "432b8ccf27fd3a76df4ba79bb1bec62118a85625"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-fc9g-5qg7-mf45",
+      "advisory_ids": [
+        "GHSA-fc9g-5qg7-mf45"
+      ],
+      "package": "pillow",
+      "repo": "python-pillow/pillow",
+      "fixed": [
+        "13.0.0"
+      ],
+      "truth": [
+        "68a3fe957d8a4d552e8c69d96066d749f0614c7e"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-vq8p-m3wm-gv5f",
+      "advisory_ids": [
+        "GHSA-vq8p-m3wm-gv5f",
+        "PYSEC-2026-4293"
+      ],
+      "package": "pyload-ng",
+      "repo": "pyload/pyload",
+      "fixed": [
+        "0.5.0b3.dev101"
+      ],
+      "truth": [
+        "461cd66f30fa9e96453fb4d8c5c47467e452363c"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-m269-wj6g-c459",
+      "advisory_ids": [
+        "GHSA-m269-wj6g-c459",
+        "PYSEC-2017-67"
+      ],
+      "package": "pysaml2",
+      "repo": "identitypython/pysaml2",
+      "fixed": [
+        "4.5.0"
+      ],
+      "truth": [
+        "6e09a25d9b4b7aa7a506853210a9a14100b8bc9b"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-gx64-gj6p-pc4c",
+      "advisory_ids": [
+        "GHSA-gx64-gj6p-pc4c",
+        "PYSEC-2026-3671"
+      ],
+      "package": "jupyterlab",
+      "repo": "jupyterlab/jupyterlab",
+      "fixed": [
+        "4.5.10",
+        "4.6.2"
+      ],
+      "truth": [
+        "be9303f5bcd5308eaeae953c5a3c903046682c2c",
+        "f1beab4a2027af4719d6edc07d52d6cf5a39a432"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-58r4-6rv3-gfh8",
+      "advisory_ids": [
+        "GHSA-58r4-6rv3-gfh8",
+        "PYSEC-2026-4329"
+      ],
+      "package": "pillow",
+      "repo": "python-pillow/pillow",
+      "fixed": [
+        "13.0.0"
+      ],
+      "truth": [
+        "18f7c0dfee93063c51db6ed0ca8c4da2999dcb64"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-3h9f-r86x-qvjx",
+      "advisory_ids": [
+        "GHSA-3h9f-r86x-qvjx",
+        "PYSEC-2026-2090"
+      ],
+      "package": "django",
+      "repo": "django/django",
+      "fixed": [
+        "5.2.16",
+        "6.0.7"
+      ],
+      "truth": [
+        "64f9a2b2283fde3ec69fb0dfe441cf0f6f411ba3",
+        "6e365f8d01f2ba0bbd90968d76a42600fb8bc4b1",
+        "721685aa7799cc9327bd202cd1f70bd012ca95a7"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-f54q-j679-p9hh",
+      "advisory_ids": [
+        "GHSA-f54q-j679-p9hh",
+        "PYSEC-2023-132"
+      ],
+      "package": "copyparty",
+      "repo": "9001/copyparty",
+      "fixed": [
+        "1.8.7"
+      ],
+      "truth": [
+        "007d948cb982daa05bc6619cd20ee55b7e834c38"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-22m3-c7vp-49fj",
+      "advisory_ids": [
+        "GHSA-22m3-c7vp-49fj",
+        "PYSEC-2026-2186"
+      ],
+      "package": "irrd",
+      "repo": "irrdnet/irrd",
+      "fixed": [
+        "4.4.5",
+        "4.5.1"
+      ],
+      "truth": [
+        "8408e0f1b9f47eb2f2e712d6153e32194df05fbb",
+        "cf62df4a49d3891e80b2879d9b324d1af050000c"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-7mpr-5m44-h73r",
+      "advisory_ids": [
+        "GHSA-7mpr-5m44-h73r",
+        "PYSEC-2026-1604"
+      ],
+      "package": "markdownify",
+      "repo": "matthewwithanm/python-markdownify",
+      "fixed": [
+        "0.14.1"
+      ],
+      "truth": [
+        "959561879693bf4a576f99c6733b50b01186aa08"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-hmq2-w58f-27jc",
+      "advisory_ids": [
+        "GHSA-hmq2-w58f-27jc",
+        "PYSEC-2026-3784"
+      ],
+      "package": "gitpython",
+      "repo": "gitpython-developers/gitpython",
+      "fixed": [
+        "3.1.58"
+      ],
+      "truth": [
+        "4299c990e1ca21896f9485277caf7bb0ae5b404c",
+        "e4b8e7d026ca6abb4cf604f8e77093432ce23c06"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-8988-9cw3-xx77",
+      "advisory_ids": [
+        "GHSA-8988-9cw3-xx77",
+        "PYSEC-2026-4175"
+      ],
+      "package": "urllib3",
+      "repo": "urllib3/urllib3",
+      "fixed": [
+        "2.8.0"
+      ],
+      "truth": [
+        "07408cec79d1856d81bb42c74a904a24fdb9e465",
+        "b6447295fff7b38fdffc67e0df9712d60cef3cc3"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-f9xw-jh8m-3mwq",
+      "advisory_ids": [
+        "GHSA-f9xw-jh8m-3mwq"
+      ],
+      "package": "aiohttp",
+      "repo": "aio-libs/aiohttp",
+      "fixed": [
+        "3.14.4"
+      ],
+      "truth": [
+        "6d4e7b01f9b951aa084a75d7356e907d4ee80411"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-hrfv-mqp8-q5rw",
+      "advisory_ids": [
+        "GHSA-hrfv-mqp8-q5rw",
+        "PYSEC-2023-221"
+      ],
+      "package": "werkzeug",
+      "repo": "pallets/werkzeug",
+      "fixed": [
+        "2.3.8",
+        "3.0.1"
+      ],
+      "truth": [
+        "b1916c0c083e0be1c9d887ee2f3d696922bfc5c1",
+        "cbb446fdcada7685fce936ded01b76c08dbd6eb5",
+        "f2300208d5e2a5076cbbb4c2aad71096fd040ef9",
+        "f3c803b3ade485a45f12b6d6617595350c0f03e2"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-4qqq-9vqf-3h3f",
+      "advisory_ids": [
+        "GHSA-4qqq-9vqf-3h3f",
+        "PYSEC-2024-258"
+      ],
+      "package": "scrapy",
+      "repo": "scrapy/scrapy",
+      "fixed": [
+        "2.0.0",
+        "2.11.2"
+      ],
+      "truth": [
+        "1d0502f25bbe55a22899af915623fda1aaeb9dd8"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-f8xq-q7px-wg8c",
+      "advisory_ids": [
+        "GHSA-f8xq-q7px-wg8c",
+        "PYSEC-2022-229"
+      ],
+      "package": "gradio",
+      "repo": "gradio-app/gradio",
+      "fixed": [
+        "2.8.11"
+      ],
+      "truth": [
+        "80fea89117358ee105973453fdc402398ae20239"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-xq59-7jf3-rjc6",
+      "advisory_ids": [
+        "GHSA-xq59-7jf3-rjc6",
+        "PYSEC-2023-241"
+      ],
+      "package": "piccolo",
+      "repo": "piccolo-orm/piccolo",
+      "fixed": [
+        "1.1.1"
+      ],
+      "truth": [
+        "82679eb8cd1449cf31d87c9914a072e70168b6eb"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-m842-4qm8-7gpq",
+      "advisory_ids": [
+        "GHSA-m842-4qm8-7gpq",
+        "PYSEC-2026-345"
+      ],
+      "package": "gradio",
+      "repo": "gradio-app/gradio",
+      "fixed": [
+        "4.19.2"
+      ],
+      "truth": [
+        "16fbe9cd0cffa9f2a824a0165beb43446114eec7"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-5jqp-qgf6-3pvh",
+      "advisory_ids": [
+        "GHSA-5jqp-qgf6-3pvh",
+        "PYSEC-2021-47"
+      ],
+      "package": "pydantic",
+      "repo": "pydantic/pydantic",
+      "fixed": [
+        "1.6.2",
+        "1.7.4",
+        "1.8.2"
+      ],
+      "truth": [
+        "1c24f1d74ba95ea985b50bdc001ce96c813229aa",
+        "80e0dd3f752bef145dce12f160d262bb40ec8d47",
+        "bdde15b7b947c94ca00fd6eb92da8db390a13520",
+        "7e83fdd2563ffac081db7ecdf1affa65ef38c468"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-p99v-5w3c-jqq9",
+      "advisory_ids": [
+        "GHSA-p99v-5w3c-jqq9",
+        "PYSEC-2021-99"
+      ],
+      "package": "django",
+      "repo": "django/django",
+      "fixed": [
+        "2.2.24",
+        "3.1.12",
+        "3.2.4"
+      ],
+      "truth": [
+        "203d4ab9ebcd72fc4d6eb7398e66ed9e474e118e",
+        "9f75e2e562fa0c0482f3dde6fc7399a9070b4a3d",
+        "f27c38ab5d90f68c9dd60cabef248a570c0be8fc"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-jw8x-6495-233v",
+      "advisory_ids": [
+        "GHSA-jw8x-6495-233v",
+        "PYSEC-2024-110"
+      ],
+      "package": "scikit-learn",
+      "repo": "scikit-learn/scikit-learn",
+      "fixed": [
+        "1.5.0"
+      ],
+      "truth": [
+        "70ca21f106b603b611da73012c9ade7cd8e438b8"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-3m3h-v9hv-9j4h",
+      "advisory_ids": [
+        "GHSA-3m3h-v9hv-9j4h",
+        "PYSEC-2021-850"
+      ],
+      "package": "wiki",
+      "repo": "django-wiki/django-wiki",
+      "fixed": [
+        "0.7.9"
+      ],
+      "truth": [
+        "9eaccc7519e4206a4d2f22640882f0737b2da9c5"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-j3j3-jrfh-cm2w",
+      "advisory_ids": [
+        "GHSA-j3j3-jrfh-cm2w",
+        "PYSEC-2015-18"
+      ],
+      "package": "django",
+      "repo": "django/django",
+      "fixed": [
+        "1.6.11",
+        "1.7.7",
+        "1.8rc1"
+      ],
+      "truth": [
+        "5447709a571cd5d95971f1d5d21d4a7edcf85bbd",
+        "b6b3cb9899214a23ebb0f4ebf0e0b300b0ee524f",
+        "e63363f8e075fa8d66326ad6a1cc3391cc95cd97"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-h5cg-53g7-gqjw",
+      "advisory_ids": [
+        "GHSA-h5cg-53g7-gqjw",
+        "PYSEC-2024-44"
+      ],
+      "package": "rpyc",
+      "repo": "tomerfiliba-org/rpyc",
+      "fixed": [
+        "6.0.0"
+      ],
+      "truth": [
+        "9f45f8269d4106905db61d82cd529cacdb178911",
+        "bba1d3562e6f9f1256ec64048cc23001c0bb7516"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-c6mm-2g84-v4m7",
+      "advisory_ids": [
+        "GHSA-c6mm-2g84-v4m7",
+        "PYSEC-2023-64"
+      ],
+      "package": "mage-ai",
+      "repo": "mage-ai/mage-ai",
+      "fixed": [
+        "0.8.72"
+      ],
+      "truth": [
+        "f63cd00f6a3be372397d37a4c9a49bfaf50d7650"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-whr6-fgpq-fpv9",
+      "advisory_ids": [
+        "GHSA-whr6-fgpq-fpv9"
+      ],
+      "package": "compose-lint",
+      "repo": "tmatens/compose-lint",
+      "fixed": [
+        "0.25.0"
+      ],
+      "truth": [
+        "cb12b5313ff1fb182ff3c832b41ff3d574a68c6b",
+        "364814329417dbbc34d1ad2f3981f8a7a023799e"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-7984-qgvg-3j9c",
+      "advisory_ids": [
+        "GHSA-7984-qgvg-3j9c"
+      ],
+      "package": "oauthlib",
+      "repo": "oauthlib/oauthlib",
+      "fixed": [
+        "4.0.0"
+      ],
+      "truth": [
+        "c951a1d09f99f14e3240973fa83c4f4287d4753d"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-r44w-v6gf-x3p6",
+      "advisory_ids": [
+        "GHSA-r44w-v6gf-x3p6"
+      ],
+      "package": "pyload-ng",
+      "repo": "pyload/pyload",
+      "fixed": [
+        "0.5.0b3.dev101"
+      ],
+      "truth": [
+        "00d1372510f915f843b1574a3f1b28fbb724a42e"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-rw75-m7gp-92m3",
+      "advisory_ids": [
+        "GHSA-rw75-m7gp-92m3",
+        "PYSEC-2014-7"
+      ],
+      "package": "django",
+      "repo": "django/django",
+      "fixed": [
+        "1.4.14",
+        "1.5.9",
+        "1.6.6",
+        "1.7rc3"
+      ],
+      "truth": [
+        "027bd348642007617518379f8b02546abacaa6e0",
+        "2a446c896e7c814661fb9c4f212b071b2a7fa446",
+        "2b31342cdf14fc20e07c43d258f1e7334ad664a6",
+        "f7c494f2506250b8cb5923714360a3642ed63e0f"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-q63x-9pfm-mjx4",
+      "advisory_ids": [
+        "GHSA-q63x-9pfm-mjx4"
+      ],
+      "package": "feast",
+      "repo": "feast-dev/feast",
+      "fixed": [
+        "0.63.0"
+      ],
+      "truth": [
+        "835cda8e2c1359f1f496ad72701dbd6a73bdb25a"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-qm57-vhq3-3fwf",
+      "advisory_ids": [
+        "GHSA-qm57-vhq3-3fwf",
+        "PYSEC-2021-8"
+      ],
+      "package": "django",
+      "repo": "django/django",
+      "fixed": [
+        "2.2.22",
+        "3.1.10",
+        "3.2.2"
+      ],
+      "truth": [
+        "e1e81aa1c4427411e3c68facdd761229ffea6f6f"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-c2jg-hw38-jrqq",
+      "advisory_ids": [
+        "GHSA-c2jg-hw38-jrqq",
+        "PYSEC-2022-195"
+      ],
+      "package": "twisted",
+      "repo": "twisted/twisted",
+      "fixed": [
+        "22.4.0"
+      ],
+      "truth": [
+        "592217e951363d60e9cd99c5bbfd23d4615043ac"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-q7q2-qf2q-rw3w",
+      "advisory_ids": [
+        "GHSA-q7q2-qf2q-rw3w",
+        "PYSEC-2014-19"
+      ],
+      "package": "django",
+      "repo": "django/django",
+      "fixed": [
+        "1.4.13",
+        "1.5.8",
+        "1.6.5",
+        "1.7b4"
+      ],
+      "truth": [
+        "1abcf3a808b35abae5d425ed4d44cb6e886dc769",
+        "28e23306aa53bbbb8fb87db85f99d970b051026c",
+        "4001ec8698f577b973c5a540801d8a0bbea1205b"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-57fc-8q82-gfp3",
+      "advisory_ids": [
+        "GHSA-57fc-8q82-gfp3",
+        "PYSEC-2023-109"
+      ],
+      "package": "langchain",
+      "repo": "langchain-ai/langchain",
+      "fixed": [
+        "0.0.247"
+      ],
+      "truth": [
+        "e294ba475a355feb95003ed8f1a2b99942509a9e"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-8rj5-2857-877j",
+      "advisory_ids": [
+        "GHSA-8rj5-2857-877j",
+        "PYSEC-2023-149"
+      ],
+      "package": "json2xml",
+      "repo": "vinitkumar/json2xml",
+      "fixed": [
+        "3.14.0"
+      ],
+      "truth": [
+        "a9cd75b61329801b47a8fba7473bce6c85a38b9b"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-v9v9-xffq-rwr4",
+      "advisory_ids": [
+        "GHSA-v9v9-xffq-rwr4",
+        "PYSEC-2017-14"
+      ],
+      "package": "html5lib",
+      "repo": "html5lib/html5lib-python",
+      "fixed": [
+        "0.999999999"
+      ],
+      "truth": [
+        "9b8d8eb5afbc066b7fac9390f5ec75e5e8a7cab7"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-grjp-54v3-c442",
+      "advisory_ids": [
+        "GHSA-grjp-54v3-c442"
+      ],
+      "package": "usd-core",
+      "repo": "pixaranimationstudios/openusd",
+      "fixed": [
+        "25.11"
+      ],
+      "truth": [
+        "b9530922b6a8ea72cd43661226b693fff8abbe4c"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-xjhm-gp88-8pfx",
+      "advisory_ids": [
+        "GHSA-xjhm-gp88-8pfx",
+        "PYSEC-2026-1274"
+      ],
+      "package": "copier",
+      "repo": "copier-org/copier",
+      "fixed": [
+        "9.11.2"
+      ],
+      "truth": [
+        "b3a7b3772d17cf0e7a4481978188c9f536c8d8f6"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-6p6v-m64v-jx8q",
+      "advisory_ids": [
+        "GHSA-6p6v-m64v-jx8q",
+        "PYSEC-2025-184"
+      ],
+      "package": "pyspark",
+      "repo": "apache/spark",
+      "fixed": [
+        "3.4.4",
+        "3.5.2"
+      ],
+      "truth": [
+        "05ba74e5f8043601b7af530429ceaf828d7bb329",
+        "405b23b1aef889fad03bf4e3ced6d427dc9a43f4",
+        "f0563ef64c7f42df21b16ccaeb4cf1324ea720f9"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-3f84-rpwh-47g6",
+      "advisory_ids": [
+        "GHSA-3f84-rpwh-47g6",
+        "PYSEC-2024-211"
+      ],
+      "package": "waitress",
+      "repo": "pylons/waitress",
+      "fixed": [
+        "3.0.1"
+      ],
+      "truth": [
+        "1ae4e894c9f76543bee06584001583fc6fa8c95c"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-mqpq-2p68-46fv",
+      "advisory_ids": [
+        "GHSA-mqpq-2p68-46fv",
+        "PYSEC-2026-1820"
+      ],
+      "package": "pyload-ng",
+      "repo": "pyload/pyload",
+      "fixed": [
+        "0.5.0b3.dev77"
+      ],
+      "truth": [
+        "bb22063a875ffeca357aaf6e2edcd09705688c40"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-g3cq-j2xw-wf74",
+      "advisory_ids": [
+        "GHSA-g3cq-j2xw-wf74",
+        "PYSEC-2026-2111"
+      ],
+      "package": "aiohttp",
+      "repo": "aio-libs/aiohttp",
+      "fixed": [
+        "3.14.1"
+      ],
+      "truth": [
+        "4f7480e474cccc6a8cc2c92ad3f17a31dedf8232"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-r9mr-m37c-5fr3",
+      "advisory_ids": [
+        "GHSA-r9mr-m37c-5fr3",
+        "PYSEC-2026-3953"
+      ],
+      "package": "gitpython",
+      "repo": "gitpython-developers/gitpython",
+      "fixed": [
+        "3.1.54"
+      ],
+      "truth": [
+        "e8d0fbf774d1f6baa3b481adfe48bd262e43b453"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-qw25-v68c-qjf3",
+      "advisory_ids": [
+        "GHSA-qw25-v68c-qjf3",
+        "PYSEC-2025-107"
+      ],
+      "package": "django",
+      "repo": "django/django",
+      "fixed": [
+        "4.2.26",
+        "5.1.14",
+        "5.2.8"
+      ],
+      "truth": [
+        "3790593781d26168e7306b5b2f8ea0309de16242",
+        "4f5d904b63751dea9ffc3b0e046404a7fa5881ac",
+        "6e13348436fccf8f22982921d6a3a3e65c956a9f",
+        "770eea38d7a0e9ba9455140b5a9a9e33618226a7"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-f2mf-q878-gh58",
+      "advisory_ids": [
+        "GHSA-f2mf-q878-gh58",
+        "PYSEC-2026-1759"
+      ],
+      "package": "parsl",
+      "repo": "parsl/parsl",
+      "fixed": [
+        "2026.1.5"
+      ],
+      "truth": [
+        "013a928461e70f38a33258bd525a351ed828e974"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-f9fq-78ch-4wmj",
+      "advisory_ids": [
+        "GHSA-f9fq-78ch-4wmj",
+        "PYSEC-2022-42971"
+      ],
+      "package": "apache-airflow",
+      "repo": "apache/airflow",
+      "fixed": [
+        "2.4.2",
+        "2.4.2rc1"
+      ],
+      "truth": [
+        "9fb4814d29d934cef3b02fb3b2547f9fb76aaa97"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-8x3m-m3x9-54fj",
+      "advisory_ids": [
+        "GHSA-8x3m-m3x9-54fj",
+        "PYSEC-2018-68"
+      ],
+      "package": "oauthenticator",
+      "repo": "jupyterhub/oauthenticator",
+      "fixed": [
+        "0.6.2",
+        "0.7.3"
+      ],
+      "truth": [
+        "1845c0e4b1bff3462c91c3108c85205acd3c75a2"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-vx4q-3cr2-7cg2",
+      "advisory_ids": [
+        "GHSA-vx4q-3cr2-7cg2",
+        "PYSEC-2026-3433"
+      ],
+      "package": "yt-dlp",
+      "repo": "yt-dlp/yt-dlp",
+      "fixed": [
+        "2026.6.9"
+      ],
+      "truth": [
+        "25056f0d2d47adbd235a8d422fa62d68d0be2bc2"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-vh75-fwv3-pqrh",
+      "advisory_ids": [
+        "GHSA-vh75-fwv3-pqrh",
+        "PYSEC-2026-3050"
+      ],
+      "package": "requests-hardened",
+      "repo": "saleor/requests-hardened",
+      "fixed": [
+        "1.2.1"
+      ],
+      "truth": [
+        "a266b3958bb142bca515b3c230fdea19fbda327c",
+        "b7403f88d3b3689e57435b75b51691a160aaeef5"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-6m53-c78q-7qmg",
+      "advisory_ids": [
+        "GHSA-6m53-c78q-7qmg",
+        "PYSEC-2018-56"
+      ],
+      "package": "mitmproxy",
+      "repo": "mitmproxy/mitmproxy",
+      "fixed": [
+        "4.0.4"
+      ],
+      "truth": [
+        "7f464b89296881f4d9ec032378c4418e832d17e3"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-g4mx-q9vg-27p4",
+      "advisory_ids": [
+        "GHSA-g4mx-q9vg-27p4",
+        "PYSEC-2023-212"
+      ],
+      "package": "urllib3",
+      "repo": "urllib3/urllib3",
+      "fixed": [
+        "1.26.18",
+        "2.0.7"
+      ],
+      "truth": [
+        "4e50fbc5db74e32cabd5ccc1ab81fc103adfe0b3",
+        "4e98d57809dacab1cbe625fddeec1a290c478ea9",
+        "b594c5ceaca38e1ac215f916538fb128e3526a36"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-jqpc-rc7g-vf83",
+      "advisory_ids": [
+        "GHSA-jqpc-rc7g-vf83",
+        "PYSEC-2026-1451"
+      ],
+      "package": "homeassistant",
+      "repo": "home-assistant/core",
+      "fixed": [
+        "2023.12.3"
+      ],
+      "truth": [
+        "dbfc5ea8f96bde6cd165892f5a6a6f9a65731c76"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-xm98-3vcf-fph7",
+      "advisory_ids": [
+        "GHSA-xm98-3vcf-fph7",
+        "PYSEC-2026-3862"
+      ],
+      "package": "mcp-contextforge-gateway",
+      "repo": "ibm/mcp-context-forge",
+      "fixed": [
+        "1.0.2"
+      ],
+      "truth": [
+        "63a2900e6301b9c8a483a38d3737a1beb3a7ce89"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-6vqj-c2q5-j97w",
+      "advisory_ids": [
+        "GHSA-6vqj-c2q5-j97w",
+        "PYSEC-2026-4132"
+      ],
+      "package": "picklescan",
+      "repo": "mmaitre314/picklescan",
+      "fixed": [
+        "0.0.29"
+      ],
+      "truth": [
+        "aecd11be98702caa9ba9b12189d91ad596a36114"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-956x-8gvw-wg5v",
+      "advisory_ids": [
+        "GHSA-956x-8gvw-wg5v",
+        "PYSEC-2026-3839"
+      ],
+      "package": "gitpython",
+      "repo": "gitpython-developers/gitpython",
+      "fixed": [
+        "3.1.51"
+      ],
+      "truth": [
+        "701ce32fe5ba8cb622c0e0342a376a6beb47d738"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-r735-9gc6-2hvq",
+      "advisory_ids": [
+        "GHSA-r735-9gc6-2hvq",
+        "PYSEC-2026-1236"
+      ],
+      "package": "calibreweb",
+      "repo": "janeczku/calibre-web",
+      "fixed": [
+        "0.6.15"
+      ],
+      "truth": [
+        "7ad419dc8c12180e842a82118f4866ac3d074bc5"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-6px8-mr29-cj4r",
+      "advisory_ids": [
+        "GHSA-6px8-mr29-cj4r",
+        "PYSEC-2026-1288"
+      ],
+      "package": "datachain",
+      "repo": "datachain-ai/datachain",
+      "fixed": [
+        "0.34.2"
+      ],
+      "truth": [
+        "914b95610620d50c8d9bee506ccbfa7d4d57fdc0"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-q6j3-c4wc-63vw",
+      "advisory_ids": [
+        "GHSA-q6j3-c4wc-63vw"
+      ],
+      "package": "datasette",
+      "repo": "simonw/datasette",
+      "fixed": [
+        "0.46"
+      ],
+      "truth": [
+        "7f10f0f7664d474c1be82bf668829e3b736a3d2b"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-hhxq-47xx-j5xx",
+      "advisory_ids": [
+        "GHSA-hhxq-47xx-j5xx"
+      ],
+      "package": "virtualenv",
+      "repo": "pypa/virtualenv",
+      "fixed": [
+        "21.14.9"
+      ],
+      "truth": [
+        "e3cea6fa10a50fa29cf1fdddd772458fba076d5f"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-9r5j-7r2x-rv4g",
+      "advisory_ids": [
+        "GHSA-9r5j-7r2x-rv4g",
+        "PYSEC-2026-2367"
+      ],
+      "package": "apache-airflow-providers-http",
+      "repo": "apache/airflow",
+      "fixed": [
+        "6.0.0"
+      ],
+      "truth": [
+        "97839f7b0a8ae66d6079bb7fad5a363068f61617"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-qppw-c37g-xwcc",
+      "advisory_ids": [
+        "GHSA-qppw-c37g-xwcc",
+        "PYSEC-2024-144"
+      ],
+      "package": "paddlepaddle",
+      "repo": "paddlepaddle/paddle",
+      "fixed": [
+        "2.6.0",
+        "2.6.1"
+      ],
+      "truth": [
+        "488a0ddc322b24659b6b0067fea3030d2f013cf4"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-f42p-vc8p-7x54",
+      "advisory_ids": [
+        "GHSA-f42p-vc8p-7x54",
+        "PYSEC-2026-848"
+      ],
+      "package": "mobsf",
+      "repo": "mobsf/mobile-security-framework-mobsf",
+      "fixed": [
+        "0.9.3"
+      ],
+      "truth": [
+        "b9cdd1f52bdf127cf33bb1be369e374a2855f8e6"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-9j6q-wvj5-jgjg",
+      "advisory_ids": [
+        "GHSA-9j6q-wvj5-jgjg"
+      ],
+      "package": "filelock",
+      "repo": "tox-dev/filelock",
+      "fixed": [
+        "4.2.1"
+      ],
+      "truth": [
+        "e1e825b1992f69fb6b346dc395d5ae4893536c0a"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-c4m7-2gwp-vw76",
+      "advisory_ids": [
+        "GHSA-c4m7-2gwp-vw76",
+        "PYSEC-2026-2857"
+      ],
+      "package": "ouroboros-ai",
+      "repo": "q00/ouroboros",
+      "fixed": [
+        "0.39.0"
+      ],
+      "truth": [
+        "4e70b760b4eb157469b58645339ba831f6513d37"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-rwv7-3v45-hg29",
+      "advisory_ids": [
+        "GHSA-rwv7-3v45-hg29",
+        "PYSEC-2021-138"
+      ],
+      "package": "pillow",
+      "repo": "python-pillow/pillow",
+      "fixed": [
+        "8.2.0"
+      ],
+      "truth": [
+        "3bf5eddb89afdf690eceaa52bc4d3546ba9a5f87"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-89vp-jrxv-24w8",
+      "advisory_ids": [
+        "GHSA-89vp-jrxv-24w8",
+        "PYSEC-2026-3670"
+      ],
+      "package": "jupyterlab",
+      "repo": "jupyterlab/jupyterlab",
+      "fixed": [
+        "4.5.10",
+        "4.6.2"
+      ],
+      "truth": [
+        "be9303f5bcd5308eaeae953c5a3c903046682c2c",
+        "f1beab4a2027af4719d6edc07d52d6cf5a39a432"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-6wcr-wcqm-3mfh",
+      "advisory_ids": [
+        "GHSA-6wcr-wcqm-3mfh",
+        "PYSEC-2015-11"
+      ],
+      "package": "django",
+      "repo": "django/django",
+      "fixed": [
+        "1.7.11",
+        "1.8.7",
+        "1.9rc2"
+      ],
+      "truth": [
+        "316bc3fc9437c5960c24baceb93c73f1939711e4",
+        "3ebbda0aef9e7a90ac6208bb8f9bc21228e2c7da",
+        "8a01c6b53169ee079cb21ac5919fdafcc8c5e172",
+        "9f83fc2f66f5a0bac7c291aec55df66050bb6991"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-527m-2xhr-j27g",
+      "advisory_ids": [
+        "GHSA-527m-2xhr-j27g",
+        "PYSEC-2026-1573"
+      ],
+      "package": "llamafactory",
+      "repo": "hiyouga/llamafactory",
+      "fixed": [
+        "0.9.4"
+      ],
+      "truth": [
+        "95b7188090a1018935c9dc072bfc97f24f1c96e9"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-w889-685w-c8fh",
+      "advisory_ids": [
+        "GHSA-w889-685w-c8fh"
+      ],
+      "package": "pillow",
+      "repo": "python-pillow/pillow",
+      "fixed": [
+        "13.0.0"
+      ],
+      "truth": [
+        "a2c363141da31a265dd536c945677db4b64f3ec9"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-q2x7-8rv6-6q7h",
+      "advisory_ids": [
+        "GHSA-q2x7-8rv6-6q7h",
+        "PYSEC-2026-1475"
+      ],
+      "package": "jinja2",
+      "repo": "pallets/jinja",
+      "fixed": [
+        "3.1.5"
+      ],
+      "truth": [
+        "48b0687e05a5466a91cd5812d604fa37ad0943b4"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-xx9p-xxvh-7g8j",
+      "advisory_ids": [
+        "GHSA-xx9p-xxvh-7g8j",
+        "PYSEC-2023-247"
+      ],
+      "package": "aiohttp",
+      "repo": "aio-libs/aiohttp",
+      "fixed": [
+        "3.8.0"
+      ],
+      "truth": [
+        "f016f0680e4ace6742b03a70cb0382ce86abe371"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-94v7-wxj6-r2q5",
+      "advisory_ids": [
+        "GHSA-94v7-wxj6-r2q5"
+      ],
+      "package": "multicast",
+      "repo": "reactive-firewall-org/multicast",
+      "fixed": [
+        "2.0.9a0"
+      ],
+      "truth": [
+        "c5c7c7de272421d944beca8452871bca6bfd151f"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-63wh-p5fx-h4vc",
+      "advisory_ids": [
+        "GHSA-63wh-p5fx-h4vc",
+        "PYSEC-2026-1216"
+      ],
+      "package": "bbot",
+      "repo": "blacklanternsecurity/bbot",
+      "fixed": [
+        "2.7.0"
+      ],
+      "truth": [
+        "0ede97fa887de33fcfd1378b4213a09c21dc6140"
+      ]
+    },
+    {
+      "vulnerability": "PYSEC-2026-3998",
+      "advisory_ids": [
+        "PYSEC-2026-3998"
+      ],
+      "package": "vllm",
+      "repo": "vllm-project/vllm",
+      "fixed": [
+        "0.29.0"
+      ],
+      "truth": [
+        "5b0e5b69ac1a3884a6479c9537789c95263cc804"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-rp38-pj7h-r8q2",
+      "advisory_ids": [
+        "GHSA-rp38-pj7h-r8q2",
+        "PYSEC-2025-64"
+      ],
+      "package": "python-a2a",
+      "repo": "themanojdesai/python-a2a",
+      "fixed": [
+        "0.5.6"
+      ],
+      "truth": [
+        "f486b53625698b7d03561d176dfe98f5d1528276"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-rrmf-rvhw-rf47",
+      "advisory_ids": [
+        "GHSA-rrmf-rvhw-rf47",
+        "PYSEC-2025-194"
+      ],
+      "package": "torch",
+      "repo": "pytorch/pytorch",
+      "fixed": [
+        "2.13.0"
+      ],
+      "truth": [
+        "b90c94991cdf8b87c8f7439f79518e0ef2c4ca4f"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-78qv-3mpx-9cqq",
+      "advisory_ids": [
+        "GHSA-78qv-3mpx-9cqq",
+        "PYSEC-2026-2232"
+      ],
+      "package": "nicegui",
+      "repo": "zauberzeug/nicegui",
+      "fixed": [
+        "3.8.0"
+      ],
+      "truth": [
+        "1861f59cc374ca0dc9d970b157ef3774720f8dbf"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-8qpj-27x8-pwpq",
+      "advisory_ids": [
+        "GHSA-8qpj-27x8-pwpq",
+        "PYSEC-2026-4231"
+      ],
+      "package": "langflow",
+      "repo": "langflow-ai/langflow",
+      "fixed": [
+        "1.10.1"
+      ],
+      "truth": [
+        "2754c84aad1306f463db1c3bbb3e8ffbe85da77d"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-fw5r-6m3x-rh7p",
+      "advisory_ids": [
+        "GHSA-fw5r-6m3x-rh7p",
+        "PYSEC-2026-1382"
+      ],
+      "package": "flask-appbuilder",
+      "repo": "dpgaspar/flask-appbuilder",
+      "fixed": [
+        "4.5.1"
+      ],
+      "truth": [
+        "3030e881d2e44f4021764e18e489fe940a9b3636"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-cggm-52qp-wvw7",
+      "advisory_ids": [
+        "GHSA-cggm-52qp-wvw7",
+        "PYSEC-2017-85"
+      ],
+      "package": "txaws",
+      "repo": "twisted/txaws",
+      "fixed": [
+        "0.4.0"
+      ],
+      "truth": [
+        "46b66c3dc315de7b5896d60531311ec9658bc466"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-7h6r-6p76-68c9",
+      "advisory_ids": [
+        "GHSA-7h6r-6p76-68c9",
+        "PYSEC-2026-2775"
+      ],
+      "package": "openbabel",
+      "repo": "openbabel/openbabel",
+      "fixed": [
+        "3.2.0"
+      ],
+      "truth": [
+        "40e852138f21d586b7ccdce6329e7b23a87168bb"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-655q-fx9r-782v",
+      "advisory_ids": [
+        "GHSA-655q-fx9r-782v",
+        "GHSA-769v-p64c-89pr",
+        "PYSEC-2025-18",
+        "PYSEC-2025-19"
+      ],
+      "package": "picklescan",
+      "repo": "mmaitre314/picklescan",
+      "fixed": [
+        "0.0.21",
+        "0.0.22"
+      ],
+      "truth": [
+        "78ce704227c51f070c0c5fb4b466d92c62a7aa3d",
+        "baf03faf88fece56a89534d12ce048e5ee36e50e"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-5vgj-ggm4-fg62",
+      "advisory_ids": [
+        "GHSA-5vgj-ggm4-fg62",
+        "PYSEC-2026-1764"
+      ],
+      "package": "pdoc",
+      "repo": "mitmproxy/pdoc",
+      "fixed": [
+        "14.5.1"
+      ],
+      "truth": [
+        "726b8f2e365fe8afeb3604a7c73d19b460395d58"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-7r9x-qrpr-3cxw",
+      "advisory_ids": [
+        "GHSA-7r9x-qrpr-3cxw"
+      ],
+      "package": "mofh",
+      "repo": "wallvon/mofh",
+      "fixed": [
+        "1.0.1"
+      ],
+      "truth": [
+        "da0d33cfd368e2f237ab28bf7a7f00e3d281005a"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-5jmr-gcrj-2c9q",
+      "advisory_ids": [
+        "GHSA-5jmr-gcrj-2c9q",
+        "PYSEC-2026-3477"
+      ],
+      "package": "litellm",
+      "repo": "berriai/litellm",
+      "fixed": [
+        "1.83.7"
+      ],
+      "truth": [
+        "6a15adcd64137d37f73dee76dfe7481f8c2d9196"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-9xwg-3r6f-jcx2",
+      "advisory_ids": [
+        "GHSA-9xwg-3r6f-jcx2",
+        "PYSEC-2026-3609"
+      ],
+      "package": "pymdown-extensions",
+      "repo": "facelessuser/pymdown-extensions",
+      "fixed": [
+        "11.0.0"
+      ],
+      "truth": [
+        "edce35586d11a1ef78bb187bc60497fe6dbf3b64"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-wwv8-cqpr-vx3m",
+      "advisory_ids": [
+        "GHSA-wwv8-cqpr-vx3m",
+        "PYSEC-2026-2223"
+      ],
+      "package": "modoboa",
+      "repo": "modoboa/modoboa",
+      "fixed": [
+        "2.7.1"
+      ],
+      "truth": [
+        "27a7aa133d3608fe8c25ae39125d1012c333cbfa"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-g7f3-828f-7h7m",
+      "advisory_ids": [
+        "GHSA-g7f3-828f-7h7m",
+        "PYSEC-2026-1202"
+      ],
+      "package": "authlib",
+      "repo": "authlib/authlib",
+      "fixed": [
+        "1.6.5"
+      ],
+      "truth": [
+        "e0863d5129316b1790eee5f14cece32a03b8184d"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-7432-952r-cw78",
+      "advisory_ids": [
+        "GHSA-7432-952r-cw78",
+        "PYSEC-2026-2116"
+      ],
+      "package": "authlib",
+      "repo": "authlib/authlib",
+      "fixed": [
+        "1.6.9"
+      ],
+      "truth": [
+        "48b345f29f6c459f11c6a40162b6c0b742ef2e22"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-q5qw-4364-5hhm",
+      "advisory_ids": [
+        "GHSA-q5qw-4364-5hhm",
+        "PYSEC-2015-10"
+      ],
+      "package": "django",
+      "repo": "django/django",
+      "fixed": [
+        "1.4.21",
+        "1.7.9",
+        "1.8.3"
+      ],
+      "truth": [
+        "1ba1cdce7d58e6740fe51955d945b56ae51d072a",
+        "574dd5e0b0fbb877ae5827b1603d298edc9bb2a0",
+        "8f9a4d3a2bc42f14bb437defd30c7315adbff22c",
+        "ae49b4d994656bc037513dcd064cb9ce5bb85649"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-4qqf-9m5c-w2c5",
+      "advisory_ids": [
+        "GHSA-4qqf-9m5c-w2c5",
+        "PYSEC-2026-2038"
+      ],
+      "package": "weblate",
+      "repo": "weblateorg/weblate",
+      "fixed": [
+        "5.12"
+      ],
+      "truth": [
+        "020b2905e4d001cff2452574d10e6cf3621b5f62"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-w4pr-4vjg-hffh",
+      "advisory_ids": [
+        "GHSA-w4pr-4vjg-hffh",
+        "PYSEC-2026-842"
+      ],
+      "package": "matrix-nio",
+      "repo": "matrix-nio/matrix-nio",
+      "fixed": [
+        "0.20"
+      ],
+      "truth": [
+        "b1cbf234a831daa160673defd596e6450e9c29f0"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-332p-7hrc-92wf",
+      "advisory_ids": [
+        "GHSA-332p-7hrc-92wf"
+      ],
+      "package": "pillow",
+      "repo": "python-pillow/pillow",
+      "fixed": [
+        "13.0.0"
+      ],
+      "truth": [
+        "11582e5ffbdceb973d5ee593f3105af5a9852b40"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-r82c-j4mq-5xfw",
+      "advisory_ids": [
+        "GHSA-r82c-j4mq-5xfw"
+      ],
+      "package": "bitlyshortener",
+      "repo": "impredicative/bitlyshortener",
+      "fixed": [
+        "0.5.0"
+      ],
+      "truth": [
+        "3d412feb77f3daf6f71536463734c2119a55968d"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-3589-pxp7-3gj8",
+      "advisory_ids": [
+        "GHSA-3589-pxp7-3gj8"
+      ],
+      "package": "pydantic-ai-harness",
+      "repo": "pydantic/pydantic-ai",
+      "fixed": [
+        "0.59.0"
+      ],
+      "truth": [
+        "eb27b2b89fe76ae23ee9b6fc9eb4b227a4967949"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-894g-6j7q-2hx6",
+      "advisory_ids": [
+        "GHSA-894g-6j7q-2hx6",
+        "PYSEC-2018-54"
+      ],
+      "package": "flask-admin",
+      "repo": "pallets-eco/flask-admin",
+      "fixed": [
+        "1.5.3"
+      ],
+      "truth": [
+        "8af10e0b022464fdcb2da3d0ea5bbd2f11c0acd1"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-jmp3-39vp-fwg8",
+      "advisory_ids": [
+        "GHSA-jmp3-39vp-fwg8",
+        "PYSEC-2024-86"
+      ],
+      "package": "wagtail",
+      "repo": "wagtail/wagtail",
+      "fixed": [
+        "5.2.6",
+        "6.0.6",
+        "6.1.3"
+      ],
+      "truth": [
+        "31b1e8532dfb1b70d8d37d22aff9cbde9109cdf2",
+        "3c941136f79c48446e3858df46e5b668d7f83797",
+        "b783c096b6d4fd2cfc05f9137a0be288850e99a2"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-494p-63j8-28p3",
+      "advisory_ids": [
+        "GHSA-494p-63j8-28p3"
+      ],
+      "package": "virtualenv",
+      "repo": "pypa/virtualenv",
+      "fixed": [
+        "21.14.9"
+      ],
+      "truth": [
+        "7babec66e043e1cc8bc66869a063653898719d96"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-hvmf-r92r-27hr",
+      "advisory_ids": [
+        "GHSA-hvmf-r92r-27hr",
+        "PYSEC-2019-15"
+      ],
+      "package": "django",
+      "repo": "django/django",
+      "fixed": [
+        "2.1.15",
+        "2.2.8"
+      ],
+      "truth": [
+        "103ebe2b5ff1b2614b85a52c239f471904d26244",
+        "36f580a17f0b3cb087deadf3b65eea024f479c21"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-8m3f-g62j-3vx8",
+      "advisory_ids": [
+        "GHSA-8m3f-g62j-3vx8",
+        "PYSEC-2026-788"
+      ],
+      "package": "binwalk",
+      "repo": "refirmlabs/binwalk",
+      "fixed": [
+        "2.3.3"
+      ],
+      "truth": [
+        "fa0c0bd59b8588814756942fe4cb5452e76c1dcd"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-wj6g-v78p-6fx3",
+      "advisory_ids": [
+        "GHSA-wj6g-v78p-6fx3",
+        "PYSEC-2026-3896"
+      ],
+      "package": "praisonai",
+      "repo": "mervinpraison/praisonai",
+      "fixed": [
+        "4.6.58"
+      ],
+      "truth": [
+        "2f9677abb2ea68eab864ee8b6a828fd0141612e1"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-48mj-p7x2-5jfm",
+      "advisory_ids": [
+        "GHSA-48mj-p7x2-5jfm",
+        "PYSEC-2021-351"
+      ],
+      "package": "esphome",
+      "repo": "esphome/esphome",
+      "fixed": [
+        "2021.9.2"
+      ],
+      "truth": [
+        "2234f6aacf8cc653307fed80f3750317a82c4f83",
+        "be965a60eba6bb769e2a5afdbc8eed132f077a59",
+        "207cde1667d8c799a197b78ca8a5a14de8d5ca1e"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-rr46-m366-gm44",
+      "advisory_ids": [
+        "GHSA-rr46-m366-gm44",
+        "PYSEC-2023-123"
+      ],
+      "package": "paddlepaddle",
+      "repo": "paddlepaddle/paddle",
+      "fixed": [
+        "2.5.0"
+      ],
+      "truth": [
+        "ed96baeed19b4e11b6cbc2dcc6776245ba5fab13"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-r6v9-p59m-gj2p",
+      "advisory_ids": [
+        "GHSA-r6v9-p59m-gj2p",
+        "PYSEC-2022-265"
+      ],
+      "package": "indy-node",
+      "repo": "hyperledger-indy/indy-node",
+      "fixed": [
+        "1.12.5rc1"
+      ],
+      "truth": [
+        "fe507474f77084faef4539101e2bbb4d508a97f5"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-v7m9-9497-p9gr",
+      "advisory_ids": [
+        "GHSA-v7m9-9497-p9gr",
+        "PYSEC-2020-51"
+      ],
+      "package": "jupyterhub-kubespawner",
+      "repo": "jupyterhub/kubespawner",
+      "fixed": [
+        "0.12.0"
+      ],
+      "truth": [
+        "3dfe870a7f5e98e2e398b01996ca6b8eff4bb1d0"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-4h3h-63v6-88qx",
+      "advisory_ids": [
+        "GHSA-4h3h-63v6-88qx",
+        "PYSEC-2026-1326"
+      ],
+      "package": "esphome",
+      "repo": "esphome/esphome",
+      "fixed": [
+        "2025.12.7"
+      ],
+      "truth": [
+        "69d7b6e9210390051318bd8e6410727689de08d6"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-rrx3-2x4g-mq2h",
+      "advisory_ids": [
+        "GHSA-rrx3-2x4g-mq2h",
+        "PYSEC-2026-1227"
+      ],
+      "package": "bugsink",
+      "repo": "bugsink/bugsink",
+      "fixed": [
+        "2.0.6"
+      ],
+      "truth": [
+        "1201f754e39265d2aac58edf49dc380bac334388"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-937f-qh3w-6g87",
+      "advisory_ids": [
+        "GHSA-937f-qh3w-6g87",
+        "PYSEC-2022-282"
+      ],
+      "package": "octoprint",
+      "repo": "octoprint/octoprint",
+      "fixed": [
+        "1.8.3"
+      ],
+      "truth": [
+        "40e6217ac1a85cc5ed592873ae49db01d3005da4"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-r4rv-85jg-w4mf",
+      "advisory_ids": [
+        "GHSA-r4rv-85jg-w4mf",
+        "PYSEC-2026-2212"
+      ],
+      "package": "mistune",
+      "repo": "lepture/mistune",
+      "fixed": [
+        "3.3.0"
+      ],
+      "truth": [
+        "1bef343ade163fc3bb95572b15be720084cdb993"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-vm8q-m57g-pff3",
+      "advisory_ids": [
+        "GHSA-vm8q-m57g-pff3",
+        "PYSEC-2024-47"
+      ],
+      "package": "django",
+      "repo": "django/django",
+      "fixed": [
+        "3.2.25",
+        "4.2.11",
+        "5.0.3"
+      ],
+      "truth": [
+        "072963e4c4d0b3a7a8c5412bc0c7d27d1a9c3521",
+        "3394fc6132436eca89e997083bae9985fb7e761e",
+        "3c9a2771cc80821e041b16eb36c1c37af5349d4a"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-fgch-86x8-fv43",
+      "advisory_ids": [
+        "GHSA-fgch-86x8-fv43",
+        "PYSEC-2026-238"
+      ],
+      "package": "apache-airflow-providers-ftp",
+      "repo": "apache/airflow",
+      "fixed": [
+        "3.15.1"
+      ],
+      "truth": [
+        "a929d142d667f71dea29c565a7167216a9c30378"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-qqv2-35q8-p2g2",
+      "advisory_ids": [
+        "GHSA-qqv2-35q8-p2g2",
+        "PYSEC-2026-1756"
+      ],
+      "package": "paddlepaddle",
+      "repo": "paddlepaddle/paddle",
+      "fixed": [
+        "3.0.0b0"
+      ],
+      "truth": [
+        "4c0888d7b8f10405e2e79adc41c224264f93e816"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-hvc7-763r-4f3h",
+      "advisory_ids": [
+        "GHSA-hvc7-763r-4f3h",
+        "PYSEC-2026-3743"
+      ],
+      "package": "openssl-encrypt",
+      "repo": "jahlives/openssl_encrypt",
+      "fixed": [
+        "1.4.0"
+      ],
+      "truth": [
+        "05e45f393886b5bf7e924d2dd42099a9dd37f91d"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-p7q8-grrj-3m8w",
+      "advisory_ids": [
+        "GHSA-p7q8-grrj-3m8w",
+        "PYSEC-2026-1273"
+      ],
+      "package": "copier",
+      "repo": "copier-org/copier",
+      "fixed": [
+        "9.9.1"
+      ],
+      "truth": [
+        "fdbc0167cc22780b497e4db176feaf6f024757d6"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-wqmh-qccw-pqwf",
+      "advisory_ids": [
+        "GHSA-wqmh-qccw-pqwf"
+      ],
+      "package": "mlflow",
+      "repo": "mlflow/mlflow",
+      "fixed": [
+        "3.17.2"
+      ],
+      "truth": [
+        "31ff9e56f5038d61ec75344518912945f60dffec"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-37cf-r3w2-gjfw",
+      "advisory_ids": [
+        "GHSA-37cf-r3w2-gjfw",
+        "PYSEC-2020-229"
+      ],
+      "package": "django-nopassword",
+      "repo": "relekang/django-nopassword",
+      "fixed": [
+        "5.0.0"
+      ],
+      "truth": [
+        "d8b4615f5fbfe3997d96cf4cb3e342406396193c"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-h56g-gq9v-vc8r",
+      "advisory_ids": [
+        "GHSA-h56g-gq9v-vc8r",
+        "PYSEC-2023-272"
+      ],
+      "package": "jupyter-server",
+      "repo": "jupyter-server/jupyter_server",
+      "fixed": [
+        "2.11.2"
+      ],
+      "truth": [
+        "0056c3aa52cbb28b263a7a609ae5f17618b36652"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-9v8h-57gv-qch6",
+      "advisory_ids": [
+        "GHSA-9v8h-57gv-qch6",
+        "PYSEC-2007-1"
+      ],
+      "package": "django",
+      "repo": "django/django",
+      "fixed": [
+        "0.91.1",
+        "0.95.2",
+        "0.96.1",
+        "1.1"
+      ],
+      "truth": [
+        "412ed22502e11c50dbfee854627594f0e7e2c234",
+        "7dd2dd08a79e388732ce00e2b5514f15bd6d0f6f",
+        "8bc36e726c9e8c75c681d3ad232df8e882aaac81"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-h4hv-m4h4-mhwg",
+      "advisory_ids": [
+        "GHSA-h4hv-m4h4-mhwg",
+        "PYSEC-2017-10"
+      ],
+      "package": "django",
+      "repo": "django/django",
+      "fixed": [
+        "1.10.7",
+        "1.8.18",
+        "1.9.13"
+      ],
+      "truth": [
+        "2a9f6ef71b8e23fd267ee2be1be26dde8ab67037",
+        "4a6b945dffe8d10e7cec107d93e6efaebfbded29",
+        "5f1ffb07afc1e59729ce2b283124116d6c0659e4"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-6cc5-2vg4-cc7m",
+      "advisory_ids": [
+        "GHSA-6cc5-2vg4-cc7m",
+        "PYSEC-2019-128"
+      ],
+      "package": "twisted",
+      "repo": "twisted/twisted",
+      "fixed": [
+        "19.2.1"
+      ],
+      "truth": [
+        "6c61fc4503ae39ab8ecee52d10f10ee2c371d7e2"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-wr9h-g72x-mwhm",
+      "advisory_ids": [
+        "GHSA-wr9h-g72x-mwhm",
+        "PYSEC-2026-2026"
+      ],
+      "package": "vllm",
+      "repo": "vllm-project/vllm",
+      "fixed": [
+        "0.11.0"
+      ],
+      "truth": [
+        "ee10d7e6ff5875386c7f136ce8b5f525c8fcef48"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-pq67-6m6q-mj2v",
+      "advisory_ids": [
+        "GHSA-pq67-6m6q-mj2v",
+        "PYSEC-2026-1999"
+      ],
+      "package": "urllib3",
+      "repo": "urllib3/urllib3",
+      "fixed": [
+        "2.5.0"
+      ],
+      "truth": [
+        "f05b1329126d5be6de501f9d1e3e36738bc08857"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-fcfq-m8p6-gw56",
+      "advisory_ids": [
+        "GHSA-fcfq-m8p6-gw56",
+        "PYSEC-2025-48"
+      ],
+      "package": "mobsf",
+      "repo": "mobsf/mobile-security-framework-mobsf",
+      "fixed": [
+        "4.3.2"
+      ],
+      "truth": [
+        "4b8bab5a9858c69fe13be4631b82d82186e0d3bd"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-75c5-xw7c-p5pm",
+      "advisory_ids": [
+        "GHSA-75c5-xw7c-p5pm",
+        "PYSEC-2026-1814"
+      ],
+      "package": "pyjwt",
+      "repo": "jpadilla/pyjwt",
+      "fixed": [
+        "2.10.1"
+      ],
+      "truth": [
+        "1570e708672aa9036bc772476beae8bfa48f4131",
+        "33022c25525c1020869c71ce2a4109e44ae4ced1"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-q238-5cxm-5c9h",
+      "advisory_ids": [
+        "GHSA-q238-5cxm-5c9h",
+        "PYSEC-2026-3717"
+      ],
+      "package": "django",
+      "repo": "django/django",
+      "fixed": [
+        "5.2.17",
+        "6.0.8",
+        "6.1.1"
+      ],
+      "truth": [
+        "1eafa1a80f1363283f89208ba4499ed54e35f085",
+        "4353dfb56f8ba3a6fccc4bdd7f2ef2fbee3aa638",
+        "62ef9d40cf4ea75f16518436b44b8ab2515340df",
+        "6af5da31775417c610dbf9c3f1b5b8333d42daf6",
+        "75d401a1491e04a907ed745c128836d51c982c0f",
+        "9e4a3f186b6b07b483bfd9195ea06734663fcd06",
+        "ba80833fa656dd09660b97c4429331067db1b080",
+        "d2e59b77fe18de318a8272c2a7bbc798d84d1d0d"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-jff3-mwp3-f8cw",
+      "advisory_ids": [
+        "GHSA-jff3-mwp3-f8cw",
+        "PYSEC-2021-43"
+      ],
+      "package": "products-genericsetup",
+      "repo": "zopefoundation/products.genericsetup",
+      "fixed": [
+        "2.1.1"
+      ],
+      "truth": [
+        "700319512b3615b3871a1f24e096cf66dc488c57"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-r5ph-4jxm-6j9p",
+      "advisory_ids": [
+        "GHSA-r5ph-4jxm-6j9p",
+        "PYSEC-2024-72"
+      ],
+      "package": "ekuiper",
+      "repo": "lf-edge/ekuiper",
+      "fixed": [
+        "1.14.2"
+      ],
+      "truth": [
+        "1a9c745649438feaac357d282959687012b65503"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-vpp8-g58w-m8mp",
+      "advisory_ids": [
+        "GHSA-vpp8-g58w-m8mp"
+      ],
+      "package": "twisted",
+      "repo": "twisted/twisted",
+      "fixed": [
+        "26.10.0rc1"
+      ],
+      "truth": [
+        "498939422b69d5a75c4b8f81fa7926423dac534d"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-3jqf-v4mv-747g",
+      "advisory_ids": [
+        "GHSA-3jqf-v4mv-747g",
+        "PYSEC-2026-1679"
+      ],
+      "package": "moonraker",
+      "repo": "arksine/moonraker",
+      "fixed": [
+        "0.10.0"
+      ],
+      "truth": [
+        "74c5d8e44c4a4abbfbb06fb991e7ebb9ac947f42"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-g39v-cvjh-8fpf",
+      "advisory_ids": [
+        "GHSA-g39v-cvjh-8fpf"
+      ],
+      "package": "ha-mcp",
+      "repo": "homeassistant-ai/ha-mcp",
+      "fixed": [
+        "7.5.0"
+      ],
+      "truth": [
+        "09c524526b5f945638aa97de6218fadcd233023c"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-f3q4-ggfp-jv34",
+      "advisory_ids": [
+        "GHSA-f3q4-ggfp-jv34"
+      ],
+      "package": "adyen",
+      "repo": "adyen/adyen-python-api-library",
+      "fixed": [
+        "7.1.0"
+      ],
+      "truth": [
+        "3292133dbc00ffc4cccfb92de672a76eaa587ca5"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-jhpr-j7cq-3jp3",
+      "advisory_ids": [
+        "GHSA-jhpr-j7cq-3jp3",
+        "PYSEC-2023-94"
+      ],
+      "package": "flask-appbuilder",
+      "repo": "dpgaspar/flask-appbuilder",
+      "fixed": [
+        "4.3.2"
+      ],
+      "truth": [
+        "ae25ad4c87a9051ebe4a4e8f02aee73232642626"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-9fpm-3445-2vx4",
+      "advisory_ids": [
+        "GHSA-9fpm-3445-2vx4",
+        "PYSEC-2026-4232"
+      ],
+      "package": "langflow",
+      "repo": "langflow-ai/langflow",
+      "fixed": [
+        "1.10.3"
+      ],
+      "truth": [
+        "1641b28f33e2c47b9a0c6855922d44d1b8418b9d",
+        "94859df33acd70b2a1f816e26d68f5e89a7e5639"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-hc5c-r8m5-2gfh",
+      "advisory_ids": [
+        "GHSA-hc5c-r8m5-2gfh"
+      ],
+      "package": "plone-restapi",
+      "repo": "plone/plone.restapi",
+      "fixed": [
+        "8.43.3"
+      ],
+      "truth": [
+        "5f44c23ac69db7d6d933d77f177e07603cf05f8b"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-4qjh-9fv9-r85r",
+      "advisory_ids": [
+        "GHSA-4qjh-9fv9-r85r",
+        "PYSEC-2025-53"
+      ],
+      "package": "vllm",
+      "repo": "vllm-project/vllm",
+      "fixed": [
+        "0.9.0"
+      ],
+      "truth": [
+        "77073c77bc2006eb80ea6d5128f076f5e6c6f54f"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-7h3g-4w2f-fj2f",
+      "advisory_ids": [
+        "GHSA-7h3g-4w2f-fj2f",
+        "PYSEC-2026-3607"
+      ],
+      "package": "proot-distro",
+      "repo": "termux/proot-distro",
+      "fixed": [
+        "5.1.6"
+      ],
+      "truth": [
+        "98aff324b7d8500ff75a8ca9ac087ee636be4716"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-q8h9-pqcx-59hw",
+      "advisory_ids": [
+        "GHSA-q8h9-pqcx-59hw",
+        "PYSEC-2022-261"
+      ],
+      "package": "apache-airflow",
+      "repo": "apache/airflow",
+      "fixed": [
+        "2.3.4"
+      ],
+      "truth": [
+        "b6a2cd1aa34f69a36ea127e4f7f5ba87f4aca420",
+        "bf01d10cd348e679916034de1befb79ec6e46ff8",
+        "c14ea8f0f34944d2ecfa9021d167602e8b2b8b90"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-gwqq-6vq7-5j86",
+      "advisory_ids": [
+        "GHSA-gwqq-6vq7-5j86",
+        "PYSEC-2023-138"
+      ],
+      "package": "langchain",
+      "repo": "langchain-ai/langchain",
+      "fixed": [
+        "0.0.236"
+      ],
+      "truth": [
+        "8ba9835b925473655914f63822775679e03ea137",
+        "e294ba475a355feb95003ed8f1a2b99942509a9e"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-23mf-xhv8-69c2",
+      "advisory_ids": [
+        "GHSA-23mf-xhv8-69c2"
+      ],
+      "package": "gitpython",
+      "repo": "gitpython-developers/gitpython",
+      "fixed": [
+        "3.2.0"
+      ],
+      "truth": [
+        "8da65080849a56a2fc9f3e7817bbf0524e8397d5"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-rw7v-4hrq-x6r9",
+      "advisory_ids": [
+        "GHSA-rw7v-4hrq-x6r9"
+      ],
+      "package": "fpdf2",
+      "repo": "py-pdf/fpdf2",
+      "fixed": [
+        "2.8.8"
+      ],
+      "truth": [
+        "0d27190a8c907e02ebe9cd881471a14d0622b432",
+        "6e23f610b7946e96e9a5dd0535dcbfbe7ac1397d"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-fvx8-v524-8579",
+      "advisory_ids": [
+        "GHSA-fvx8-v524-8579",
+        "PYSEC-2020-38"
+      ],
+      "package": "django-celery-results",
+      "repo": "celery/django-celery-results",
+      "fixed": [
+        "2.0.0",
+        "2.4.0"
+      ],
+      "truth": [
+        "ad508fe3433499e5fc94645412d911e174863f28"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-83pf-v6qq-pwmr",
+      "advisory_ids": [
+        "GHSA-83pf-v6qq-pwmr"
+      ],
+      "package": "fickling",
+      "repo": "trailofbits/fickling",
+      "fixed": [
+        "0.1.8"
+      ],
+      "truth": [
+        "6d20564d23acf14b42ec883908aed159be7b9ade"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-8f6m-gfq9-g33v",
+      "advisory_ids": [
+        "GHSA-8f6m-gfq9-g33v",
+        "PYSEC-2017-15"
+      ],
+      "package": "html5lib",
+      "repo": "html5lib/html5lib-python",
+      "fixed": [
+        "0.99999999",
+        "0.999999999"
+      ],
+      "truth": [
+        "9b8d8eb5afbc066b7fac9390f5ec75e5e8a7cab7"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-c9rc-mg46-23w3",
+      "advisory_ids": [
+        "GHSA-c9rc-mg46-23w3",
+        "PYSEC-2025-75"
+      ],
+      "package": "keras",
+      "repo": "keras-team/keras",
+      "fixed": [
+        "3.11.0"
+      ],
+      "truth": [
+        "713172ab56b864e59e2aa79b1a51b0e728bba858"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-2mqj-m65w-jghx",
+      "advisory_ids": [
+        "GHSA-2mqj-m65w-jghx",
+        "PYSEC-2024-4"
+      ],
+      "package": "gitpython",
+      "repo": "gitpython-developers/gitpython",
+      "fixed": [
+        "3.1.41"
+      ],
+      "truth": [
+        "ef3192cc414f2fd9978908454f6fd95243784c7f"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-7488-6r32-c95q",
+      "advisory_ids": [
+        "GHSA-7488-6r32-c95q",
+        "PYSEC-2026-3479"
+      ],
+      "package": "litellm",
+      "repo": "berriai/litellm",
+      "fixed": [
+        "1.84.0"
+      ],
+      "truth": [
+        "73869f0faf7d11ee21adcb5f91b8c33a340b6c2c"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-wf9g-c67g-h4ch",
+      "advisory_ids": [
+        "GHSA-wf9g-c67g-h4ch",
+        "PYSEC-2024-81"
+      ],
+      "package": "mindsdb",
+      "repo": "mindsdb/mindshub",
+      "fixed": [
+        "24.7.4.1"
+      ],
+      "truth": [
+        "11a4db792ad36cf704f7307c7602128b17752c80"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-g35p-px32-whv6",
+      "advisory_ids": [
+        "GHSA-g35p-px32-whv6",
+        "PYSEC-2026-2222"
+      ],
+      "package": "mlflow",
+      "repo": "mlflow/mlflow",
+      "fixed": [
+        "3.11.0"
+      ],
+      "truth": [
+        "4a3f2f720cb4f058c9e0c5b883e0acc9ab64a7f3"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-432c-wxpg-m4q3",
+      "advisory_ids": [
+        "GHSA-432c-wxpg-m4q3"
+      ],
+      "package": "xml2rfc",
+      "repo": "ietf-tools/xml2rfc",
+      "fixed": [
+        "3.27.0"
+      ],
+      "truth": [
+        "ec98f9cb4b9a8658222117df037dda473ca3f4e4"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-fh66-fcv5-jjfr",
+      "advisory_ids": [
+        "GHSA-fh66-fcv5-jjfr",
+        "PYSEC-2026-1612"
+      ],
+      "package": "matrix-synapse",
+      "repo": "element-hq/synapse",
+      "fixed": [
+        "1.138.3",
+        "1.139.1"
+      ],
+      "truth": [
+        "26aaaf9e48fff80cf67a20c691c75d670034b3c1",
+        "7069636c2d6d1ef2022287addf3ed8b919ef2740"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-53mr-44pp-crf4",
+      "advisory_ids": [
+        "GHSA-53mr-44pp-crf4",
+        "PYSEC-2014-11"
+      ],
+      "package": "pip",
+      "repo": "pypa/pip",
+      "fixed": [
+        "6.0"
+      ],
+      "truth": [
+        "043fe9f5700315d97f83609c1f59deece8f1b901"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-h63r-9xxf-f2c7",
+      "advisory_ids": [
+        "GHSA-h63r-9xxf-f2c7",
+        "PYSEC-2022-42970"
+      ],
+      "package": "apache-airflow",
+      "repo": "apache/airflow",
+      "fixed": [
+        "2.4.2",
+        "2.4.2rc1"
+      ],
+      "truth": [
+        "9fb4814d29d934cef3b02fb3b2547f9fb76aaa97"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-772j-xvf9-qpf5",
+      "advisory_ids": [
+        "GHSA-772j-xvf9-qpf5",
+        "PYSEC-2022-43068"
+      ],
+      "package": "ansible-runner",
+      "repo": "ansible/ansible-runner",
+      "fixed": [
+        "2.1.0"
+      ],
+      "truth": [
+        "93e95a3df9021a38010386d07df121392d249253"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-qh4c-xf7m-gxfc",
+      "advisory_ids": [
+        "GHSA-qh4c-xf7m-gxfc",
+        "PYSEC-2026-2020"
+      ],
+      "package": "vllm",
+      "repo": "vllm-project/vllm",
+      "fixed": [
+        "0.14.1"
+      ],
+      "truth": [
+        "f46d576c54fb8aeec5fc70560e850bed38ef17d7"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-g9cj-cfpp-4g2x",
+      "advisory_ids": [
+        "GHSA-g9cj-cfpp-4g2x",
+        "PYSEC-2026-1415"
+      ],
+      "package": "gradio",
+      "repo": "gradio-app/gradio",
+      "fixed": [
+        "4.13.0"
+      ],
+      "truth": [
+        "24a583688046867ca8b8b02959c441818bdb34a2"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-cpqf-3c3r-c9g2",
+      "advisory_ids": [
+        "GHSA-cpqf-3c3r-c9g2",
+        "PYSEC-2021-373"
+      ],
+      "package": "cobbler",
+      "repo": "cobbler/cobbler",
+      "fixed": [
+        "3.3.0"
+      ],
+      "truth": [
+        "d8f60bbf14a838c8c8a1dba98086b223e35fe70a"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-c6hw-5grf-ff96",
+      "advisory_ids": [
+        "GHSA-c6hw-5grf-ff96"
+      ],
+      "package": "pillow",
+      "repo": "python-pillow/pillow",
+      "fixed": [
+        "13.0.0"
+      ],
+      "truth": [
+        "1d4773e6cea0c4a2814e6d4cdc099bbcf56da6ce"
+      ]
+    },
+    {
+      "vulnerability": "PYSEC-2026-2154",
+      "advisory_ids": [
+        "PYSEC-2026-2154"
+      ],
+      "package": "gdal",
+      "repo": "osgeo/gdal",
+      "fixed": [
+        "3.13.0"
+      ],
+      "truth": [
+        "9491e794f1757f08063ea2f7a274ad2994afa636"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-jrwr-5x3p-hvc3",
+      "advisory_ids": [
+        "GHSA-jrwr-5x3p-hvc3",
+        "PYSEC-2023-23"
+      ],
+      "package": "markdown-it-py",
+      "repo": "executablebooks/markdown-it-py",
+      "fixed": [
+        "2.2.0"
+      ],
+      "truth": [
+        "53ca3e9c2b9e9b295f6abf7f4ad2730a9b70f68c"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-frvg-qw88-hww9",
+      "advisory_ids": [
+        "GHSA-frvg-qw88-hww9",
+        "PYSEC-2026-4006"
+      ],
+      "package": "vllm",
+      "repo": "vllm-project/vllm",
+      "fixed": [
+        "0.30.0",
+        "0.32.0"
+      ],
+      "truth": [
+        "93d2cab35e8ae66bbaa1dea1c077986d5a79eb80"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-m64x-33q8-m5h7",
+      "advisory_ids": [
+        "GHSA-m64x-33q8-m5h7"
+      ],
+      "package": "gitpython",
+      "repo": "gitpython-developers/gitpython",
+      "fixed": [
+        "3.2.0"
+      ],
+      "truth": [
+        "8290c98d35465a38090cdcc1b17be69967092a15"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-j28r-j54m-gpc4",
+      "advisory_ids": [
+        "GHSA-j28r-j54m-gpc4",
+        "PYSEC-2021-429"
+      ],
+      "package": "slo-generator",
+      "repo": "google/slo-generator",
+      "fixed": [
+        "2.0.1"
+      ],
+      "truth": [
+        "36318beab1b85d14bb860e45bea186b184690d5d"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-h7ww-273w-6cm8",
+      "advisory_ids": [
+        "GHSA-h7ww-273w-6cm8"
+      ],
+      "package": "mistune",
+      "repo": "lepture/mistune",
+      "fixed": [
+        "3.3.0"
+      ],
+      "truth": [
+        "1bef343ade163fc3bb95572b15be720084cdb993"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-6845-xw22-ffxv",
+      "advisory_ids": [
+        "GHSA-6845-xw22-ffxv",
+        "PYSEC-2024-147"
+      ],
+      "package": "vyper",
+      "repo": "vyperlang/vyper",
+      "fixed": [
+        "0.4.0",
+        "0.4.0b1"
+      ],
+      "truth": [
+        "d9f9fdadd81a148cbc68f02dbbbcdc0c92fad652"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-6fvq-23cw-5628",
+      "advisory_ids": [
+        "GHSA-6fvq-23cw-5628",
+        "PYSEC-2026-2013"
+      ],
+      "package": "vllm",
+      "repo": "vllm-project/vllm",
+      "fixed": [
+        "0.11.0"
+      ],
+      "truth": [
+        "7977e5027c2250a4abc1f474c5619c40b4e5682f"
+      ]
+    }
+  ]
+}

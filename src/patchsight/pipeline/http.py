@@ -91,6 +91,7 @@ class CachedJsonClient:
             reraise=True,
         )
         self.network_requests = 0
+        self.lookups = 0  # every request asked of this client, answered from cache or not
 
     def close(self) -> None:
         self._http.close()
@@ -102,6 +103,7 @@ class CachedJsonClient:
 
     def get_json(self, path: str, params: Mapping[str, str | int] | None = None) -> Any:
         params = dict(params or {})
+        self.lookups += 1
         cache_file = self._cache_path(path, params)
         if cache_file.exists():
             cached = json.loads(cache_file.read_text(encoding="utf-8"))

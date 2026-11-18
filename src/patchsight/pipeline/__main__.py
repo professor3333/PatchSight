@@ -1021,6 +1021,75 @@ def panel_report_command(
     )
 
 
+LOCATOR_SAMPLE = Path("benchmarks/locator/masked-v1.json")
+
+
+@app.command("locator-sample")
+def locator_sample_command(
+    root: Root = Path(),
+    cache: Annotated[Path, typer.Option(help="HTTP response cache.")] = Path(".cache/http"),
+) -> None:
+    """Draw and freeze the masked sample for the fix-commit locator (needs GITHUB_TOKEN)."""
+    from patchsight.pipeline.locator import masked
+
+    manifest, dump = _load_verified(root)
+    by_id, groups, _ = _fix_groups(dump)
+    github = GitHubClient(root / cache / "github", token=_github_token(), wait_for_rate_limit=3900)
+    pypi = PyPIClient(root / cache / "pypi")
+    try:
+        sample = masked.draw(groups, by_id, github, pypi, manifest.file(DUMP).sha256)
+    finally:
+        github.close()
+        pypi.close()
+    target = root / LOCATOR_SAMPLE
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(sample.model_dump_json(indent=2) + "\n", "utf-8")
+    typer.echo(f"{len(sample.cases)} cases from {sample.eligible:,} eligible -> {target}")
+
+
+@app.command("locator-eval")
+def locator_eval_command(
+    root: Root = Path(),
+    cache: Annotated[Path, typer.Option(help="HTTP response cache.")] = Path(".cache/http"),
+) -> None:
+    """Score the fix-commit locator's variants on the frozen masked sample (needs
+    GITHUB_TOKEN unless every response is cached)."""
+    from patchsight.pipeline.locator import baseline, masked
+
+    sample = masked.MaskedSample.model_validate_json((root / LOCATOR_SAMPLE).read_text("utf-8"))
+    manifest, dump = _load_verified(root)
+    if manifest.file(DUMP).sha256 != sample.snapshot_sha256:
+        raise typer.BadParameter(
+            "the pinned snapshot is not the one the sample was drawn from; restore it first"
+        )
+    by_id = {r.id: r for r in normalise_dump(dump) if isinstance(r, Advisory)}
+    github = GitHubClient(
+        root / cache / "github", token=os.environ.get("GITHUB_TOKEN"), wait_for_rate_limit=3900
+    )
+    pypi = PyPIClient(root / cache / "pypi")
+    try:
+        results = {v: tuple(masked.run(sample, by_id, github, pypi, v)) for v in baseline.VARIANTS}
+    finally:
+        github.close()
+        pypi.close()
+    report = masked.LocatorReport(
+        sample=sample.name, seed=sample.seed, snapshot_sha256=sample.snapshot_sha256,
+        eligible=sample.eligible,
+        scores=tuple(masked.summarise(v, r) for v, r in results.items()),
+        results=results,
+    )  # fmt: skip
+    target = root / "docs" / "reports" / f"locator-{sample.name}"
+    target.with_name(target.name + ".md").write_text(masked.render_markdown(report), "utf-8")
+    target.with_name(target.name + ".json").write_text(
+        report.model_dump_json(indent=2) + "\n", "utf-8"
+    )
+    for scores in report.scores:
+        typer.echo(
+            f"{scores.variant}: exact {scores.exact}, wrong {scores.wrong}, abstained "
+            f"{scores.abstained} of {scores.cases}"
+        )
+
+
 @app.command("reproduce")
 def reproduce_command(root: Root = Path()) -> None:
     """Recompute the benchmark tables offline from committed files. No network, no API key."""

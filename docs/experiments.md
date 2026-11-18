@@ -20,6 +20,7 @@ Every controlled experiment on the extraction system, including the ones that lo
 | E4 | Output-capacity cap | none; 105 output tokens per candidate | F1 unchanged; 1 more truncated report | Measured; switch on after the gpt-oss-20b evaluation ([#52](https://github.com/professor3333/PatchSight/issues/52)) |
 | E5 | Run-to-run determinism (self-hosted) | two full Kaggle runs, two days apart | 277 of 277 answers identical | Confirmed |
 | E6 | Entry-point name matching | exact names; a unique dotted-boundary match | dev high-confidence misses 1 of 27 to 0 of 27; F1 unchanged | Measured; switch on after the gpt-oss-20b evaluation, then evaluate on unseen data |
+| E7 | Fix-commit locator without the fix link | the proposal's message baseline; a ranking that prefers the advisory's own IDs | exact SHA 9.0% and 25.0%; wrong commit 64.0% and 47.0% | Neither is used: both are far from the 5% wrong-commit cap. Baseline for the agent ([#56](https://github.com/professor3333/PatchSight/issues/56)) |
 
 ## E1: 4-bit self-hosted against hosted serving
 
@@ -200,6 +201,35 @@ declared criteria compare against the 120b pairing measured with exact names. Th
 effect on high confidence on data not used yet, the Go temporal holdout, as ADR 0004 requires of
 any change to the rule. For low-confidence records the change can only add names, which can only
 raise an alert's priority.
+
+## E7: Locating a fix commit the advisory does not link
+
+**Question.** For the 2,306 vulnerabilities whose advisories link no fix commit on GitHub, can a
+fix be found from the package's own repository alone? Their alerts get no symbol data today
+(416 of the 3,526 alerts on the [repository panel](reports/panel-db-2026.11.18.1.md)).
+
+**Method.** Masked evaluation, as the proposal asks: 200 vulnerabilities, drawn with a recorded
+seed from the 4,416 whose advisories *do* link a fix commit on the package's repository
+([sample](../benchmarks/locator/masked-v1.json)), with the links hidden. The locator reads the
+package's PyPI metadata, its repository's tags, and the commits between the last vulnerable and
+the first fixed release. A located commit must touch non-test Python source.
+
+| Variant | Exact SHA | Wrong commit | Abstained |
+|---|---:|---:|---:|
+| Baseline: first commit saying CVE, security or fix | 9.0% | 64.0% | 27.0% |
+| Ranked: the advisory's own IDs, then security words, then "fix" | 25.0% | 47.0% | 28.0% |
+| Target for the agent | 70% or more | 5% or less | |
+
+**Why it misses.** In 64 of the ranked variant's 94 wrong commits, a linked commit was between
+the same two tags: the right commit was in view and another was chosen. In the other 30 the fix
+was not between the tags at all, usually because it landed on another branch. Even a perfect
+choice within the comparison would reach about 57% exact.
+
+**Decision.** Neither heuristic is used to build records: a wrong commit becomes a record of the
+wrong functions, and the 5% cap exists for that reason. They are the baseline the bounded agent
+(rule 8) must beat. The agent needs both a better choice between candidates (reading their
+diffs) and a wider search (commit search by advisory ID). Report:
+[masked evaluation](reports/locator-masked-v1.md) (`locator-eval`).
 
 ## Failure analysis
 

@@ -1,0 +1,6044 @@
+{
+  "sample": "masked-v1",
+  "seed": 20261118,
+  "snapshot_sha256": "1de5d3c1dfe3e61366562dc984b533325d23b992b25f0840f3fbdd0d60050bf2",
+  "eligible": 4416,
+  "scores": [
+    {
+      "variant": "baseline",
+      "cases": 200,
+      "exact": 18,
+      "wrong": 128,
+      "abstained": 54,
+      "abstain_reasons": {
+        "no tag for a fixed version": 24,
+        "no matching commit touches Python source": 22,
+        "no commit message matches": 7,
+        "comparison failed": 1
+      },
+      "wrong_linked_in_range": 98,
+      "median_requests": 7.0
+    },
+    {
+      "variant": "ranked",
+      "cases": 200,
+      "exact": 50,
+      "wrong": 94,
+      "abstained": 56,
+      "abstain_reasons": {
+        "no tag for a fixed version": 24,
+        "no matching commit touches Python source": 23,
+        "no commit message matches": 8,
+        "comparison failed": 1
+      },
+      "wrong_linked_in_range": 64,
+      "median_requests": 7.0
+    }
+  ],
+  "results": {
+    "baseline": [
+      {
+        "vulnerability": "GHSA-p5w8-wqhj-9hhf",
+        "package": "sqlparse",
+        "located": {
+          "repo": "andialbrecht/sqlparse",
+          "commit": "e575ae2c37359ab51b23ce44ccda4bb9bbfd3a5f",
+          "reason": "baseline match",
+          "base": "0.4.1",
+          "head": "0.4.2",
+          "compared": 11,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-2g87-pp6c-29x5",
+        "package": "aiohttp",
+        "located": {
+          "repo": "aio-libs/aiohttp",
+          "commit": "f793a691930315289d86fdf3fcbdffd29047920b",
+          "reason": "baseline match",
+          "base": "v3.14.3",
+          "head": "v3.14.4",
+          "compared": 91,
+          "requests": 8
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-cpcw-p965-wpqx",
+        "package": "rtslib-fb",
+        "located": {
+          "repo": "open-iscsi/rtslib-fb",
+          "commit": "46f22603240f51def35abfbf3b3d2682b6b6759f",
+          "reason": "baseline match",
+          "base": "v2.1.72",
+          "head": "v2.1.73",
+          "compared": 10,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-59qj-jcjv-662j",
+        "package": "dirac",
+        "located": {
+          "repo": "diracgrid/dirac",
+          "commit": "6469b04e7425a87b10861e670fae62ad01f84d26",
+          "reason": "baseline match",
+          "base": "v8.0.36",
+          "head": "v8.0.37",
+          "compared": 18,
+          "requests": 14
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-55x5-fj6c-h6m8",
+        "package": "lxml",
+        "located": {
+          "repo": "lxml/lxml",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 8
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-3gf5-cxq9-w223",
+        "package": "picklescan",
+        "located": {
+          "repo": "mmaitre314/picklescan",
+          "commit": "1931c2d04eaca8d20597705ff39cab78ba364e4b",
+          "reason": "baseline match",
+          "base": "v0.0.29",
+          "head": "v0.0.30",
+          "compared": 1,
+          "requests": 5
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-m6h2-jx9v-58w6",
+        "package": "apache-airflow",
+        "located": {
+          "repo": "apache/airflow",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 12
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-8m59-7xv8-735h",
+        "package": "marimo",
+        "located": {
+          "repo": "marimo-team/marimo",
+          "commit": "3dd695500ba1beaff82b0d9b9168155e65582d5a",
+          "reason": "baseline match",
+          "base": "0.23.8",
+          "head": "0.23.9",
+          "compared": 50,
+          "requests": 10
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-vxmm-cwh2-q762",
+        "package": "vyper",
+        "located": {
+          "repo": "vyperlang/vyper",
+          "commit": "f4deb13ddd14d4b535c2d7dc8098bdef09cb29c5",
+          "reason": "baseline match",
+          "base": "v0.3.7",
+          "head": "v0.3.8",
+          "compared": 160,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-hf3c-wxg2-49q9",
+        "package": "vllm",
+        "located": {
+          "repo": "vllm-project/vllm",
+          "commit": "2fa66ef713a62f96c24135ceffd70f1bbafea4e4",
+          "reason": "baseline match",
+          "base": "v0.8.3",
+          "head": "v0.8.4",
+          "compared": 179,
+          "requests": 11
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-vv4j-m4vr-f3g6",
+        "package": "esphome-device-builder",
+        "located": {
+          "repo": "esphome/device-builder",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 8
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-45c4-8wx5-qw6w",
+        "package": "aiohttp",
+        "located": {
+          "repo": "aio-libs/aiohttp",
+          "commit": "8d45f9c99511cd80140d6658bd9c11002c697f1c",
+          "reason": "baseline match",
+          "base": "v3.8.4",
+          "head": "v3.8.5",
+          "compared": 16,
+          "requests": 10
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-wr9v-g9vf-c74v",
+        "package": "tensorflow",
+        "located": {
+          "repo": "tensorflow/tensorflow",
+          "commit": "51d867296a46a60954affec46b6dbfac73181269",
+          "reason": "baseline match",
+          "base": "v2.7.1",
+          "head": "v2.7.2",
+          "compared": 64,
+          "requests": 20
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-mf9w-mj56-hr94",
+        "package": "python-dotenv",
+        "located": {
+          "repo": "theskumar/python-dotenv",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 9
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-gfw2-4jvh-wgfg",
+        "package": "aiohttp",
+        "located": {
+          "repo": "aio-libs/aiohttp",
+          "commit": "8d701c3d2811070213c7309f873167b2b8b3655b",
+          "reason": "baseline match",
+          "base": "v3.8.5",
+          "head": "v3.8.6",
+          "compared": 13,
+          "requests": 8
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-9c4x-gm8v-wgc4",
+        "package": "filelock",
+        "located": {
+          "repo": "tox-dev/filelock",
+          "commit": "119cb393ea835fd55b69a7335a8c7aa8ab8d1e8e",
+          "reason": "baseline match",
+          "base": "4.2.0",
+          "head": "4.2.1",
+          "compared": 23,
+          "requests": 9
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-j92p-c242-7hfx",
+        "package": "pyload-ng",
+        "located": {
+          "repo": "pyload/pyload",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 3
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-pqhf-p39g-3x64",
+        "package": "uv",
+        "located": {
+          "repo": "astral-sh/uv",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 12
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-x88j-93vc-wpmp",
+        "package": "django",
+        "located": {
+          "repo": "django/django",
+          "commit": "ce9b216882ea11bf351f222513458bc503556a91",
+          "reason": "baseline match",
+          "base": "1.3",
+          "head": "1.3.1",
+          "compared": 113,
+          "requests": 12
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-w7rv-gfp4-j9j3",
+        "package": "slippers",
+        "located": {
+          "repo": "mixxorz/slippers",
+          "commit": null,
+          "reason": "no commit message matches",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 4
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-vmhf-c436-hxj4",
+        "package": "jupyterlab",
+        "located": {
+          "repo": "jupyterlab/jupyterlab",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 17
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-qqcv-vg9f-5rr3",
+        "package": "litellm",
+        "located": {
+          "repo": "berriai/litellm",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 12
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-69w3-r845-3855",
+        "package": "transformers",
+        "located": {
+          "repo": "huggingface/transformers",
+          "commit": "2f9e21f5c58e73bf612228a3f9680fd2cf54f33d",
+          "reason": "baseline match",
+          "base": "v4.57.6",
+          "head": "v5.0.0",
+          "compared": 250,
+          "requests": 8
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-mq26-g339-26xf",
+        "package": "pip",
+        "located": {
+          "repo": "pypa/pip",
+          "commit": "d09431feb5049ec5e7a9b4ecb5d338a38a14ffc4",
+          "reason": "baseline match",
+          "base": "23.2.1",
+          "head": "23.3",
+          "compared": 234,
+          "requests": 6
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-vqxf-v2gg-x3hc",
+        "package": "docling-core",
+        "located": {
+          "repo": "docling-project/docling-core",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 6
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-f3h9-8phc-6gvh",
+        "package": "gradio",
+        "located": {
+          "repo": "gradio-app/gradio",
+          "commit": "3227b1748c7a3b8257fbf3c50d266c526da1f306",
+          "reason": "baseline match",
+          "base": "gradio@4.8.0",
+          "head": "gradio@4.9.0",
+          "compared": 42,
+          "requests": 14
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-jg86-v3jv-hrpm",
+        "package": "pillow",
+        "located": {
+          "repo": "python-pillow/pillow",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 10
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-47wv-vhj2-g66m",
+        "package": "horovod",
+        "located": {
+          "repo": "horovod/horovod",
+          "commit": "f29b02f3ffab6782e8070a27c9f5eb53e217b556",
+          "reason": "baseline match",
+          "base": "v0.23.0",
+          "head": "v0.24.0",
+          "compared": 90,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-8j24-cjrq-gr2m",
+        "package": "django",
+        "located": {
+          "repo": "django/django",
+          "commit": "317690403a40fbaf52c6abcbc8d39f199c9b5102",
+          "reason": "baseline match",
+          "base": "5.2",
+          "head": "5.2.1",
+          "compared": 33,
+          "requests": 11
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-fvww-7h3r-vfhp",
+        "package": "langgraph-sdk",
+        "located": {
+          "repo": "langchain-ai/langgraph",
+          "commit": "2a1c63ff9cdc948d101d070d561ad41f2c79f9fa",
+          "reason": "baseline match",
+          "base": "0.4.3",
+          "head": "0.4.4",
+          "compared": 143,
+          "requests": 11
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-vx5f-957p-qpvm",
+        "package": "glances",
+        "located": {
+          "repo": "nicolargo/glances",
+          "commit": "4139b10c5c3a98afc67a19ae67d66d2d94d7db6a",
+          "reason": "baseline match",
+          "base": "v4.5.1",
+          "head": "v4.5.2",
+          "compared": 27,
+          "requests": 7
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-gv5h-5655-h4mv",
+        "package": "django-cms",
+        "located": {
+          "repo": "django-cms/django-cms",
+          "commit": "e7c1bf4d32c784c46b5401ed6a40ff1e747531d3",
+          "reason": "baseline match",
+          "base": "4.1.3",
+          "head": "4.1.4",
+          "compared": 11,
+          "requests": 8
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-j47q-rc62-w448",
+        "package": "fastapi-guard",
+        "located": {
+          "repo": "guard-core/fastapi-guard",
+          "commit": null,
+          "reason": "no commit message matches",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 4
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-rcrv-228c-gprj",
+        "package": "bitlyshortener",
+        "located": {
+          "repo": "impredicative/bitlyshortener",
+          "commit": null,
+          "reason": "no commit message matches",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 4
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-74xw-82v7-hmrm",
+        "package": "python-dbusmock",
+        "located": {
+          "repo": "martinpitt/python-dbusmock",
+          "commit": "4e7d0df909338eb3c44b083722c7bf8b76bdf940",
+          "reason": "baseline match",
+          "base": "0.15",
+          "head": "0.15.1",
+          "compared": 2,
+          "requests": 6
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-cxfr-5q3r-2rc2",
+        "package": "mlflow",
+        "located": {
+          "repo": "mlflow/mlflow",
+          "commit": "7cd8ab8e31efff1cda76b1743930811d319ff94c",
+          "reason": "baseline match",
+          "base": "v2.9.1",
+          "head": "v2.9.2",
+          "compared": 22,
+          "requests": 8
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-fc9g-5qg7-mf45",
+        "package": "pillow",
+        "located": {
+          "repo": "python-pillow/pillow",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 10
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-vq8p-m3wm-gv5f",
+        "package": "pyload-ng",
+        "located": {
+          "repo": "pyload/pyload",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 3
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-m269-wj6g-c459",
+        "package": "pysaml2",
+        "located": {
+          "repo": "identitypython/pysaml2",
+          "commit": "6e09a25d9b4b7aa7a506853210a9a14100b8bc9b",
+          "reason": "baseline match",
+          "base": "v4.4.0",
+          "head": "v4.5.0",
+          "compared": 95,
+          "requests": 5
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-gx64-gj6p-pc4c",
+        "package": "jupyterlab",
+        "located": {
+          "repo": "jupyterlab/jupyterlab",
+          "commit": "be9303f5bcd5308eaeae953c5a3c903046682c2c",
+          "reason": "baseline match",
+          "base": "v4.5.9",
+          "head": "v4.5.10",
+          "compared": 4,
+          "requests": 20
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-58r4-6rv3-gfh8",
+        "package": "pillow",
+        "located": {
+          "repo": "python-pillow/pillow",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 10
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-3h9f-r86x-qvjx",
+        "package": "django",
+        "located": {
+          "repo": "django/django",
+          "commit": "721685aa7799cc9327bd202cd1f70bd012ca95a7",
+          "reason": "baseline match",
+          "base": "5.2.15",
+          "head": "5.2.16",
+          "compared": 11,
+          "requests": 19
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-f54q-j679-p9hh",
+        "package": "copyparty",
+        "located": {
+          "repo": "9001/copyparty",
+          "commit": "007d948cb982daa05bc6619cd20ee55b7e834c38",
+          "reason": "baseline match",
+          "base": "v1.8.6",
+          "head": "v1.8.7",
+          "compared": 7,
+          "requests": 8
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-22m3-c7vp-49fj",
+        "package": "irrd",
+        "located": {
+          "repo": "irrdnet/irrd",
+          "commit": "53702c3888214929dbd7209de0e0799022fd84eb",
+          "reason": "baseline match",
+          "base": "v4.5.0",
+          "head": "v4.5.1",
+          "compared": 8,
+          "requests": 6
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-7mpr-5m44-h73r",
+        "package": "markdownify",
+        "located": {
+          "repo": "matthewwithanm/python-markdownify",
+          "commit": "959561879693bf4a576f99c6733b50b01186aa08",
+          "reason": "baseline match",
+          "base": "0.14.0",
+          "head": "0.14.1",
+          "compared": 4,
+          "requests": 5
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-hmq2-w58f-27jc",
+        "package": "gitpython",
+        "located": {
+          "repo": "gitpython-developers/gitpython",
+          "commit": "804f7a4e5dd6948a1f87b29d27d076c9b54e8745",
+          "reason": "baseline match",
+          "base": "3.1.57",
+          "head": "3.1.58",
+          "compared": 33,
+          "requests": 7
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-8988-9cw3-xx77",
+        "package": "urllib3",
+        "located": {
+          "repo": "urllib3/urllib3",
+          "commit": "9f1b31d7daab252962d3400f64c3574c0ccb122f",
+          "reason": "baseline match",
+          "base": "2.7.0",
+          "head": "2.8.0",
+          "compared": 69,
+          "requests": 7
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-f9xw-jh8m-3mwq",
+        "package": "aiohttp",
+        "located": {
+          "repo": "aio-libs/aiohttp",
+          "commit": "f793a691930315289d86fdf3fcbdffd29047920b",
+          "reason": "baseline match",
+          "base": "v3.14.3",
+          "head": "v3.14.4",
+          "compared": 91,
+          "requests": 8
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-hrfv-mqp8-q5rw",
+        "package": "werkzeug",
+        "located": {
+          "repo": "pallets/werkzeug",
+          "commit": "b1916c0c083e0be1c9d887ee2f3d696922bfc5c1",
+          "reason": "baseline match",
+          "base": "3.0.0",
+          "head": "3.0.1",
+          "compared": 3,
+          "requests": 6
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-4qqq-9vqf-3h3f",
+        "package": "scrapy",
+        "located": {
+          "repo": "scrapy/scrapy",
+          "commit": "33ef5450f988963096ee618e41342184af3e8e44",
+          "reason": "baseline match",
+          "base": "2.11.1",
+          "head": "2.11.2",
+          "compared": 42,
+          "requests": 6
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-f8xq-q7px-wg8c",
+        "package": "gradio",
+        "located": {
+          "repo": "gradio-app/gradio",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 12
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-xq59-7jf3-rjc6",
+        "package": "piccolo",
+        "located": {
+          "repo": "piccolo-orm/piccolo",
+          "commit": "82679eb8cd1449cf31d87c9914a072e70168b6eb",
+          "reason": "baseline match",
+          "base": "1.1.0",
+          "head": "1.1.1",
+          "compared": 4,
+          "requests": 7
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-m842-4qm8-7gpq",
+        "package": "gradio",
+        "located": {
+          "repo": "gradio-app/gradio",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 18
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-5jqp-qgf6-3pvh",
+        "package": "pydantic",
+        "located": {
+          "repo": "pydantic/pydantic",
+          "commit": "f1fd5c21f4a9ab84baf4787bedbadbc762a5d4c2",
+          "reason": "baseline match",
+          "base": "v1.8.1",
+          "head": "v1.8.2",
+          "compared": 16,
+          "requests": 7
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-p99v-5w3c-jqq9",
+        "package": "django",
+        "located": {
+          "repo": "django/django",
+          "commit": "ce78bc9808db279ab5db1b285518ca3eb189419c",
+          "reason": "baseline match",
+          "base": "3.2.3",
+          "head": "3.2.4",
+          "compared": 27,
+          "requests": 13
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-jw8x-6495-233v",
+        "package": "scikit-learn",
+        "located": {
+          "repo": "scikit-learn/scikit-learn",
+          "commit": "846b0fd1d8700c99a75561f60551d034dcb46acd",
+          "reason": "baseline match",
+          "base": "1.4.2",
+          "head": "1.5.0",
+          "compared": 250,
+          "requests": 7
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-3m3h-v9hv-9j4h",
+        "package": "wiki",
+        "located": {
+          "repo": "django-wiki/django-wiki",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 3
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-j3j3-jrfh-cm2w",
+        "package": "django",
+        "located": {
+          "repo": "django/django",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 20
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-h5cg-53g7-gqjw",
+        "package": "rpyc",
+        "located": {
+          "repo": "tomerfiliba-org/rpyc",
+          "commit": "43027f9447aa88f598fb0fbccee1f462fb128eec",
+          "reason": "baseline match",
+          "base": "5.3.1",
+          "head": "6.0.0",
+          "compared": 37,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-c6mm-2g84-v4m7",
+        "package": "mage-ai",
+        "located": {
+          "repo": "mage-ai/mage-ai",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 3
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-whr6-fgpq-fpv9",
+        "package": "compose-lint",
+        "located": {
+          "repo": "tmatens/compose-lint",
+          "commit": "e317ccfc417d849f89faa5b169ff4ad2df7ec5b0",
+          "reason": "baseline match",
+          "base": "v0.24.0",
+          "head": "v0.25.0",
+          "compared": 20,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-7984-qgvg-3j9c",
+        "package": "oauthlib",
+        "located": {
+          "repo": "oauthlib/oauthlib",
+          "commit": "eb185bb2ea4da0f50eb122a7c0641341c280f1de",
+          "reason": "baseline match",
+          "base": "v3.3.1",
+          "head": "v4.0.0",
+          "compared": 74,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-r44w-v6gf-x3p6",
+        "package": "pyload-ng",
+        "located": {
+          "repo": "pyload/pyload",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 3
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-rw75-m7gp-92m3",
+        "package": "django",
+        "located": {
+          "repo": "django/django",
+          "commit": "4b49cbfae47f279e1a3f33f4143ff416ddf68e3d",
+          "reason": "baseline match",
+          "base": "1.6.5",
+          "head": "1.6.6",
+          "compared": 106,
+          "requests": 10
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-q63x-9pfm-mjx4",
+        "package": "feast",
+        "located": {
+          "repo": "feast-dev/feast",
+          "commit": "0c469a7f1d49046c6be7be61bd65ca706b2f207e",
+          "reason": "baseline match",
+          "base": "v0.62.0",
+          "head": "v0.63.0",
+          "compared": 63,
+          "requests": 8
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-qm57-vhq3-3fwf",
+        "package": "django",
+        "located": {
+          "repo": "django/django",
+          "commit": "364098fdac597d2293d844d81ab523c22ca5a361",
+          "reason": "baseline match",
+          "base": "3.2.1",
+          "head": "3.2.2",
+          "compared": 7,
+          "requests": 11
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-c2jg-hw38-jrqq",
+        "package": "twisted",
+        "located": {
+          "repo": "twisted/twisted",
+          "commit": "3338a1fd4fb13f86cec95caa21cd58600762faba",
+          "reason": "baseline match",
+          "base": "twisted-22.2.0",
+          "head": "twisted-22.4.0",
+          "compared": 112,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-q7q2-qf2q-rw3w",
+        "package": "django",
+        "located": {
+          "repo": "django/django",
+          "commit": "908bdea482d0a5af7a4c9d38ae52ed876d30cbe4",
+          "reason": "baseline match",
+          "base": "1.6.11",
+          "head": "1.7b4",
+          "compared": 250,
+          "requests": 10
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-57fc-8q82-gfp3",
+        "package": "langchain",
+        "located": {
+          "repo": "langchain-ai/langchain",
+          "commit": "1bbadde77b2e22bfbb6bf8049f0f1687bcf18de0",
+          "reason": "baseline match",
+          "base": "v0.0.245",
+          "head": "v0.0.247",
+          "compared": 54,
+          "requests": 14
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-8rj5-2857-877j",
+        "package": "json2xml",
+        "located": {
+          "repo": "vinitkumar/json2xml",
+          "commit": "a9cd75b61329801b47a8fba7473bce6c85a38b9b",
+          "reason": "baseline match",
+          "base": "3.12.0",
+          "head": "v3.14.0",
+          "compared": 6,
+          "requests": 5
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-v9v9-xffq-rwr4",
+        "package": "html5lib",
+        "located": {
+          "repo": "html5lib/html5lib-python",
+          "commit": "e0dc25f335d3df610f752df29d5c4301717eb452",
+          "reason": "baseline match",
+          "base": "0.99999999",
+          "head": "0.999999999",
+          "compared": 3,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-grjp-54v3-c442",
+        "package": "usd-core",
+        "located": {
+          "repo": "pixaranimationstudios/openusd",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 9
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-xjhm-gp88-8pfx",
+        "package": "copier",
+        "located": {
+          "repo": "copier-org/copier",
+          "commit": "41cb45c9649782150c01886bc52bee5eddb655b9",
+          "reason": "baseline match",
+          "base": "v9.11.1",
+          "head": "v9.11.2",
+          "compared": 10,
+          "requests": 6
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-6p6v-m64v-jx8q",
+        "package": "pyspark",
+        "located": {
+          "repo": "apache/spark",
+          "commit": "1c1c5faa29dc649faf143fe2eea39ccf15862f85",
+          "reason": "baseline match",
+          "base": "v3.5.1",
+          "head": "v3.5.2",
+          "compared": 211,
+          "requests": 8
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-3f84-rpwh-47g6",
+        "package": "waitress",
+        "located": {
+          "repo": "pylons/waitress",
+          "commit": "8565e0deaf0ffaea6c6f93e27e32b51f518ff05f",
+          "reason": "baseline match",
+          "base": "v3.0.0",
+          "head": "v3.0.1",
+          "compared": 27,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-mqpq-2p68-46fv",
+        "package": "pyload-ng",
+        "located": {
+          "repo": "pyload/pyload",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 3
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-g3cq-j2xw-wf74",
+        "package": "aiohttp",
+        "located": {
+          "repo": "aio-libs/aiohttp",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 12
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-r9mr-m37c-5fr3",
+        "package": "gitpython",
+        "located": {
+          "repo": "gitpython-developers/gitpython",
+          "commit": "e8d0fbf774d1f6baa3b481adfe48bd262e43b453",
+          "reason": "baseline match",
+          "base": "3.1.53",
+          "head": "3.1.54",
+          "compared": 5,
+          "requests": 6
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-qw25-v68c-qjf3",
+        "package": "django",
+        "located": {
+          "repo": "django/django",
+          "commit": "2d2e1a6a9dbfe0cba58a4d2486c51fccdb501d55",
+          "reason": "baseline match",
+          "base": "5.2.7",
+          "head": "5.2.8",
+          "compared": 27,
+          "requests": 12
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-f2mf-q878-gh58",
+        "package": "parsl",
+        "located": {
+          "repo": "parsl/parsl",
+          "commit": "013a928461e70f38a33258bd525a351ed828e974",
+          "reason": "baseline match",
+          "base": "2025.12.29",
+          "head": "2026.01.05",
+          "compared": 1,
+          "requests": 7
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-f9fq-78ch-4wmj",
+        "package": "apache-airflow",
+        "located": {
+          "repo": "apache/airflow",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 12
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-8x3m-m3x9-54fj",
+        "package": "oauthenticator",
+        "located": {
+          "repo": "jupyterhub/oauthenticator",
+          "commit": "30825c47e4202d73ceabe023b331f66df25c303c",
+          "reason": "baseline match",
+          "base": "0.7.2",
+          "head": "0.7.3",
+          "compared": 4,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-vx4q-3cr2-7cg2",
+        "package": "yt-dlp",
+        "located": {
+          "repo": "yt-dlp/yt-dlp",
+          "commit": "2d7b278666bfbf12cf287072498dd275c946b968",
+          "reason": "baseline match",
+          "base": "2026.03.17",
+          "head": "2026.06.09",
+          "compared": 65,
+          "requests": 8
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-vh75-fwv3-pqrh",
+        "package": "requests-hardened",
+        "located": {
+          "repo": "saleor/requests-hardened",
+          "commit": "b7403f88d3b3689e57435b75b51691a160aaeef5",
+          "reason": "baseline match",
+          "base": "v1.2.0",
+          "head": "v1.2.1",
+          "compared": 8,
+          "requests": 5
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-6m53-c78q-7qmg",
+        "package": "mitmproxy",
+        "located": {
+          "repo": "mitmproxy/mitmproxy",
+          "commit": "9c41a92ff283c52fdb7a01465b24ccef5c68eca4",
+          "reason": "baseline match",
+          "base": "v4.0.3",
+          "head": "v4.0.4",
+          "compared": 7,
+          "requests": 6
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-g4mx-q9vg-27p4",
+        "package": "urllib3",
+        "located": {
+          "repo": "urllib3/urllib3",
+          "commit": "80808b04bfa68fbd099828848c96ee25df185f1d",
+          "reason": "baseline match",
+          "base": "2.0.6",
+          "head": "2.0.7",
+          "compared": 4,
+          "requests": 6
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-jqpc-rc7g-vf83",
+        "package": "homeassistant",
+        "located": {
+          "repo": "home-assistant/core",
+          "commit": "3adda6b11024edff427a6522d2fb9e4c1b440db0",
+          "reason": "baseline match",
+          "base": "2023.12.2",
+          "head": "2023.12.3",
+          "compared": 10,
+          "requests": 14
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-xm98-3vcf-fph7",
+        "package": "mcp-contextforge-gateway",
+        "located": {
+          "repo": "ibm/mcp-context-forge",
+          "commit": "f2548c9367bbca9dd2009d50f36139840bd56c79",
+          "reason": "baseline match",
+          "base": "v1.0.1",
+          "head": "v1.0.2",
+          "compared": 47,
+          "requests": 6
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-6vqj-c2q5-j97w",
+        "package": "picklescan",
+        "located": {
+          "repo": "mmaitre314/picklescan",
+          "commit": "aecd11be98702caa9ba9b12189d91ad596a36114",
+          "reason": "baseline match",
+          "base": "v0.0.28",
+          "head": "v0.0.29",
+          "compared": 1,
+          "requests": 5
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-956x-8gvw-wg5v",
+        "package": "gitpython",
+        "located": {
+          "repo": "gitpython-developers/gitpython",
+          "commit": "010a7bbfd237d2ab0627c20a542933abf978b690",
+          "reason": "baseline match",
+          "base": "3.1.50",
+          "head": "3.1.51",
+          "compared": 59,
+          "requests": 6
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-r735-9gc6-2hvq",
+        "package": "calibreweb",
+        "located": {
+          "repo": "janeczku/calibre-web",
+          "commit": "a5415e00d54788cc32702b9a2793015281a34c22",
+          "reason": "baseline match",
+          "base": "0.6.14",
+          "head": "0.6.15",
+          "compared": 127,
+          "requests": 8
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-6px8-mr29-cj4r",
+        "package": "datachain",
+        "located": {
+          "repo": "datachain-ai/datachain",
+          "commit": null,
+          "reason": "no commit message matches",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 6
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-q6j3-c4wc-63vw",
+        "package": "datasette",
+        "located": {
+          "repo": "simonw/datasette",
+          "commit": "0748a65a22302640ec7520a19aaba280b5615930",
+          "reason": "baseline match",
+          "base": "0.45",
+          "head": "0.46",
+          "compared": 35,
+          "requests": 7
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-hhxq-47xx-j5xx",
+        "package": "virtualenv",
+        "located": {
+          "repo": "pypa/virtualenv",
+          "commit": "c1c6eeec4843da892d4be0e7374a4ef01198cfe8",
+          "reason": "baseline match",
+          "base": "21.14.8",
+          "head": "21.14.9",
+          "compared": 40,
+          "requests": 8
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-9r5j-7r2x-rv4g",
+        "package": "apache-airflow-providers-http",
+        "located": {
+          "repo": "apache/airflow",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 12
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-qppw-c37g-xwcc",
+        "package": "paddlepaddle",
+        "located": {
+          "repo": "paddlepaddle/paddle",
+          "commit": "ae2e58805cbcf800c6d0487adeea7509c6a454d9",
+          "reason": "baseline match",
+          "base": "v2.6.0",
+          "head": "v2.6.1",
+          "compared": 54,
+          "requests": 9
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-f42p-vc8p-7x54",
+        "package": "mobsf",
+        "located": {
+          "repo": "mobsf/mobile-security-framework-mobsf",
+          "commit": "0458e21b2a9d6e4bc154a58b10c8713d914e177b",
+          "reason": "baseline match",
+          "base": "v0.9.2",
+          "head": "v0.9.3",
+          "compared": 80,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-9j6q-wvj5-jgjg",
+        "package": "filelock",
+        "located": {
+          "repo": "tox-dev/filelock",
+          "commit": "119cb393ea835fd55b69a7335a8c7aa8ab8d1e8e",
+          "reason": "baseline match",
+          "base": "4.2.0",
+          "head": "4.2.1",
+          "compared": 23,
+          "requests": 9
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-c4m7-2gwp-vw76",
+        "package": "ouroboros-ai",
+        "located": {
+          "repo": "q00/ouroboros",
+          "commit": "2d8c0c4751baa8df54379df5761c0c70031ce67e",
+          "reason": "baseline match",
+          "base": "v0.38.2",
+          "head": "v0.39.0",
+          "compared": 167,
+          "requests": 6
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-rwv7-3v45-hg29",
+        "package": "pillow",
+        "located": {
+          "repo": "python-pillow/pillow",
+          "commit": "480f6819b592d7f07b9a9a52a7656c10bbe07442",
+          "reason": "baseline match",
+          "base": "8.1.2",
+          "head": "8.2.0",
+          "compared": 250,
+          "requests": 9
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-89vp-jrxv-24w8",
+        "package": "jupyterlab",
+        "located": {
+          "repo": "jupyterlab/jupyterlab",
+          "commit": "be9303f5bcd5308eaeae953c5a3c903046682c2c",
+          "reason": "baseline match",
+          "base": "v4.5.9",
+          "head": "v4.5.10",
+          "compared": 4,
+          "requests": 20
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-6wcr-wcqm-3mfh",
+        "package": "django",
+        "located": {
+          "repo": "django/django",
+          "commit": "a4b80e242162a7d6ac2337a2a621a82027c549b7",
+          "reason": "baseline match",
+          "base": "1.8.19",
+          "head": "1.9rc2",
+          "compared": 250,
+          "requests": 10
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-527m-2xhr-j27g",
+        "package": "llamafactory",
+        "located": {
+          "repo": "hiyouga/llamafactory",
+          "commit": "48897e5b168ce8502911f29dc0067ad856a21b59",
+          "reason": "baseline match",
+          "base": "v0.9.3",
+          "head": "v0.9.4",
+          "compared": 203,
+          "requests": 6
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-w889-685w-c8fh",
+        "package": "pillow",
+        "located": {
+          "repo": "python-pillow/pillow",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 10
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-q2x7-8rv6-6q7h",
+        "package": "jinja2",
+        "located": {
+          "repo": "pallets/jinja",
+          "commit": "1655128cfc0e8b598d5b3f361a3983f82098276b",
+          "reason": "baseline match",
+          "base": "3.1.4",
+          "head": "3.1.5",
+          "compared": 86,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-xx9p-xxvh-7g8j",
+        "package": "aiohttp",
+        "located": {
+          "repo": "aio-libs/aiohttp",
+          "commit": "9a09d1b2fefd47d18af02989cfa0b88871a0081c",
+          "reason": "baseline match",
+          "base": "v3.7.4.post0",
+          "head": "v3.8.0",
+          "compared": 250,
+          "requests": 8
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-94v7-wxj6-r2q5",
+        "package": "multicast",
+        "located": {
+          "repo": "reactive-firewall-org/multicast",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 3
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-63wh-p5fx-h4vc",
+        "package": "bbot",
+        "located": {
+          "repo": "blacklanternsecurity/bbot",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 4
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "PYSEC-2026-3998",
+        "package": "vllm",
+        "located": {
+          "repo": "vllm-project/vllm",
+          "commit": "299ebd094a9cea1a16077dc2a4419192b85a777c",
+          "reason": "baseline match",
+          "base": "v0.28.0",
+          "head": "v0.29.0",
+          "compared": 250,
+          "requests": 7
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-rp38-pj7h-r8q2",
+        "package": "python-a2a",
+        "located": {
+          "repo": "themanojdesai/python-a2a",
+          "commit": "de8337a00815a32a671a9074cd3fb0752ebd0d03",
+          "reason": "baseline match",
+          "base": "v0.5.5",
+          "head": "v0.5.6",
+          "compared": 13,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-rrmf-rvhw-rf47",
+        "package": "torch",
+        "located": {
+          "repo": "pytorch/pytorch",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 12
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-78qv-3mpx-9cqq",
+        "package": "nicegui",
+        "located": {
+          "repo": "zauberzeug/nicegui",
+          "commit": "25b473072f304f305f7ccb37a432a16b43172e71",
+          "reason": "baseline match",
+          "base": "v3.7.1",
+          "head": "v3.8.0",
+          "compared": 45,
+          "requests": 10
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-8qpj-27x8-pwpq",
+        "package": "langflow",
+        "located": {
+          "repo": "langflow-ai/langflow",
+          "commit": "2ff17eca243b7712d9927b4d8d429687e7b04dd9",
+          "reason": "baseline match",
+          "base": "v1.10.0",
+          "head": "v1.10.1",
+          "compared": 106,
+          "requests": 14
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-fw5r-6m3x-rh7p",
+        "package": "flask-appbuilder",
+        "located": {
+          "repo": "dpgaspar/flask-appbuilder",
+          "commit": "1a85de966bb689b59e95813cce7d2a369abee26e",
+          "reason": "baseline match",
+          "base": "v4.5.0",
+          "head": "v4.5.1",
+          "compared": 6,
+          "requests": 7
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-cggm-52qp-wvw7",
+        "package": "txaws",
+        "located": {
+          "repo": "twisted/txaws",
+          "commit": "d212451ae5560315481ca24ecee4a6900577a1f7",
+          "reason": "baseline match",
+          "base": "release-0.3.0",
+          "head": "0.4.0",
+          "compared": 81,
+          "requests": 8
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-7h6r-6p76-68c9",
+        "package": "openbabel",
+        "located": {
+          "repo": "openbabel/openbabel",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 3
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-655q-fx9r-782v",
+        "package": "picklescan",
+        "located": {
+          "repo": "mmaitre314/picklescan",
+          "commit": "f34d091824cb8775711f039b5299c277e2ecc663",
+          "reason": "baseline match",
+          "base": "v0.0.21",
+          "head": "v0.0.22",
+          "compared": 3,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-5vgj-ggm4-fg62",
+        "package": "pdoc",
+        "located": {
+          "repo": "mitmproxy/pdoc",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 5
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-7r9x-qrpr-3cxw",
+        "package": "mofh",
+        "located": {
+          "repo": "wallvon/mofh",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 3
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-5jmr-gcrj-2c9q",
+        "package": "litellm",
+        "located": {
+          "repo": "berriai/litellm",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 12
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-9xwg-3r6f-jcx2",
+        "package": "pymdown-extensions",
+        "located": {
+          "repo": "facelessuser/pymdown-extensions",
+          "commit": "19ec93690bd3a038c1eddc4fe63850e20daf3bb4",
+          "reason": "baseline match",
+          "base": "10.21.3",
+          "head": "11.0",
+          "compared": 12,
+          "requests": 7
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-wwv8-cqpr-vx3m",
+        "package": "modoboa",
+        "located": {
+          "repo": "modoboa/modoboa",
+          "commit": "8f2a1880a27a9c26ef92173f7357b78c0377a985",
+          "reason": "baseline match",
+          "base": "2.7.0",
+          "head": "2.7.1",
+          "compared": 66,
+          "requests": 6
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-g7f3-828f-7h7m",
+        "package": "authlib",
+        "located": {
+          "repo": "authlib/authlib",
+          "commit": "4b5b5703394608124cd39e547cc7829feda05a13",
+          "reason": "baseline match",
+          "base": "v1.6.4",
+          "head": "v1.6.5",
+          "compared": 11,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-7432-952r-cw78",
+        "package": "authlib",
+        "located": {
+          "repo": "authlib/authlib",
+          "commit": "a5d4b2d4c9e46bfa11c82f85fdc2bcc0b50ae681",
+          "reason": "baseline match",
+          "base": "v1.6.8",
+          "head": "v1.6.9",
+          "compared": 6,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-q5qw-4364-5hhm",
+        "package": "django",
+        "located": {
+          "repo": "django/django",
+          "commit": "2e47f3e401c29bc2ba5ab794d483cb0820855fb9",
+          "reason": "baseline match",
+          "base": "1.4.20",
+          "head": "1.4.21",
+          "compared": 7,
+          "requests": 23
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-4qqf-9m5c-w2c5",
+        "package": "weblate",
+        "located": {
+          "repo": "weblateorg/weblate",
+          "commit": null,
+          "reason": "comparison failed",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 6
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-w4pr-4vjg-hffh",
+        "package": "matrix-nio",
+        "located": {
+          "repo": "matrix-nio/matrix-nio",
+          "commit": "a84fa5b481bbfdc01910d5d42c10aa3050bfdf49",
+          "reason": "baseline match",
+          "base": "0.19.0",
+          "head": "0.20.0",
+          "compared": 41,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-332p-7hrc-92wf",
+        "package": "pillow",
+        "located": {
+          "repo": "python-pillow/pillow",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 10
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-r82c-j4mq-5xfw",
+        "package": "bitlyshortener",
+        "located": {
+          "repo": "impredicative/bitlyshortener",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 5
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-3589-pxp7-3gj8",
+        "package": "pydantic-ai-harness",
+        "located": {
+          "repo": "pydantic/pydantic-ai",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 6
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-894g-6j7q-2hx6",
+        "package": "flask-admin",
+        "located": {
+          "repo": "pallets-eco/flask-admin",
+          "commit": "14862cba7b182d2413ed4310de7729edba8c2ae3",
+          "reason": "baseline match",
+          "base": "v1.5.2",
+          "head": "v1.5.3",
+          "compared": 189,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-jmp3-39vp-fwg8",
+        "package": "wagtail",
+        "located": {
+          "repo": "wagtail/wagtail",
+          "commit": "7011dbbce82a72b00c257196d37bdd8979110bd9",
+          "reason": "baseline match",
+          "base": "v6.1.2",
+          "head": "v6.1.3",
+          "compared": 12,
+          "requests": 8
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-494p-63j8-28p3",
+        "package": "virtualenv",
+        "located": {
+          "repo": "pypa/virtualenv",
+          "commit": "c1c6eeec4843da892d4be0e7374a4ef01198cfe8",
+          "reason": "baseline match",
+          "base": "21.14.8",
+          "head": "21.14.9",
+          "compared": 40,
+          "requests": 8
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-hvmf-r92r-27hr",
+        "package": "django",
+        "located": {
+          "repo": "django/django",
+          "commit": "015fab76ad7f91562d2323657a6b5d7b4ff15e28",
+          "reason": "baseline match",
+          "base": "2.1.14",
+          "head": "2.1.15",
+          "compared": 8,
+          "requests": 16
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-8m3f-g62j-3vx8",
+        "package": "binwalk",
+        "located": {
+          "repo": "refirmlabs/binwalk",
+          "commit": "cc5cf9b24148da38335119c5a07d15f7a053ba83",
+          "reason": "baseline match",
+          "base": "v2.3.2",
+          "head": "v2.3.3",
+          "compared": 13,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-wj6g-v78p-6fx3",
+        "package": "praisonai",
+        "located": {
+          "repo": "mervinpraison/praisonai",
+          "commit": "86aeaa4d89c52791dae2fb31cb9e91e99b0d50e8",
+          "reason": "baseline match",
+          "base": "v4.6.57",
+          "head": "v4.6.58",
+          "compared": 5,
+          "requests": 14
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-48mj-p7x2-5jfm",
+        "package": "esphome",
+        "located": {
+          "repo": "esphome/esphome",
+          "commit": "185340764548d751e6005b46af9e097c119eb95d",
+          "reason": "baseline match",
+          "base": "2021.9.1",
+          "head": "2021.9.2",
+          "compared": 6,
+          "requests": 11
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-rr46-m366-gm44",
+        "package": "paddlepaddle",
+        "located": {
+          "repo": "paddlepaddle/paddle",
+          "commit": "5694736111d39cf6ba9b4083ff9c1417b5b6aa03",
+          "reason": "baseline match",
+          "base": "v2.4.2",
+          "head": "v2.5.0",
+          "compared": 250,
+          "requests": 7
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-r6v9-p59m-gj2p",
+        "package": "indy-node",
+        "located": {
+          "repo": "hyperledger-indy/indy-node",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 3
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-v7m9-9497-p9gr",
+        "package": "jupyterhub-kubespawner",
+        "located": {
+          "repo": "jupyterhub/kubespawner",
+          "commit": "788281bc89cbf0fd8f0b26b956762269631a034e",
+          "reason": "baseline match",
+          "base": "0.11.1",
+          "head": "0.12.0",
+          "compared": 39,
+          "requests": 7
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-4h3h-63v6-88qx",
+        "package": "esphome",
+        "located": {
+          "repo": "esphome/esphome",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 11
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-rrx3-2x4g-mq2h",
+        "package": "bugsink",
+        "located": {
+          "repo": "bugsink/bugsink",
+          "commit": null,
+          "reason": "no commit message matches",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 4
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-937f-qh3w-6g87",
+        "package": "octoprint",
+        "located": {
+          "repo": "octoprint/octoprint",
+          "commit": "6af0ce48dcc7cfcb3034b8f56b4d55f67a4fc23a",
+          "reason": "baseline match",
+          "base": "1.8.2",
+          "head": "1.8.3",
+          "compared": 24,
+          "requests": 8
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-r4rv-85jg-w4mf",
+        "package": "mistune",
+        "located": {
+          "repo": "lepture/mistune",
+          "commit": "d68b0d0c1b8e9bdfc74e14f34793fefa73ac8977",
+          "reason": "baseline match",
+          "base": "v3.2.1",
+          "head": "v3.3.0",
+          "compared": 39,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-vm8q-m57g-pff3",
+        "package": "django",
+        "located": {
+          "repo": "django/django",
+          "commit": "c22075af803e031e2977ed93391c2e3c6a714df4",
+          "reason": "baseline match",
+          "base": "5.0.2",
+          "head": "5.0.3",
+          "compared": 20,
+          "requests": 12
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-fgch-86x8-fv43",
+        "package": "apache-airflow-providers-ftp",
+        "located": {
+          "repo": "apache/airflow",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 12
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-qqv2-35q8-p2g2",
+        "package": "paddlepaddle",
+        "located": {
+          "repo": "paddlepaddle/paddle",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 3
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-hvc7-763r-4f3h",
+        "package": "openssl-encrypt",
+        "located": {
+          "repo": "jahlives/openssl_encrypt",
+          "commit": "3d25c67614ca608814fc72ac24b68e9f830d3249",
+          "reason": "baseline match",
+          "base": "v1.3.6",
+          "head": "v1.4.0",
+          "compared": 250,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-p7q8-grrj-3m8w",
+        "package": "copier",
+        "located": {
+          "repo": "copier-org/copier",
+          "commit": "3feea3b3ff3c20d80cbb16a2f3b9567ffc5606d1",
+          "reason": "baseline match",
+          "base": "v9.9.0",
+          "head": "v9.9.1",
+          "compared": 18,
+          "requests": 6
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-wqmh-qccw-pqwf",
+        "package": "mlflow",
+        "located": {
+          "repo": "mlflow/mlflow",
+          "commit": "b58d40d0bea09f6909e24974e9f7f822de5f4359",
+          "reason": "baseline match",
+          "base": "v3.17.1",
+          "head": "v3.17.2",
+          "compared": 4,
+          "requests": 7
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-37cf-r3w2-gjfw",
+        "package": "django-nopassword",
+        "located": {
+          "repo": "relekang/django-nopassword",
+          "commit": "ea2ba48ad2472bca2b57a4590a80d400dd8f37d5",
+          "reason": "baseline match",
+          "base": "v4.0.1",
+          "head": "v5.0.0",
+          "compared": 3,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-h56g-gq9v-vc8r",
+        "package": "jupyter-server",
+        "located": {
+          "repo": "jupyter-server/jupyter_server",
+          "commit": null,
+          "reason": "no commit message matches",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 5
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-9v8h-57gv-qch6",
+        "package": "django",
+        "located": {
+          "repo": "django/django",
+          "commit": "31c833f113caa85bcaa14673b738b4555e6be463",
+          "reason": "baseline match",
+          "base": "1.0.4",
+          "head": "1.1",
+          "compared": 250,
+          "requests": 11
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-h4hv-m4h4-mhwg",
+        "package": "django",
+        "located": {
+          "repo": "django/django",
+          "commit": "c4b8c46345305ad975e12f6a9a086874e639575c",
+          "reason": "baseline match",
+          "base": "1.10.6",
+          "head": "1.10.7",
+          "compared": 18,
+          "requests": 13
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-6cc5-2vg4-cc7m",
+        "package": "twisted",
+        "located": {
+          "repo": "twisted/twisted",
+          "commit": "8a473397d5cdecff38b95a94fc7fc75dd06217dc",
+          "reason": "baseline match",
+          "base": "twisted-19.2.0",
+          "head": "twisted-19.2.1",
+          "compared": 3,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-wr9h-g72x-mwhm",
+        "package": "vllm",
+        "located": {
+          "repo": "vllm-project/vllm",
+          "commit": "0eecb3166365a29db117c2aff6ca441b484b514d",
+          "reason": "baseline match",
+          "base": "v0.10.2",
+          "head": "v0.11.0",
+          "compared": 250,
+          "requests": 8
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-pq67-6m6q-mj2v",
+        "package": "urllib3",
+        "located": {
+          "repo": "urllib3/urllib3",
+          "commit": "c4b5917e911a90c8bf279448df8952a682294135",
+          "reason": "baseline match",
+          "base": "2.4.0",
+          "head": "2.5.0",
+          "compared": 16,
+          "requests": 8
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-fcfq-m8p6-gw56",
+        "package": "mobsf",
+        "located": {
+          "repo": "mobsf/mobile-security-framework-mobsf",
+          "commit": "05206e72cae35b311615a70e51e1a946955c5e83",
+          "reason": "baseline match",
+          "base": "v4.3.0",
+          "head": "v4.3.2",
+          "compared": 4,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-75c5-xw7c-p5pm",
+        "package": "pyjwt",
+        "located": {
+          "repo": "jpadilla/pyjwt",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 5
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-q238-5cxm-5c9h",
+        "package": "django",
+        "located": {
+          "repo": "django/django",
+          "commit": "0060c6c0328eedd9ef1d5faa0306e34ec59696eb",
+          "reason": "baseline match",
+          "base": "6.1",
+          "head": "6.1.1",
+          "compared": 31,
+          "requests": 11
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-jff3-mwp3-f8cw",
+        "package": "products-genericsetup",
+        "located": {
+          "repo": "zopefoundation/products.genericsetup",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 5
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-r5ph-4jxm-6j9p",
+        "package": "ekuiper",
+        "located": {
+          "repo": "lf-edge/ekuiper",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 10
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-vpp8-g58w-m8mp",
+        "package": "twisted",
+        "located": {
+          "repo": "twisted/twisted",
+          "commit": "cb1211d87d4dc418a04b8474628e04d78176a26a",
+          "reason": "baseline match",
+          "base": "twisted-26.4.0",
+          "head": "twisted-26.10.0rc1",
+          "compared": 250,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-3jqf-v4mv-747g",
+        "package": "moonraker",
+        "located": {
+          "repo": "arksine/moonraker",
+          "commit": "d4ef626961f1a9464dbdfc6761ead734a033c961",
+          "reason": "baseline match",
+          "base": "v0.9.3",
+          "head": "v0.10.0",
+          "compared": 146,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-g39v-cvjh-8fpf",
+        "package": "ha-mcp",
+        "located": {
+          "repo": "homeassistant-ai/ha-mcp",
+          "commit": "9783f346795be919bffda8a6475ae716a9e3580c",
+          "reason": "baseline match",
+          "base": "v7.4.1",
+          "head": "v7.5.0",
+          "compared": 196,
+          "requests": 16
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-f3q4-ggfp-jv34",
+        "package": "adyen",
+        "located": {
+          "repo": "adyen/adyen-python-api-library",
+          "commit": "9229e1523db45f43e1974ab879e4253631bbffb7",
+          "reason": "baseline match",
+          "base": "7.0.0",
+          "head": "7.1.0",
+          "compared": 41,
+          "requests": 6
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-jhpr-j7cq-3jp3",
+        "package": "flask-appbuilder",
+        "located": {
+          "repo": "dpgaspar/flask-appbuilder",
+          "commit": "0e08270ce4e8274447db70e48cd8312ae0571238",
+          "reason": "baseline match",
+          "base": "v4.3.1",
+          "head": "v4.3.2",
+          "compared": 9,
+          "requests": 6
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-9fpm-3445-2vx4",
+        "package": "langflow",
+        "located": {
+          "repo": "langflow-ai/langflow",
+          "commit": "32bef8c1b2ad7da657ef8fc1e36a95d8272e68aa",
+          "reason": "baseline match",
+          "base": "v1.10.2",
+          "head": "v1.10.3",
+          "compared": 32,
+          "requests": 15
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-hc5c-r8m5-2gfh",
+        "package": "plone-restapi",
+        "located": {
+          "repo": "plone/plone.restapi",
+          "commit": "f280675e445a86cbede2a7bf2b5ff65ce30a9a31",
+          "reason": "baseline match",
+          "base": "8.43.2",
+          "head": "8.43.3",
+          "compared": 3,
+          "requests": 7
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-4qjh-9fv9-r85r",
+        "package": "vllm",
+        "located": {
+          "repo": "vllm-project/vllm",
+          "commit": "01c22335baa03dbbc3ae662c76a089ff1c5b5742",
+          "reason": "baseline match",
+          "base": "v0.8.5.post1",
+          "head": "v0.9.0",
+          "compared": 250,
+          "requests": 7
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-7h3g-4w2f-fj2f",
+        "package": "proot-distro",
+        "located": {
+          "repo": "termux/proot-distro",
+          "commit": "98aff324b7d8500ff75a8ca9ac087ee636be4716",
+          "reason": "baseline match",
+          "base": "v5.1.5",
+          "head": "v5.1.6",
+          "compared": 7,
+          "requests": 6
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-q8h9-pqcx-59hw",
+        "package": "apache-airflow",
+        "located": {
+          "repo": "apache/airflow",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 12
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-gwqq-6vq7-5j86",
+        "package": "langchain",
+        "located": {
+          "repo": "langchain-ai/langchain",
+          "commit": "3902b85657a0d3f4345fe834434c33fa17780383",
+          "reason": "baseline match",
+          "base": "v0.0.235",
+          "head": "v0.0.236",
+          "compared": 48,
+          "requests": 16
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-23mf-xhv8-69c2",
+        "package": "gitpython",
+        "located": {
+          "repo": "gitpython-developers/gitpython",
+          "commit": "5fd795a4981d02c1cd9050e41793b3dc64ff2438",
+          "reason": "baseline match",
+          "base": "3.1.62",
+          "head": "3.2.0",
+          "compared": 74,
+          "requests": 6
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-rw7v-4hrq-x6r9",
+        "package": "fpdf2",
+        "located": {
+          "repo": "py-pdf/fpdf2",
+          "commit": "697c2e2112b24293424aafe354bb56f6c73cd593",
+          "reason": "baseline match",
+          "base": "2.8.7",
+          "head": "2.8.8",
+          "compared": 106,
+          "requests": 6
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-fvx8-v524-8579",
+        "package": "django-celery-results",
+        "located": {
+          "repo": "celery/django-celery-results",
+          "commit": "ad508fe3433499e5fc94645412d911e174863f28",
+          "reason": "baseline match",
+          "base": "v2.3.1",
+          "head": "v2.4.0",
+          "compared": 9,
+          "requests": 6
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-83pf-v6qq-pwmr",
+        "package": "fickling",
+        "located": {
+          "repo": "trailofbits/fickling",
+          "commit": "92917cd89f5995d17b0db6282a674dd43513468b",
+          "reason": "baseline match",
+          "base": "v0.1.7",
+          "head": "v0.1.8",
+          "compared": 40,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-8f6m-gfq9-g33v",
+        "package": "html5lib",
+        "located": {
+          "repo": "html5lib/html5lib-python",
+          "commit": "e0dc25f335d3df610f752df29d5c4301717eb452",
+          "reason": "baseline match",
+          "base": "0.99999999",
+          "head": "0.999999999",
+          "compared": 3,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-c9rc-mg46-23w3",
+        "package": "keras",
+        "located": {
+          "repo": "keras-team/keras",
+          "commit": "37a0920a3d83efcb6754fe7f09d991484198f17a",
+          "reason": "baseline match",
+          "base": "v3.10.0",
+          "head": "v3.11.0",
+          "compared": 107,
+          "requests": 6
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-2mqj-m65w-jghx",
+        "package": "gitpython",
+        "located": {
+          "repo": "gitpython-developers/gitpython",
+          "commit": "7dd209593d08067e005c92b6856a07dc5a2b618a",
+          "reason": "baseline match",
+          "base": "3.1.40",
+          "head": "3.1.41",
+          "compared": 230,
+          "requests": 6
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-7488-6r32-c95q",
+        "package": "litellm",
+        "located": {
+          "repo": "berriai/litellm",
+          "commit": "0dd64baa669aef52738f1d628982537707d29e95",
+          "reason": "baseline match",
+          "base": "v1.82.3",
+          "head": "v1.84.0",
+          "compared": 250,
+          "requests": 14
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-wf9g-c67g-h4ch",
+        "package": "mindsdb",
+        "located": {
+          "repo": "mindsdb/mindshub",
+          "commit": null,
+          "reason": "no commit message matches",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 7
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-g35p-px32-whv6",
+        "package": "mlflow",
+        "located": {
+          "repo": "mlflow/mlflow",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 5
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-432c-wxpg-m4q3",
+        "package": "xml2rfc",
+        "located": {
+          "repo": "ietf-tools/xml2rfc",
+          "commit": "05954443d654c52ffa0639505b9ac320028930ac",
+          "reason": "baseline match",
+          "base": "v3.26.0",
+          "head": "v3.27.0",
+          "compared": 7,
+          "requests": 8
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-fh66-fcv5-jjfr",
+        "package": "matrix-synapse",
+        "located": {
+          "repo": "element-hq/synapse",
+          "commit": "d67280f5d8e865875a45d5d27790b604dcbcff70",
+          "reason": "baseline match",
+          "base": "v1.139.0",
+          "head": "v1.139.1",
+          "compared": 5,
+          "requests": 13
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-53mr-44pp-crf4",
+        "package": "pip",
+        "located": {
+          "repo": "pypa/pip",
+          "commit": "f6b0665553f67b1e4aab1dc07dba90093ad81855",
+          "reason": "baseline match",
+          "base": "1.5.6",
+          "head": "6.0",
+          "compared": 250,
+          "requests": 6
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-h63r-9xxf-f2c7",
+        "package": "apache-airflow",
+        "located": {
+          "repo": "apache/airflow",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 12
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-772j-xvf9-qpf5",
+        "package": "ansible-runner",
+        "located": {
+          "repo": "ansible/ansible-runner",
+          "commit": "558237e662d071b5fe27ca78bbe5be897a450da2",
+          "reason": "baseline match",
+          "base": "2.0.4",
+          "head": "2.1.0",
+          "compared": 250,
+          "requests": 7
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-qh4c-xf7m-gxfc",
+        "package": "vllm",
+        "located": {
+          "repo": "vllm-project/vllm",
+          "commit": "4dc11b06d3843f862e30f431f48b29f8f94cd0c8",
+          "reason": "baseline match",
+          "base": "v0.14.0",
+          "head": "v0.14.1",
+          "compared": 5,
+          "requests": 8
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-g9cj-cfpp-4g2x",
+        "package": "gradio",
+        "located": {
+          "repo": "gradio-app/gradio",
+          "commit": "d876d770da6901d309a2828499881dc9d6dceac9",
+          "reason": "baseline match",
+          "base": "gradio@4.12.0",
+          "head": "gradio@4.13.0",
+          "compared": 26,
+          "requests": 15
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-cpqf-3c3r-c9g2",
+        "package": "cobbler",
+        "located": {
+          "repo": "cobbler/cobbler",
+          "commit": "68225e2d2108d442ac5dcb68f07484d001964d7c",
+          "reason": "baseline match",
+          "base": "v3.2.3",
+          "head": "v3.3.0",
+          "compared": 250,
+          "requests": 8
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-c6hw-5grf-ff96",
+        "package": "pillow",
+        "located": {
+          "repo": "python-pillow/pillow",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 10
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "PYSEC-2026-2154",
+        "package": "gdal",
+        "located": {
+          "repo": "osgeo/gdal",
+          "commit": "343696c18d0663c4be35403340b5cb3f68e550a2",
+          "reason": "baseline match",
+          "base": "v3.12.4",
+          "head": "v3.13.0",
+          "compared": 250,
+          "requests": 7
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-jrwr-5x3p-hvc3",
+        "package": "markdown-it-py",
+        "located": {
+          "repo": "executablebooks/markdown-it-py",
+          "commit": "ae03c6107dfa18e648f6fdd1280f5b89092d5d49",
+          "reason": "baseline match",
+          "base": "v2.1.0",
+          "head": "v2.2.0",
+          "compared": 18,
+          "requests": 6
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-frvg-qw88-hww9",
+        "package": "vllm",
+        "located": {
+          "repo": "vllm-project/vllm",
+          "commit": "fd928e5f3cf17bce1ba090040beec48f86c84ff6",
+          "reason": "baseline match",
+          "base": "v0.31.0",
+          "head": "v0.32.0",
+          "compared": 250,
+          "requests": 7
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-m64x-33q8-m5h7",
+        "package": "gitpython",
+        "located": {
+          "repo": "gitpython-developers/gitpython",
+          "commit": "5fd795a4981d02c1cd9050e41793b3dc64ff2438",
+          "reason": "baseline match",
+          "base": "3.1.62",
+          "head": "3.2.0",
+          "compared": 74,
+          "requests": 6
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-j28r-j54m-gpc4",
+        "package": "slo-generator",
+        "located": {
+          "repo": "google/slo-generator",
+          "commit": "36318beab1b85d14bb860e45bea186b184690d5d",
+          "reason": "baseline match",
+          "base": "v2.0.0",
+          "head": "v2.0.1",
+          "compared": 5,
+          "requests": 5
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-h7ww-273w-6cm8",
+        "package": "mistune",
+        "located": {
+          "repo": "lepture/mistune",
+          "commit": "d68b0d0c1b8e9bdfc74e14f34793fefa73ac8977",
+          "reason": "baseline match",
+          "base": "v3.2.1",
+          "head": "v3.3.0",
+          "compared": 39,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-6845-xw22-ffxv",
+        "package": "vyper",
+        "located": {
+          "repo": "vyperlang/vyper",
+          "commit": "7c74aa2618c8051db88acfac3bd71a3017c524cb",
+          "reason": "baseline match",
+          "base": "v0.3.10",
+          "head": "v0.4.0",
+          "compared": 250,
+          "requests": 6
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-6fvq-23cw-5628",
+        "package": "vllm",
+        "located": {
+          "repo": "vllm-project/vllm",
+          "commit": "0eecb3166365a29db117c2aff6ca441b484b514d",
+          "reason": "baseline match",
+          "base": "v0.10.2",
+          "head": "v0.11.0",
+          "compared": 250,
+          "requests": 8
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      }
+    ],
+    "ranked": [
+      {
+        "vulnerability": "GHSA-p5w8-wqhj-9hhf",
+        "package": "sqlparse",
+        "located": {
+          "repo": "andialbrecht/sqlparse",
+          "commit": "e575ae2c37359ab51b23ce44ccda4bb9bbfd3a5f",
+          "reason": "ranked match",
+          "base": "0.4.1",
+          "head": "0.4.2",
+          "compared": 11,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-2g87-pp6c-29x5",
+        "package": "aiohttp",
+        "located": {
+          "repo": "aio-libs/aiohttp",
+          "commit": "752600382a328f1a63f10bbe04aaeccc6805be97",
+          "reason": "ranked match",
+          "base": "v3.14.3",
+          "head": "v3.14.4",
+          "compared": 91,
+          "requests": 10
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-cpcw-p965-wpqx",
+        "package": "rtslib-fb",
+        "located": {
+          "repo": "open-iscsi/rtslib-fb",
+          "commit": "46f22603240f51def35abfbf3b3d2682b6b6759f",
+          "reason": "ranked match",
+          "base": "v2.1.72",
+          "head": "v2.1.73",
+          "compared": 10,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-59qj-jcjv-662j",
+        "package": "dirac",
+        "located": {
+          "repo": "diracgrid/dirac",
+          "commit": "f9ddab755b9a69acb85e14d2db851d8ac0c9648c",
+          "reason": "ranked match",
+          "base": "v8.0.36",
+          "head": "v8.0.37",
+          "compared": 18,
+          "requests": 14
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-55x5-fj6c-h6m8",
+        "package": "lxml",
+        "located": {
+          "repo": "lxml/lxml",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 8
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-3gf5-cxq9-w223",
+        "package": "picklescan",
+        "located": {
+          "repo": "mmaitre314/picklescan",
+          "commit": "1931c2d04eaca8d20597705ff39cab78ba364e4b",
+          "reason": "ranked match",
+          "base": "v0.0.29",
+          "head": "v0.0.30",
+          "compared": 1,
+          "requests": 5
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-m6h2-jx9v-58w6",
+        "package": "apache-airflow",
+        "located": {
+          "repo": "apache/airflow",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 12
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-8m59-7xv8-735h",
+        "package": "marimo",
+        "located": {
+          "repo": "marimo-team/marimo",
+          "commit": "8ca34dd9a08a24f916efa87431e8e0bd5a4eb9b6",
+          "reason": "ranked match",
+          "base": "0.23.8",
+          "head": "0.23.9",
+          "compared": 50,
+          "requests": 9
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-vxmm-cwh2-q762",
+        "package": "vyper",
+        "located": {
+          "repo": "vyperlang/vyper",
+          "commit": "851f7a1b3aa2a36fd041e3d0ed38f9355a58c8ae",
+          "reason": "ranked match",
+          "base": "v0.3.7",
+          "head": "v0.3.8",
+          "compared": 160,
+          "requests": 6
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-hf3c-wxg2-49q9",
+        "package": "vllm",
+        "located": {
+          "repo": "vllm-project/vllm",
+          "commit": "2fa66ef713a62f96c24135ceffd70f1bbafea4e4",
+          "reason": "ranked match",
+          "base": "v0.8.3",
+          "head": "v0.8.4",
+          "compared": 179,
+          "requests": 11
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-vv4j-m4vr-f3g6",
+        "package": "esphome-device-builder",
+        "located": {
+          "repo": "esphome/device-builder",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 8
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-45c4-8wx5-qw6w",
+        "package": "aiohttp",
+        "located": {
+          "repo": "aio-libs/aiohttp",
+          "commit": "9c13a52c21c23dfdb49ed89418d28a5b116d0681",
+          "reason": "ranked match",
+          "base": "v3.8.4",
+          "head": "v3.8.5",
+          "compared": 16,
+          "requests": 8
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-wr9v-g9vf-c74v",
+        "package": "tensorflow",
+        "located": {
+          "repo": "tensorflow/tensorflow",
+          "commit": "51d867296a46a60954affec46b6dbfac73181269",
+          "reason": "ranked match",
+          "base": "v2.7.1",
+          "head": "v2.7.2",
+          "compared": 64,
+          "requests": 20
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-mf9w-mj56-hr94",
+        "package": "python-dotenv",
+        "located": {
+          "repo": "theskumar/python-dotenv",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 9
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-gfw2-4jvh-wgfg",
+        "package": "aiohttp",
+        "located": {
+          "repo": "aio-libs/aiohttp",
+          "commit": "8d701c3d2811070213c7309f873167b2b8b3655b",
+          "reason": "ranked match",
+          "base": "v3.8.5",
+          "head": "v3.8.6",
+          "compared": 13,
+          "requests": 8
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-9c4x-gm8v-wgc4",
+        "package": "filelock",
+        "located": {
+          "repo": "tox-dev/filelock",
+          "commit": "119cb393ea835fd55b69a7335a8c7aa8ab8d1e8e",
+          "reason": "ranked match",
+          "base": "4.2.0",
+          "head": "4.2.1",
+          "compared": 23,
+          "requests": 9
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-j92p-c242-7hfx",
+        "package": "pyload-ng",
+        "located": {
+          "repo": "pyload/pyload",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 3
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-pqhf-p39g-3x64",
+        "package": "uv",
+        "located": {
+          "repo": "astral-sh/uv",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 12
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-x88j-93vc-wpmp",
+        "package": "django",
+        "located": {
+          "repo": "django/django",
+          "commit": "2f7fadc38efa58ac0a8f93f936b82332a199f396",
+          "reason": "ranked match",
+          "base": "1.3",
+          "head": "1.3.1",
+          "compared": 113,
+          "requests": 11
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-w7rv-gfp4-j9j3",
+        "package": "slippers",
+        "located": {
+          "repo": "mixxorz/slippers",
+          "commit": null,
+          "reason": "no commit message matches",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 4
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-vmhf-c436-hxj4",
+        "package": "jupyterlab",
+        "located": {
+          "repo": "jupyterlab/jupyterlab",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 17
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-qqcv-vg9f-5rr3",
+        "package": "litellm",
+        "located": {
+          "repo": "berriai/litellm",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 12
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-69w3-r845-3855",
+        "package": "transformers",
+        "located": {
+          "repo": "huggingface/transformers",
+          "commit": "03c8082ba4594c9b8d6fe190ca9bed0e5f8ca396",
+          "reason": "ranked match",
+          "base": "v4.57.6",
+          "head": "v5.0.0",
+          "compared": 250,
+          "requests": 8
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-mq26-g339-26xf",
+        "package": "pip",
+        "located": {
+          "repo": "pypa/pip",
+          "commit": "d09431feb5049ec5e7a9b4ecb5d338a38a14ffc4",
+          "reason": "ranked match",
+          "base": "23.2.1",
+          "head": "23.3",
+          "compared": 234,
+          "requests": 7
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-vqxf-v2gg-x3hc",
+        "package": "docling-core",
+        "located": {
+          "repo": "docling-project/docling-core",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 6
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-f3h9-8phc-6gvh",
+        "package": "gradio",
+        "located": {
+          "repo": "gradio-app/gradio",
+          "commit": "3227b1748c7a3b8257fbf3c50d266c526da1f306",
+          "reason": "ranked match",
+          "base": "gradio@4.8.0",
+          "head": "gradio@4.9.0",
+          "compared": 42,
+          "requests": 14
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-jg86-v3jv-hrpm",
+        "package": "pillow",
+        "located": {
+          "repo": "python-pillow/pillow",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 10
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-47wv-vhj2-g66m",
+        "package": "horovod",
+        "located": {
+          "repo": "horovod/horovod",
+          "commit": "f29b02f3ffab6782e8070a27c9f5eb53e217b556",
+          "reason": "ranked match",
+          "base": "v0.23.0",
+          "head": "v0.24.0",
+          "compared": 90,
+          "requests": 6
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-8j24-cjrq-gr2m",
+        "package": "django",
+        "located": {
+          "repo": "django/django",
+          "commit": "c9731dc656e533187b021b4d81f8293d6c943a43",
+          "reason": "ranked match",
+          "base": "5.2",
+          "head": "5.2.1",
+          "compared": 33,
+          "requests": 10
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-fvww-7h3r-vfhp",
+        "package": "langgraph-sdk",
+        "located": {
+          "repo": "langchain-ai/langgraph",
+          "commit": "2a1c63ff9cdc948d101d070d561ad41f2c79f9fa",
+          "reason": "ranked match",
+          "base": "0.4.3",
+          "head": "0.4.4",
+          "compared": 143,
+          "requests": 11
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-vx5f-957p-qpvm",
+        "package": "glances",
+        "located": {
+          "repo": "nicolargo/glances",
+          "commit": "2abe8d8733e354f280bb3616150c7338b4940ff1",
+          "reason": "ranked match",
+          "base": "v4.5.1",
+          "head": "v4.5.2",
+          "compared": 27,
+          "requests": 6
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-gv5h-5655-h4mv",
+        "package": "django-cms",
+        "located": {
+          "repo": "django-cms/django-cms",
+          "commit": "c045a990e56d54cd0bfc0eea2c8192c447b19b95",
+          "reason": "ranked match",
+          "base": "4.1.3",
+          "head": "4.1.4",
+          "compared": 11,
+          "requests": 7
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-j47q-rc62-w448",
+        "package": "fastapi-guard",
+        "located": {
+          "repo": "guard-core/fastapi-guard",
+          "commit": null,
+          "reason": "no commit message matches",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 4
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-rcrv-228c-gprj",
+        "package": "bitlyshortener",
+        "located": {
+          "repo": "impredicative/bitlyshortener",
+          "commit": null,
+          "reason": "no commit message matches",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 4
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-74xw-82v7-hmrm",
+        "package": "python-dbusmock",
+        "located": {
+          "repo": "martinpitt/python-dbusmock",
+          "commit": "4e7d0df909338eb3c44b083722c7bf8b76bdf940",
+          "reason": "ranked match",
+          "base": "0.15",
+          "head": "0.15.1",
+          "compared": 2,
+          "requests": 6
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-cxfr-5q3r-2rc2",
+        "package": "mlflow",
+        "located": {
+          "repo": "mlflow/mlflow",
+          "commit": "7cd8ab8e31efff1cda76b1743930811d319ff94c",
+          "reason": "ranked match",
+          "base": "v2.9.1",
+          "head": "v2.9.2",
+          "compared": 22,
+          "requests": 8
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-fc9g-5qg7-mf45",
+        "package": "pillow",
+        "located": {
+          "repo": "python-pillow/pillow",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 10
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-vq8p-m3wm-gv5f",
+        "package": "pyload-ng",
+        "located": {
+          "repo": "pyload/pyload",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 3
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-m269-wj6g-c459",
+        "package": "pysaml2",
+        "located": {
+          "repo": "identitypython/pysaml2",
+          "commit": "6e09a25d9b4b7aa7a506853210a9a14100b8bc9b",
+          "reason": "ranked match",
+          "base": "v4.4.0",
+          "head": "v4.5.0",
+          "compared": 95,
+          "requests": 5
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-gx64-gj6p-pc4c",
+        "package": "jupyterlab",
+        "located": {
+          "repo": "jupyterlab/jupyterlab",
+          "commit": "f1beab4a2027af4719d6edc07d52d6cf5a39a432",
+          "reason": "ranked match",
+          "base": "v4.6.1",
+          "head": "v4.6.2",
+          "compared": 16,
+          "requests": 14
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-58r4-6rv3-gfh8",
+        "package": "pillow",
+        "located": {
+          "repo": "python-pillow/pillow",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 10
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-3h9f-r86x-qvjx",
+        "package": "django",
+        "located": {
+          "repo": "django/django",
+          "commit": "64f9a2b2283fde3ec69fb0dfe441cf0f6f411ba3",
+          "reason": "ranked match",
+          "base": "6.0.6",
+          "head": "6.0.7",
+          "compared": 27,
+          "requests": 10
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-f54q-j679-p9hh",
+        "package": "copyparty",
+        "located": {
+          "repo": "9001/copyparty",
+          "commit": "007d948cb982daa05bc6619cd20ee55b7e834c38",
+          "reason": "ranked match",
+          "base": "v1.8.6",
+          "head": "v1.8.7",
+          "compared": 7,
+          "requests": 8
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-22m3-c7vp-49fj",
+        "package": "irrd",
+        "located": {
+          "repo": "irrdnet/irrd",
+          "commit": "cf62df4a49d3891e80b2879d9b324d1af050000c",
+          "reason": "ranked match",
+          "base": "v4.5.0",
+          "head": "v4.5.1",
+          "compared": 8,
+          "requests": 6
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-7mpr-5m44-h73r",
+        "package": "markdownify",
+        "located": {
+          "repo": "matthewwithanm/python-markdownify",
+          "commit": "959561879693bf4a576f99c6733b50b01186aa08",
+          "reason": "ranked match",
+          "base": "0.14.0",
+          "head": "0.14.1",
+          "compared": 4,
+          "requests": 5
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-hmq2-w58f-27jc",
+        "package": "gitpython",
+        "located": {
+          "repo": "gitpython-developers/gitpython",
+          "commit": "e4b8e7d026ca6abb4cf604f8e77093432ce23c06",
+          "reason": "ranked match",
+          "base": "3.1.57",
+          "head": "3.1.58",
+          "compared": 33,
+          "requests": 6
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-8988-9cw3-xx77",
+        "package": "urllib3",
+        "located": {
+          "repo": "urllib3/urllib3",
+          "commit": "9f1b31d7daab252962d3400f64c3574c0ccb122f",
+          "reason": "ranked match",
+          "base": "2.7.0",
+          "head": "2.8.0",
+          "compared": 69,
+          "requests": 9
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-f9xw-jh8m-3mwq",
+        "package": "aiohttp",
+        "located": {
+          "repo": "aio-libs/aiohttp",
+          "commit": "752600382a328f1a63f10bbe04aaeccc6805be97",
+          "reason": "ranked match",
+          "base": "v3.14.3",
+          "head": "v3.14.4",
+          "compared": 91,
+          "requests": 10
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-hrfv-mqp8-q5rw",
+        "package": "werkzeug",
+        "located": {
+          "repo": "pallets/werkzeug",
+          "commit": "b1916c0c083e0be1c9d887ee2f3d696922bfc5c1",
+          "reason": "ranked match",
+          "base": "3.0.0",
+          "head": "3.0.1",
+          "compared": 3,
+          "requests": 6
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-4qqq-9vqf-3h3f",
+        "package": "scrapy",
+        "located": {
+          "repo": "scrapy/scrapy",
+          "commit": "33ef5450f988963096ee618e41342184af3e8e44",
+          "reason": "ranked match",
+          "base": "2.11.1",
+          "head": "2.11.2",
+          "compared": 42,
+          "requests": 6
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-f8xq-q7px-wg8c",
+        "package": "gradio",
+        "located": {
+          "repo": "gradio-app/gradio",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 12
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-xq59-7jf3-rjc6",
+        "package": "piccolo",
+        "located": {
+          "repo": "piccolo-orm/piccolo",
+          "commit": "82679eb8cd1449cf31d87c9914a072e70168b6eb",
+          "reason": "ranked match",
+          "base": "1.1.0",
+          "head": "1.1.1",
+          "compared": 4,
+          "requests": 7
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-m842-4qm8-7gpq",
+        "package": "gradio",
+        "located": {
+          "repo": "gradio-app/gradio",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 18
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-5jqp-qgf6-3pvh",
+        "package": "pydantic",
+        "located": {
+          "repo": "pydantic/pydantic",
+          "commit": "1c24f1d74ba95ea985b50bdc001ce96c813229aa",
+          "reason": "ranked match",
+          "base": "v1.8.1",
+          "head": "v1.8.2",
+          "compared": 16,
+          "requests": 7
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-p99v-5w3c-jqq9",
+        "package": "django",
+        "located": {
+          "repo": "django/django",
+          "commit": "9f75e2e562fa0c0482f3dde6fc7399a9070b4a3d",
+          "reason": "ranked match",
+          "base": "3.2.3",
+          "head": "3.2.4",
+          "compared": 27,
+          "requests": 10
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-jw8x-6495-233v",
+        "package": "scikit-learn",
+        "located": {
+          "repo": "scikit-learn/scikit-learn",
+          "commit": "846b0fd1d8700c99a75561f60551d034dcb46acd",
+          "reason": "ranked match",
+          "base": "1.4.2",
+          "head": "1.5.0",
+          "compared": 250,
+          "requests": 8
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-3m3h-v9hv-9j4h",
+        "package": "wiki",
+        "located": {
+          "repo": "django-wiki/django-wiki",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 3
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-j3j3-jrfh-cm2w",
+        "package": "django",
+        "located": {
+          "repo": "django/django",
+          "commit": "e63363f8e075fa8d66326ad6a1cc3391cc95cd97",
+          "reason": "ranked match",
+          "base": "1.7.6",
+          "head": "1.7.7",
+          "compared": 26,
+          "requests": 11
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-h5cg-53g7-gqjw",
+        "package": "rpyc",
+        "located": {
+          "repo": "tomerfiliba-org/rpyc",
+          "commit": "43027f9447aa88f598fb0fbccee1f462fb128eec",
+          "reason": "ranked match",
+          "base": "5.3.1",
+          "head": "6.0.0",
+          "compared": 37,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-c6mm-2g84-v4m7",
+        "package": "mage-ai",
+        "located": {
+          "repo": "mage-ai/mage-ai",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 3
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-whr6-fgpq-fpv9",
+        "package": "compose-lint",
+        "located": {
+          "repo": "tmatens/compose-lint",
+          "commit": "e317ccfc417d849f89faa5b169ff4ad2df7ec5b0",
+          "reason": "ranked match",
+          "base": "v0.24.0",
+          "head": "v0.25.0",
+          "compared": 20,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-7984-qgvg-3j9c",
+        "package": "oauthlib",
+        "located": {
+          "repo": "oauthlib/oauthlib",
+          "commit": "eb185bb2ea4da0f50eb122a7c0641341c280f1de",
+          "reason": "ranked match",
+          "base": "v3.3.1",
+          "head": "v4.0.0",
+          "compared": 74,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-r44w-v6gf-x3p6",
+        "package": "pyload-ng",
+        "located": {
+          "repo": "pyload/pyload",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 3
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-rw75-m7gp-92m3",
+        "package": "django",
+        "located": {
+          "repo": "django/django",
+          "commit": "da051da8df5e69944745072611351d4cfc6435d5",
+          "reason": "ranked match",
+          "base": "1.6.5",
+          "head": "1.6.6",
+          "compared": 106,
+          "requests": 10
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-q63x-9pfm-mjx4",
+        "package": "feast",
+        "located": {
+          "repo": "feast-dev/feast",
+          "commit": "0c469a7f1d49046c6be7be61bd65ca706b2f207e",
+          "reason": "ranked match",
+          "base": "v0.62.0",
+          "head": "v0.63.0",
+          "compared": 63,
+          "requests": 8
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-qm57-vhq3-3fwf",
+        "package": "django",
+        "located": {
+          "repo": "django/django",
+          "commit": "2d2c1d0c97832860fbd6597977e2aae17dd7e5b2",
+          "reason": "ranked match",
+          "base": "3.2.1",
+          "head": "3.2.2",
+          "compared": 7,
+          "requests": 10
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-c2jg-hw38-jrqq",
+        "package": "twisted",
+        "located": {
+          "repo": "twisted/twisted",
+          "commit": "592217e951363d60e9cd99c5bbfd23d4615043ac",
+          "reason": "ranked match",
+          "base": "twisted-22.2.0",
+          "head": "twisted-22.4.0",
+          "compared": 112,
+          "requests": 6
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-q7q2-qf2q-rw3w",
+        "package": "django",
+        "located": {
+          "repo": "django/django",
+          "commit": "546740544d7f69254a67b06a3fc7fa0c43512958",
+          "reason": "ranked match",
+          "base": "1.6.11",
+          "head": "1.7b4",
+          "compared": 250,
+          "requests": 10
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-57fc-8q82-gfp3",
+        "package": "langchain",
+        "located": {
+          "repo": "langchain-ai/langchain",
+          "commit": "1bbadde77b2e22bfbb6bf8049f0f1687bcf18de0",
+          "reason": "ranked match",
+          "base": "v0.0.245",
+          "head": "v0.0.247",
+          "compared": 54,
+          "requests": 14
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-8rj5-2857-877j",
+        "package": "json2xml",
+        "located": {
+          "repo": "vinitkumar/json2xml",
+          "commit": "a9cd75b61329801b47a8fba7473bce6c85a38b9b",
+          "reason": "ranked match",
+          "base": "3.12.0",
+          "head": "v3.14.0",
+          "compared": 6,
+          "requests": 5
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-v9v9-xffq-rwr4",
+        "package": "html5lib",
+        "located": {
+          "repo": "html5lib/html5lib-python",
+          "commit": "e0dc25f335d3df610f752df29d5c4301717eb452",
+          "reason": "ranked match",
+          "base": "0.99999999",
+          "head": "0.999999999",
+          "compared": 3,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-grjp-54v3-c442",
+        "package": "usd-core",
+        "located": {
+          "repo": "pixaranimationstudios/openusd",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 9
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-xjhm-gp88-8pfx",
+        "package": "copier",
+        "located": {
+          "repo": "copier-org/copier",
+          "commit": "41cb45c9649782150c01886bc52bee5eddb655b9",
+          "reason": "ranked match",
+          "base": "v9.11.1",
+          "head": "v9.11.2",
+          "compared": 10,
+          "requests": 6
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-6p6v-m64v-jx8q",
+        "package": "pyspark",
+        "located": {
+          "repo": "apache/spark",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 18
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-3f84-rpwh-47g6",
+        "package": "waitress",
+        "located": {
+          "repo": "pylons/waitress",
+          "commit": "f4ba1c260cf17156b582c6252496213ddc96b591",
+          "reason": "ranked match",
+          "base": "v3.0.0",
+          "head": "v3.0.1",
+          "compared": 27,
+          "requests": 8
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-mqpq-2p68-46fv",
+        "package": "pyload-ng",
+        "located": {
+          "repo": "pyload/pyload",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 3
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-g3cq-j2xw-wf74",
+        "package": "aiohttp",
+        "located": {
+          "repo": "aio-libs/aiohttp",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 12
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-r9mr-m37c-5fr3",
+        "package": "gitpython",
+        "located": {
+          "repo": "gitpython-developers/gitpython",
+          "commit": "e8d0fbf774d1f6baa3b481adfe48bd262e43b453",
+          "reason": "ranked match",
+          "base": "3.1.53",
+          "head": "3.1.54",
+          "compared": 5,
+          "requests": 6
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-qw25-v68c-qjf3",
+        "package": "django",
+        "located": {
+          "repo": "django/django",
+          "commit": "4f5d904b63751dea9ffc3b0e046404a7fa5881ac",
+          "reason": "ranked match",
+          "base": "5.2.7",
+          "head": "5.2.8",
+          "compared": 27,
+          "requests": 10
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-f2mf-q878-gh58",
+        "package": "parsl",
+        "located": {
+          "repo": "parsl/parsl",
+          "commit": "013a928461e70f38a33258bd525a351ed828e974",
+          "reason": "ranked match",
+          "base": "2025.12.29",
+          "head": "2026.01.05",
+          "compared": 1,
+          "requests": 7
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-f9fq-78ch-4wmj",
+        "package": "apache-airflow",
+        "located": {
+          "repo": "apache/airflow",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 12
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-8x3m-m3x9-54fj",
+        "package": "oauthenticator",
+        "located": {
+          "repo": "jupyterhub/oauthenticator",
+          "commit": "30825c47e4202d73ceabe023b331f66df25c303c",
+          "reason": "ranked match",
+          "base": "0.7.2",
+          "head": "0.7.3",
+          "compared": 4,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-vx4q-3cr2-7cg2",
+        "package": "yt-dlp",
+        "located": {
+          "repo": "yt-dlp/yt-dlp",
+          "commit": "25056f0d2d47adbd235a8d422fa62d68d0be2bc2",
+          "reason": "ranked match",
+          "base": "2026.03.17",
+          "head": "2026.06.09",
+          "compared": 65,
+          "requests": 6
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-vh75-fwv3-pqrh",
+        "package": "requests-hardened",
+        "located": {
+          "repo": "saleor/requests-hardened",
+          "commit": "b7403f88d3b3689e57435b75b51691a160aaeef5",
+          "reason": "ranked match",
+          "base": "v1.2.0",
+          "head": "v1.2.1",
+          "compared": 8,
+          "requests": 5
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-6m53-c78q-7qmg",
+        "package": "mitmproxy",
+        "located": {
+          "repo": "mitmproxy/mitmproxy",
+          "commit": "9c41a92ff283c52fdb7a01465b24ccef5c68eca4",
+          "reason": "ranked match",
+          "base": "v4.0.3",
+          "head": "v4.0.4",
+          "compared": 7,
+          "requests": 6
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-g4mx-q9vg-27p4",
+        "package": "urllib3",
+        "located": {
+          "repo": "urllib3/urllib3",
+          "commit": "4e50fbc5db74e32cabd5ccc1ab81fc103adfe0b3",
+          "reason": "ranked match",
+          "base": "2.0.6",
+          "head": "2.0.7",
+          "compared": 4,
+          "requests": 6
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-jqpc-rc7g-vf83",
+        "package": "homeassistant",
+        "located": {
+          "repo": "home-assistant/core",
+          "commit": "3adda6b11024edff427a6522d2fb9e4c1b440db0",
+          "reason": "ranked match",
+          "base": "2023.12.2",
+          "head": "2023.12.3",
+          "compared": 10,
+          "requests": 14
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-xm98-3vcf-fph7",
+        "package": "mcp-contextforge-gateway",
+        "located": {
+          "repo": "ibm/mcp-context-forge",
+          "commit": "d6c8c614414246a321784cf45c6b3aa99bda9563",
+          "reason": "ranked match",
+          "base": "v1.0.1",
+          "head": "v1.0.2",
+          "compared": 47,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-6vqj-c2q5-j97w",
+        "package": "picklescan",
+        "located": {
+          "repo": "mmaitre314/picklescan",
+          "commit": "aecd11be98702caa9ba9b12189d91ad596a36114",
+          "reason": "ranked match",
+          "base": "v0.0.28",
+          "head": "v0.0.29",
+          "compared": 1,
+          "requests": 5
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-956x-8gvw-wg5v",
+        "package": "gitpython",
+        "located": {
+          "repo": "gitpython-developers/gitpython",
+          "commit": "701ce32fe5ba8cb622c0e0342a376a6beb47d738",
+          "reason": "ranked match",
+          "base": "3.1.50",
+          "head": "3.1.51",
+          "compared": 59,
+          "requests": 6
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-r735-9gc6-2hvq",
+        "package": "calibreweb",
+        "located": {
+          "repo": "janeczku/calibre-web",
+          "commit": "a5415e00d54788cc32702b9a2793015281a34c22",
+          "reason": "ranked match",
+          "base": "0.6.14",
+          "head": "0.6.15",
+          "compared": 127,
+          "requests": 9
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-6px8-mr29-cj4r",
+        "package": "datachain",
+        "located": {
+          "repo": "datachain-ai/datachain",
+          "commit": null,
+          "reason": "no commit message matches",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 6
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-q6j3-c4wc-63vw",
+        "package": "datasette",
+        "located": {
+          "repo": "simonw/datasette",
+          "commit": "0748a65a22302640ec7520a19aaba280b5615930",
+          "reason": "ranked match",
+          "base": "0.45",
+          "head": "0.46",
+          "compared": 35,
+          "requests": 8
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-hhxq-47xx-j5xx",
+        "package": "virtualenv",
+        "located": {
+          "repo": "pypa/virtualenv",
+          "commit": "c1c6eeec4843da892d4be0e7374a4ef01198cfe8",
+          "reason": "ranked match",
+          "base": "21.14.8",
+          "head": "21.14.9",
+          "compared": 40,
+          "requests": 8
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-9r5j-7r2x-rv4g",
+        "package": "apache-airflow-providers-http",
+        "located": {
+          "repo": "apache/airflow",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 12
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-qppw-c37g-xwcc",
+        "package": "paddlepaddle",
+        "located": {
+          "repo": "paddlepaddle/paddle",
+          "commit": "aeaa0cae925144334d693aac91efa92f98421190",
+          "reason": "ranked match",
+          "base": "v2.6.0",
+          "head": "v2.6.1",
+          "compared": 54,
+          "requests": 7
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-f42p-vc8p-7x54",
+        "package": "mobsf",
+        "located": {
+          "repo": "mobsf/mobile-security-framework-mobsf",
+          "commit": "b9cdd1f52bdf127cf33bb1be369e374a2855f8e6",
+          "reason": "ranked match",
+          "base": "v0.9.2",
+          "head": "v0.9.3",
+          "compared": 80,
+          "requests": 5
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-9j6q-wvj5-jgjg",
+        "package": "filelock",
+        "located": {
+          "repo": "tox-dev/filelock",
+          "commit": "119cb393ea835fd55b69a7335a8c7aa8ab8d1e8e",
+          "reason": "ranked match",
+          "base": "4.2.0",
+          "head": "4.2.1",
+          "compared": 23,
+          "requests": 9
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-c4m7-2gwp-vw76",
+        "package": "ouroboros-ai",
+        "located": {
+          "repo": "q00/ouroboros",
+          "commit": "58562e3601bb58c389efd7d0280454af68b3214d",
+          "reason": "ranked match",
+          "base": "v0.38.2",
+          "head": "v0.39.0",
+          "compared": 167,
+          "requests": 6
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-rwv7-3v45-hg29",
+        "package": "pillow",
+        "located": {
+          "repo": "python-pillow/pillow",
+          "commit": "5a5e6db0abf4e7a638fb1b3408c4e495a096cb92",
+          "reason": "ranked match",
+          "base": "8.1.2",
+          "head": "8.2.0",
+          "compared": 250,
+          "requests": 8
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-89vp-jrxv-24w8",
+        "package": "jupyterlab",
+        "located": {
+          "repo": "jupyterlab/jupyterlab",
+          "commit": "f1beab4a2027af4719d6edc07d52d6cf5a39a432",
+          "reason": "ranked match",
+          "base": "v4.6.1",
+          "head": "v4.6.2",
+          "compared": 16,
+          "requests": 14
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-6wcr-wcqm-3mfh",
+        "package": "django",
+        "located": {
+          "repo": "django/django",
+          "commit": "3ebbda0aef9e7a90ac6208bb8f9bc21228e2c7da",
+          "reason": "ranked match",
+          "base": "1.8.19",
+          "head": "1.9rc2",
+          "compared": 250,
+          "requests": 10
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-527m-2xhr-j27g",
+        "package": "llamafactory",
+        "located": {
+          "repo": "hiyouga/llamafactory",
+          "commit": "48897e5b168ce8502911f29dc0067ad856a21b59",
+          "reason": "ranked match",
+          "base": "v0.9.3",
+          "head": "v0.9.4",
+          "compared": 203,
+          "requests": 6
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-w889-685w-c8fh",
+        "package": "pillow",
+        "located": {
+          "repo": "python-pillow/pillow",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 10
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-q2x7-8rv6-6q7h",
+        "package": "jinja2",
+        "located": {
+          "repo": "pallets/jinja",
+          "commit": "48b0687e05a5466a91cd5812d604fa37ad0943b4",
+          "reason": "ranked match",
+          "base": "3.1.4",
+          "head": "3.1.5",
+          "compared": 86,
+          "requests": 5
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-xx9p-xxvh-7g8j",
+        "package": "aiohttp",
+        "located": {
+          "repo": "aio-libs/aiohttp",
+          "commit": "c5b7ba3ed51e00f26a4ab8618295f8839808b2fc",
+          "reason": "ranked match",
+          "base": "v3.7.4.post0",
+          "head": "v3.8.0",
+          "compared": 250,
+          "requests": 8
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-94v7-wxj6-r2q5",
+        "package": "multicast",
+        "located": {
+          "repo": "reactive-firewall-org/multicast",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 3
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-63wh-p5fx-h4vc",
+        "package": "bbot",
+        "located": {
+          "repo": "blacklanternsecurity/bbot",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 4
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "PYSEC-2026-3998",
+        "package": "vllm",
+        "located": {
+          "repo": "vllm-project/vllm",
+          "commit": "a447955acad919a6902d65f0af2d4f76c0335ed3",
+          "reason": "ranked match",
+          "base": "v0.28.0",
+          "head": "v0.29.0",
+          "compared": 250,
+          "requests": 9
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-rp38-pj7h-r8q2",
+        "package": "python-a2a",
+        "located": {
+          "repo": "themanojdesai/python-a2a",
+          "commit": "9f59f5490dc00a3fcc9b9cd9bf612979ff1ee487",
+          "reason": "ranked match",
+          "base": "v0.5.5",
+          "head": "v0.5.6",
+          "compared": 13,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-rrmf-rvhw-rf47",
+        "package": "torch",
+        "located": {
+          "repo": "pytorch/pytorch",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 12
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-78qv-3mpx-9cqq",
+        "package": "nicegui",
+        "located": {
+          "repo": "zauberzeug/nicegui",
+          "commit": "25b473072f304f305f7ccb37a432a16b43172e71",
+          "reason": "ranked match",
+          "base": "v3.7.1",
+          "head": "v3.8.0",
+          "compared": 45,
+          "requests": 10
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-8qpj-27x8-pwpq",
+        "package": "langflow",
+        "located": {
+          "repo": "langflow-ai/langflow",
+          "commit": "2754c84aad1306f463db1c3bbb3e8ffbe85da77d",
+          "reason": "ranked match",
+          "base": "v1.10.0",
+          "head": "v1.10.1",
+          "compared": 106,
+          "requests": 14
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-fw5r-6m3x-rh7p",
+        "package": "flask-appbuilder",
+        "located": {
+          "repo": "dpgaspar/flask-appbuilder",
+          "commit": "1a85de966bb689b59e95813cce7d2a369abee26e",
+          "reason": "ranked match",
+          "base": "v4.5.0",
+          "head": "v4.5.1",
+          "compared": 6,
+          "requests": 7
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-cggm-52qp-wvw7",
+        "package": "txaws",
+        "located": {
+          "repo": "twisted/txaws",
+          "commit": "d212451ae5560315481ca24ecee4a6900577a1f7",
+          "reason": "ranked match",
+          "base": "release-0.3.0",
+          "head": "0.4.0",
+          "compared": 81,
+          "requests": 8
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-7h6r-6p76-68c9",
+        "package": "openbabel",
+        "located": {
+          "repo": "openbabel/openbabel",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 3
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-655q-fx9r-782v",
+        "package": "picklescan",
+        "located": {
+          "repo": "mmaitre314/picklescan",
+          "commit": "f34d091824cb8775711f039b5299c277e2ecc663",
+          "reason": "ranked match",
+          "base": "v0.0.21",
+          "head": "v0.0.22",
+          "compared": 3,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-5vgj-ggm4-fg62",
+        "package": "pdoc",
+        "located": {
+          "repo": "mitmproxy/pdoc",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 5
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-7r9x-qrpr-3cxw",
+        "package": "mofh",
+        "located": {
+          "repo": "wallvon/mofh",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 3
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-5jmr-gcrj-2c9q",
+        "package": "litellm",
+        "located": {
+          "repo": "berriai/litellm",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 12
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-9xwg-3r6f-jcx2",
+        "package": "pymdown-extensions",
+        "located": {
+          "repo": "facelessuser/pymdown-extensions",
+          "commit": "19ec93690bd3a038c1eddc4fe63850e20daf3bb4",
+          "reason": "ranked match",
+          "base": "10.21.3",
+          "head": "11.0",
+          "compared": 12,
+          "requests": 7
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-wwv8-cqpr-vx3m",
+        "package": "modoboa",
+        "located": {
+          "repo": "modoboa/modoboa",
+          "commit": "27a7aa133d3608fe8c25ae39125d1012c333cbfa",
+          "reason": "ranked match",
+          "base": "2.7.0",
+          "head": "2.7.1",
+          "compared": 66,
+          "requests": 6
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-g7f3-828f-7h7m",
+        "package": "authlib",
+        "located": {
+          "repo": "authlib/authlib",
+          "commit": "e0863d5129316b1790eee5f14cece32a03b8184d",
+          "reason": "ranked match",
+          "base": "v1.6.4",
+          "head": "v1.6.5",
+          "compared": 11,
+          "requests": 5
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-7432-952r-cw78",
+        "package": "authlib",
+        "located": {
+          "repo": "authlib/authlib",
+          "commit": "a5d4b2d4c9e46bfa11c82f85fdc2bcc0b50ae681",
+          "reason": "ranked match",
+          "base": "v1.6.8",
+          "head": "v1.6.9",
+          "compared": 6,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-q5qw-4364-5hhm",
+        "package": "django",
+        "located": {
+          "repo": "django/django",
+          "commit": "66d12d1ababa8f062857ee5eb43276493720bf16",
+          "reason": "ranked match",
+          "base": "1.8.2",
+          "head": "1.8.3",
+          "compared": 104,
+          "requests": 11
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-4qqf-9m5c-w2c5",
+        "package": "weblate",
+        "located": {
+          "repo": "weblateorg/weblate",
+          "commit": null,
+          "reason": "comparison failed",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 6
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-w4pr-4vjg-hffh",
+        "package": "matrix-nio",
+        "located": {
+          "repo": "matrix-nio/matrix-nio",
+          "commit": "a84fa5b481bbfdc01910d5d42c10aa3050bfdf49",
+          "reason": "ranked match",
+          "base": "0.19.0",
+          "head": "0.20.0",
+          "compared": 41,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-332p-7hrc-92wf",
+        "package": "pillow",
+        "located": {
+          "repo": "python-pillow/pillow",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 10
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-r82c-j4mq-5xfw",
+        "package": "bitlyshortener",
+        "located": {
+          "repo": "impredicative/bitlyshortener",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 5
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-3589-pxp7-3gj8",
+        "package": "pydantic-ai-harness",
+        "located": {
+          "repo": "pydantic/pydantic-ai",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 6
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-894g-6j7q-2hx6",
+        "package": "flask-admin",
+        "located": {
+          "repo": "pallets-eco/flask-admin",
+          "commit": "14862cba7b182d2413ed4310de7729edba8c2ae3",
+          "reason": "ranked match",
+          "base": "v1.5.2",
+          "head": "v1.5.3",
+          "compared": 189,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-jmp3-39vp-fwg8",
+        "package": "wagtail",
+        "located": {
+          "repo": "wagtail/wagtail",
+          "commit": "b783c096b6d4fd2cfc05f9137a0be288850e99a2",
+          "reason": "ranked match",
+          "base": "v6.1.2",
+          "head": "v6.1.3",
+          "compared": 12,
+          "requests": 8
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-494p-63j8-28p3",
+        "package": "virtualenv",
+        "located": {
+          "repo": "pypa/virtualenv",
+          "commit": "c1c6eeec4843da892d4be0e7374a4ef01198cfe8",
+          "reason": "ranked match",
+          "base": "21.14.8",
+          "head": "21.14.9",
+          "compared": 40,
+          "requests": 8
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-hvmf-r92r-27hr",
+        "package": "django",
+        "located": {
+          "repo": "django/django",
+          "commit": "36f580a17f0b3cb087deadf3b65eea024f479c21",
+          "reason": "ranked match",
+          "base": "2.2.7",
+          "head": "2.2.8",
+          "compared": 45,
+          "requests": 10
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-8m3f-g62j-3vx8",
+        "package": "binwalk",
+        "located": {
+          "repo": "refirmlabs/binwalk",
+          "commit": "fa0c0bd59b8588814756942fe4cb5452e76c1dcd",
+          "reason": "ranked match",
+          "base": "v2.3.2",
+          "head": "v2.3.3",
+          "compared": 13,
+          "requests": 6
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-wj6g-v78p-6fx3",
+        "package": "praisonai",
+        "located": {
+          "repo": "mervinpraison/praisonai",
+          "commit": "86aeaa4d89c52791dae2fb31cb9e91e99b0d50e8",
+          "reason": "ranked match",
+          "base": "v4.6.57",
+          "head": "v4.6.58",
+          "compared": 5,
+          "requests": 14
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-48mj-p7x2-5jfm",
+        "package": "esphome",
+        "located": {
+          "repo": "esphome/esphome",
+          "commit": "4579f78bf97dc8f09b2eccd7e58b2804aad33ef5",
+          "reason": "ranked match",
+          "base": "2021.9.1",
+          "head": "2021.9.2",
+          "compared": 6,
+          "requests": 11
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-rr46-m366-gm44",
+        "package": "paddlepaddle",
+        "located": {
+          "repo": "paddlepaddle/paddle",
+          "commit": "5694736111d39cf6ba9b4083ff9c1417b5b6aa03",
+          "reason": "ranked match",
+          "base": "v2.4.2",
+          "head": "v2.5.0",
+          "compared": 250,
+          "requests": 7
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-r6v9-p59m-gj2p",
+        "package": "indy-node",
+        "located": {
+          "repo": "hyperledger-indy/indy-node",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 3
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-v7m9-9497-p9gr",
+        "package": "jupyterhub-kubespawner",
+        "located": {
+          "repo": "jupyterhub/kubespawner",
+          "commit": "788281bc89cbf0fd8f0b26b956762269631a034e",
+          "reason": "ranked match",
+          "base": "0.11.1",
+          "head": "0.12.0",
+          "compared": 39,
+          "requests": 7
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-4h3h-63v6-88qx",
+        "package": "esphome",
+        "located": {
+          "repo": "esphome/esphome",
+          "commit": null,
+          "reason": "no commit message matches",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 10
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-rrx3-2x4g-mq2h",
+        "package": "bugsink",
+        "located": {
+          "repo": "bugsink/bugsink",
+          "commit": null,
+          "reason": "no commit message matches",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 4
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-937f-qh3w-6g87",
+        "package": "octoprint",
+        "located": {
+          "repo": "octoprint/octoprint",
+          "commit": "59a0c8e8d79e9d28c4a2dfbf4105f8dd580a8f04",
+          "reason": "ranked match",
+          "base": "1.8.2",
+          "head": "1.8.3",
+          "compared": 24,
+          "requests": 6
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-r4rv-85jg-w4mf",
+        "package": "mistune",
+        "located": {
+          "repo": "lepture/mistune",
+          "commit": "5afeaf6bf43649c575ebf016316fb46096993ece",
+          "reason": "ranked match",
+          "base": "v3.2.1",
+          "head": "v3.3.0",
+          "compared": 39,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-vm8q-m57g-pff3",
+        "package": "django",
+        "located": {
+          "repo": "django/django",
+          "commit": "3394fc6132436eca89e997083bae9985fb7e761e",
+          "reason": "ranked match",
+          "base": "5.0.2",
+          "head": "5.0.3",
+          "compared": 20,
+          "requests": 10
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-fgch-86x8-fv43",
+        "package": "apache-airflow-providers-ftp",
+        "located": {
+          "repo": "apache/airflow",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 12
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-qqv2-35q8-p2g2",
+        "package": "paddlepaddle",
+        "located": {
+          "repo": "paddlepaddle/paddle",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 3
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-hvc7-763r-4f3h",
+        "package": "openssl-encrypt",
+        "located": {
+          "repo": "jahlives/openssl_encrypt",
+          "commit": "05e45f393886b5bf7e924d2dd42099a9dd37f91d",
+          "reason": "ranked match",
+          "base": "v1.3.6",
+          "head": "v1.4.0",
+          "compared": 250,
+          "requests": 5
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-p7q8-grrj-3m8w",
+        "package": "copier",
+        "located": {
+          "repo": "copier-org/copier",
+          "commit": "3feea3b3ff3c20d80cbb16a2f3b9567ffc5606d1",
+          "reason": "ranked match",
+          "base": "v9.9.0",
+          "head": "v9.9.1",
+          "compared": 18,
+          "requests": 6
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-wqmh-qccw-pqwf",
+        "package": "mlflow",
+        "located": {
+          "repo": "mlflow/mlflow",
+          "commit": "b58d40d0bea09f6909e24974e9f7f822de5f4359",
+          "reason": "ranked match",
+          "base": "v3.17.1",
+          "head": "v3.17.2",
+          "compared": 4,
+          "requests": 7
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-37cf-r3w2-gjfw",
+        "package": "django-nopassword",
+        "located": {
+          "repo": "relekang/django-nopassword",
+          "commit": "ea2ba48ad2472bca2b57a4590a80d400dd8f37d5",
+          "reason": "ranked match",
+          "base": "v4.0.1",
+          "head": "v5.0.0",
+          "compared": 3,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-h56g-gq9v-vc8r",
+        "package": "jupyter-server",
+        "located": {
+          "repo": "jupyter-server/jupyter_server",
+          "commit": "0056c3aa52cbb28b263a7a609ae5f17618b36652",
+          "reason": "ranked match",
+          "base": "v2.11.1",
+          "head": "v2.11.2",
+          "compared": 3,
+          "requests": 6
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-9v8h-57gv-qch6",
+        "package": "django",
+        "located": {
+          "repo": "django/django",
+          "commit": "fce800f3fda6d22e90215a63d60e3567c3a48128",
+          "reason": "ranked match",
+          "base": "1.0.4",
+          "head": "1.1",
+          "compared": 250,
+          "requests": 10
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-h4hv-m4h4-mhwg",
+        "package": "django",
+        "located": {
+          "repo": "django/django",
+          "commit": "2a9f6ef71b8e23fd267ee2be1be26dde8ab67037",
+          "reason": "ranked match",
+          "base": "1.10.6",
+          "head": "1.10.7",
+          "compared": 18,
+          "requests": 10
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-6cc5-2vg4-cc7m",
+        "package": "twisted",
+        "located": {
+          "repo": "twisted/twisted",
+          "commit": "8a473397d5cdecff38b95a94fc7fc75dd06217dc",
+          "reason": "ranked match",
+          "base": "twisted-19.2.0",
+          "head": "twisted-19.2.1",
+          "compared": 3,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-wr9h-g72x-mwhm",
+        "package": "vllm",
+        "located": {
+          "repo": "vllm-project/vllm",
+          "commit": "0eecb3166365a29db117c2aff6ca441b484b514d",
+          "reason": "ranked match",
+          "base": "v0.10.2",
+          "head": "v0.11.0",
+          "compared": 250,
+          "requests": 7
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-pq67-6m6q-mj2v",
+        "package": "urllib3",
+        "located": {
+          "repo": "urllib3/urllib3",
+          "commit": "c4b5917e911a90c8bf279448df8952a682294135",
+          "reason": "ranked match",
+          "base": "2.4.0",
+          "head": "2.5.0",
+          "compared": 16,
+          "requests": 8
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-fcfq-m8p6-gw56",
+        "package": "mobsf",
+        "located": {
+          "repo": "mobsf/mobile-security-framework-mobsf",
+          "commit": "05206e72cae35b311615a70e51e1a946955c5e83",
+          "reason": "ranked match",
+          "base": "v4.3.0",
+          "head": "v4.3.2",
+          "compared": 4,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-75c5-xw7c-p5pm",
+        "package": "pyjwt",
+        "located": {
+          "repo": "jpadilla/pyjwt",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 5
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-q238-5cxm-5c9h",
+        "package": "django",
+        "located": {
+          "repo": "django/django",
+          "commit": "0060c6c0328eedd9ef1d5faa0306e34ec59696eb",
+          "reason": "ranked match",
+          "base": "6.1",
+          "head": "6.1.1",
+          "compared": 31,
+          "requests": 12
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-jff3-mwp3-f8cw",
+        "package": "products-genericsetup",
+        "located": {
+          "repo": "zopefoundation/products.genericsetup",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 5
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-r5ph-4jxm-6j9p",
+        "package": "ekuiper",
+        "located": {
+          "repo": "lf-edge/ekuiper",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 10
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-vpp8-g58w-m8mp",
+        "package": "twisted",
+        "located": {
+          "repo": "twisted/twisted",
+          "commit": "817c56f1b7b24d9cd3ff3c5f3d05abc7aee35674",
+          "reason": "ranked match",
+          "base": "twisted-26.4.0",
+          "head": "twisted-26.10.0rc1",
+          "compared": 250,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-3jqf-v4mv-747g",
+        "package": "moonraker",
+        "located": {
+          "repo": "arksine/moonraker",
+          "commit": "74c5d8e44c4a4abbfbb06fb991e7ebb9ac947f42",
+          "reason": "ranked match",
+          "base": "v0.9.3",
+          "head": "v0.10.0",
+          "compared": 146,
+          "requests": 5
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-g39v-cvjh-8fpf",
+        "package": "ha-mcp",
+        "located": {
+          "repo": "homeassistant-ai/ha-mcp",
+          "commit": "09c524526b5f945638aa97de6218fadcd233023c",
+          "reason": "ranked match",
+          "base": "v7.4.1",
+          "head": "v7.5.0",
+          "compared": 196,
+          "requests": 14
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-f3q4-ggfp-jv34",
+        "package": "adyen",
+        "located": {
+          "repo": "adyen/adyen-python-api-library",
+          "commit": "9229e1523db45f43e1974ab879e4253631bbffb7",
+          "reason": "ranked match",
+          "base": "7.0.0",
+          "head": "7.1.0",
+          "compared": 41,
+          "requests": 6
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-jhpr-j7cq-3jp3",
+        "package": "flask-appbuilder",
+        "located": {
+          "repo": "dpgaspar/flask-appbuilder",
+          "commit": "0e08270ce4e8274447db70e48cd8312ae0571238",
+          "reason": "ranked match",
+          "base": "v4.3.1",
+          "head": "v4.3.2",
+          "compared": 9,
+          "requests": 6
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-9fpm-3445-2vx4",
+        "package": "langflow",
+        "located": {
+          "repo": "langflow-ai/langflow",
+          "commit": "32bef8c1b2ad7da657ef8fc1e36a95d8272e68aa",
+          "reason": "ranked match",
+          "base": "v1.10.2",
+          "head": "v1.10.3",
+          "compared": 32,
+          "requests": 14
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-hc5c-r8m5-2gfh",
+        "package": "plone-restapi",
+        "located": {
+          "repo": "plone/plone.restapi",
+          "commit": "f280675e445a86cbede2a7bf2b5ff65ce30a9a31",
+          "reason": "ranked match",
+          "base": "8.43.2",
+          "head": "8.43.3",
+          "compared": 3,
+          "requests": 7
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-4qjh-9fv9-r85r",
+        "package": "vllm",
+        "located": {
+          "repo": "vllm-project/vllm",
+          "commit": "d637b960994119907b41c82d79f5a71c96dd419b",
+          "reason": "ranked match",
+          "base": "v0.8.5.post1",
+          "head": "v0.9.0",
+          "compared": 250,
+          "requests": 7
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-7h3g-4w2f-fj2f",
+        "package": "proot-distro",
+        "located": {
+          "repo": "termux/proot-distro",
+          "commit": "98aff324b7d8500ff75a8ca9ac087ee636be4716",
+          "reason": "ranked match",
+          "base": "v5.1.5",
+          "head": "v5.1.6",
+          "compared": 7,
+          "requests": 6
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-q8h9-pqcx-59hw",
+        "package": "apache-airflow",
+        "located": {
+          "repo": "apache/airflow",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 12
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-gwqq-6vq7-5j86",
+        "package": "langchain",
+        "located": {
+          "repo": "langchain-ai/langchain",
+          "commit": "3902b85657a0d3f4345fe834434c33fa17780383",
+          "reason": "ranked match",
+          "base": "v0.0.235",
+          "head": "v0.0.236",
+          "compared": 48,
+          "requests": 16
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-23mf-xhv8-69c2",
+        "package": "gitpython",
+        "located": {
+          "repo": "gitpython-developers/gitpython",
+          "commit": "8da65080849a56a2fc9f3e7817bbf0524e8397d5",
+          "reason": "ranked match",
+          "base": "3.1.62",
+          "head": "3.2.0",
+          "compared": 74,
+          "requests": 6
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-rw7v-4hrq-x6r9",
+        "package": "fpdf2",
+        "located": {
+          "repo": "py-pdf/fpdf2",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 9
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-fvx8-v524-8579",
+        "package": "django-celery-results",
+        "located": {
+          "repo": "celery/django-celery-results",
+          "commit": "e92777025cfd56656cafd6ce7782cce115db45ec",
+          "reason": "ranked match",
+          "base": "v2.3.1",
+          "head": "v2.4.0",
+          "compared": 9,
+          "requests": 6
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-83pf-v6qq-pwmr",
+        "package": "fickling",
+        "located": {
+          "repo": "trailofbits/fickling",
+          "commit": "c2087d9a71b785ec4ef09675824ccd02515ec141",
+          "reason": "ranked match",
+          "base": "v0.1.7",
+          "head": "v0.1.8",
+          "compared": 40,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-8f6m-gfq9-g33v",
+        "package": "html5lib",
+        "located": {
+          "repo": "html5lib/html5lib-python",
+          "commit": "e0dc25f335d3df610f752df29d5c4301717eb452",
+          "reason": "ranked match",
+          "base": "0.99999999",
+          "head": "0.999999999",
+          "compared": 3,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-c9rc-mg46-23w3",
+        "package": "keras",
+        "located": {
+          "repo": "keras-team/keras",
+          "commit": "37a0920a3d83efcb6754fe7f09d991484198f17a",
+          "reason": "ranked match",
+          "base": "v3.10.0",
+          "head": "v3.11.0",
+          "compared": 107,
+          "requests": 6
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-2mqj-m65w-jghx",
+        "package": "gitpython",
+        "located": {
+          "repo": "gitpython-developers/gitpython",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 10
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-7488-6r32-c95q",
+        "package": "litellm",
+        "located": {
+          "repo": "berriai/litellm",
+          "commit": "148485c2a24b739074f9416cf6fb66d5d7adb759",
+          "reason": "ranked match",
+          "base": "v1.82.3",
+          "head": "v1.84.0",
+          "compared": 250,
+          "requests": 14
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-wf9g-c67g-h4ch",
+        "package": "mindsdb",
+        "located": {
+          "repo": "mindsdb/mindshub",
+          "commit": null,
+          "reason": "no commit message matches",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 7
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-g35p-px32-whv6",
+        "package": "mlflow",
+        "located": {
+          "repo": "mlflow/mlflow",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 5
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-432c-wxpg-m4q3",
+        "package": "xml2rfc",
+        "located": {
+          "repo": "ietf-tools/xml2rfc",
+          "commit": "ec98f9cb4b9a8658222117df037dda473ca3f4e4",
+          "reason": "ranked match",
+          "base": "v3.26.0",
+          "head": "v3.27.0",
+          "compared": 7,
+          "requests": 6
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-fh66-fcv5-jjfr",
+        "package": "matrix-synapse",
+        "located": {
+          "repo": "element-hq/synapse",
+          "commit": null,
+          "reason": "no commit message matches",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 13
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-53mr-44pp-crf4",
+        "package": "pip",
+        "located": {
+          "repo": "pypa/pip",
+          "commit": "3203d1db9f0fe74c0f22f01e2b4b9de34136a813",
+          "reason": "ranked match",
+          "base": "1.5.6",
+          "head": "6.0",
+          "compared": 250,
+          "requests": 6
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-h63r-9xxf-f2c7",
+        "package": "apache-airflow",
+        "located": {
+          "repo": "apache/airflow",
+          "commit": null,
+          "reason": "no tag for a fixed version",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 12
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-772j-xvf9-qpf5",
+        "package": "ansible-runner",
+        "located": {
+          "repo": "ansible/ansible-runner",
+          "commit": "558237e662d071b5fe27ca78bbe5be897a450da2",
+          "reason": "ranked match",
+          "base": "2.0.4",
+          "head": "2.1.0",
+          "compared": 250,
+          "requests": 7
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-qh4c-xf7m-gxfc",
+        "package": "vllm",
+        "located": {
+          "repo": "vllm-project/vllm",
+          "commit": "4dc11b06d3843f862e30f431f48b29f8f94cd0c8",
+          "reason": "ranked match",
+          "base": "v0.14.0",
+          "head": "v0.14.1",
+          "compared": 5,
+          "requests": 8
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-g9cj-cfpp-4g2x",
+        "package": "gradio",
+        "located": {
+          "repo": "gradio-app/gradio",
+          "commit": "d876d770da6901d309a2828499881dc9d6dceac9",
+          "reason": "ranked match",
+          "base": "gradio@4.12.0",
+          "head": "gradio@4.13.0",
+          "compared": 26,
+          "requests": 15
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-cpqf-3c3r-c9g2",
+        "package": "cobbler",
+        "located": {
+          "repo": "cobbler/cobbler",
+          "commit": "ca06cae96626faac8c0c592a33c6d134a896bfb6",
+          "reason": "ranked match",
+          "base": "v3.2.3",
+          "head": "v3.3.0",
+          "compared": 250,
+          "requests": 6
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-c6hw-5grf-ff96",
+        "package": "pillow",
+        "located": {
+          "repo": "python-pillow/pillow",
+          "commit": null,
+          "reason": "no matching commit touches Python source",
+          "base": null,
+          "head": null,
+          "compared": 0,
+          "requests": 10
+        },
+        "outcome": "abstained",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "PYSEC-2026-2154",
+        "package": "gdal",
+        "located": {
+          "repo": "osgeo/gdal",
+          "commit": "343696c18d0663c4be35403340b5cb3f68e550a2",
+          "reason": "ranked match",
+          "base": "v3.12.4",
+          "head": "v3.13.0",
+          "compared": 250,
+          "requests": 7
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      },
+      {
+        "vulnerability": "GHSA-jrwr-5x3p-hvc3",
+        "package": "markdown-it-py",
+        "located": {
+          "repo": "executablebooks/markdown-it-py",
+          "commit": "53ca3e9c2b9e9b295f6abf7f4ad2730a9b70f68c",
+          "reason": "ranked match",
+          "base": "v2.1.0",
+          "head": "v2.2.0",
+          "compared": 18,
+          "requests": 5
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-frvg-qw88-hww9",
+        "package": "vllm",
+        "located": {
+          "repo": "vllm-project/vllm",
+          "commit": "3d52578e13454de0bb8352cac988347cdcc89928",
+          "reason": "ranked match",
+          "base": "v0.31.0",
+          "head": "v0.32.0",
+          "compared": 250,
+          "requests": 7
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-m64x-33q8-m5h7",
+        "package": "gitpython",
+        "located": {
+          "repo": "gitpython-developers/gitpython",
+          "commit": "8290c98d35465a38090cdcc1b17be69967092a15",
+          "reason": "ranked match",
+          "base": "3.1.62",
+          "head": "3.2.0",
+          "compared": 74,
+          "requests": 6
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-j28r-j54m-gpc4",
+        "package": "slo-generator",
+        "located": {
+          "repo": "google/slo-generator",
+          "commit": "36318beab1b85d14bb860e45bea186b184690d5d",
+          "reason": "ranked match",
+          "base": "v2.0.0",
+          "head": "v2.0.1",
+          "compared": 5,
+          "requests": 5
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-h7ww-273w-6cm8",
+        "package": "mistune",
+        "located": {
+          "repo": "lepture/mistune",
+          "commit": "5afeaf6bf43649c575ebf016316fb46096993ece",
+          "reason": "ranked match",
+          "base": "v3.2.1",
+          "head": "v3.3.0",
+          "compared": 39,
+          "requests": 5
+        },
+        "outcome": "wrong",
+        "linked_in_range": true
+      },
+      {
+        "vulnerability": "GHSA-6845-xw22-ffxv",
+        "package": "vyper",
+        "located": {
+          "repo": "vyperlang/vyper",
+          "commit": "d9f9fdadd81a148cbc68f02dbbbcdc0c92fad652",
+          "reason": "ranked match",
+          "base": "v0.3.10",
+          "head": "v0.4.0",
+          "compared": 250,
+          "requests": 5
+        },
+        "outcome": "exact",
+        "linked_in_range": null
+      },
+      {
+        "vulnerability": "GHSA-6fvq-23cw-5628",
+        "package": "vllm",
+        "located": {
+          "repo": "vllm-project/vllm",
+          "commit": "0eecb3166365a29db117c2aff6ca441b484b514d",
+          "reason": "ranked match",
+          "base": "v0.10.2",
+          "head": "v0.11.0",
+          "compared": 250,
+          "requests": 7
+        },
+        "outcome": "wrong",
+        "linked_in_range": false
+      }
+    ]
+  }
+}

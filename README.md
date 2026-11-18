@@ -193,7 +193,7 @@ flowchart LR
 4. **Decide confidence.** A second model from another family must agree, and the agreed answer must include a public symbol. Anything else falls back to every changed function ([ADR 0004](docs/adr/0004-fall-back-to-the-baseline.md)).
 5. **Scan locally.** Your lockfile is matched against OSV, joined with the database, and checked against your code's syntax tree.
 
-Every stage and table is described in the [architecture doc](docs/architecture.md). The [model card](docs/model_card.md) covers the extractor and its measured accuracy, and the [dataset card](docs/dataset_card.md) covers the database.
+Every stage and table is described in the [architecture doc](docs/architecture.md). The [model card](docs/model_card.md) covers the extractor and its measured accuracy, and the [dataset card](docs/dataset_card.md) covers the database. The [labelling guideline](docs/labelling-guideline.md) says how the Python gold set is labelled.
 
 <details>
 <summary><b>Pipeline command reference</b></summary>

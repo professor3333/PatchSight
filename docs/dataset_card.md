@@ -67,7 +67,7 @@ Each record carries: vulnerability ID and aliases, package (PEP 503 name) and it
 
 ## Evaluation
 
-The database itself has no labelled split. The extraction method is evaluated on the Dunlap et al. Go benchmark (dev 60 reports, test 220, frozen in [`splits/dunlap-v1.json`](../splits/dunlap-v1.json)); see the [model card](model_card.md#metrics). A Python gold set, with a labelling guideline and repeat-annotation agreement, is not built yet ([#54](https://github.com/professor3333/PatchSight/issues/54)).
+The database itself has no labelled split. The extraction method is evaluated on the Dunlap et al. Go benchmark (dev 60 reports, test 220, frozen in [`splits/dunlap-v1.json`](../splits/dunlap-v1.json)); see the [model card](model_card.md#metrics). A Python gold set, with repeat-annotation agreement, is not built yet ([#54](https://github.com/professor3333/PatchSight/issues/54)); its [labelling guideline](labelling-guideline.md) is written.
 
 ## Known limitations and biases
 

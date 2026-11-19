@@ -37,7 +37,8 @@ Licences as listed on each model's Hugging Face page, checked 2026-11-18. Exact 
 - **Inputs:** the advisory's summary and details, and the fix diff after the path filter (tests, docs, changelogs and vendored code removed), mapped to changed definitions with tree-sitter.
 - **Evaluation data:** the Dunlap et al. Go benchmark, 280 reports with GoVulnDB's curated vulnerable symbols, split into dev (60 reports) and test (220) in [`splits/dunlap-v1.json`](../splits/dunlap-v1.json), frozen and SHA-checked before any prompt work. Reports that share a fix commit stay in one split.
 - **No few-shot examples,** so no evaluation report can leak into a prompt.
-- **Not yet built:** the Python gold set and the Go temporal holdout ([#54](https://github.com/professor3333/PatchSight/issues/54)). The extractor's training cutoff has not been established, so the benchmark may be in its training data.
+- **Go temporal holdout** ([ADR 0010](adr/0010-go-temporal-holdout.md)): 83 GoVulnDB reports published after 2026-08-13, the day the extractor's weights were released, so neither model can have seen them. Frozen, with its evaluation declared before any model run. ChangedFuncs on it: [baseline](reports/changedfuncs-go-holdout-v1.md). Its labels are broader than the 2023 benchmark's (exported callers are listed too), so its scores do not compare with the Dunlap ones.
+- **Not yet built:** the Python gold set ([#54](https://github.com/professor3333/PatchSight/issues/54)). Neither model card states a knowledge cutoff, so the 2023 benchmark may be in the models' training data; the holdout controls for that.
 
 ## Metrics
 

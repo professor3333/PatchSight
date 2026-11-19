@@ -356,14 +356,41 @@ def dunlap_extract_command(
     out: Annotated[Path, typer.Option(help="Report path, without extension.")] = Path(
         "docs/reports/extraction-dunlap"
     ),
+    benchmark: Annotated[
+        str, typer.Option(help="dunlap-v1, or go-holdout-v1 (the temporal holdout, all reports).")
+    ] = "dunlap-v1",
 ) -> None:
-    """Run LLM extraction on the Dunlap benchmark (needs GITHUB_TOKEN and the model's key)."""
+    """Run LLM extraction on the Dunlap benchmark or the Go temporal holdout (needs
+    GITHUB_TOKEN and the model's key)."""
+    import hashlib
+
+    from patchsight.pipeline.benchmarks import go_holdout
+
     token = _github_token()
-    manifest = snapshot.load_manifest(root / MANIFEST)
-    data = manifest.file(DUNLAP_DATA)
-    reports = dunlap.load(snapshot.verify(data, root))
-    advisories = extraction.load_advisories(snapshot.verify(manifest.file(DUNLAP_ADVISORIES), root))
-    frozen = splits.load_split(root / DUNLAP_SPLIT)
+    if benchmark == go_holdout.NAME:
+        frozen_file = root / go_holdout.FROZEN
+        holdout = go_holdout.load(frozen_file)
+        reports, advisories = go_holdout.as_benchmark(holdout)
+        as_of = datetime.fromisoformat(holdout.retrieved_at).date()
+        ids, split_name = None, f"{go_holdout.NAME}:all"
+        split_sha = hashlib.sha256(frozen_file.read_bytes()).hexdigest()
+        source_line = f"- Benchmark: `{go_holdout.FROZEN.as_posix()}` SHA-256 `{split_sha}`"
+    elif benchmark == "dunlap-v1":
+        manifest = snapshot.load_manifest(root / MANIFEST)
+        data = manifest.file(DUNLAP_DATA)
+        reports = dunlap.load(snapshot.verify(data, root))
+        advisories = extraction.load_advisories(
+            snapshot.verify(manifest.file(DUNLAP_ADVISORIES), root)
+        )
+        dunlap_split = splits.load_split(root / DUNLAP_SPLIT)
+        as_of = data.retrieved_at.date()
+        ids, split_name = dunlap_split.split.ids(split), f"{dunlap_split.split.name}:{split}"
+        split_sha = dunlap_split.sha256
+        source_line = (
+            f"- Benchmark: `{DUNLAP_DATA}` SHA-256 `{data.sha256}` (see `manifests/snapshot.json`)"
+        )
+    else:
+        raise typer.BadParameter(f"unknown benchmark {benchmark!r}")
     llm_config = load_config(root / config)
     template = load_template(root / prompt)
     counter = HfTokenizer(llm_config.tokenizer, root / cache / "tokenizer")
@@ -372,9 +399,8 @@ def dunlap_extract_command(
     try:
         result = extraction.run(
             github, llm, llm_config, role, template, counter, reports, advisories,
-            as_of=data.retrieved_at.date(), sample_size=sample, seed=seed,
-            ids=frozen.split.ids(split), split=f"{frozen.split.name}:{split}",
-            split_sha256=frozen.sha256,
+            as_of=as_of, sample_size=sample, seed=seed, ids=ids, split=split_name,
+            split_sha256=split_sha,
             progress=lambda done, total: typer.echo(f"extracted {done}/{total}", err=True),
         )  # fmt: skip
     except (QuotaExhaustedError, RateLimitedError) as stopped:
@@ -386,7 +412,7 @@ def dunlap_extract_command(
     finally:
         github.close()
     lines = [
-        f"- Benchmark: `{DUNLAP_DATA}` SHA-256 `{data.sha256}` (see `manifests/snapshot.json`)",
+        source_line,
         f"- Prompt: `{prompt.as_posix()}` (`{template.version}`); config: `{config.as_posix()}`",
         f"- Model: `{model_id}` via role `{role}`",
     ]
@@ -403,6 +429,111 @@ def dunlap_extract_command(
         f"{result.reports} reports: extraction P {e.precision:.3f} R {e.recall:.3f} F1 {e.f1:.3f}; "
         f"ChangedFuncs P {n.precision:.3f} R {n.recall:.3f} F1 {n.f1:.3f}; "
         f"status {result.status}; {llm.network_calls} model calls"
+    )
+
+
+@app.command("holdout-freeze")
+def holdout_freeze_command(
+    root: Root = Path(),
+    cache: Annotated[Path, typer.Option(help="HTTP response cache.")] = Path(".cache/http"),
+) -> None:
+    """Download GoVulnDB and freeze the Go temporal holdout (needs GITHUB_TOKEN)."""
+    import hashlib
+
+    from patchsight.pipeline.benchmarks import go_holdout
+
+    archive = root / RAW / "go-vulndb" / "vulndb.zip"
+    archive.parent.mkdir(parents=True, exist_ok=True)
+    with httpx.Client(timeout=httpx.Timeout(60.0, connect=15.0), follow_redirects=True) as http:
+        response = http.get(go_holdout.VULNDB_URL)
+        response.raise_for_status()
+    archive.write_bytes(response.content)
+    digest = hashlib.sha256(response.content).hexdigest()
+    github = GitHubClient(root / cache / "github", token=_github_token())
+    try:
+        holdout = go_holdout.select(archive, digest, datetime.now(UTC), github)
+    finally:
+        github.close()
+    target = root / go_holdout.FROZEN
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(holdout.model_dump_json(indent=2) + "\n", "utf-8")
+    typer.echo(
+        f"{len(holdout.reports)} reports of {holdout.considered} published after "
+        f"{holdout.cutoff}; excluded {holdout.excluded} -> {target}"
+    )
+
+
+@app.command("holdout-baseline")
+def holdout_baseline_command(
+    root: Root = Path(),
+    cache: Annotated[Path, typer.Option(help="HTTP response cache.")] = Path(".cache/http"),
+) -> None:
+    """ChangedFuncs on the frozen Go temporal holdout: no model (needs GITHUB_TOKEN)."""
+    import statistics
+
+    from patchsight.pipeline.benchmarks import go_holdout
+    from patchsight.pipeline.diffs.commits import map_commit
+
+    holdout = go_holdout.load(root / go_holdout.FROZEN)
+    reports, _ = go_holdout.as_benchmark(holdout)
+    github = GitHubClient(root / cache / "github", token=_github_token())
+    truth: dict[str, set[str]] = {}
+    naive: dict[str, set[str]] = {}
+    empty: list[str] = []
+    try:
+        for report in reports:
+            mappings = [
+                map_commit(github, c.github_repo, c.sha, include=dunlap.paper_path_filter)
+                for c in report.commits
+            ]
+            inputs, _ = extraction.candidate_inputs(mappings)
+            truth[report.id] = set(report.symbols)
+            naive[report.id] = {i.name for i in inputs}
+            if not inputs:
+                empty.append(report.id)
+    finally:
+        github.close()
+    scores = score(naive, truth, extraction.BOOTSTRAP, extraction.SEED)
+    ci = scores.f1_ci95
+    interval = f" ({ci.low:.2f} to {ci.high:.2f})" if ci else ""
+    lines = [
+        f"# ChangedFuncs on the Go temporal holdout (`{holdout.name}`)",
+        "",
+        "Generated by `python -m patchsight.pipeline holdout-baseline`; no model is involved.",
+        "",
+        f"- **{len(reports)} reports** published after {holdout.cutoff}, frozen in "
+        f"[`{go_holdout.FROZEN.as_posix()}`](../../{go_holdout.FROZEN.as_posix()}) from "
+        f"GoVulnDB (SHA-256 `{holdout.source_sha256[:12]}…`, retrieved "
+        f"{holdout.retrieved_at[:10]}); {holdout.considered} were considered, excluded: "
+        + ", ".join(f"{k} {v}" for k, v in holdout.excluded.items()),
+        f"- {sum(len(t) for t in truth.values())} vulnerable symbols (median "
+        f"{statistics.median(len(t) for t in truth.values()):g} per report, at most "
+        f"{max(len(t) for t in truth.values())}): current GoVulnDB lists the exported "
+        "functions that reach the vulnerable code, so these labels are broader than the 2023 "
+        "Dunlap ones ([ADR 0010](../adr/0010-go-temporal-holdout.md))",
+        f"- {sum(len(n) for n in naive.values())} changed functions; {len(empty)} reports "
+        "whose fix changes no Go function outside tests",
+        "",
+        "| System | Precision | Recall | F1 (95% CI) | Report miss rate |",
+        "|---|---:|---:|---:|---:|",
+        f"| ChangedFuncs (every changed function) | {scores.precision:.3f} | {scores.recall:.3f} "
+        f"| {scores.f1:.3f}{interval} | "
+        f"{scores.miss_rate:.1%} |",
+        "",
+        "The recall here is the patch ceiling for this data: a symbol the fix never changed "
+        "cannot be found from the patch.",
+        "",
+        holdout.attribution,
+        "",
+    ]
+    target = root / "docs" / "reports" / f"changedfuncs-{holdout.name}"
+    target.with_name(target.name + ".md").write_text("\n".join(lines), "utf-8")
+    target.with_name(target.name + ".json").write_text(
+        scores.model_dump_json(indent=2) + "\n", "utf-8"
+    )
+    typer.echo(
+        f"ChangedFuncs on {len(reports)} reports: P {scores.precision:.3f} R {scores.recall:.3f} "
+        f"F1 {scores.f1:.3f}, miss {scores.miss_rate:.1%}"
     )
 
 

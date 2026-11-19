@@ -211,5 +211,7 @@ def test_the_tools_reach_only_github_and_pypi() -> None:
     assert "url" not in agent.Step.model_fields  # no action takes a URL
     github = GitHubClient(Path("/nonexistent"))
     pypi = PyPIClient(Path("/nonexistent"))
-    assert str(github.http._http.base_url).startswith("https://api.github.com")
-    assert str(pypi.http._http.base_url).startswith("https://pypi.org")
+    assert (github.http._http.base_url.scheme, github.http._http.base_url.host) == (
+        "https", "api.github.com",
+    )  # fmt: skip
+    assert (pypi.http._http.base_url.scheme, pypi.http._http.base_url.host) == ("https", "pypi.org")

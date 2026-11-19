@@ -550,8 +550,11 @@ def dunlap_split_command(root: Root = Path()) -> None:
 
 
 KAGGLE_RUN_PREFIXES = (
-    ".cache/llm/", "docs/reports/", "pypi-run/", "run-info.json", "llama-server.log",
+    ".cache/llm/", ".cache/http/github/", "docs/reports/", "pypi-run/", "run-info.json",
+    "llama-server.log",
 )  # fmt: skip
+# Imported into the shared cache: model answers, and the GitHub answers a locator run fetched.
+KAGGLE_CACHE_PREFIXES = (".cache/llm/", ".cache/http/github/")
 KAGGLE_INPUTS_MANIFEST = "patchsight-pypi-inputs.json"
 
 
@@ -581,11 +584,10 @@ def import_kaggle_run_command(
         for member in members:
             # Responses go into the shared cache; the run's usage ledger does not, so it can
             # never overwrite this machine's daily-quota ledger.
-            if member.filename.startswith(".cache/llm/") and not member.filename.startswith(
-                ".cache/llm/usage/"
-            ):
-                target = root / member.filename
-                responses += member.filename.endswith(".json")
+            name = member.filename
+            if name.startswith(KAGGLE_CACHE_PREFIXES) and not name.startswith(".cache/llm/usage/"):
+                target = root / name
+                responses += name.startswith(".cache/llm/") and name.endswith(".json")
             else:
                 target = inbox / member.filename
             target.parent.mkdir(parents=True, exist_ok=True)
@@ -1220,6 +1222,84 @@ def locator_eval_command(
             f"{scores.variant}: exact {scores.exact}, wrong {scores.wrong}, abstained "
             f"{scores.abstained} of {scores.cases}"
         )
+
+
+@app.command("locator-agent-eval")
+def locator_agent_eval_command(
+    tag: Annotated[str, typer.Option(help="Run tag, e.g. locate-v1-qwen3.8-27b-q4km.")],
+    role: Annotated[str, typer.Option(help="Model role in the LLM config.")] = "extractor",
+    limit: Annotated[int | None, typer.Option(help="Only the first N cases (a smoke run).")] = None,
+    cache_only: Annotated[
+        bool, typer.Option(help="Replay from the response cache; call no model.")
+    ] = False,
+    root: Root = Path(),
+    config: Annotated[Path, typer.Option(help="LLM config.")] = Path("configs/llm.toml"),
+    prompt: Annotated[Path, typer.Option(help="Prompt template.")] = Path("prompts/locate_v1.md"),
+    cache: Annotated[Path, typer.Option(help="Cache root.")] = Path(".cache"),
+) -> None:
+    """Score the fix-commit locator agent on the frozen masked sample (needs GITHUB_TOKEN unless
+    every GitHub response is cached, and the model's key unless --cache-only)."""
+    from patchsight.pipeline.llm.client import cache_only_client
+    from patchsight.pipeline.locator import masked
+
+    sample = masked.MaskedSample.model_validate_json((root / LOCATOR_SAMPLE).read_text("utf-8"))
+    manifest, dump = _load_verified(root)
+    if manifest.file(DUMP).sha256 != sample.snapshot_sha256:
+        raise typer.BadParameter("the pinned snapshot is not the one the sample was drawn from")
+    by_id = {r.id: r for r in normalise_dump(dump) if isinstance(r, Advisory)}
+    llm_config = load_config(root / config)
+    template = load_template(root / prompt)
+    counter = HfTokenizer(llm_config.tokenizer, root / cache / "tokenizer")
+    llm, model_id = (
+        cache_only_client(llm_config, role, root / cache / "llm", counter)
+        if cache_only
+        else client_for(llm_config, role, root / cache / "llm", counter)
+    )
+    github = GitHubClient(
+        root / cache / "http" / "github", token=os.environ.get("GITHUB_TOKEN"),
+        wait_for_rate_limit=3900,
+    )  # fmt: skip
+    pypi = PyPIClient(root / cache / "http" / "pypi")
+    try:
+        results, runs = masked.run_agent(
+            sample, by_id, github, pypi, llm, llm_config.models[role], template,
+            transcripts=root / "data" / "interim" / "locator" / tag, limit=limit,
+        )  # fmt: skip
+    except (QuotaExhaustedError, RateLimitedError) as stopped:
+        typer.echo(f"stopped: {stopped}; every answer so far is cached, re-run to resume", err=True)
+        raise typer.Exit(code=2) from None
+    finally:
+        github.close()
+        pypi.close()
+    scores = masked.summarise("agent", results)
+    report = masked.LocatorReport(
+        sample=sample.name, seed=sample.seed, snapshot_sha256=sample.snapshot_sha256,
+        eligible=sample.eligible, scores=(scores,), results={"agent": tuple(results)},
+    )  # fmt: skip
+    summary = masked.summarise_agent(runs, model_id, template.version)
+    committed = root / "docs" / "reports" / f"locator-{sample.name}.json"
+    baselines: tuple[masked.VariantScores, ...] = ()
+    if committed.exists():
+        heuristics = masked.LocatorReport.model_validate_json(committed.read_text("utf-8"))
+        # On a smoke run, the heuristics on the same first cases: like with like.
+        baselines = tuple(
+            masked.summarise(variant, list(rows[:limit]))
+            for variant, rows in heuristics.results.items()
+        )
+    target = root / "docs" / "reports" / f"locator-{sample.name}-{tag}"
+    target.with_name(target.name + ".md").write_text(
+        masked.render_agent_markdown(report, summary, baselines), "utf-8"
+    )
+    target.with_name(target.name + ".json").write_text(
+        json.dumps({"report": report.model_dump(mode="json"),
+                    "agent": summary.model_dump(mode="json"),
+                    "runs": [r.model_dump(mode="json") for r in runs]}, indent=2) + "\n",
+        "utf-8",
+    )  # fmt: skip
+    typer.echo(
+        f"agent on {scores.cases}: exact {scores.exact}, wrong {scores.wrong}, abstained "
+        f"{scores.abstained}; {summary.outcomes}; {llm.network_calls} model calls -> {target}.md"
+    )
 
 
 @app.command("reproduce")

@@ -13,7 +13,7 @@ flowchart TB
         A["OSV PyPI dump<br/>pinned by SHA-256"] --> B["Normalise records<br/>group aliases"]
         B --> C{"Fix commit on the<br/>package's GitHub repo?"}
         C -- no --> Z["No record"]
-        C -. "planned #56" .-> D["Fix-commit locator agent"]:::planned
+        C -. "built, not yet evaluated (#56)" .-> D["Fix-commit locator agent<br/>4 read-only tools, 8 steps"]:::planned
         C -- yes --> E["Fetch diffs and files<br/>GitHub REST, cached"]
         E --> F["Path filter<br/>tree-sitter: hunks to definitions"]
         F --> G["Fallback record<br/>every changed definition"]

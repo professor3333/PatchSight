@@ -47,3 +47,18 @@ def test_import_refuses_unexpected_paths(tmp_path: Path, name: str) -> None:
     assert result.exit_code != 0
     assert "unexpected path" in result.output
     assert not (tmp_path.parent / "outside.json").exists()
+
+
+def test_a_locator_run_brings_its_github_answers_into_the_cache(tmp_path: Path) -> None:
+    archive = _bundle(
+        tmp_path / "patchsight-kaggle-run-locator-qwen.zip",
+        {
+            ".cache/llm/cd/cdef.json": '{"content": "{}"}',
+            ".cache/http/github/ef/efgh.json": '{"status": 200, "body": {}}',
+            "docs/reports/locator-masked-v1-locate-v1-x.md": "# report",
+        },
+    )
+    result = CliRunner().invoke(app, ["import-kaggle-run", str(archive), "--root", str(tmp_path)])
+    assert result.exit_code == 0, result.output
+    assert "imported 1 cached responses" in result.output  # model answers only
+    assert (tmp_path / ".cache/http/github/ef/efgh.json").exists()  # so a replay is exact

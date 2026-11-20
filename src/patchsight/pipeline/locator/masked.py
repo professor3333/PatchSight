@@ -319,6 +319,7 @@ def run_agent(
     template: Any,
     transcripts: Any = None,
     limit: int | None = None,
+    budget: int | None = None,
 ) -> tuple[list[CaseResult], list[Any]]:
     """The agent on the masked sample: scored results, and each run's summary. With
     ``transcripts`` (a directory), each case's message list is saved there."""
@@ -329,7 +330,7 @@ def run_agent(
     for case in sample.cases[:limit]:
         advisories = [by_id[i] for i in case.advisory_ids if i in by_id]
         task = agent.build_task(case.vulnerability, advisories, case.package, github, pypi)
-        run, messages = agent.locate(task, llm, model, template, github)
+        run, messages = agent.locate(task, llm, model, template, github, budget=budget)
         runs.append(run)
         located = Located(repo=case.repo, commit=run.commit, reason=run.reason,
                           requests=run.tool_calls)  # fmt: skip

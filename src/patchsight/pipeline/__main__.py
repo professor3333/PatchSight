@@ -1396,6 +1396,7 @@ def locator_agent_eval_command(
         results, runs = masked.run_agent(
             sample, by_id, github, pypi, llm, llm_config.models[role], template,
             transcripts=root / "data" / "interim" / "locator" / tag, limit=limit,
+            budget=llm_config.prompt_budget(role),
         )  # fmt: skip
     except (QuotaExhaustedError, RateLimitedError) as stopped:
         typer.echo(f"stopped: {stopped}; every answer so far is cached, re-run to resume", err=True)

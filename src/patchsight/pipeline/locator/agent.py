@@ -18,7 +18,7 @@ back to the model inside ``<observation>`` tags, neutralised so it cannot close 
 
 import json
 import re
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from typing import Any, Literal
 
 from packaging.version import Version
@@ -31,13 +31,19 @@ from patchsight.pipeline.extract.schema import _inline
 from patchsight.pipeline.http import HttpError, NotFoundError
 from patchsight.pipeline.llm.client import LLMClient, LLMRequest, ProviderRejectedError
 from patchsight.pipeline.llm.config import ModelConfig
+from patchsight.pipeline.llm.tokens import MESSAGE_OVERHEAD
 from patchsight.pipeline.locator.baseline import bracket, fixed_versions, tag_version, tags
 from patchsight.pipeline.pypi import PyPIClient
 
 SCHEMA_NAME = "patchsight_locator_step"
 MAX_STEPS = 8
-MAX_COMMITS_SHOWN = 80
+MAX_COMMITS_SHOWN = 60
 MAX_PATCH_LINES = 40
+# A new observation gets at most this many tokens; older ones are shortened to KEEP_LINES
+# lines when the conversation would exceed the role's prompt budget.
+MAX_OBSERVATION_TOKENS = 1_000
+KEEP_LINES = 4
+SHORTENED = "[... shortened to fit the prompt budget]"
 Action = Literal[
     "list_references", "compare_tags", "search_commits", "get_commit", "answer", "abstain"
 ]
@@ -233,7 +239,7 @@ class AgentRun(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     vulnerability: str
-    outcome: str  # found, discarded, abstained, step cap, invalid, error
+    outcome: str  # found, discarded, abstained, step cap, budget, error (rejected twice)
     commit: str | None
     reason: str
     steps: int
@@ -262,11 +268,43 @@ def render_task(template: PromptTemplate, task: Task, steps: int) -> str:
     return text
 
 
+def cap(text: str, limit: int, count: Callable[[str], int]) -> str:
+    """``text`` cut at a line boundary to at most ``limit`` tokens, marked if cut."""
+    if count(text) <= limit:
+        return text
+    lines = text.splitlines()
+    low, high = 0, len(lines)
+    while low < high:  # the most lines that fit with the marker
+        middle = (low + high + 1) // 2
+        if count("\n".join([*lines[:middle], SHORTENED])) <= limit:
+            low = middle
+        else:
+            high = middle - 1
+    return "\n".join([*lines[:low], SHORTENED])
+
+
+def fit(messages: list[dict[str, str]], budget: int, count: Callable[[str], int]) -> bool:
+    """Shorten the oldest observations until the conversation fits ``budget``; False if even
+    then it does not. Deterministic, so a replay shortens exactly the same way."""
+
+    def total() -> int:
+        return sum(count(m["content"]) + MESSAGE_OVERHEAD for m in messages)
+
+    for message in messages[2:]:  # the system prompt and the task are never shortened
+        if total() <= budget:
+            return True
+        if message["role"] == "user" and SHORTENED not in message["content"]:
+            head = message["content"].splitlines()[: KEEP_LINES + 1]
+            message["content"] = "\n".join([*head, SHORTENED, "</observation>"])
+    return total() <= budget
+
+
 def locate(
     task: Task, llm: LLMClient, model: ModelConfig, template: PromptTemplate,
-    github: GitHubClient, max_steps: int = MAX_STEPS,
+    github: GitHubClient, max_steps: int = MAX_STEPS, budget: int | None = None,
 ) -> tuple[AgentRun, list[dict[str, str]]]:  # fmt: skip
-    """Run the agent on one task: the result, and the full message list."""
+    """Run the agent on one task: the result, and the full message list. ``budget``: the
+    role's prompt budget in tokens, which every request is kept within."""
     tools = Tools(task, github)
     messages: list[dict[str, str]] = [
         {"role": "system", "content": template.system},
@@ -284,6 +322,8 @@ def locate(
         )  # fmt: skip
 
     for number in range(1, max_steps + 1):
+        if budget is not None and not fit(messages, budget, llm.estimate_tokens):
+            return finish("budget", f"step {number} would not fit the prompt budget"), messages
         request = LLMRequest(
             model=model.model, prompt_version=template.version, messages=tuple(messages),
             schema_name=SCHEMA_NAME, response_schema=step_schema(),
@@ -292,9 +332,18 @@ def locate(
         try:
             response = llm.complete(request)
         except ProviderRejectedError as rejected:
-            return finish(
-                "error", f"the provider rejected step {number}: {rejected}"[:200]
-            ), messages
+            # Hosted providers sometimes fail to produce schema JSON. Like the extractor's
+            # repair round: say so and ask again, at the cost of a step; twice running ends it.
+            if actions[-1:] == ["rejected"]:
+                why = f"rejected twice, at step {number}: {rejected}"[:200]
+                return finish("error", why), messages
+            actions.append("rejected")
+            messages.append({
+                "role": "user",
+                "content": "error: the last request produced no valid action; answer again with "
+                f"exactly one action. Steps left: {max_steps - number}.",
+            })  # fmt: skip
+            continue
         usage["calls"] += 1
         usage["cached"] += response.cached
         usage["prompt"] += response.prompt_tokens
@@ -314,9 +363,10 @@ def locate(
                 return finish("abstained", step.reason[:200]), messages
             observation = tools.run(step)
         left = max_steps - number
+        shown = cap(neutralise(observation), MAX_OBSERVATION_TOKENS, llm.estimate_tokens)
         messages.append({
             "role": "user",
-            "content": f"<observation>\n{neutralise(observation)}\n</observation>\n"
+            "content": f"<observation>\n{shown}\n</observation>\n"
             f"Steps left: {left}." + (" Answer or abstain now." if left == 1 else ""),
         })  # fmt: skip
     return finish("step cap", f"no answer within {max_steps} steps"), messages

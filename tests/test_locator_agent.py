@@ -215,3 +215,93 @@ def test_the_tools_reach_only_github_and_pypi() -> None:
         "https", "api.github.com",
     )  # fmt: skip
     assert (pypi.http._http.base_url.scheme, pypi.http._http.base_url.host) == ("https", "pypi.org")
+
+
+def test_a_long_observation_is_capped(tmp_path: Path) -> None:
+    def count(text: str) -> int:
+        return len(text) // 4
+
+    text = "\n".join(f"{i:040d} a commit message" for i in range(500))
+    capped = agent.cap(text, 300, count)
+    assert count(capped) <= 300
+    assert capped.endswith(agent.SHORTENED)
+    assert agent.cap("short", 300, count) == "short"
+
+
+def test_the_conversation_is_kept_within_the_prompt_budget(
+    tmp_path: Path, make_advisory: AdvisoryFactory
+) -> None:
+    long_message = "Fix the traversal\n" + "\n".join(f"detail line {i}" for i in range(120))
+    task, github = _task(tmp_path, make_advisory, message=long_message)
+    script = [_act("list_references"), _act("compare_tags", repo="example/some-pkg", base="v1.1",
+              head="v1.2"), _act("get_commit", repo="example/some-pkg", sha=FIX),
+              _act("answer", repo="example/some-pkg", sha=FIX)]  # fmt: skip
+    llm, seen = _model(tmp_path, script)
+    start = sum(llm.estimate_tokens(m) + 8 for m in (TEMPLATE.system, agent.render_task(
+        TEMPLATE, task, agent.MAX_STEPS)))  # fmt: skip
+    budget = start + 500  # the replies fit; the observations must be shortened to fit too
+    run, _ = agent.locate(task, llm, MODEL, TEMPLATE, github, budget=budget)
+    assert run.outcome == "found"
+    for request in seen:
+        size = sum(llm.estimate_tokens(m["content"]) + 8 for m in request.messages)
+        assert size <= budget
+
+
+def test_fit_shortens_the_oldest_observations_first() -> None:
+    def count(text: str) -> int:
+        return len(text.split())
+
+    observation = (
+        "<observation>\n" + "\n".join(f"line {i} word" for i in range(50)) + "\n</observation>"
+    )
+    messages = [
+        {"role": "system", "content": "system " * 20},
+        {"role": "user", "content": "task " * 20},
+        {"role": "assistant", "content": "reply"},
+        {"role": "user", "content": observation},
+        {"role": "assistant", "content": "reply"},
+        {"role": "user", "content": observation},
+    ]
+    total = sum(count(m["content"]) + 8 for m in messages)
+    assert agent.fit(messages, total - 50, count)
+    assert agent.SHORTENED in messages[3]["content"]  # the oldest observation
+    assert agent.SHORTENED not in messages[5]["content"]  # the newest is kept whole
+    assert messages[0]["content"] == "system " * 20  # the system prompt and task, never
+    assert sum(count(m["content"]) + 8 for m in messages) <= total - 50
+    assert not agent.fit(messages, 30, count)  # the task alone is over this budget
+
+
+def test_a_task_too_big_for_the_budget_ends_the_run(
+    tmp_path: Path, make_advisory: AdvisoryFactory
+) -> None:
+    task, github = _task(tmp_path, make_advisory)
+    llm, seen = _model(tmp_path, [_act("abstain")])
+    run, _ = agent.locate(task, llm, MODEL, TEMPLATE, github, budget=50)
+    assert (run.outcome, seen) == ("budget", [])
+
+
+def test_a_provider_rejection_costs_a_step_and_is_asked_again(
+    tmp_path: Path, make_advisory: AdvisoryFactory
+) -> None:
+    from patchsight.pipeline.llm.client import ProviderRejectedError
+
+    task, github = _task(tmp_path, make_advisory)
+    answers = iter(["rejected", _act("abstain")])
+
+    def backend(request: LLMRequest) -> tuple[str, int, int]:
+        answer = next(answers)
+        if answer == "rejected":
+            raise ProviderRejectedError("Failed to generate JSON")
+        return answer, 100, 10
+
+    llm = LLMClient(backend, RateLimiter(10**6, 10**6), tmp_path / "llm")
+    run, messages = agent.locate(task, llm, MODEL, TEMPLATE, github)
+    assert (run.outcome, run.actions) == ("abstained", ("rejected", "abstain"))
+    assert "produced no valid action" in messages[2]["content"]
+
+    always = LLMClient(
+        lambda r: (_ for _ in ()).throw(ProviderRejectedError("no")),
+        RateLimiter(10**6, 10**6), tmp_path / "llm2",
+    )  # fmt: skip
+    twice, _ = agent.locate(task, always, MODEL, TEMPLATE, github)
+    assert (twice.outcome, twice.actions) == ("error", ("rejected",))

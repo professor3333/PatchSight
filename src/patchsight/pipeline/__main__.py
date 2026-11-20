@@ -1334,6 +1334,48 @@ def reachability_report_command(
         raise typer.Exit(1)
 
 
+@app.command("operations-report")
+def operations_report_command(
+    database: Annotated[
+        Path | None, typer.Option("--db", help="A published database to describe.")
+    ] = None,
+    root: Root = Path(),
+    kaggle: Annotated[Path, typer.Option(help="Imported Kaggle runs.")] = Path(
+        "data/interim/kaggle"
+    ),
+    config: Annotated[Path, typer.Option(help="LLM config.")] = Path("configs/llm.toml"),
+    cache: Annotated[Path, typer.Option(help="Cache root.")] = Path(".cache"),
+) -> None:
+    """The operations dashboard (#60): Kaggle sessions, quota use and the database, offline."""
+    from patchsight.pipeline import operations, sessions
+
+    found = sessions.load_sessions(root / kaggle)
+    llm_config = load_config(root / config)
+    hosted = []
+    for model in sorted({m.model: m for m in llm_config.models.values()}.values(),
+                        key=lambda m: m.model):  # fmt: skip
+        cap = llm_config.providers[model.provider].tokens_per_day
+        ledger = root / cache / "llm" / "usage" / f"{model.model.replace('/', '__')}.jsonl"
+        if cap is None or not ledger.exists():
+            continue  # self-hosted, or never called here
+        days = sessions.daily_use(sessions.load_ledger(ledger), cap)
+        hosted.append(
+            operations.HostedModel(model=model.model, tokens_per_day=cap, days=tuple(days))
+        )
+    report = operations.OperationsReport(
+        generated_at=datetime.now(UTC).replace(microsecond=0),
+        sessions=tuple(found), weeks=tuple(sessions.gpu_weeks(found)), hosted=tuple(hosted),
+        database=None if database is None else operations.database_view(database),
+    )  # fmt: skip
+    target = root / "docs" / "reports" / "operations"
+    target.with_name("operations.md").write_text(operations.render_markdown(report), "utf-8")
+    target.with_name("operations.json").write_text(report.model_dump_json(indent=2) + "\n", "utf-8")
+    typer.echo(
+        f"{len(found)} Kaggle sessions, {sum(s.hours for s in found):.1f} hours; "
+        f"{len(hosted)} hosted models -> docs/reports/operations.md"
+    )
+
+
 @app.command("panel-report")
 def panel_report_command(
     database: Annotated[Path, typer.Option("--db", help="The symbol database to scan with.")],

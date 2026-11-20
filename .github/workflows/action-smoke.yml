@@ -7,9 +7,9 @@ name: action-smoke
 on:
   push:
     branches: [main]
-    paths: [action.yml, .github/workflows/action-smoke.yml, src/patchsight/cli.py, "src/patchsight/scan/**"]
+    paths: [action.yml, scripts/pr-comment.sh, .github/workflows/action-smoke.yml, src/patchsight/cli.py, "src/patchsight/scan/**"]
   pull_request:
-    paths: [action.yml, .github/workflows/action-smoke.yml, src/patchsight/cli.py, "src/patchsight/scan/**"]
+    paths: [action.yml, scripts/pr-comment.sh, .github/workflows/action-smoke.yml, src/patchsight/cli.py, "src/patchsight/scan/**"]
   workflow_dispatch:
 
 permissions:
@@ -40,8 +40,11 @@ jobs:
         env:
           ALERTS: ${{ steps.patchsight.outputs.alerts }}
           SARIF: ${{ steps.patchsight.outputs.sarif-file }}
+          REPORT: ${{ steps.patchsight.outputs.report-file }}
         run: |
           test "$ALERTS" -gt 0
+          head -n 1 "$REPORT" | grep -qx '<!-- patchsight -->'
+          grep -q "## PatchSight: $ALERTS dependency alert" "$REPORT"
           python3 -I - "$SARIF" "$ALERTS" <<'PY'
           import json, sys
           log = json.load(open(sys.argv[1]))

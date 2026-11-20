@@ -1,5 +1,6 @@
 """Offline pipeline commands: ``python -m patchsight.pipeline <command>``."""
 
+import contextlib
 import json
 import os
 import subprocess
@@ -2187,6 +2188,128 @@ def pypi_extract_command(
         f"status {summary.status}; skipped {summary.skipped}; truncated {summary.truncated}; "
         f"{llm.network_calls} model calls"
     )
+
+
+@app.command("regression-freeze")
+def regression_freeze_command(
+    sources: Annotated[list[Path], typer.Argument(help="pypi-extract outcome files (JSONL).")],
+    root: Root = Path(),
+    role: Annotated[str, typer.Option(help="Model role the runs used.")] = "kaggle_extractor",
+    size: Annotated[int, typer.Option(help="Vulnerabilities in the set.")] = 50,
+    seed: Annotated[int, typer.Option(help="Sample seed.")] = 20261120,
+    config: Annotated[Path, typer.Option(help="LLM config the runs used.")] = Path(
+        "configs/llm.toml"
+    ),
+    prompt: Annotated[Path, typer.Option(help="Prompt template.")] = Path("prompts/extract_v1.md"),
+    cache: Annotated[Path, typer.Option(help="Cache root (HTTP and LLM).")] = Path(".cache"),
+) -> None:
+    """Freeze the PyPI regression set from finished runs, offline, from the caches only.
+
+    Each case's replay must reproduce the run's own outcome, or nothing is written."""
+    from patchsight.eval.safety import lenient_match
+    from patchsight.pipeline import llm_records, pypi_extract
+    from patchsight.pipeline.benchmarks import pypi_regression as regression
+    from patchsight.pipeline.benchmarks.extraction import candidate_inputs
+    from patchsight.pipeline.benchmarks.replay import _Recorder
+    from patchsight.pipeline.extract.extractor import extract_prompt
+    from patchsight.pipeline.extract.prompt import render
+
+    outcomes = {k: v for source in sources for k, v in llm_records.load(root / source).items()}
+    chosen = regression.select(outcomes, size, seed)
+    manifest, dump = _load_verified(root)
+    by_id, groups = _github_fix_groups(dump, ",".join(k for k, _ in chosen), None, 0)
+    by_key = {g.key: g for g in groups}
+    llm_config = load_config(root / config)
+    model = llm_config.models[role]
+    template = load_template(root / prompt)
+    counter = HfTokenizer(llm_config.tokenizer, root / cache / "tokenizer")
+    github = GitHubClient(root / cache / "http" / "github", offline=True)
+    pypi = PyPIClient(root / cache / "http" / "pypi", offline=True)
+    frozen_at = manifest.file(DUMP).retrieved_at
+    cases = []
+    try:
+        for key, stratum in chosen:
+            group, run = by_key[key], outcomes[key]
+            fixes = build_db.fix_mappings(group, by_id, github, pypi)
+            inputs, known = candidate_inputs(fixes.mappings, pypi_extract.PYTHON_KINDS)
+            rendered = render(
+                template, pypi_extract.advisory_text(group, by_id), inputs,
+                llm_config.prompt_budget(role), counter, llm_config.budget.max_hunk_lines,
+                llm_config.candidate_limit(role),
+            )  # fmt: skip
+            recorder = _Recorder(root / cache / "llm", counter)
+            extract_prompt(recorder, model, key, rendered, known,
+                           llm_config.validation.dotted_entry_points)  # fmt: skip
+            proposed: set[str] = set()
+            for answer in recorder.answers:
+                with contextlib.suppress(json.JSONDecodeError, AttributeError, TypeError):
+                    proposed |= set(json.loads(answer or "{}").get("public_entry_points") or ())
+            paths = pypi_extract.defining_paths(fixes.mappings)
+            in_prompt = {(c.path, c.name) for c in rendered.candidates}
+            # Only names a proposal can resolve to matter: those it matches exactly or, with
+            # dotted entry points on, on a dotted boundary. Keeping every such name keeps the
+            # "exactly one match" rule exact in both modes.
+            relevant = {k for k in known if any(lenient_match(p, k) for p in proposed)}
+            resolvable = relevant | {c.name for c in rendered.candidates}
+            fallback, _ = build_db.fallback_records(group, by_id, github, pypi, frozen_at)
+            draft = regression.Case(
+                vulnerability=key, stratum=stratum, packages=run.packages,
+                input_hash=run.input_hash, fix_commits=run.fix_commits,
+                prompt=rendered.model_copy(update={"messages": ()}),
+                known_names=tuple(sorted(relevant)),
+                definitions={n: tuple(sorted(paths[n])) for n in sorted(resolvable) if n in paths},
+                kinds=tuple(sorted((i.path, i.name, i.kind) for i in inputs
+                                   if (i.path, i.name) in in_prompt)),
+                answers=tuple(recorder.answers), fallback=tuple(fallback),
+                expected=regression.Expected(status="", calls=0, vulnerable_symbols=(),
+                                             entry_points=(), evidence=(), merge="", records=()),
+            )  # fmt: skip
+            expected = regression.replay(
+                draft, model.model, llm_config.validation.dotted_entry_points
+            )
+            ran = (
+                run.outcome.status,
+                tuple(sorted(s.qualified_name for s in run.vulnerable_symbols)),
+                run.entry_points,
+                run.evidence,
+            )
+            again = (expected.status, expected.vulnerable_symbols, expected.entry_points,
+                     expected.evidence)  # fmt: skip
+            if ran != again:
+                raise typer.BadParameter(f"{key}: the replay does not reproduce the run's outcome")
+            cases.append(draft.model_copy(update={"expected": expected}))
+    finally:
+        github.close()
+        pypi.close()
+    strata = Counter(c.stratum for c in cases)
+    regression_set = regression.RegressionSet(
+        name=regression.NAME, model=model.model, prompt_version=template.version,
+        source=", ".join(sorted(str(s) for s in sources)), seed=seed,
+        strata=dict(sorted(strata.items())), cases=tuple(cases),
+    )  # fmt: skip
+    regression.save(regression_set, root / regression.FROZEN)
+    typer.echo(f"{regression.FROZEN}: {len(cases)} cases; {dict(sorted(strata.items()))}")
+
+
+@app.command("regression-check")
+def regression_check_command(
+    root: Root = Path(),
+    config: Annotated[Path, typer.Option(help="LLM config.")] = Path("configs/llm.toml"),
+) -> None:
+    """Replay the PyPI regression set through the live code; exit 1 on any difference."""
+    from patchsight.pipeline.benchmarks import pypi_regression as regression
+
+    frozen = regression.load(root / regression.FROZEN)
+    dotted = load_config(root / config).validation.dotted_entry_points
+    differences = regression.check(frozen, dotted)
+    for d in differences:
+        typer.echo(f"{d.vulnerability} {d.field}: expected {d.expected}, got {d.actual}")
+    typer.echo(
+        f"{frozen.name}: {len(frozen.cases)} cases, {len(differences)} differences"
+        f" ({', '.join(f'{k} {v}' for k, v in frozen.strata.items())})"
+    )
+    if differences:
+        raise typer.Exit(code=1)
 
 
 @app.command("export-kaggle-inputs")

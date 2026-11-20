@@ -222,6 +222,8 @@ The offline pipeline is `python -m patchsight.pipeline <command>`.
 | `failure-report` | Break benchmark misses down by cause |
 | `reachability-report` | Score the reachability fixtures, with labelled records or a published database |
 | `panel-report` | Scan the 20-project panel: symbol-data coverage, verdicts and scan time |
+| `regression-freeze`, `regression-check` | Freeze the PyPI regression set from finished runs, and replay it offline |
+| `operations-report` | The operations dashboard, from run traces, usage ledgers and a database |
 | `update-db`, `gate-db`, `release-notes` | The nightly: rebuild only what changed, run the release gate, write the notes |
 | `pypi-extract`, `merge-llm` | LLM extraction for PyPI advisories, and merging it into a published database |
 | `export-kaggle-inputs`, `restore-kaggle-inputs`, `import-kaggle-run` | Move the backfill's inputs to Kaggle and its answers back |
@@ -237,11 +239,13 @@ The offline pipeline is `python -m patchsight.pipeline <command>`.
 - [x] `patchsight scan` for `requirements.txt`, `uv.lock` and `poetry.lock`, with `patchsight explain`, `db update` and `db info`
 - [x] Confidence tiers from two model families, chosen on the dev split ([ADR 0004](docs/adr/0004-fall-back-to-the-baseline.md))
 - [x] **Public symbol database:** [releases](https://github.com/professor3333/PatchSight/releases), updated **every night** by the [nightly pipeline](.github/workflows/nightly.yml) after a release gate ([ADR 0006](docs/adr/0006-nightly-pipeline.md)). About 3,500 PyPI vulnerabilities, all low confidence so far
-- [ ] LLM-extracted records for PyPI: the pipeline, confidence tiers and per-symbol evidence are built; the self-hosted backfill is running on Kaggle (2 of 4 shards merged)
+- [ ] LLM-extracted records for PyPI: the pipeline, confidence tiers and per-symbol evidence are built; the self-hosted backfill is running on Kaggle (3 of 4 shards merged)
 - [x] Held-out test evaluation of the confidence rule, declared in advance and run once: the safety target is **not met** ([ADR 0004](docs/adr/0004-fall-back-to-the-baseline.md#test-result-2026-11-18))
 - [x] Reachability fixtures: 58 programs, 0 false suppressions ([report](docs/reports/reachability-fixtures-labelled.md))
 - [x] Prompt-injection suite on cached answers ([report](docs/reports/injection-dunlap-dev-extract-v1-qwen3.8-27b-vs-extract-v1-gpt-oss-120b.md)): an advisory that names a decoy makes both model families agree on it, 8 of 15 times. One more reason high confidence stays withheld
 - [x] A panel of 20 real projects: 74.3% of alerts with symbol data, and scan time within target ([report](docs/reports/panel-db-2026.11.19.md))
+- [x] Regression suite: 50 PyPI vulnerabilities whose recorded answers are replayed through the live code in CI, with the output pinned ([set](benchmarks/pypi-regression-v1/README.md))
+- [x] Tracing of every model run, and an operations dashboard: Kaggle sessions, quota against each daily cap, and what the database holds ([report](docs/reports/operations.md))
 - [x] **On PyPI:** [`pip install patchsight`](https://pypi.org/project/patchsight/), published from CI with Trusted Publishing and a required approval
 - [x] **SARIF output and a GitHub Action** (`professor3333/PatchSight@v0.6.0`), with a [smoke test](.github/workflows/action-smoke.yml) on every change
 - [ ] OpenVEX output and a pull-request comment

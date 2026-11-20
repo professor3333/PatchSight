@@ -103,7 +103,7 @@ The scan makes two kinds of network call: the OSV query, and the database downlo
 
 | Workflow | Trigger | What it does |
 |---|---|---|
-| [`ci.yml`](../.github/workflows/ci.yml) | every push and pull request | ruff, mypy, offline pytest, and `reproduce` of the benchmark table. No secrets |
+| [`ci.yml`](../.github/workflows/ci.yml) | every push and pull request | ruff, mypy, offline pytest, `reproduce` of the benchmark table, and `regression-check` of the PyPI regression set. No secrets |
 | [`nightly.yml`](../.github/workflows/nightly.yml) | 03:17 UTC daily, or by hand | snapshot, `update-db`, release gate, dated release, pointer move by `github-actions[bot]`; an issue on failure |
 | [`release.yml`](../.github/workflows/release.yml) | a `v*` tag | full tests, `reproduce`, build, clean-install smoke test, then PyPI through Trusted Publishing after the owner approves, and the GitHub Release |
 
@@ -111,7 +111,7 @@ The scan makes two kinds of network call: the OSV query, and the database downlo
 - **Releases are immutable.** Rollback is one commit that moves `latest.json` on `db-pointer` back ([ADR 0006](adr/0006-nightly-pipeline.md)). It was rehearsed and timed: users followed within 5 minutes ([report](reports/rollback-rehearsal-2026-11-18.md)).
 - **Tracing** (`pipeline/trace.py`): every extraction run writes `data/interim/traces/<run>-<start>.jsonl`. It holds the run's start and end, one line per model call (model, prompt version, input hash, cache hit, outcome, tokens, seconds) and one per extraction. No prompt, answer or account detail is written, and a trace that cannot be written never stops the run. Kaggle runs bring their traces home in the zip.
 - **Operations dashboard** (`operations-report`, [report](reports/operations.md)): Kaggle sessions and GPU hours by week, traced runs, each hosted model's tokens against its daily cap, and what the published database holds: records by source and confidence, tier reasons and second-opinion coverage.
-- **Suites:** the injection suite and the deterministic robustness suite run as described in the [threat model](threat-model.md).
+- **Suites:** the injection suite and the deterministic robustness suite run as described in the [threat model](threat-model.md). The [regression set](../benchmarks/pypi-regression-v1/README.md) pins the Python path's output for 50 PyPI vulnerabilities: their recorded answers go through the live extraction loop, evidence, naming, entry-point qualification and record merge on every push.
 - **Planned:** a Langfuse export of the traces ([#60](https://github.com/professor3333/PatchSight/issues/60)), the Hugging Face dataset and OpenVEX output.
 
 ## Design rules and where they are enforced

@@ -1,0 +1,228 @@
+{
+  "generated_at": "2026-11-20T12:28:08Z",
+  "sessions": [
+    {
+      "name": "patchsight-kaggle-run",
+      "mode": "dunlap",
+      "part": "all",
+      "model": "ggml-org/Qwen3.8-27B-GGUF:Qwen3.8-27B-Q4_K_M.gguf",
+      "code_commit": "319b75399cdb",
+      "gpus": [
+        "Tesla T4, 15360 MiB",
+        "Tesla T4, 15360 MiB"
+      ],
+      "first_answer": "2026-11-15T04:04:40.630452Z",
+      "last_answer": "2026-11-15T06:26:45.144896Z",
+      "hours": 2.37,
+      "calls": 277,
+      "tokens": 523712,
+      "seconds_per_call_p50": 21.7,
+      "seconds_per_call_p90": 63.7,
+      "vulnerabilities": null,
+      "complete": null,
+      "status": {},
+      "truncated": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "provider_rejections": null
+    },
+    {
+      "name": "patchsight-kaggle-run-pypi-shard1of4",
+      "mode": "pypi",
+      "part": "1/4",
+      "model": "ggml-org/Qwen3.8-27B-GGUF:Qwen3.8-27B-Q4_K_M.gguf",
+      "code_commit": "9aaf02ba9af7",
+      "gpus": [
+        "Tesla T4, 15360 MiB",
+        "Tesla T4, 15360 MiB"
+      ],
+      "first_answer": "2026-11-16T16:07:26.989934Z",
+      "last_answer": "2026-11-17T01:48:20.048301Z",
+      "hours": 9.68,
+      "calls": 913,
+      "tokens": 2621175,
+      "seconds_per_call_p50": 29.3,
+      "seconds_per_call_p90": 73.7,
+      "vulnerabilities": 1226,
+      "complete": true,
+      "status": {
+        "dead_letter": 7,
+        "ok": 897,
+        "repaired": 1
+      },
+      "truncated": 191,
+      "prompt_tokens": 2202194,
+      "completion_tokens": 337103,
+      "provider_rejections": 4
+    },
+    {
+      "name": "patchsight-kaggle-run-pypi-shard2of4",
+      "mode": "pypi",
+      "part": "2/4",
+      "model": "ggml-org/Qwen3.8-27B-GGUF:Qwen3.8-27B-Q4_K_M.gguf",
+      "code_commit": "6d10b0394392",
+      "gpus": [
+        "Tesla T4, 15360 MiB",
+        "Tesla T4, 15360 MiB"
+      ],
+      "first_answer": "2026-11-17T08:35:21.371079Z",
+      "last_answer": "2026-11-17T18:21:06.524979Z",
+      "hours": 9.76,
+      "calls": 893,
+      "tokens": 2556746,
+      "seconds_per_call_p50": 30.0,
+      "seconds_per_call_p90": 79.2,
+      "vulnerabilities": 1209,
+      "complete": true,
+      "status": {
+        "dead_letter": 8,
+        "ok": 877
+      },
+      "truncated": 205,
+      "prompt_tokens": 2211343,
+      "completion_tokens": 345403,
+      "provider_rejections": 0
+    },
+    {
+      "name": "patchsight-kaggle-run-pypi-shard3of4",
+      "mode": "pypi",
+      "part": "3/4",
+      "model": "ggml-org/Qwen3.8-27B-GGUF:Qwen3.8-27B-Q4_K_M.gguf",
+      "code_commit": "f5c053ed214b",
+      "gpus": [
+        "Tesla T4, 15360 MiB",
+        "Tesla T4, 15360 MiB"
+      ],
+      "first_answer": "2026-11-18T02:40:26.997447Z",
+      "last_answer": "2026-11-18T11:43:46.302811Z",
+      "hours": 9.06,
+      "calls": 846,
+      "tokens": 2418813,
+      "seconds_per_call_p50": 31.0,
+      "seconds_per_call_p90": 74.3,
+      "vulnerabilities": 1146,
+      "complete": true,
+      "status": {
+        "dead_letter": 5,
+        "ok": 836
+      },
+      "truncated": 190,
+      "prompt_tokens": 2013640,
+      "completion_tokens": 301545,
+      "provider_rejections": 4
+    }
+  ],
+  "weeks": [
+    {
+      "week": "2026-W46",
+      "hours": 2.37,
+      "sessions": 1
+    },
+    {
+      "week": "2026-W47",
+      "hours": 28.5,
+      "sessions": 3
+    }
+  ],
+  "hosted": [
+    {
+      "model": "openai/gpt-oss-120b",
+      "tokens_per_day": 200000,
+      "days": [
+        {
+          "day": "2026-11-15",
+          "calls": 75,
+          "tokens": 151169,
+          "share_of_cap": 0.756
+        },
+        {
+          "day": "2026-11-16",
+          "calls": 95,
+          "tokens": 175373,
+          "share_of_cap": 0.877
+        },
+        {
+          "day": "2026-11-17",
+          "calls": 94,
+          "tokens": 198874,
+          "share_of_cap": 0.994
+        },
+        {
+          "day": "2026-11-18",
+          "calls": 59,
+          "tokens": 164553,
+          "share_of_cap": 0.823
+        },
+        {
+          "day": "2026-11-19",
+          "calls": 73,
+          "tokens": 194502,
+          "share_of_cap": 0.973
+        },
+        {
+          "day": "2026-11-20",
+          "calls": 12,
+          "tokens": 49948,
+          "share_of_cap": 0.25
+        }
+      ]
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "tokens_per_day": 200000,
+      "days": [
+        {
+          "day": "2026-11-15",
+          "calls": 72,
+          "tokens": 197108,
+          "share_of_cap": 0.986
+        },
+        {
+          "day": "2026-11-16",
+          "calls": 28,
+          "tokens": 118080,
+          "share_of_cap": 0.59
+        },
+        {
+          "day": "2026-11-18",
+          "calls": 68,
+          "tokens": 195153,
+          "share_of_cap": 0.976
+        },
+        {
+          "day": "2026-11-19",
+          "calls": 1,
+          "tokens": 4862,
+          "share_of_cap": 0.024
+        },
+        {
+          "day": "2026-11-20",
+          "calls": 11,
+          "tokens": 28576,
+          "share_of_cap": 0.143
+        }
+      ]
+    }
+  ],
+  "database": {
+    "db_version": "2026.11.20",
+    "records": {
+      "llm, low": 2709,
+      "fallback, low": 1091
+    },
+    "tier_reasons": {
+      "no valid second opinion": 2709
+    },
+    "second_opinions": 0,
+    "builds": {
+      "built": 3569,
+      "no_github_fix": 2306,
+      "no_python_fix": 1084,
+      "module_level_references": 71,
+      "no_resolvable_commit": 64,
+      "module_level_only": 50,
+      "too_broad": 18,
+      "error": 11
+    }
+  }
+}

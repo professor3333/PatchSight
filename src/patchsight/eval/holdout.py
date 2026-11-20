@@ -1,0 +1,210 @@
+"""The declared evaluation on the Go temporal holdout (ADR 0010).
+
+For each declared rule, from both models' cached answers:
+
+* **The ADR 0008 criterion:** the high-confidence miss rate (a high-confidence report whose
+  record holds none of the labelled symbols, safety view), with its Wilson 95% interval. A
+  rule passes at 2% or less.
+* **Every miss, with a cause:** *patch ceiling* when no labelled symbol is among the changed
+  functions, so no reading of the patch could find it; otherwise *model*.
+* **Coverage, also declared:** current GoVulnDB lists the exported callers of the
+  vulnerable code, so the miss rate is lenient here. A high-confidence report is *not
+  covered* when any labelled symbol is missing from the record. That is the closer measure
+  of a wrong "not called".
+
+Nothing here chooses anything: the rules and the criterion were fixed before the run.
+"""
+
+from collections.abc import Mapping, Set
+
+from pydantic import BaseModel, ConfigDict
+
+from patchsight.eval.confidence import CHOSEN_RULE, Answer, decide
+from patchsight.eval.metrics import SetScores, score
+from patchsight.eval.safety import SafetyScores, lenient_match, safety
+from patchsight.pipeline.week1 import wilson
+
+TARGET = 0.02
+
+
+class HighMiss(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
+    report: str
+    cause: str  # patch ceiling, or model
+    labelled: tuple[str, ...]
+    record: tuple[str, ...]
+
+
+class Uncovered(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
+    report: str
+    labelled: int
+    missing: int
+
+
+class RuleResult(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
+    variant: str  # "exact" entry points, or "dotted" (E6)
+    reports: int
+    high_reports: int
+    high_misses: int
+    high_miss_rate: float
+    ci95_low: float
+    ci95_high: float
+    passes: bool
+    covered_reports: int  # high-confidence reports holding every labelled symbol
+    uncovered: tuple[Uncovered, ...]
+    misses: tuple[HighMiss, ...]
+    overall: SetScores
+    safety_overall: SafetyScores
+
+
+def _covered(symbols: Set[str], labelled: str) -> bool:
+    return any(lenient_match(s, labelled) for s in symbols)
+
+
+def evaluate(
+    variant: str,
+    primary: Mapping[str, Answer],
+    secondary: Mapping[str, Answer],
+    changed: Mapping[str, Set[str]],
+    truth: Mapping[str, Set[str]],
+) -> RuleResult:
+    """The ADR 0004 rule (``subset`` and a public symbol) with the fallback, as published."""
+    predicted: dict[str, set[str]] = {}
+    product: dict[str, set[str]] = {}
+    misses: list[HighMiss] = []
+    uncovered: list[Uncovered] = []
+    high = covered = 0
+    for report in sorted(primary):
+        answer, other = primary[report], secondary.get(report)
+        decision = decide(answer, other, CHOSEN_RULE, require_public=True, language="go")
+        entry = set(answer.entry_points) | (set(other.entry_points) if other else set())
+        labelled = set(truth[report])
+        if decision.tier != "high":
+            predicted[report] = set(changed[report])
+            product[report] = set(changed[report]) | entry
+            continue
+        high += 1
+        predicted[report] = set(decision.agreed)
+        record = set(decision.symbols)
+        product[report] = record
+        missing = [t for t in labelled if not _covered(record, t)]
+        if len(missing) == len(labelled):
+            in_patch = any(_covered(changed[report], t) for t in labelled)
+            misses.append(HighMiss(
+                report=report, cause="model" if in_patch else "patch ceiling",
+                labelled=tuple(sorted(labelled))[:10], record=tuple(sorted(record))[:10],
+            ))  # fmt: skip
+        if missing:
+            uncovered.append(Uncovered(report=report, labelled=len(labelled), missing=len(missing)))
+        else:
+            covered += 1
+    share = wilson(len(misses), high)
+    return RuleResult(
+        variant=variant, reports=len(primary), high_reports=high, high_misses=len(misses),
+        high_miss_rate=share.share, ci95_low=share.ci95_low, ci95_high=share.ci95_high,
+        passes=high > 0 and share.share <= TARGET, covered_reports=covered,
+        uncovered=tuple(uncovered), misses=tuple(misses),
+        overall=score(predicted, {r: set(truth[r]) for r in primary}),
+        safety_overall=safety(product, {r: set(truth[r]) for r in primary}),
+    )  # fmt: skip
+
+
+class HoldoutEvaluation(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
+    holdout: str
+    holdout_sha256: str
+    primary: str
+    primary_model: str
+    secondary: str
+    secondary_model: str
+    changedfuncs: SetScores
+    changedfuncs_safety: SafetyScores
+    results: tuple[RuleResult, ...]
+
+
+def render_markdown(evaluation: HoldoutEvaluation) -> str:
+    e = evaluation
+    lines = [
+        f"# Declared evaluation on the Go temporal holdout (`{e.holdout}`)",
+        "",
+        "Generated by `python -m patchsight.pipeline holdout-report`; do not edit by hand. "
+        "Run once, as [ADR 0010](../adr/0010-go-temporal-holdout.md) declares, and reported "
+        "as it came out.",
+        "",
+        f"- Holdout: `benchmarks/go-holdout-v1/reports.json` (SHA-256 `{e.holdout_sha256}`)",
+        f"- Extractor: `{e.primary_model}` (`{e.primary}`)",
+        f"- Second opinion: `{e.secondary_model}` (`{e.secondary}`)",
+        "- Rule: `subset` agreement plus a public symbol ([ADR 0004](../adr/0004-fall-back-to-"
+        "the-baseline.md)); low confidence falls back to every changed function",
+        "",
+        "## The ADR 0008 criterion",
+        "",
+        "| Entry points | High-confidence reports | Misses | Miss rate (95% interval) | "
+        "Target | Result |",
+        "|---|---:|---:|---|---|---|",
+    ]
+    for r in e.results:
+        lines.append(
+            f"| {r.variant} | {r.high_reports} of {r.reports} | {r.high_misses} | "
+            f"{r.high_miss_rate:.1%} ({r.ci95_low:.1%} to {r.ci95_high:.1%}) | 2% or less | "
+            f"**{'passes' if r.passes else 'fails'}** |"
+        )
+    lines += [
+        "",
+        "## Coverage, declared with the criterion",
+        "",
+        "A high-confidence report is covered when its record holds every labelled symbol. "
+        "GoVulnDB labels list the exported callers too, so this is the closer measure of a "
+        'wrong "not called".',
+        "",
+        "| Entry points | High-confidence reports | Covered | Not covered |",
+        "|---|---:|---:|---:|",
+        *(
+            f"| {r.variant} | {r.high_reports} | {r.covered_reports} | {len(r.uncovered)} |"
+            for r in e.results
+        ),
+        "",
+        "## Every high-confidence miss",
+        "",
+    ]
+    for r in e.results:
+        if not r.misses:
+            lines.append(f"- {r.variant}: none")
+        for m in r.misses:
+            lines.append(
+                f"- {r.variant}, `{m.report}` ({m.cause}): labelled "
+                + ", ".join(f"`{s}`" for s in m.labelled)
+                + "; record "
+                + (", ".join(f"`{s}`" for s in m.record) or "empty")
+            )
+    lines += [
+        "",
+        "*Patch ceiling:* no labelled symbol is among the functions the fix changed, so no "
+        "reading of the patch could find it. *Model:* a labelled symbol was changed, and the "
+        "agreed set left it out.",
+        "",
+        "## Next to ChangedFuncs",
+        "",
+        "| System | Precision | Recall | F1 | Safety recall | Safety miss rate |",
+        "|---|---:|---:|---:|---:|---:|",
+        f"| ChangedFuncs | {e.changedfuncs.precision:.3f} | {e.changedfuncs.recall:.3f} | "
+        f"{e.changedfuncs.f1:.3f} | {e.changedfuncs_safety.recall:.3f} | "
+        f"{e.changedfuncs_safety.miss_rate:.1%} |",
+        *(
+            f"| Tiers, {r.variant} entry points | {r.overall.precision:.3f} | "
+            f"{r.overall.recall:.3f} | {r.overall.f1:.3f} | {r.safety_overall.recall:.3f} | "
+            f"{r.safety_overall.miss_rate:.1%} |"
+            for r in e.results
+        ),
+        "",
+        "These scores do not compare with the Dunlap benchmark: the labels here are broader "
+        "(ADR 0010).",
+        "",
+    ]
+    return "\n".join(lines)

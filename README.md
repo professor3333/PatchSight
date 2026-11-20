@@ -162,8 +162,8 @@ Outputs: `sarif-file`, `alerts`, `called` and `unknown`.
 |:---:|:---|:---|
 | 🔴 | **CALLED** | A reference in your code resolves to a vulnerable function, its class, or an entry point that reaches it. **Fix these first.** |
 | 🟢 | **IMPORTED, NOT CALLED** | The package is imported, but no vulnerable symbol is referenced. Given only for high-confidence data, which is [withheld for now](docs/adr/0008-withhold-high-confidence.md). |
-| ⚪ | **NOT IMPORTED** | Your code never imports the package directly. It may still be used through other dependencies. |
-| 🟡 | **UNKNOWN** | No symbol data (the alert says why, for example "the fix changes no Python code"), only low-confidence data, or code the scanner can't follow: dynamic imports, a vulnerable method called on an object of unknown type, a template filter, or a package whose import name isn't known. |
+| ⚪ | **NOT IMPORTED** | Your code never imports the package directly, and no file that starts processes names it (a Dockerfile, Procfile, start script or CI workflow). It may still be used through other dependencies. |
+| 🟡 | **UNKNOWN** | No symbol data (the alert says why, for example "the fix changes no Python code"), only low-confidence data, or code the scanner can't follow: dynamic imports, a vulnerable method called on an object of unknown type, a template filter, a package whose import name isn't known, or a package your project runs as a command (`exec gunicorn app.wsgi`). |
 
 > [!NOTE]
 > **The safety rule: fail towards noise, never towards silence.** A wrong "not called" could hide a real vulnerability, so:

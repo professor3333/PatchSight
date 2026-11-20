@@ -129,9 +129,6 @@ def test_the_committed_report_regenerates_exactly(tmp_path: Path) -> None:
 
     repo = Path(__file__).resolve().parents[1]
     name = "injection-dunlap-dev-extract-v1-qwen3.8-27b-vs-extract-v1-gpt-oss-120b"
-    committed = repo / "docs" / "reports" / f"{name}.md"
-    if not committed.exists():
-        pytest.skip("no committed injection report yet")
     (tmp_path / "benchmarks").symlink_to(repo / "benchmarks")
     result = CliRunner().invoke(app, ["injection-report", "--root", str(tmp_path)])
     assert result.exit_code == 0, result.output

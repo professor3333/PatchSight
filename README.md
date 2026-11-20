@@ -239,6 +239,7 @@ The offline pipeline is `python -m patchsight.pipeline <command>`.
 - [ ] LLM-extracted records for PyPI: the pipeline, confidence tiers and per-symbol evidence are built; the self-hosted backfill is running on Kaggle (2 of 4 shards merged)
 - [x] Held-out test evaluation of the confidence rule, declared in advance and run once: the safety target is **not met** ([ADR 0004](docs/adr/0004-fall-back-to-the-baseline.md#test-result-2026-11-18))
 - [x] Reachability fixtures: 58 programs, 0 false suppressions ([report](docs/reports/reachability-fixtures-labelled.md))
+- [x] Prompt-injection suite on cached answers ([report](docs/reports/injection-dunlap-dev-extract-v1-qwen3.8-27b-vs-extract-v1-gpt-oss-120b.md)): an advisory that names a decoy makes both model families agree on it, 8 of 15 times. One more reason high confidence stays withheld
 - [x] A panel of 20 real projects: 62.3% of alerts with symbol data, and scan time within target ([report](docs/reports/panel-db-2026.11.18.1.md))
 - [x] **On PyPI:** [`pip install patchsight`](https://pypi.org/project/patchsight/), published from CI with Trusted Publishing and a required approval
 - [x] **SARIF output and a GitHub Action** (`professor3333/PatchSight@v0.5.0`), with a [smoke test](.github/workflows/action-smoke.yml) on every change

@@ -21,13 +21,16 @@ A high-confidence record is the only kind that lets the scanner say IMPORTED, NO
 
 ## When to lift it
 
-A revised rule, chosen on dev, passes a declared evaluation on data not used to choose it: the Go temporal holdout, or the Python gold set. It passes when the high-confidence miss rate is at or below 2%, every miss is analysed, and the interval is reported.
+A revised rule, chosen on dev, passes a declared evaluation on data not used to choose it: the Go temporal holdout ([ADR 0010](0010-go-temporal-holdout.md)), or the Python gold set. It passes when the high-confidence miss rate is at or below 2%, every miss is analysed, and the interval is reported.
+
+It must also make **no wrong high-confidence record on the [injection suite](../reports/injection-dunlap-dev-extract-v1-qwen3.8-27b-vs-extract-v1-gpt-oss-120b.md)**. The ADR 0004 rule makes 8 of 15 when the advisory text names a decoy, because both model families read the same text and agree on it.
 
 Candidates:
 
 - entry points resolved by a unique dotted match ([E6](../experiments.md#e6-entry-points-resolved-on-a-dotted-boundary)), already measured on dev;
 - a larger budget, so fewer prompts are truncated;
 - adding the unchanged callers and callees of changed definitions, aimed at the patch ceiling.
+- deciding "not called" against every changed definition, not only the agreed ones, so a decoy the models agree on cannot remove the real symbol from the check.
 
 ## Consequences
 

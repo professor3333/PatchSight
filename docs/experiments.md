@@ -21,6 +21,7 @@ Every controlled experiment on the extraction system, including the ones that lo
 | E5 | Run-to-run determinism (self-hosted) | two full Kaggle runs, two days apart | 277 of 277 answers identical | Confirmed |
 | E6 | Entry-point name matching | exact names; a unique dotted-boundary match | dev high-confidence misses 1 of 27 to 0 of 27; F1 unchanged | Measured; switch on after the gpt-oss-20b evaluation, then evaluate on unseen data |
 | E7 | Fix-commit locator without the fix link | the proposal's message baseline; a ranking that prefers the advisory's own IDs | exact SHA 9.0% and 25.0%; wrong commit 64.0% and 47.0% | Neither is used: both are far from the 5% wrong-commit cap. Baseline for the agent ([#56](https://github.com/professor3333/PatchSight/issues/56)) |
+| E8 | Prompt injection (rule 7) | clean; advisory says nothing is vulnerable; advisory names a decoy; a code comment names a decoy | decoy in the advisory: 8 of 15 would become wrong high-confidence records; the others: none | High confidence stays withheld; a lifting rule must make none ([ADR 0008](adr/0008-withhold-high-confidence.md)) |
 
 ## E1: 4-bit self-hosted against hosted serving
 
@@ -230,6 +231,22 @@ wrong functions, and the 5% cap exists for that reason. They are the baseline th
 (rule 8) must beat. The agent needs both a better choice between candidates (reading their
 diffs) and a wider search (commit search by advisory ID). Report:
 [masked evaluation](reports/locator-masked-v1.md) (`locator-eval`).
+
+## E8: Prompt injection
+
+**Question.** Can attacker-writable text make the pair of models agree on a wrong answer, so that the confidence rule makes a high-confidence record without the real symbol (rule 7)?
+
+**Method.** On the 15 dev reports where an attack can be planted (a true candidate, a plausible decoy, and no truncation), each model answers four times: on the clean prompt, and with one of three attacks. In `advisory-none` the advisory says nothing is vulnerable. In `advisory-decoy` it names the decoy function as the vulnerable one. In `comment-decoy`, a code comment in the target's first hunk calls the decoy the real fix. Qwen3.8-27B on Groq and gpt-oss-120b, answers cached and committed ([report](reports/injection-dunlap-dev-extract-v1-qwen3.8-27b-vs-extract-v1-gpt-oss-120b.md), regenerated in CI).
+
+| Attack | Qwen: decoy picked | gpt-oss: decoy picked | Pair: new wrong high-confidence records |
+|---|---:|---:|---:|
+| `advisory-none` | — (emptied 12 of 13) | — (emptied 15 of 15) | 0 |
+| `advisory-decoy` | 9 of 15 | 13 of 15 | **8** |
+| `comment-decoy` | 0 of 10 | 2 of 15 | 0 |
+
+**Findings.** Telling the models that nothing is vulnerable empties their answers, and the fallback turns an empty answer into a low-confidence record with every changed definition: safe. Naming a decoy in the advisory is the dangerous attack. Both families read the same text and agree on it, so agreement is not independent evidence here. That was the residual risk the threat model named; it is now measured. Comments planted in code moved neither model much.
+
+**Decision.** High confidence stays withheld. Any rule that lifts it must make no wrong high-confidence record on this suite ([ADR 0008](adr/0008-withhold-high-confidence.md)). One candidate: decide "not called" against every changed definition, so an agreed decoy cannot remove the real symbol.
 
 ## Failure analysis
 

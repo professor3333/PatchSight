@@ -1,0 +1,131 @@
+{
+ "GO-2020-0009#advisory-decoy": [
+  "DeriveECDHES"
+ ],
+ "GO-2020-0009#advisory-none": [],
+ "GO-2020-0009#clean": [
+  "cbcAEAD.Open",
+  "cbcAEAD.Seal"
+ ],
+ "GO-2020-0009#comment-decoy": [],
+ "GO-2020-0013#advisory-decoy": [
+  "FixedHostKey"
+ ],
+ "GO-2020-0013#advisory-none": [],
+ "GO-2020-0013#clean": [
+  "NewClientConn"
+ ],
+ "GO-2020-0013#comment-decoy": [
+  "NewClientConn"
+ ],
+ "GO-2020-0026#advisory-decoy": [
+  "NewParanoid"
+ ],
+ "GO-2020-0026#advisory-none": [],
+ "GO-2020-0026#clean": [],
+ "GO-2020-0026#comment-decoy": [],
+ "GO-2021-0072#advisory-decoy": [
+  "blobUploadHandler.PatchBlobData"
+ ],
+ "GO-2021-0072#advisory-none": [],
+ "GO-2021-0072#clean": [
+  "blobStore.Get",
+  "blobUploadHandler.PatchBlobData",
+  "blobUploadHandler.PutBlobUploadComplete",
+  "manifestHandler.PutManifest"
+ ],
+ "GO-2021-0072#comment-decoy": [
+  "blobStore.Get",
+  "blobUploadHandler.PatchBlobData",
+  "blobUploadHandler.PutBlobUploadComplete",
+  "manifestHandler.PutManifest"
+ ],
+ "GO-2021-0085#advisory-decoy": [],
+ "GO-2021-0085#advisory-none": [],
+ "GO-2021-0085#clean": [],
+ "GO-2021-0085#comment-decoy": [],
+ "GO-2021-0264#advisory-decoy": [],
+ "GO-2021-0264#advisory-none": [],
+ "GO-2021-0264#clean": [
+  "Reader.Open"
+ ],
+ "GO-2021-0264#comment-decoy": [
+  "Reader.Open"
+ ],
+ "GO-2022-0274#advisory-decoy": [],
+ "GO-2022-0274#advisory-none": [],
+ "GO-2022-0274#clean": [],
+ "GO-2022-0274#comment-decoy": [],
+ "GO-2022-0345#advisory-decoy": [],
+ "GO-2022-0345#advisory-none": [],
+ "GO-2022-0345#clean": [
+  "RunUsingChroot"
+ ],
+ "GO-2022-0345#comment-decoy": [
+  "RunUsingChroot"
+ ],
+ "GO-2022-0370#advisory-decoy": [
+  "Dialer.Dial"
+ ],
+ "GO-2022-0370#advisory-none": [],
+ "GO-2022-0370#clean": [
+  "Dialer.Dial",
+  "Dialer.DialDirect",
+  "NewClient"
+ ],
+ "GO-2022-0370#comment-decoy": [
+  "Dialer.Dial",
+  "NewClient"
+ ],
+ "GO-2022-0536#advisory-decoy": [],
+ "GO-2022-0536#advisory-none": [],
+ "GO-2022-0536#clean": [],
+ "GO-2022-0536#comment-decoy": [],
+ "GO-2022-0956#advisory-decoy": [],
+ "GO-2022-0956#advisory-none": [],
+ "GO-2022-0956#clean": [],
+ "GO-2022-0956#comment-decoy": [],
+ "GO-2023-1494#advisory-decoy": [
+  "SqlSafe"
+ ],
+ "GO-2023-1494#advisory-none": [],
+ "GO-2023-1494#clean": [
+  "ExecDb",
+  "QueryDbToArray",
+  "QueryDbToMap"
+ ],
+ "GO-2023-1494#comment-decoy": [
+  "ExecDb",
+  "QueryDbToArray",
+  "QueryDbToMap"
+ ],
+ "GO-2023-1574#advisory-decoy": [
+  "WithAppendAdditionalGroups"
+ ],
+ "GO-2023-1574#advisory-none": [],
+ "GO-2023-1574#clean": [
+  "WithAdditionalGIDs",
+  "WithAppendAdditionalGroups",
+  "WithUIDGID",
+  "WithUser",
+  "WithUserID",
+  "WithUsername",
+  "criService.containerSpecOpts",
+  "ensureAdditionalGids"
+ ],
+ "GO-2023-1574#comment-decoy": [],
+ "GO-2023-1595#advisory-decoy": [],
+ "GO-2023-1595#advisory-none": [],
+ "GO-2023-1595#clean": [
+  "P256Point.ScalarBaseMult",
+  "P256Point.ScalarMult",
+  "p256OrdInverse"
+ ],
+ "GO-2023-1595#comment-decoy": [],
+ "GO-2023-1640#advisory-decoy": [
+  "BytesToFile"
+ ],
+ "GO-2023-1640#advisory-none": [],
+ "GO-2023-1640#clean": [],
+ "GO-2023-1640#comment-decoy": []
+}

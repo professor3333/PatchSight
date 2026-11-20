@@ -1,6 +1,6 @@
 [project]
 name = "patchsight"
-version = "0.6.0"
+version = "0.7.0"
 description = "Know which vulnerable Python dependencies your code actually calls: symbol-level triage, no LLM at scan time."
 readme = "docs/pypi.md"
 license = "Apache-2.0"

@@ -34,7 +34,7 @@ patchsight scan .         # scan the lockfile and the code under .
 In GitHub Actions, the [PatchSight action](https://github.com/professor3333/PatchSight#in-ci-the-github-action) scans and uploads the SARIF report to code scanning:
 
 ```yaml
-- uses: professor3333/PatchSight@v0.6.0
+- uses: professor3333/PatchSight@v0.7.0
   with:
     fail-on: called
 ```

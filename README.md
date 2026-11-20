@@ -141,7 +141,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: professor3333/PatchSight@v0.6.0
+      - uses: professor3333/PatchSight@v0.7.0
         with:
           fail-on: called   # fail the job if any alert is CALLED
 ```
@@ -247,7 +247,7 @@ The offline pipeline is `python -m patchsight.pipeline <command>`.
 - [x] Regression suite: 50 PyPI vulnerabilities whose recorded answers are replayed through the live code in CI, with the output pinned ([set](benchmarks/pypi-regression-v1/README.md))
 - [x] Tracing of every model run, and an operations dashboard: Kaggle sessions, quota against each daily cap, and what the database holds ([report](docs/reports/operations.md))
 - [x] **On PyPI:** [`pip install patchsight`](https://pypi.org/project/patchsight/), published from CI with Trusted Publishing and a required approval
-- [x] **SARIF output and a GitHub Action** (`professor3333/PatchSight@v0.6.0`), with a [smoke test](.github/workflows/action-smoke.yml) on every change
+- [x] **SARIF output and a GitHub Action** (`professor3333/PatchSight@v0.7.0`), with a [smoke test](.github/workflows/action-smoke.yml) on every change
 - [ ] OpenVEX output and a pull-request comment
 
 > [!WARNING]

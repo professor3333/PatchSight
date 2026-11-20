@@ -22,6 +22,7 @@ from pydantic import BaseModel, ConfigDict
 
 from patchsight.pipeline.llm.config import LLMConfig
 from patchsight.pipeline.llm.tokens import CharEstimate, TokenCounter
+from patchsight.pipeline.trace import Tracer
 
 _ACCOUNT_ID = re.compile(r"\b(org|user|proj|acct)_[A-Za-z0-9]{6,}")
 _SECRET = re.compile(r"(?i)\b(api[_-]?key|token|secret)\b(\W{1,3})\S+")
@@ -221,12 +222,24 @@ class LLMClient:
         limiter: RateLimiter,
         cache_dir: Path,
         counter: TokenCounter | None = None,
+        tracer: Tracer | None = None,
     ) -> None:
         self._backend = backend
         self._limiter = limiter
         self._cache_dir = cache_dir
         self._counter: TokenCounter = counter or CharEstimate()
         self.network_calls = 0
+        self.tracer = tracer or Tracer()
+
+    def _trace(
+        self, request: LLMRequest, key: str, cached: bool, outcome: str, seconds: float,
+        prompt_tokens: int = 0, completion_tokens: int = 0,
+    ) -> None:  # fmt: skip
+        self.tracer.emit(
+            "llm_call", model=request.model, prompt_version=request.prompt_version,
+            input_hash=key, cached=cached, outcome=outcome, prompt_tokens=prompt_tokens,
+            completion_tokens=completion_tokens, seconds=round(seconds, 3),
+        )  # fmt: skip
 
     def estimate_tokens(self, text: str) -> int:
         return self._counter.count(text)
@@ -238,8 +251,12 @@ class LLMClient:
             cached = json.loads(path.read_text(encoding="utf-8"))
             if "rejected" in cached:
                 # Rejections are cached too, so a re-run gives the same outcome for free.
+                self._trace(request, key, cached=True, outcome="rejected", seconds=0.0)
                 raise ProviderRejectedError(cached["rejected"])
-            return LLMResponse(**cached, cached=True, seconds=0.0)
+            response = LLMResponse(**cached, cached=True, seconds=0.0)
+            self._trace(request, key, True, "ok", 0.0, response.prompt_tokens,
+                        response.completion_tokens)  # fmt: skip
+            return response
 
         prompt_text = "".join(m["content"] for m in request.messages)
         estimate = self.estimate_tokens(prompt_text) + request.max_tokens
@@ -250,10 +267,14 @@ class LLMClient:
         except ProviderRejectedError as rejected:
             self.network_calls += 1
             self._limiter.settle(estimate)  # the provider may still count it; stay conservative
+            self._trace(request, key, False, "rejected", time.monotonic() - started)
             message = redact(str(rejected))
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(json.dumps({"rejected": message}), encoding="utf-8")
             raise ProviderRejectedError(message) from rejected
+        except Exception as error:
+            self._trace(request, key, False, type(error).__name__, time.monotonic() - started)
+            raise
         seconds = time.monotonic() - started
         self.network_calls += 1
         self._limiter.settle(prompt_tokens + completion_tokens)
@@ -265,6 +286,7 @@ class LLMClient:
         }
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(record, ensure_ascii=False), encoding="utf-8")
+        self._trace(request, key, False, "ok", seconds, prompt_tokens, completion_tokens)
         return LLMResponse(**record, cached=False, seconds=seconds)
 
 

@@ -36,8 +36,8 @@ flowchart TB
         M --> N["Join with the cached database"]
         N --> O["AST scan of your code"]
         O --> V["Verdict and evidence per alert"]
-        V --> T["Terminal, JSON or SARIF report"]
-        V -. "planned #57" .-> S["GitHub Action, PR comment"]:::planned
+        V --> T["Terminal, JSON, SARIF or markdown report"]
+        T --> S["GitHub Action: code scanning,<br/>job summary, PR comment"]
     end
     P -. "patchsight db update<br/>SHA-256 verified" .-> N
     classDef planned stroke-dasharray: 5 5
@@ -93,7 +93,7 @@ No third-party source code is stored: only names, paths, line ranges and commit 
 2. **Ask OSV.** One `querybatch` request to `api.osv.dev` with package names and versions only (`scan/osv_client.py`).
 3. **Join with the database.** Through the alias table, so all IDs of one vulnerability become one alert.
 4. **Scan your code.** The standard library `ast` module finds imports and references: aliases, from-imports, attribute chains, names passed as arguments, and dynamic use such as `getattr` with a computed name or `importlib` (`scan/ast_scanner.py`). It also records what could reach vulnerable code unseen, each of which withholds "not called": unused from-imports (possible re-exports), attributes of objects it cannot type, and names inside template tags, in Python strings and template files. It also reads the files that start processes (Dockerfiles, Procfiles, scripts, CI workflows): a package named there is never "not imported" or "not called" ([ADR 0012](adr/0012-packages-run-as-commands.md)).
-5. **Decide and report.** One verdict per alert with file-and-line evidence (`scan/verdicts.py`), as text, JSON or SARIF 2.1.0 for code scanning (`scan/report.py`, `scan/sarif.py`). Every alert is shown; in SARIF, CALLED is an error, UNKNOWN a warning and the rest notes. A low-confidence record can raise an alert to CALLED but never lower it.
+5. **Decide and report.** One verdict per alert with file-and-line evidence (`scan/verdicts.py`), as text, JSON, SARIF 2.1.0 for code scanning (`scan/report.py`, `scan/sarif.py`), or markdown for a pull-request comment or job summary. Every alert is shown; in SARIF, CALLED is an error, UNKNOWN a warning and the rest notes. The markdown report counts every verdict and, if GitHub's comment limit forces it to leave rows out, says how many. The [Action](../action.yml) uploads the SARIF report, writes the markdown one as the job summary and, with `comment: "true"`, keeps one pull-request comment up to date (`scripts/pr-comment.sh`). A low-confidence record can raise an alert to CALLED but never lower it.
 
 The scan makes two kinds of network call: the OSV query, and the database download when the cache is empty or `patchsight db update` is run. The download follows `latest.json` on the `db-pointer` branch (falling back to `main` only if that file is missing), verifies the SHA-256 and schema version, and swaps the file in atomically (`scan/dbcache.py`). The scan warns when the database is more than 7 days old. There is no telemetry.
 

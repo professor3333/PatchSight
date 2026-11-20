@@ -93,7 +93,10 @@ def sample_item(group: AliasGroup, by_id: Mapping[str, Advisory]) -> SampleItem:
     for advisory in advisories:
         for package in advisory.packages:
             packages.setdefault(package.name, package_versions(package))
-    links = sorted({c.url for a in advisories for c in a.fix_candidates if c.host == "github.com"})
+    links = sorted({
+        c.url for a in advisories for c in a.fix_candidates
+        if c.host == "github.com" and any(p in c.url for p in ("/commit/", "/pull/", "/compare/"))
+    })  # fmt: skip
     return SampleItem(
         advisory=group.key, identifiers=tuple(sorted(group.identifiers)),
         packages=tuple(packages[n] for n in sorted(packages)), fix_links=tuple(links),

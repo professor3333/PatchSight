@@ -33,11 +33,15 @@ def _advisory(key: str, upstream: bool = False) -> Advisory:
         "kind": "github_commit", "origin": "reference", "url": f"https://github.com/o/pkg/commit/{key}",
         "host": "github.com", "repo": "o/pkg", "ref": key,
     })  # fmt: skip
+    bare = FixCandidate.model_validate({  # a repository link is not a fix
+        "kind": "other_commit", "origin": "reference", "url": "https://github.com/o/pkg",
+        "host": "github.com",
+    })  # fmt: skip
     hints = (SymbolHint(field="imports", package="pkg", value=["pkg.load"]),) if upstream else ()
     return Advisory(
         id=key, source="ghsa", aliases=(), related=(), published=NOW, modified=NOW, summary="s",
         details="d", packages=(_package(("1.0", "1.2", "1.10"), fixed="1.11"),), references=(),
-        fix_candidates=(fix,), symbol_hints=hints,
+        fix_candidates=(fix, bare), symbol_hints=hints,
     )  # fmt: skip
 
 
@@ -66,7 +70,7 @@ def test_the_sample_takes_every_upstream_label_then_a_seeded_draw() -> None:
         i.advisory for i in gold.draw(groups, by_id, extractable, "0" * 64, 6, 1).items
     ]
     item = sample.items[0]
-    assert item.packages[0].last_vulnerable == "1.10"
+    assert item.packages[0].last_vulnerable == "1.10"  # a bare repository link is not a fix
     assert item.fix_links == (f"https://github.com/o/pkg/commit/{item.advisory}",)
 
 

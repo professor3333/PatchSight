@@ -99,6 +99,7 @@ def export(
     reports: Sequence[dunlap.DunlapReport],
     advisories: dict[str, AdvisoryText],
     split: str = "all",
+    benchmark: str = "dunlap-dimva24",
 ) -> ReplayBundle:
     model = config.models[role]
     budget = config.prompt_budget(role)
@@ -130,7 +131,7 @@ def export(
         )
     return ReplayBundle(
         replay_version=REPLAY_VERSION,
-        benchmark="dunlap-dimva24",
+        benchmark=benchmark,
         model=model.model,
         prompt_version=template.version,
         split=split,

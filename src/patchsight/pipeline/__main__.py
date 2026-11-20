@@ -7,9 +7,9 @@ import tarfile
 import time
 import zipfile
 from collections import Counter
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, NamedTuple
 
 import httpx
 import typer
@@ -26,7 +26,7 @@ from patchsight.pipeline.benchmarks import (
     splits,
 )
 from patchsight.pipeline.diffs.github import GitHubClient
-from patchsight.pipeline.extract.prompt import load_template
+from patchsight.pipeline.extract.prompt import AdvisoryText, load_template
 from patchsight.pipeline.ingest import ghsa_repo, snapshot
 from patchsight.pipeline.ingest.aliases import AliasGroup, alias_groups
 from patchsight.pipeline.ingest.osv import Advisory, Excluded, Quarantined, normalise_dump
@@ -343,6 +343,52 @@ def dunlap_baseline_command(
     )
 
 
+class _Benchmark(NamedTuple):
+    """A benchmark's reports and advisory text, narrowed to one part, with its provenance."""
+
+    reports: list[dunlap.DunlapReport]
+    advisories: dict[str, AdvisoryText]
+    ids: frozenset[str] | None
+    split: str
+    split_sha256: str | None
+    as_of: date
+    source: str  # the report line naming the data
+    bundle_dir: Path  # where its replay bundles live
+    replay_name: str  # the benchmark name a replay bundle records
+
+
+def _load_benchmark(root: Path, name: str, part: str) -> _Benchmark:
+    """``dunlap-v1`` (one split part) or ``go-holdout-v1`` (always all of it)."""
+    import hashlib
+
+    from patchsight.pipeline.benchmarks import go_holdout
+
+    if name == go_holdout.NAME:
+        frozen_file = root / go_holdout.FROZEN
+        holdout = go_holdout.load(frozen_file)
+        reports, advisories = go_holdout.as_benchmark(holdout)
+        digest = hashlib.sha256(frozen_file.read_bytes()).hexdigest()
+        return _Benchmark(
+            reports, advisories, None, f"{go_holdout.NAME}:all", digest,
+            datetime.fromisoformat(holdout.retrieved_at).date(),
+            f"- Benchmark: `{go_holdout.FROZEN.as_posix()}` SHA-256 `{digest}`",
+            go_holdout.FROZEN.parent, go_holdout.NAME,
+        )  # fmt: skip
+    if name != "dunlap-v1":
+        raise typer.BadParameter(f"unknown benchmark {name!r}")
+    manifest = snapshot.load_manifest(root / MANIFEST)
+    data = manifest.file(DUNLAP_DATA)
+    frozen = splits.load_split(root / DUNLAP_SPLIT)
+    return _Benchmark(
+        dunlap.load(snapshot.verify(data, root)),
+        extraction.load_advisories(snapshot.verify(manifest.file(DUNLAP_ADVISORIES), root)),
+        frozen.split.ids(part), f"{frozen.split.name}:{part}", frozen.sha256,
+        data.retrieved_at.date(),
+        f"- Benchmark: `{DUNLAP_DATA}` SHA-256 `{data.sha256}` (see `manifests/snapshot.json`)",
+        DUNLAP_BUNDLE.parent, "dunlap-dimva24",
+    )  # fmt: skip
+
+
 @app.command("dunlap-extract")
 def dunlap_extract_command(
     root: Root = Path(),
@@ -362,35 +408,8 @@ def dunlap_extract_command(
 ) -> None:
     """Run LLM extraction on the Dunlap benchmark or the Go temporal holdout (needs
     GITHUB_TOKEN and the model's key)."""
-    import hashlib
-
-    from patchsight.pipeline.benchmarks import go_holdout
-
     token = _github_token()
-    if benchmark == go_holdout.NAME:
-        frozen_file = root / go_holdout.FROZEN
-        holdout = go_holdout.load(frozen_file)
-        reports, advisories = go_holdout.as_benchmark(holdout)
-        as_of = datetime.fromisoformat(holdout.retrieved_at).date()
-        ids, split_name = None, f"{go_holdout.NAME}:all"
-        split_sha = hashlib.sha256(frozen_file.read_bytes()).hexdigest()
-        source_line = f"- Benchmark: `{go_holdout.FROZEN.as_posix()}` SHA-256 `{split_sha}`"
-    elif benchmark == "dunlap-v1":
-        manifest = snapshot.load_manifest(root / MANIFEST)
-        data = manifest.file(DUNLAP_DATA)
-        reports = dunlap.load(snapshot.verify(data, root))
-        advisories = extraction.load_advisories(
-            snapshot.verify(manifest.file(DUNLAP_ADVISORIES), root)
-        )
-        dunlap_split = splits.load_split(root / DUNLAP_SPLIT)
-        as_of = data.retrieved_at.date()
-        ids, split_name = dunlap_split.split.ids(split), f"{dunlap_split.split.name}:{split}"
-        split_sha = dunlap_split.sha256
-        source_line = (
-            f"- Benchmark: `{DUNLAP_DATA}` SHA-256 `{data.sha256}` (see `manifests/snapshot.json`)"
-        )
-    else:
-        raise typer.BadParameter(f"unknown benchmark {benchmark!r}")
+    chosen = _load_benchmark(root, benchmark, split)
     llm_config = load_config(root / config)
     template = load_template(root / prompt)
     counter = HfTokenizer(llm_config.tokenizer, root / cache / "tokenizer")
@@ -398,9 +417,9 @@ def dunlap_extract_command(
     github = GitHubClient(root / cache / "http" / "github", token=token)
     try:
         result = extraction.run(
-            github, llm, llm_config, role, template, counter, reports, advisories,
-            as_of=as_of, sample_size=sample, seed=seed, ids=ids, split=split_name,
-            split_sha256=split_sha,
+            github, llm, llm_config, role, template, counter, chosen.reports, chosen.advisories,
+            as_of=chosen.as_of, sample_size=sample, seed=seed, ids=chosen.ids,
+            split=chosen.split, split_sha256=chosen.split_sha256,
             progress=lambda done, total: typer.echo(f"extracted {done}/{total}", err=True),
         )  # fmt: skip
     except (QuotaExhaustedError, RateLimitedError) as stopped:
@@ -412,7 +431,7 @@ def dunlap_extract_command(
     finally:
         github.close()
     lines = [
-        source_line,
+        chosen.source,
         f"- Prompt: `{prompt.as_posix()}` (`{template.version}`); config: `{config.as_posix()}`",
         f"- Model: `{model_id}` via role `{role}`",
     ]
@@ -867,26 +886,24 @@ def export_replay_command(
     config: Annotated[Path, typer.Option(help="LLM config.")] = Path("configs/llm.toml"),
     prompt: Annotated[Path, typer.Option(help="Prompt template.")] = Path("prompts/extract_v1.md"),
     cache: Annotated[Path, typer.Option(help="Cache root.")] = Path(".cache"),
+    benchmark: Annotated[str, typer.Option(help="dunlap-v1 or go-holdout-v1.")] = "dunlap-v1",
 ) -> None:
     """Write a replay bundle from the response cache only (never calls a model)."""
     token = _github_token()
-    manifest = snapshot.load_manifest(root / MANIFEST)
-    ids = splits.load_split(root / DUNLAP_SPLIT).split.ids(part)
-    reports = [
-        r for r in dunlap.load(snapshot.verify(manifest.file(DUNLAP_DATA), root)) if r.id in ids
-    ]
-    advisories = extraction.load_advisories(snapshot.verify(manifest.file(DUNLAP_ADVISORIES), root))
+    chosen = _load_benchmark(root, benchmark, part)
+    reports = [r for r in chosen.reports if chosen.ids is None or r.id in chosen.ids]
+    advisories = chosen.advisories
     llm_config = load_config(root / config)
     counter = HfTokenizer(llm_config.tokenizer, root / cache / "tokenizer")
     github = GitHubClient(root / cache / "http" / "github", token=token)
     try:
         exported = replay.export(
             github, root / cache / "llm", llm_config, role, load_template(root / prompt), counter,
-            reports, advisories, split=part,
+            reports, advisories, split=part, benchmark=chosen.replay_name,
         )  # fmt: skip
     finally:
         github.close()
-    target = root / DUNLAP_BUNDLE.parent / f"extraction-{tag}.json"
+    target = root / chosen.bundle_dir / f"extraction-{tag}.json"
     replay.save(exported, target)
     answers = sum(len(r.answers) for r in exported.reports)
     typer.echo(f"{target.relative_to(root)}: {len(exported.reports)} reports, {answers} answers")

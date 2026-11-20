@@ -99,3 +99,18 @@ def test_the_frozen_holdout_is_after_the_cutoff_and_complete() -> None:
     assert all(r.symbols and r.commits for r in holdout.reports)
     assert holdout.considered == len(holdout.reports) + sum(holdout.excluded.values())
     assert len({r.id for r in holdout.reports}) == len(holdout.reports)
+
+
+@pytest.mark.skipif(not (REPO / go_holdout.FROZEN).exists(), reason="not frozen yet")
+def test_the_cli_loads_the_holdout_whole_with_its_provenance() -> None:
+    from patchsight.pipeline.__main__ import _load_benchmark
+
+    chosen = _load_benchmark(REPO, go_holdout.NAME, "dev")  # a part does not narrow it
+    assert len(chosen.reports) == len(go_holdout.load(REPO / go_holdout.FROZEN).reports)
+    assert chosen.ids is None
+    assert (chosen.split, chosen.replay_name) == ("go-holdout-v1:all", "go-holdout-v1")
+    assert chosen.bundle_dir == go_holdout.FROZEN.parent
+    assert chosen.split_sha256
+    assert chosen.split_sha256 in chosen.source
+    with pytest.raises(Exception, match="unknown benchmark"):
+        _load_benchmark(REPO, "nonsense", "all")

@@ -50,8 +50,10 @@ round = 1                              # 1, or 2 for the repeat a week later
 
 The sample is frozen in `annotations/python-gold-v1/sample.json`: 120 advisories, seed 20261120, the two with upstream symbol data and a draw from the 3,505 whose fixes change Python definitions. [`worksheet.md`](../annotations/python-gold-v1/worksheet.md) links each advisory and its fixes.
 
-1. **Round 1:** fill `annotations/python-gold-v1/round1.toml`, one entry at a time. `python -m patchsight.pipeline gold-check --round 1` shows what is left and any entry that breaks a rule.
-2. **Round 2, at least a week later:** `gold-round --round 2` writes fresh stubs in a different order. Label them without opening round 1.
+**The declared 60.** Only the first 60 entries of `round1.toml`, above the line that marks their end, are labelled and scored. This was decided on 2026-11-20, before any labelling. The file's order was shuffled by the recorded seed, so the 60 are a random sample of the 125. At about 15 minutes each that is some 15 hours a round, and it should give an F1 interval of roughly ±0.10: enough to tell a clear pass from a clear miss against the target, an F1 within 0.10 of the Go result. Extending to 120 entries must be decided **before any score is run**, in a commit that says so. The worksheet marks the advisories the 60 cover.
+
+1. **Round 1:** fill the first 60 entries of `annotations/python-gold-v1/round1.toml`, one at a time, and leave the rest `todo`. `python -m patchsight.pipeline gold-check --round 1` shows how many are finished and any entry that breaks a rule.
+2. **Round 2, at least a week later:** `gold-round --round 2` writes fresh stubs for the same 60, in a different order. Label them without opening round 1.
 3. **Agreement:** `gold-agreement` reports the exact-match share and the mean Jaccard overlap, with intervals, and lists each disagreement.
 4. **Resolution:** `gold-round --round 3` writes stubs for the disagreements only. Settle each one there, saying why in the note.
 5. **Scoring:** `gold-eval <pypi-extract outcomes> --db <database>` scores the extractor and the published records against the final labels.

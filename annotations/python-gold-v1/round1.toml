@@ -602,6 +602,9 @@ status = "todo"
 note = ""
 round = 1
 
+# ---- The declared 60 end here. The entries below stay todo unless the
+# ---- set is extended, which is decided before any score is run.
+
 [[label]]
 advisory = "GHSA-2qfp-q593-8484"
 package = "scrapy"

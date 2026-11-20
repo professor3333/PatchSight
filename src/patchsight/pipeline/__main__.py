@@ -2268,9 +2268,13 @@ def gold_check_command(
 
     sample = gold.Sample.model_validate_json((root / gold.SAMPLE).read_text("utf-8"))
     labels = gold.load_labels(_gold_round(root, round_))
-    done = Counter(label.status for label in labels)
-    typer.echo(f"round {round_}: {dict(sorted(done.items()))}")
-    problems = gold.check_labels(labels, sample, round_, gold.declared(sample))
+    scope = gold.declared(sample)
+    mine = [lb for lb in labels if (lb.advisory, lb.package) in scope]
+    done = Counter(label.status for label in mine)
+    finished = len(mine) - done.get("todo", 0)
+    typer.echo(f"round {round_}: {finished} of {len(mine)} declared entries finished; "
+               f"{dict(sorted(done.items()))}")  # fmt: skip
+    problems = gold.check_labels(labels, sample, round_, scope)
     if round_ == 3:  # resolutions cover the disagreements only
         problems = [p for p in problems if not p.endswith(": missing")]
     for problem in problems:

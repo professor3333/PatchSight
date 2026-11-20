@@ -192,7 +192,7 @@ def test_the_commands_check_a_round_and_measure_agreement(tmp_path: Path) -> Non
     runner = CliRunner()
     todo = runner.invoke(app, ["gold-check", "--round", "1", "--root", str(tmp_path)])
     assert todo.exit_code == 1
-    assert "round 1: {'todo': 2}" in todo.output
+    assert "round 1: 0 of 2 declared entries finished; {'todo': 2}" in todo.output
     for round_, symbols in ((1, '["pkg.core:load"]'), (2, '["pkg.core:load", "pkg:x"]')):
         text = gold.stub_round(sample, round_).replace("symbols = []", f"symbols = {symbols}")
         (directory / f"round{round_}.toml").write_text(text.replace('"todo"', '"labelled"'))

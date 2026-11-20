@@ -121,3 +121,55 @@ def test_the_worksheet_links_and_copies_no_advisory_text() -> None:
     assert "[GHSA-a](https://github.com/o/pkg/commit/GHSA-a)" in text
     assert "| pkg 1.10 |" in text
     assert "details" not in text
+
+
+def _label(advisory: str, round_: int, *symbols: str, status: str = "labelled",
+           package: str = "pkg") -> gold.Label:  # fmt: skip
+    entry = {"advisory": advisory, "package": package, "version": "1", "symbols": symbols,
+             "status": status, "round": round_}  # fmt: skip
+    return gold.Label.model_validate(entry)
+
+
+def test_agreement_is_exact_match_and_jaccard_over_finished_entries() -> None:
+    first = [_label("A", 1, "pkg.core:load"), _label("B", 1, "pkg:x", "pkg:y"),
+             _label("C", 1, status="no_fix"), _label("D", 1, status="todo")]  # fmt: skip
+    second = [_label("A", 2, "pkg.core:load"), _label("B", 2, "pkg:x"),
+              _label("C", 2, status="no_fix"), _label("D", 2, "pkg:z")]  # fmt: skip
+    result = gold.agreement(first, second, bootstrap=200)
+    assert (result.compared, result.advisories) == (3, 3)  # D was not finished in round 1
+    assert result.exact_match == pytest.approx(2 / 3)
+    assert result.mean_jaccard == pytest.approx((1 + 0.5 + 1) / 3)
+    assert result.exact_ci95.low <= result.exact_match <= result.exact_ci95.high
+    (disagreement,) = result.disagreements
+    assert (disagreement.advisory, disagreement.first, disagreement.second) == (
+        "B", ("labelled", "pkg:x", "pkg:y"), ("labelled", "pkg:x"),
+    )  # fmt: skip
+    assert (
+        gold.agreement([_label("A", 1, status="no_fix")], [_label("A", 2, "pkg:x")]).exact_match
+        == 0
+    )
+
+
+def test_final_labels_take_agreement_or_the_recorded_resolution() -> None:
+    first = [_label("A", 1, "pkg:load"), _label("B", 1, "pkg:x", "pkg:y"), _label("C", 1, "pkg:c")]
+    second = [_label("A", 2, "pkg:load"), _label("B", 2, "pkg:x"), _label("C", 2, "pkg:d")]
+    final, unresolved = gold.final_labels(first, second, [_label("B", 3, "pkg:x", "pkg:y")])
+    assert [(f.advisory, f.round) for f in final] == [("A", 1), ("B", 3)]
+    assert unresolved == [("C", "pkg")]
+
+
+def test_systems_are_scored_strictly_and_on_a_dotted_boundary() -> None:
+    labels = [_label("A", 1, "yaml.constructor:FullConstructor.construct_python_object"),
+              _label("B", 1, "pkg:load"), _label("C", 1, status="no_python_symbol")]  # fmt: skip
+    systems = {
+        "extractor": {"A/pkg": {"lib.yaml.constructor.FullConstructor.construct_python_object"},
+                      "B/pkg": {"pkg.load"}},
+        "ChangedFuncs": {"A/pkg": {"yaml.constructor.FullConstructor.construct_python_object",
+                                   "yaml.loader.Loader"}},
+    }  # fmt: skip
+    extractor, changed = gold.score_against(labels, systems, bootstrap=100)
+    assert extractor.strict.reports == 2  # the no_python_symbol entry is not scored
+    assert extractor.strict.true_positives == 1  # the src-layout module differs exactly...
+    assert extractor.lenient.recall == 1.0  # ...but matches on a dotted boundary
+    assert (changed.strict.true_positives, changed.strict.false_positives) == (1, 1)
+    assert changed.lenient.miss_rate == 0.5  # B has no prediction at all

@@ -16,13 +16,15 @@ Labels hold IDs, names and versions only: no advisory text and no code.
 
 import random
 import tomllib
-from collections.abc import Iterable, Mapping, Sequence
+from collections.abc import Iterable, Mapping, Sequence, Set
 from pathlib import Path
 from typing import Literal
 
 from packaging.version import InvalidVersion, Version
 from pydantic import BaseModel, ConfigDict, field_validator
 
+from patchsight.eval.metrics import Interval, SetScores, jaccard, score
+from patchsight.eval.safety import SafetyScores, safety
 from patchsight.pipeline.ingest.aliases import AliasGroup
 from patchsight.pipeline.ingest.osv import Advisory, AffectedPackage
 
@@ -251,3 +253,135 @@ def worksheet(sample: Sample) -> str:
             f"| {packages} | {commits} |"
         )
     return "\n".join(lines) + "\n"
+
+
+# --- Agreement between rounds, and the final labels ----------------------------------------
+
+
+class Disagreement(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
+    advisory: str
+    package: str
+    first: tuple[str, ...]  # status, then symbols
+    second: tuple[str, ...]
+
+
+class Agreement(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
+    compared: int  # entries finished in both rounds
+    advisories: int
+    exact_match: float
+    exact_ci95: Interval
+    mean_jaccard: float
+    jaccard_ci95: Interval
+    disagreements: tuple[Disagreement, ...]
+
+
+def _overlap(a: Label, b: Label) -> float:
+    if a.status != b.status:
+        return 0.0
+    if a.status != "labelled":
+        return 1.0
+    return jaccard(a.qualified, b.qualified)
+
+
+def _summary(label: Label) -> tuple[str, ...]:
+    return (label.status, *sorted(label.symbols))
+
+
+def agreement(
+    first: Sequence[Label], second: Sequence[Label], bootstrap: int = 2000, seed: int = SEED
+) -> Agreement:
+    """Self-agreement over the entries both rounds finished: the exact-match share and the
+    mean Jaccard overlap of the symbol sets, each with a bootstrap interval that resamples
+    advisories (the guideline's measure)."""
+    later = {(b.advisory, b.package): b for b in second if b.status != "todo"}
+    by_advisory: dict[str, list[float]] = {}
+    disagreements = []
+    for a in first:
+        b = later.get((a.advisory, a.package))
+        if a.status == "todo" or b is None:
+            continue
+        overlap = _overlap(a, b)
+        by_advisory.setdefault(a.advisory, []).append(overlap)
+        if overlap < 1.0:
+            disagreements.append(Disagreement(
+                advisory=a.advisory, package=a.package, first=_summary(a), second=_summary(b),
+            ))  # fmt: skip
+    groups = [by_advisory[k] for k in sorted(by_advisory)]
+
+    def measures(chosen: Sequence[list[float]]) -> tuple[float, float]:
+        values = [v for g in chosen for v in g]
+        if not values:
+            return 0.0, 0.0
+        return sum(v == 1.0 for v in values) / len(values), sum(values) / len(values)
+
+    exact, mean = measures(groups)
+    rng = random.Random(seed)  # noqa: S311 - statistical resampling, not security
+    draws = [
+        measures([rng.choice(groups) for _ in groups]) for _ in range(bootstrap if groups else 0)
+    ]
+
+    def interval(index: int) -> Interval:
+        values = sorted(d[index] for d in draws) or [0.0]
+        return Interval(low=values[int(0.025 * (len(values) - 1))],
+                        high=values[int(0.975 * (len(values) - 1))])  # fmt: skip
+
+    return Agreement(
+        compared=sum(len(g) for g in groups), advisories=len(groups), exact_match=exact,
+        exact_ci95=interval(0), mean_jaccard=mean, jaccard_ci95=interval(1),
+        disagreements=tuple(disagreements),
+    )  # fmt: skip
+
+
+def final_labels(
+    first: Sequence[Label], second: Sequence[Label], resolved: Sequence[Label] = ()
+) -> tuple[list[Label], list[tuple[str, str]]]:
+    """The gold labels: an entry both rounds agree on exactly, or its recorded resolution
+    (round 3) when they do not. Returns the labels and the entries still unresolved."""
+    later = {(b.advisory, b.package): b for b in second}
+    resolutions = {(r.advisory, r.package): r for r in resolved if r.status != "todo"}
+    final, unresolved = [], []
+    for a in first:
+        key = (a.advisory, a.package)
+        b = later.get(key)
+        if a.status == "todo" or b is None or b.status == "todo":
+            unresolved.append(key)
+        elif _overlap(a, b) == 1.0:
+            final.append(a)
+        elif key in resolutions:
+            final.append(resolutions[key])
+        else:
+            unresolved.append(key)
+    return final, unresolved
+
+
+# --- Scoring the extraction against the labels --------------------------------------------
+
+
+class GoldScores(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
+    system: str
+    strict: SetScores  # exact names, as the database writes them
+    lenient: SafetyScores  # names matched on a dotted boundary (module layouts differ)
+
+
+def score_against(
+    labels: Sequence[Label], systems: Mapping[str, Mapping[str, Set[str]]], bootstrap: int = 2000
+) -> list[GoldScores]:
+    """Each system's symbols per ``advisory/package`` against the labelled entries (entries
+    whose flaw is in no Python symbol, or whose fix was not found, are not scored)."""
+    truth = {
+        f"{lb.advisory}/{lb.package}": set(lb.qualified) for lb in labels if lb.status == "labelled"
+    }
+    results = []
+    for name, predicted in systems.items():
+        guesses = {k: set(predicted.get(k, ())) for k in truth}
+        results.append(GoldScores(
+            system=name, strict=score(guesses, truth, bootstrap=bootstrap, seed=SEED),
+            lenient=safety(guesses, truth),
+        ))  # fmt: skip
+    return results

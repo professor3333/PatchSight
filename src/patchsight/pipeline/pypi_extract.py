@@ -15,7 +15,7 @@ import hashlib
 import json
 import time
 from collections import Counter
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence, Set
 from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict
@@ -153,11 +153,20 @@ def qualify_entry_points(
     Entry points are validated against the definitions in the changed files, so each name
     has at least one; a file outside any importable module leaves the bare name.
     """
+    return qualify_with(names, defining_paths(mappings))
+
+
+def defining_paths(mappings: Sequence[CommitMapping]) -> dict[str, set[str]]:
+    """Each name defined in a changed file, with the files that define it."""
     paths: dict[str, set[str]] = {}
     for mapping in mappings:
         for file in mapping.files:
             for known in file.mapping.known_names:
                 paths.setdefault(known, set()).add(file.mapping.path)
+    return paths
+
+
+def qualify_with(names: Sequence[str], paths: Mapping[str, Set[str]]) -> tuple[str, ...]:
     qualified: set[str] = set()
     for name in names:
         for path in paths.get(name, ()):

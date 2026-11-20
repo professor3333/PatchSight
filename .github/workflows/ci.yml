@@ -41,3 +41,6 @@ jobs:
 
       - name: Reproduce the benchmark table
         run: uv run python -m patchsight.pipeline reproduce
+
+      - name: Replay the PyPI regression set
+        run: uv run python -m patchsight.pipeline regression-check

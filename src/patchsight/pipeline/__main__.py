@@ -9,7 +9,7 @@ import zipfile
 from collections import Counter
 from datetime import UTC, date, datetime
 from pathlib import Path
-from typing import Annotated, NamedTuple
+from typing import Annotated, Any, NamedTuple
 
 import httpx
 import typer
@@ -686,6 +686,87 @@ def injection_report_command(
 ) -> None:
     """Recompute the injection report offline from the committed replay bundles."""
     typer.echo(_write_injection_report(root, split, primary, secondary))
+
+
+def _entry_points(reports_dir: Path, name: str) -> dict[str, frozenset[str]]:
+    """Validated entry points per report, from a committed extraction report."""
+    path = reports_dir / f"{name}.json"
+    outcomes = json.loads(path.read_text("utf-8"))["outcomes"]
+    return {o["advisory_id"]: frozenset(o.get("entry_points") or ()) for o in outcomes}
+
+
+@app.command("holdout-report")
+def holdout_report_command(
+    primary: Annotated[str, typer.Option(help="Extractor run tag (replay bundle).")],
+    secondary: Annotated[str, typer.Option(help="Second-opinion run tag (replay bundle).")],
+    root: Root = Path(),
+) -> None:
+    """The declared evaluation on the Go temporal holdout (ADR 0010), offline, from the
+    committed replay bundles and extraction reports of both models."""
+    import hashlib
+
+    from patchsight.eval import confidence, holdout
+    from patchsight.eval.safety import safety
+    from patchsight.pipeline.benchmarks import go_holdout
+
+    frozen_file = root / go_holdout.FROZEN
+    labels = {r.id: set(r.symbols) for r in go_holdout.load(frozen_file).reports}
+    reports_dir = root / "docs" / "reports"
+    runs: dict[str, tuple[str, Any]] = {}
+    for tag in (primary, secondary):
+        run = replay.load(root / go_holdout.FROZEN.parent / f"extraction-{tag}.json")
+        runs[tag] = (run.model, run)
+    changed = {
+        r.id: {c.name for c in r.candidates} for r in runs[primary][1].reports if r.id in labels
+    }
+    results = []
+    for variant, suffix in (("exact", ""), ("dotted", "-dotted")):
+        names = {t: f"extraction-{go_holdout.NAME}-{t}{suffix}" for t in (primary, secondary)}
+        if not all((reports_dir / f"{n}.json").exists() for n in names.values()):
+            if variant == "exact":
+                raise typer.BadParameter(f"missing extraction reports: {sorted(names.values())}")
+            typer.echo(
+                "dotted variant not computed: replay both runs with --config "
+                "configs/experiments/llm-dotted-entry-points.toml and --out ...-dotted",
+                err=True,
+            )
+            continue
+        answers = {}
+        for tag in (primary, secondary):
+            entry = _entry_points(reports_dir, names[tag])
+            run = runs[tag][1]
+            by_report = {}
+            for report in run.reports:
+                if report.id in labels:
+                    status, picked = replay.replay_report(report, run.prompt_version)
+                    by_report[report.id] = confidence.Answer(
+                        status=status, vulnerable=frozenset(picked), truncated=report.truncated,
+                        entry_points=entry.get(report.id, frozenset()),
+                    )  # fmt: skip
+            answers[tag] = by_report
+        results.append(
+            holdout.evaluate(variant, answers[primary], answers[secondary], changed, labels)
+        )
+    digest = hashlib.sha256(frozen_file.read_bytes()).hexdigest()
+    evaluation = holdout.HoldoutEvaluation(
+        holdout=go_holdout.NAME, holdout_sha256=digest,
+        primary=primary, primary_model=runs[primary][0],
+        secondary=secondary, secondary_model=runs[secondary][0],
+        changedfuncs=score(changed, {r: labels[r] for r in changed}),
+        changedfuncs_safety=safety(changed, {r: labels[r] for r in changed}),
+        results=tuple(results),
+    )  # fmt: skip
+    target = reports_dir / f"holdout-{go_holdout.NAME}-{primary}-vs-{secondary}"
+    target.with_name(target.name + ".md").write_text(holdout.render_markdown(evaluation), "utf-8")
+    target.with_name(target.name + ".json").write_text(
+        evaluation.model_dump_json(indent=2) + "\n", "utf-8"
+    )
+    for r in results:
+        typer.echo(
+            f"{r.variant}: {r.high_reports} of {r.reports} high, {r.high_misses} misses "
+            f"({r.high_miss_rate:.1%}), {'passes' if r.passes else 'fails'}; covered "
+            f"{r.covered_reports} of {r.high_reports}"
+        )
 
 
 @app.command("dunlap-split")

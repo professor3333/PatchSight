@@ -1,5 +1,7 @@
 """The declared holdout evaluation (ADR 0010): criterion, misses by cause, and coverage."""
 
+from pathlib import Path
+
 from patchsight.eval import holdout
 from patchsight.eval.confidence import Answer
 from patchsight.eval.metrics import score
@@ -73,3 +75,55 @@ def test_the_report_states_the_result_and_every_miss() -> None:
     assert "**fails**" in text
     assert "`GO-4` (patch ceiling)" in text
     assert "| exact | 4 | 1 | 3 |" in text
+
+
+def test_the_command_scores_both_runs_from_their_committed_files(tmp_path: Path) -> None:
+    import json
+
+    from typer.testing import CliRunner
+
+    from patchsight.pipeline.__main__ import app
+    from patchsight.pipeline.benchmarks import go_holdout
+    from patchsight.pipeline.benchmarks.replay import REPLAY_VERSION, ReplayBundle, ReplayReport
+    from patchsight.pipeline.extract.prompt import Candidate
+
+    frozen = go_holdout.Holdout(
+        name=go_holdout.NAME, cutoff=go_holdout.CUTOFF, source="s", source_sha256="0" * 64,
+        retrieved_at="2026-11-19T00:00:00+00:00", attribution="a", considered=1, excluded={},
+        reports=(go_holdout.HoldoutReport(
+            id="GO-2026-0001", published="2026-09-01T00:00:00Z", summary="s", details="d",
+            symbols=("Parse",),
+            commits=(go_holdout.HoldoutCommit(github_repo="o/r", sha="a" * 40),),
+        ),),
+    )  # fmt: skip
+    (tmp_path / go_holdout.FROZEN).parent.mkdir(parents=True)
+    (tmp_path / go_holdout.FROZEN).write_text(frozen.model_dump_json())
+    answer = json.dumps({"items": [
+        {"candidate_id": "F1", "is_vulnerable": True, "rationale": "r",
+         "evidence_hunk_ids": ["H1"]},
+        {"candidate_id": "F2", "is_vulnerable": False, "rationale": "r", "evidence_hunk_ids": []},
+    ], "public_entry_points": []})  # fmt: skip
+    candidates = (Candidate(id="F1", path="p.go", name="Parse", hunk_ids=("H1",)),
+                  Candidate(id="F2", path="p.go", name="helper", hunk_ids=("H2",)))  # fmt: skip
+    reports = tmp_path / "docs" / "reports"
+    reports.mkdir(parents=True)
+    for tag, model in (("one", "m1"), ("two", "m2")):
+        bundle = ReplayBundle(
+            replay_version=REPLAY_VERSION, benchmark=go_holdout.NAME, model=model,
+            prompt_version="extract-v1",
+            reports=(ReplayReport(id="GO-2026-0001", candidates=candidates, answers=(answer,),
+                                  truncated=False, dropped=()),),
+        )  # fmt: skip
+        (tmp_path / go_holdout.FROZEN.parent / f"extraction-{tag}.json").write_text(
+            bundle.model_dump_json()
+        )
+        outcomes = {"outcomes": [{"advisory_id": "GO-2026-0001", "entry_points": []}]}
+        (reports / f"extraction-go-holdout-v1-{tag}.json").write_text(json.dumps(outcomes))
+    result = CliRunner().invoke(
+        app, ["holdout-report", "--primary", "one", "--secondary", "two", "--root", str(tmp_path)]
+    )
+    assert result.exit_code == 0, result.output
+    assert "exact: 1 of 1 high, 0 misses (0.0%), passes; covered 1 of 1" in result.output
+    assert "dotted variant not computed" in result.output
+    text = (reports / "holdout-go-holdout-v1-one-vs-two.md").read_text()
+    assert "| exact | 1 of 1 | 0 | 0.0% (" in text

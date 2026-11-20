@@ -214,3 +214,28 @@ def test_the_scores_report_names_each_system() -> None:
     text = gold.render_scores(scores, labelled=1, unresolved=2)
     assert "| Extractor alone | 1.000 | 1.000 | 1.000" in text
     assert "still unresolved and not scored: 2" in text
+
+
+def test_a_new_round_starts_fresh_and_round_three_holds_the_disagreements(tmp_path: Path) -> None:
+    from typer.testing import CliRunner
+
+    from patchsight.pipeline.__main__ import app
+
+    directory = tmp_path / gold.DIRECTORY
+    directory.mkdir(parents=True)
+    sample = _sample()
+    (tmp_path / gold.SAMPLE).write_text(sample.model_dump_json())
+    labelled = {"GHSA-a": '["pkg:load"]', "GHSA-b": '["pkg:x"]'}
+    for round_, changed in ((1, {}), (2, {"GHSA-b": '["pkg:y"]'})):
+        entries = []
+        for advisory, symbols in (labelled | changed).items():
+            head = f'[[label]]\nadvisory = "{advisory}"\npackage = "pkg"\nversion = "1.10"\n'
+            entries.append(head + f'symbols = {symbols}\nstatus = "labelled"\nround = {round_}\n')
+        (directory / f"round{round_}.toml").write_text("\n".join(entries))
+    runner = CliRunner()
+    again = runner.invoke(app, ["gold-round", "--round", "2", "--root", str(tmp_path)])
+    assert again.exit_code != 0  # never replaces a round's file
+    third = runner.invoke(app, ["gold-round", "--round", "3", "--root", str(tmp_path)])
+    assert third.exit_code == 0, third.output
+    stubs = gold.load_labels(directory / "round3.toml")
+    assert [(s.advisory, s.status, s.round) for s in stubs] == [("GHSA-b", "todo", 3)]

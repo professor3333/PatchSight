@@ -2236,6 +2236,31 @@ def _gold_round(root: Path, round_: int) -> Path:
     return root / gold.DIRECTORY / f"round{round_}.toml"
 
 
+@app.command("gold-round")
+def gold_round_command(
+    round_: Annotated[int, typer.Option("--round", help="The round to start: 2, or 3.")],
+    root: Root = Path(),
+) -> None:
+    """Start a round's file: fresh todo stubs, in that round's own order. Round 3 holds
+    only the disagreements between rounds 1 and 2, to resolve. Never replaces a file."""
+    from patchsight.pipeline.benchmarks import python_gold as gold
+
+    target = _gold_round(root, round_)
+    if target.exists():
+        raise typer.BadParameter(f"{target.relative_to(root)} exists")
+    sample = gold.Sample.model_validate_json((root / gold.SAMPLE).read_text("utf-8"))
+    if round_ == 3:
+        result = gold.agreement(gold.load_labels(_gold_round(root, 1)),
+                                gold.load_labels(_gold_round(root, 2)))  # fmt: skip
+        wanted = {d.advisory for d in result.disagreements}
+        sample = sample.model_copy(
+            update={"items": tuple(i for i in sample.items if i.advisory in wanted)}
+        )
+    target.write_text(gold.stub_round(sample, round_), "utf-8")
+    entries = sum(len(i.packages) for i in sample.items)
+    typer.echo(f"{target.relative_to(root)}: {entries} entries to label")
+
+
 @app.command("gold-check")
 def gold_check_command(
     round_: Annotated[int, typer.Option("--round", help="1, 2, or 3 for resolutions.")] = 1,

@@ -121,11 +121,26 @@ def extract(
     dotted_entry_points: bool = False,
 ) -> ExtractionOutcome:
     """Extract one advisory; its model calls and its outcome go to the client's trace."""
-    with llm.tracer.advisory(advisory.id):
-        outcome = _extract(
-            llm, model, template, advisory, inputs, known_names, budget_tokens, counter,
-            max_hunk_lines, max_candidates, dotted_entry_points,
-        )  # fmt: skip
+    prompt = render(
+        template, advisory, inputs, budget_tokens, counter, max_hunk_lines, max_candidates
+    )
+    return extract_prompt(llm, model, advisory.id, prompt, known_names, dotted_entry_points)
+
+
+def extract_prompt(
+    llm: LLMClient,
+    model: ModelConfig,
+    advisory_id: str,
+    prompt: RenderedPrompt,
+    known_names: Set[str],
+    dotted_entry_points: bool = False,
+) -> ExtractionOutcome:
+    """Ask the model about one rendered prompt, validate, repair once, or dead-letter.
+
+    Split from ``extract`` so a stored prompt's metadata can be replayed through the same
+    loop: the regression suite does that with the recorded answers."""
+    with llm.tracer.advisory(advisory_id):
+        outcome = _extract(llm, model, advisory_id, prompt, known_names, dotted_entry_points)
         llm.tracer.emit(
             "extraction", status=outcome.status, model=outcome.model,
             prompt_version=outcome.prompt_version, candidates=outcome.candidates,
@@ -142,21 +157,13 @@ def extract(
 def _extract(
     llm: LLMClient,
     model: ModelConfig,
-    template: PromptTemplate,
-    advisory: AdvisoryText,
-    inputs: Sequence[CandidateInput],
+    advisory_id: str,
+    prompt: RenderedPrompt,
     known_names: Set[str],
-    budget_tokens: int,
-    counter: TokenCounter,
-    max_hunk_lines: int,
-    max_candidates: int | None,
     dotted_entry_points: bool,
 ) -> ExtractionOutcome:
-    prompt = render(
-        template, advisory, inputs, budget_tokens, counter, max_hunk_lines, max_candidates
-    )
     base = {
-        "advisory_id": advisory.id,
+        "advisory_id": advisory_id,
         "model": model.model,
         "prompt_version": prompt.version,
         "candidates": len(prompt.candidates),

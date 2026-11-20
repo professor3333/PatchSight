@@ -2190,6 +2190,46 @@ def pypi_extract_command(
     )
 
 
+@app.command("gold-sample")
+def gold_sample_command(
+    database: Annotated[
+        Path,
+        typer.Option(
+            "--db",
+            help="A database whose build ledger says which vulnerabilities "
+            "extraction can be scored on.",
+        ),
+    ],
+    root: Root = Path(),
+    size: Annotated[int, typer.Option(help="Advisories in the sample.")] = 120,
+    seed: Annotated[int, typer.Option(help="Sample seed.")] = 20261120,
+) -> None:
+    """Choose the Python gold set before any labelling, and write its round-1 file and
+    worksheet. Refuses to replace an existing sample."""
+    import sqlite3
+
+    from patchsight.pipeline.benchmarks import python_gold as gold
+
+    target = root / gold.SAMPLE
+    if target.exists():
+        raise typer.BadParameter(f"{gold.SAMPLE} exists: the sample is chosen once")
+    manifest, dump = _load_verified(root)
+    by_id, fixed, unfixed = _fix_groups(dump)
+    with sqlite3.connect(f"file:{database}?mode=ro", uri=True) as connection:
+        rows = connection.execute("SELECT vulnerability FROM builds WHERE status = 'built'")
+        built = {key for (key,) in rows}
+    sample = gold.draw(fixed + unfixed, by_id, built, manifest.file(DUMP).sha256, size, seed)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(sample.model_dump_json(indent=1) + "\n", "utf-8")
+    (target.parent / "round1.toml").write_text(gold.stub_round(sample, 1), "utf-8")
+    (target.parent / "worksheet.md").write_text(gold.worksheet(sample), "utf-8")
+    labels = sum(len(i.packages) for i in sample.items)
+    typer.echo(
+        f"{gold.SAMPLE}: {len(sample.items)} advisories ({sample.upstream} with upstream "
+        f"symbols) from {sample.population:,}; {labels} entries in round1.toml"
+    )
+
+
 @app.command("regression-freeze")
 def regression_freeze_command(
     sources: Annotated[list[Path], typer.Argument(help="pypi-extract outcome files (JSONL).")],

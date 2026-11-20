@@ -70,12 +70,12 @@ On the Go benchmark of [Dunlap et al. (DIMVA 2024)](https://www.enck.org/pubs/du
 
 **Precision is three times the naive baseline's.** Recall is lower, so the model alone sometimes misses the vulnerable function. That is why PatchSight never trusts it alone to say "not called" (see [the safety rule](#reading-the-verdicts)).
 
-**On 20 real projects**, each pinned to its lockfile from May 2024 ([panel](benchmarks/panel-v1.toml), [report](docs/reports/panel-db-2026.11.18.1.md)):
+**On 20 real projects**, each pinned to its lockfile from May 2024 ([panel](benchmarks/panel-v1.toml), [report](docs/reports/panel-db-2026.11.19.md)):
 
 | Metric | Measured | Target |
 |:---|:---:|:---:|
-| Alerts with symbol data | **62.3%** of 4,224 | 50% or more |
-| Scan time, projects with 200+ dependencies (p50 / p95) | **2.05 s / 5.17 s** | under 5 s / under 15 s |
+| Alerts with symbol data | **74.3%** of 3,579 | 50% or more |
+| Scan time, projects with 200+ dependencies (p50 / p95) | **1.96 s / 4.96 s** | under 5 s / under 15 s |
 | LLM tokens per scan | **0** | 0 |
 
 <sub>Scan time includes the OSV query, on an 8-core arm64 Mac with the database already downloaded. Since every record is low confidence for now, most alerts are UNKNOWN: the report breaks down why.</sub>
@@ -98,6 +98,7 @@ patchsight scan . --format json                           # machine-readable out
 patchsight scan . --format sarif > patchsight.sarif       # SARIF 2.1.0, for code scanning
 patchsight scan . --fail-on called                        # exit 1 if any alert is CALLED (CI gate)
 patchsight explain GHSA-87cj-px37-rc3x                    # why these symbols, with evidence
+patchsight report GHSA-87cj-px37-rc3x                     # draft an issue if the symbols look wrong
 patchsight db info                                        # which database a scan uses, and its age
 ```
 
@@ -140,7 +141,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: professor3333/PatchSight@v0.5.0
+      - uses: professor3333/PatchSight@v0.6.0
         with:
           fail-on: called   # fail the job if any alert is CALLED
 ```
@@ -162,7 +163,7 @@ Outputs: `sarif-file`, `alerts`, `called` and `unknown`.
 | 🔴 | **CALLED** | A reference in your code resolves to a vulnerable function, its class, or an entry point that reaches it. **Fix these first.** |
 | 🟢 | **IMPORTED, NOT CALLED** | The package is imported, but no vulnerable symbol is referenced. Given only for high-confidence data, which is [withheld for now](docs/adr/0008-withhold-high-confidence.md). |
 | ⚪ | **NOT IMPORTED** | Your code never imports the package directly. It may still be used through other dependencies. |
-| 🟡 | **UNKNOWN** | No symbol data, only low-confidence data, or code the scanner can't follow: dynamic imports, a vulnerable method called on an object of unknown type, a template filter, or a package whose import name isn't known. |
+| 🟡 | **UNKNOWN** | No symbol data (the alert says why, for example "the fix changes no Python code"), only low-confidence data, or code the scanner can't follow: dynamic imports, a vulnerable method called on an object of unknown type, a template filter, or a package whose import name isn't known. |
 
 > [!NOTE]
 > **The safety rule: fail towards noise, never towards silence.** A wrong "not called" could hide a real vulnerability, so:
@@ -240,9 +241,9 @@ The offline pipeline is `python -m patchsight.pipeline <command>`.
 - [x] Held-out test evaluation of the confidence rule, declared in advance and run once: the safety target is **not met** ([ADR 0004](docs/adr/0004-fall-back-to-the-baseline.md#test-result-2026-11-18))
 - [x] Reachability fixtures: 58 programs, 0 false suppressions ([report](docs/reports/reachability-fixtures-labelled.md))
 - [x] Prompt-injection suite on cached answers ([report](docs/reports/injection-dunlap-dev-extract-v1-qwen3.8-27b-vs-extract-v1-gpt-oss-120b.md)): an advisory that names a decoy makes both model families agree on it, 8 of 15 times. One more reason high confidence stays withheld
-- [x] A panel of 20 real projects: 62.3% of alerts with symbol data, and scan time within target ([report](docs/reports/panel-db-2026.11.18.1.md))
+- [x] A panel of 20 real projects: 74.3% of alerts with symbol data, and scan time within target ([report](docs/reports/panel-db-2026.11.19.md))
 - [x] **On PyPI:** [`pip install patchsight`](https://pypi.org/project/patchsight/), published from CI with Trusted Publishing and a required approval
-- [x] **SARIF output and a GitHub Action** (`professor3333/PatchSight@v0.5.0`), with a [smoke test](.github/workflows/action-smoke.yml) on every change
+- [x] **SARIF output and a GitHub Action** (`professor3333/PatchSight@v0.6.0`), with a [smoke test](.github/workflows/action-smoke.yml) on every change
 - [ ] OpenVEX output and a pull-request comment
 
 > [!WARNING]

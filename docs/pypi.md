@@ -62,7 +62,7 @@ On the Go benchmark of Dunlap et al. (DIMVA 2024), 280 vulnerability reports:
 
 The F1 95% interval is 0.62 to 0.74. The reports and a one-command offline reproduction are [in the repository](https://github.com/professor3333/PatchSight#results-at-a-glance).
 
-On 20 real projects pinned to their May 2024 lockfiles, **74.3% of 3,579 alerts have symbol data**, and a scan of a project with 200 or more dependencies takes **1.96 s at the median and 4.96 s at p95**, OSV query included ([report](https://github.com/professor3333/PatchSight/blob/main/docs/reports/panel-db-2026.11.19.md)). On 58 small programs with a known answer, no program that uses the vulnerable code is labelled "not called" or "not imported" ([fixtures](https://github.com/professor3333/PatchSight/blob/main/docs/reports/reachability-fixtures-labelled.md)).
+On 20 real projects pinned to their May 2024 lockfiles, **75.6% of 3,544 alerts have symbol data**, and a scan of a project with 200 or more dependencies takes **2.23 s at the median and 5.29 s at p95**, OSV query included ([report](https://github.com/professor3333/PatchSight/blob/main/docs/reports/panel-db-2026.11.20.md)). On 58 small programs with a known answer, no program that uses the vulnerable code is labelled "not called" or "not imported" ([fixtures](https://github.com/professor3333/PatchSight/blob/main/docs/reports/reachability-fixtures-labelled.md)).
 
 ## Status: early release
 

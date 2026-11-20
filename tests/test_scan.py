@@ -284,6 +284,104 @@ def test_an_unknown_import_name_is_never_not_imported(tmp_path: Path) -> None:
     assert decide("A", "pyyaml", "1", known, usage).verdict == "NOT_IMPORTED"
 
 
+def _as(package: str, *roots: str) -> db.Record:
+    return _record().model_copy(update={"package": package, "import_roots": roots})
+
+
+@pytest.mark.parametrize(
+    ("name", "launches"),
+    [
+        ("Dockerfile", True), ("production.Dockerfile", True), ("Containerfile", True),
+        ("Procfile", True), ("docker-compose.dev.yml", True), ("compose.yaml", True),
+        ("bin/start.sh", True), ("Makefile", True), ("deploy/app.service", True),
+        ("deploy/supervisord.conf", True), (".github/workflows/ci.yml", True),
+        ("requirements.txt", False), ("pyproject.toml", False), ("poetry.lock", False),
+        ("setup.cfg", False), ("tox.ini", False), ("docs/workflows/ci.yml", False),
+        ("deploy/nginx.conf", False),
+    ],
+)  # fmt: skip
+def test_which_files_start_processes(tmp_path: Path, name: str, launches: bool) -> None:
+    path = _write(tmp_path, {name: "x\n"}) / name
+    assert ast_scanner.is_launch_file(path) is launches
+
+
+def test_an_extensionless_script_starts_processes_only_with_a_shebang(tmp_path: Path) -> None:
+    root = _write(tmp_path, {"bin/docker-server": "#!/bin/bash\nexec gunicorn app.wsgi\n",
+                             "bin/NOTES": "gunicorn is configured elsewhere\n"})  # fmt: skip
+    assert ast_scanner.is_launch_file(root / "bin/docker-server")
+    assert not ast_scanner.is_launch_file(root / "bin/NOTES")
+
+
+def test_a_package_run_as_a_command_is_never_not_imported(tmp_path: Path) -> None:
+    script = "#!/bin/bash\n# start\nexec gunicorn app.wsgi\n"
+    root = _write(tmp_path, {"app/main.py": "import os\n", "bin/docker-server": script})
+    alert = decide("A", "gunicorn", "20.1.0", _as("gunicorn", "gunicorn"), ast_scanner.scan(root))
+    assert alert.verdict == "UNKNOWN"
+    assert alert.reason.startswith("your project may run gunicorn as a command (bin/docker-server")
+    assert [(e.path, e.line) for e in alert.evidence] == [("bin/docker-server", 3)]
+
+
+@pytest.mark.parametrize(
+    "line",
+    ["CMD /venv/bin/gunicorn app.wsgi", "RUN pip install gunicorn==21.2.0",
+     "COPY gunicorn.conf.py ./", "web: python -m gunicorn app:application"],
+)  # fmt: skip
+def test_the_forms_a_command_takes(tmp_path: Path, line: str) -> None:
+    usage = ast_scanner.scan(_write(tmp_path, {"Dockerfile": f"FROM python\n{line}\n"}))
+    assert usage.launched_as(("gunicorn",), "gunicorn") is not None
+
+
+def test_an_import_name_counts_only_after_python_m(tmp_path: Path) -> None:
+    root = _write(tmp_path / "a", {"Procfile": "release: python -m dotenv.cli run\n"})
+    found = ast_scanner.scan(root).launched_as(("dotenv",), "python-dotenv")
+    assert found is not None
+    assert found[0] == "-m dotenv"
+    # A bare import name is too often another word: the git binary, a compose dns: key.
+    other = _write(tmp_path / "b", {"compose.yaml": "dns: 8.8.8.8\n", "Makefile": "git pull\n"})
+    usage = ast_scanner.scan(other)
+    assert usage.launched_as(("dns",), "dnspython") is None
+    assert usage.launched_as(("git",), "gitpython") is None
+
+
+def test_comments_and_other_cases_do_not_name_a_package(tmp_path: Path) -> None:
+    dockerfile = "# we used to run gunicorn\nRUN apt-get install -y openssl\n"
+    root = _write(tmp_path, {"app.py": "import os\n", "Dockerfile": dockerfile})
+    usage = ast_scanner.scan(root)
+    assert decide("A", "gunicorn", "1", _as("gunicorn", "gunicorn"), usage).verdict == (
+        "NOT_IMPORTED"
+    )
+    # Import names are case-sensitive: the system library is not pyOpenSSL.
+    assert decide("A", "pyopenssl", "1", _as("pyopenssl", "OpenSSL"), usage).verdict == (
+        "NOT_IMPORTED"
+    )
+
+
+def test_a_distribution_name_in_a_launch_file_counts(tmp_path: Path) -> None:
+    dockerfile = "RUN pip install python_dotenv\n"
+    root = _write(tmp_path, {"app.py": "import os\n", "Dockerfile": dockerfile})
+    alert = decide(
+        "A", "python-dotenv", "1", _as("python-dotenv", "dotenv"), ast_scanner.scan(root)
+    )
+    assert alert.verdict == "UNKNOWN"
+
+
+def test_a_package_run_as_a_command_is_never_imported_not_called(tmp_path: Path) -> None:
+    code = {"app/main.py": "import yaml\nyaml.safe_load(s)\n"}
+    usage = ast_scanner.scan(_write(tmp_path / "a", {**code, "Procfile": "w: python -m yaml\n"}))
+    alert = decide("A", "pyyaml", "5.3.1", _record(), usage)  # high confidence, no reference
+    assert alert.verdict == "UNKNOWN"
+    assert "(Procfile names -m yaml)" in alert.reason
+    called = ast_scanner.scan(
+        _write(
+            tmp_path / "b",
+            {"app/main.py": "import yaml\nyaml.full_load(s)\n", "Procfile": "w: pyyaml\n"},
+        )
+    )
+    assert decide("A", "pyyaml", "5.3.1", _record(), called).verdict == "CALLED"
+    other = ast_scanner.scan(_write(tmp_path / "c", {**code, "Procfile": "w: yaml run\n"}))
+    assert decide("A", "pyyaml", "5.3.1", _record(), other).verdict == "IMPORTED_NOT_CALLED"
+
+
 # --- end to end ------------------------------------------------------------------------
 
 

@@ -26,6 +26,12 @@ reference the scanner can resolve. A verdict uses them only to withhold "not cal
 * **Template names.** Names inside ``{{ ... }}`` and ``{% ... %}`` tags, in Python strings
   and in template files (``.html``, ``.jinja``, ``.j2``, ...), because a template calls
   filters by name.
+* **Launched names.** Words in the files that start processes: Dockerfiles, Procfiles,
+  Compose files, shell scripts and other scripts with a shebang, Makefiles, systemd and
+  supervisor units, and CI workflows. ``exec gunicorn app.wsgi`` runs gunicorn's code
+  without any import, so a package named there is never "not imported" or "not called".
+  A word names a package when it is the distribution name, or the module after
+  ``python -m``; a bare import name is too often an unrelated word (``git``, ``dns``).
 
 The analysis is flow-insensitive, so an import anywhere counts for the whole file. That
 can over-report references, which only raises an alert's priority.
@@ -35,12 +41,12 @@ import ast
 import os
 import re
 import warnings
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, PrivateAttr
 
-from patchsight.names import module_for_path
+from patchsight.names import canonical_package_name, module_for_path
 
 SKIP_DIRS = frozenset(
     {
@@ -65,6 +71,13 @@ TEMPLATE_SUFFIXES = frozenset({".html", ".htm", ".jinja", ".jinja2", ".j2", ".dj
 _TEMPLATE_TAG = re.compile(r"\{[{%](.*?)[%}]\}", re.DOTALL)
 _WORD = re.compile(r"[A-Za-z_][A-Za-z0-9_]*")
 _MAX_TEMPLATE_BYTES = 2_000_000
+_MAX_LAUNCH_BYTES = 1_000_000
+_LAUNCH_NAMES = frozenset({"makefile", "gnumakefile", "justfile", "entrypoint", "fly.toml",
+                           "app.yaml", "render.yaml", ".gitlab-ci.yml"})  # fmt: skip
+_LAUNCH_SUFFIXES = frozenset({".sh", ".bash", ".zsh", ".service", ".mk"})
+_COMPOSE = re.compile(r"(docker-)?compose[\w.-]*\.ya?ml")
+_TOKEN = re.compile(r"[A-Za-z_][A-Za-z0-9_.-]*")
+_RUN_MODULE = re.compile(r"(?<![\w-])-m\s+([A-Za-z_][A-Za-z0-9_.]*)")
 
 
 class Location(BaseModel):
@@ -100,7 +113,24 @@ class Usage(BaseModel):
     # Name -> the first place it is seen. Used only to withhold "not called".
     attributes: dict[str, Location] = {}
     template_names: dict[str, Location] = {}
+    launched: dict[str, Location] = {}  # words in launch files
+    launched_modules: dict[str, Location] = {}  # modules run with ``python -m``
     _by_root: dict[str, list[Reference]] | None = PrivateAttr(default=None)
+    _launched_by_name: dict[str, tuple[str, Location]] | None = PrivateAttr(default=None)
+
+    def launched_as(self, names: tuple[str, ...], package: str) -> tuple[str, Location] | None:
+        """Where a launch file names the package: ``python -m`` with one of its import names
+        (case-sensitive), or a word that is its distribution name (normalised, so
+        ``python-dotenv`` matches ``python_dotenv``)."""
+        for name in names:
+            if name in self.launched_modules:
+                return f"-m {name}", self.launched_modules[name]
+        if self._launched_by_name is None:
+            index: dict[str, tuple[str, Location]] = {}
+            for word, location in self.launched.items():
+                index.setdefault(canonical_package_name(word), (word, location))
+            self._launched_by_name = index
+        return self._launched_by_name.get(canonical_package_name(package))
 
     def references_into(self, roots: set[str]) -> list[Reference]:
         """References whose top-level name is one of ``roots``. Indexed once, because a
@@ -123,16 +153,63 @@ class Usage(BaseModel):
         return sorted(set(hits), key=lambda loc: (loc.path, loc.line))
 
 
-def _files(root: Path, suffixes: frozenset[str]) -> Iterator[Path]:
+def _walk(root: Path, keep: Callable[[Path], bool]) -> Iterator[Path]:
     if root.is_file():
-        if root.suffix in suffixes:
+        if keep(root):
             yield root
         return
     found: list[Path] = []
     for directory, subdirs, names in os.walk(root):
         subdirs[:] = [d for d in subdirs if d not in SKIP_DIRS]
-        found.extend(Path(directory, n) for n in names if Path(n).suffix in suffixes)
+        found.extend(p for n in names if keep(p := Path(directory, n)))
     yield from sorted(found)
+
+
+def _files(root: Path, suffixes: frozenset[str]) -> Iterator[Path]:
+    return _walk(root, lambda p: p.suffix in suffixes)
+
+
+def is_launch_file(path: Path) -> bool:
+    """A file that starts processes. Lockfiles, requirements files and ``pyproject.toml``
+    are not: they name every dependency, so they say nothing about what is run."""
+    name = path.name.lower()
+    if name in _LAUNCH_NAMES or path.suffix.lower() in _LAUNCH_SUFFIXES:
+        return True
+    if name.startswith(("dockerfile", "containerfile", "procfile")):
+        return True
+    if name.endswith((".dockerfile", ".containerfile")) or _COMPOSE.fullmatch(name):
+        return True
+    if "supervisor" in name and name.endswith(".conf"):
+        return True
+    parts = path.parts
+    if (
+        name.endswith((".yml", ".yaml"))
+        and len(parts) >= 3
+        and parts[-3:-1] == (".github", "workflows")
+    ):
+        return True
+    if path.suffix:
+        return False
+    try:  # an extensionless script: bin/docker-server, scripts/start
+        with path.open("rb") as handle:
+            return handle.read(2) == b"#!"
+    except OSError:
+        return False
+
+
+def launch_words(text: str) -> Iterator[tuple[str, str, int]]:
+    """``("word" | "module", name, line)`` for each non-comment line. A dotted name also
+    yields its first part, so ``gunicorn.conf.py`` names gunicorn and ``-m celery.bin``
+    runs celery."""
+    for number, line in enumerate(text.splitlines(), 1):
+        if line.lstrip().startswith("#"):
+            continue
+        for kind, pattern in (("word", _TOKEN), ("module", _RUN_MODULE)):
+            for match in pattern.finditer(line):
+                name = match.group(match.lastindex or 0).rstrip(".-")
+                yield kind, name, number
+                if "." in name:
+                    yield kind, name.split(".", 1)[0], number
 
 
 def python_files(root: Path) -> Iterator[Path]:
@@ -372,6 +449,14 @@ def scan(root: Path) -> Usage:
         text = path.read_text(encoding="utf-8", errors="replace")
         for word, line in template_words(text):
             template_names.setdefault(word, Location(path=display, line=line))
+    launched: dict[str, dict[str, Location]] = {"word": {}, "module": {}}
+    for path in _walk(root, is_launch_file):
+        if path.stat().st_size > _MAX_LAUNCH_BYTES:
+            continue
+        display = path.relative_to(base).as_posix()
+        text = path.read_text(encoding="utf-8", errors="replace")
+        for kind, name, line in launch_words(text):
+            launched[kind].setdefault(name, Location(path=display, line=line))
     return Usage(
         imports={
             m: tuple(sorted(set(v), key=lambda loc: (loc.path, loc.line)))
@@ -383,4 +468,6 @@ def scan(root: Path) -> Usage:
         files=files,
         attributes=attributes,
         template_names=template_names,
+        launched=launched["word"],
+        launched_modules=launched["module"],
     )

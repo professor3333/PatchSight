@@ -6,11 +6,12 @@ Rules, in order:
 2. A reference in user code matches a vulnerable symbol or entry point: CALLED. This holds
    at any confidence; low-confidence data may raise an alert's priority.
 3. The package is never imported: NOT_IMPORTED (transitive use is not analysed), unless an
-   unparsable file mentions it, a dynamic import has a computed name, or the package's
-   import name is not known (the record has no import roots and the package is not a
-   known exception): UNKNOWN.
+   unparsable file mentions it, a file that starts processes names it (``exec gunicorn
+   app.wsgi`` in a start script runs gunicorn's code without an import), a dynamic import
+   has a computed name, or the package's import name is not known (the record has no
+   import roots and the package is not a known exception): UNKNOWN.
 4. Dynamic use of the package (``getattr`` with a computed name, ``importlib``, a module
-   used as a value, a star import): UNKNOWN.
+   used as a value, a star import), or a file that starts processes names it: UNKNOWN.
 5. Low-confidence symbol data, no symbols, or an unparsable file that mentions the
    package: UNKNOWN. Low confidence can never lower an alert.
 6. A vulnerable symbol's name is used where the scanner cannot tell what it belongs to:
@@ -136,6 +137,7 @@ def decide(
 
     unparsable = _mentions(usage.unparsable, roots)
     computed = [d for d in usage.dynamic if d.root == "?"]
+    launched = usage.launched_as(names, package)
     imported = usage.imported(names)
     if not imported:
         if unparsable:
@@ -145,6 +147,15 @@ def decide(
                 verdict="UNKNOWN",
                 reason=f"could not parse {', '.join(unparsable)}, which "
                 f"{'mentions' if len(unparsable) == 1 else 'mention'} {package}",
+            )
+        if launched:
+            return Alert(
+                **base,
+                **context,
+                verdict="UNKNOWN",
+                reason=f"your project may run {package} as a command ({launched[1].path} "
+                f"names {launched[0]}); its code then runs without an import",
+                evidence=(launched[1],),
             )
         if computed:
             return Alert(
@@ -179,6 +190,16 @@ def decide(
             verdict="UNKNOWN",
             reason=f"dynamic use the scanner cannot follow: {first.reason}",
             evidence=tuple(d.location for d in dynamic),
+            referenced=referenced,
+        )
+    if launched:
+        return Alert(
+            **base,
+            **context,
+            verdict="UNKNOWN",
+            reason=f"your project may run {package} as a command ({launched[1].path} "
+            f"names {launched[0]}); that runs its code without a reference",
+            evidence=(launched[1], *imported),
             referenced=referenced,
         )
     if record.confidence == "low":

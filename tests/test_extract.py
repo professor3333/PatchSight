@@ -346,3 +346,20 @@ def test_dotted_entry_points_keep_the_definition_name() -> None:
     on = validate(answer, _render(), known, dotted_entry_points=True)
     assert on.entry_points == ("ParseHeader", "Paved.SetValue")
     assert on.entry_points_dropped == ("Get",)
+
+
+def test_an_extraction_and_its_calls_are_traced_under_its_advisory(tmp_path: Path) -> None:
+    from patchsight.pipeline.trace import Tracer
+
+    broken = json.loads(_answer())
+    broken["items"][0]["candidate_id"] = "F7"
+    client, _ = _client(tmp_path / "cache", [json.dumps(broken), _answer()])
+    client.tracer = Tracer(tmp_path / "t.jsonl")
+    _extract(client)
+    events = [json.loads(line) for line in (tmp_path / "t.jsonl").read_text().splitlines()]
+    assert [e["kind"] for e in events] == ["llm_call", "llm_call", "extraction"]
+    assert {e["advisory"] for e in events} == {ADVISORY.id}
+    final = events[-1]
+    assert (final["status"], final["calls"], final["invented_ids_first_attempt"]) == (
+        "repaired", 2, 1,
+    )  # fmt: skip

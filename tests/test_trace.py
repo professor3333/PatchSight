@@ -94,3 +94,50 @@ def test_each_run_gets_its_own_file(tmp_path: Path) -> None:
         == tmp_path
         / "data/interim/traces/pypi-extract-kaggle_extractor-shard4of4-20261121T030405Z.jsonl"
     )
+
+
+def _client_for_run(tmp_path: Path) -> LLMClient:
+    return LLMClient(lambda r: ("{}", 1, 1), RateLimiter(100_000, 100), tmp_path / "cache")
+
+
+def _run_events(tmp_path: Path) -> list[dict[str, object]]:
+    (trace,) = (tmp_path / "data" / "interim" / "traces").glob("*.jsonl")
+    return _events(trace)
+
+
+def test_a_run_is_traced_from_start_to_end(tmp_path: Path) -> None:
+    from patchsight.pipeline.__main__ import _run_trace
+
+    llm = _client_for_run(tmp_path)
+    with _run_trace(tmp_path, "pypi-extract-x", "pypi-extract", llm, shard="4/4") as end:
+        llm.complete(_request())
+        end.update(outcome="time budget", processed=3)
+    events = _run_events(tmp_path)
+    assert [e["kind"] for e in events] == ["run_start", "llm_call", "run_end"]
+    assert (events[0]["command"], events[0]["shard"]) == ("pypi-extract", "4/4")
+    assert "code_commit" in events[0]
+    assert (events[-1]["outcome"], events[-1]["processed"], events[-1]["network_calls"]) == (
+        "time budget", 3, 1,
+    )  # fmt: skip
+
+
+@pytest.mark.parametrize(
+    ("error", "outcome"),
+    [("quota", "stopped"), ("crash", "crashed")],
+)
+def test_a_stopped_or_crashed_run_still_ends_its_trace(
+    tmp_path: Path, error: str, outcome: str
+) -> None:
+    from patchsight.pipeline.__main__ import _run_trace
+    from patchsight.pipeline.llm.client import QuotaExhaustedError
+
+    llm = _client_for_run(tmp_path)
+    raised: Exception = QuotaExhaustedError("cap") if error == "quota" else KeyError("x")
+    with pytest.raises(type(raised)), _run_trace(tmp_path, "run", "pypi-extract", llm):
+        raise raised
+    end = _run_events(tmp_path)[-1]
+    assert (end["kind"], end["outcome"], end["reason"]) == (
+        "run_end",
+        outcome,
+        type(raised).__name__,
+    )

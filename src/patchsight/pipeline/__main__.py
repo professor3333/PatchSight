@@ -7,6 +7,8 @@ import tarfile
 import time
 import zipfile
 from collections import Counter
+from collections.abc import Iterator
+from contextlib import contextmanager
 from datetime import UTC, date, datetime
 from pathlib import Path
 from typing import Annotated, Any, NamedTuple
@@ -31,6 +33,7 @@ from patchsight.pipeline.ingest import ghsa_repo, snapshot
 from patchsight.pipeline.ingest.aliases import AliasGroup, alias_groups
 from patchsight.pipeline.ingest.osv import Advisory, Excluded, Quarantined, normalise_dump
 from patchsight.pipeline.llm.client import (
+    LLMClient,
     QuotaExhaustedError,
     RateLimitedError,
     cache_only_client,
@@ -39,11 +42,44 @@ from patchsight.pipeline.llm.client import (
 from patchsight.pipeline.llm.config import load_config
 from patchsight.pipeline.llm.tokens import HfTokenizer
 from patchsight.pipeline.pypi import PyPIClient
+from patchsight.pipeline.trace import Tracer, code_commit, trace_path
 from patchsight.scan import dbcache
 
 app = typer.Typer(name="patchsight-pipeline", no_args_is_help=True, add_completion=False)
 
 Root = Annotated[Path, typer.Option(help="Repository root.")]
+
+
+@contextmanager
+def _run_trace(
+    root: Path, name: str, command: str, llm: LLMClient, **fields: object
+) -> Iterator[dict[str, object]]:
+    """Trace one model run to ``data/interim/traces/<name>-<start>.jsonl``: ``run_start``,
+    then the client's calls, then ``run_end``. The caller adds end fields to the dict it gets.
+    A quota stop or a crash is recorded before the exception goes on."""
+    tracer = Tracer(trace_path(root, name))
+    llm.tracer = tracer
+    started = time.monotonic()
+    tracer.emit("run_start", command=command, code_commit=code_commit(root), **fields)
+    end: dict[str, object] = {}
+
+    def finish(outcome: str, **extra: object) -> None:
+        tracer.emit(
+            "run_end", outcome=outcome, seconds=round(time.monotonic() - started, 1),
+            network_calls=llm.network_calls, **extra,
+        )  # fmt: skip
+
+    try:
+        yield end
+    except (QuotaExhaustedError, RateLimitedError) as stopped:
+        finish("stopped", reason=type(stopped).__name__)
+        raise
+    except BaseException as error:
+        finish("crashed", reason=type(error).__name__)
+        raise
+    finish(str(end.pop("outcome", "complete")), **end)
+
+
 DUMP = "osv-pypi-all"
 MODIFIED = "osv-pypi-modified-id"
 TOP_PACKAGES = "top-pypi-packages"
@@ -416,12 +452,18 @@ def dunlap_extract_command(
     llm, model_id = client_for(llm_config, role, root / cache / "llm", counter)
     github = GitHubClient(root / cache / "http" / "github", token=token)
     try:
-        result = extraction.run(
-            github, llm, llm_config, role, template, counter, chosen.reports, chosen.advisories,
-            as_of=chosen.as_of, sample_size=sample, seed=seed, ids=chosen.ids,
-            split=chosen.split, split_sha256=chosen.split_sha256,
-            progress=lambda done, total: typer.echo(f"extracted {done}/{total}", err=True),
-        )  # fmt: skip
+        with _run_trace(
+            root, f"dunlap-extract-{benchmark}-{split}-{role}", "dunlap-extract", llm,
+            role=role, model=model_id, prompt_version=template.version, benchmark=benchmark,
+            split=chosen.split, sample=sample, reports=len(chosen.reports),
+        ) as end:  # fmt: skip
+            result = extraction.run(
+                github, llm, llm_config, role, template, counter, chosen.reports,
+                chosen.advisories, as_of=chosen.as_of, sample_size=sample, seed=seed,
+                ids=chosen.ids, split=chosen.split, split_sha256=chosen.split_sha256,
+                progress=lambda done, total: typer.echo(f"extracted {done}/{total}", err=True),
+            )  # fmt: skip
+            end.update(reports=result.reports, status=result.status)
     except (QuotaExhaustedError, RateLimitedError) as stopped:
         typer.echo(f"stopped: {stopped}", err=True)
         typer.echo(
@@ -2103,12 +2145,23 @@ def pypi_extract_command(
     make_client = cache_only_client if cache_only else client_for
     llm, model_id = make_client(llm_config, role, root / cache / "llm", counter)
     try:
-        results, summary = pypi_extract.run(
-            groups, by_id, github, pypi, llm, llm_config, role, template, counter,
-            progress=lambda done, total: typer.echo(f"extracted {done}/{total}", err=True),
-            deadline=None if max_minutes is None else started + 60 * max_minutes,
-            keep_order=priority,
-        )  # fmt: skip
+        with _run_trace(
+            root, f"pypi-extract-{role}{suffix}", "pypi-extract", llm, role=role, model=model_id,
+            prompt_version=template.version, shard=shard, offline=offline,
+            cache_only=cache_only, max_minutes=max_minutes, priority=priority,
+            second_opinion=eligible_from is not None, vulnerabilities=len(groups),
+        ) as end:  # fmt: skip
+            results, summary = pypi_extract.run(
+                groups, by_id, github, pypi, llm, llm_config, role, template, counter,
+                progress=lambda done, total: typer.echo(f"extracted {done}/{total}", err=True),
+                deadline=None if max_minutes is None else started + 60 * max_minutes,
+                keep_order=priority,
+            )  # fmt: skip
+            end.update(
+                outcome="complete" if summary.complete else "time budget",
+                processed=summary.processed, status=summary.status,
+                truncated=summary.truncated, skipped=summary.skipped,
+            )  # fmt: skip
     except (QuotaExhaustedError, RateLimitedError) as stopped:
         typer.echo(f"stopped: {stopped}", err=True)
         typer.echo(

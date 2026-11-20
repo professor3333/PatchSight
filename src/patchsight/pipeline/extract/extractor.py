@@ -120,6 +120,38 @@ def extract(
     max_candidates: int | None = None,
     dotted_entry_points: bool = False,
 ) -> ExtractionOutcome:
+    """Extract one advisory; its model calls and its outcome go to the client's trace."""
+    with llm.tracer.advisory(advisory.id):
+        outcome = _extract(
+            llm, model, template, advisory, inputs, known_names, budget_tokens, counter,
+            max_hunk_lines, max_candidates, dotted_entry_points,
+        )  # fmt: skip
+        llm.tracer.emit(
+            "extraction", status=outcome.status, model=outcome.model,
+            prompt_version=outcome.prompt_version, candidates=outcome.candidates,
+            truncated=outcome.truncated, dropped_candidates=len(outcome.dropped_candidates),
+            calls=outcome.calls, cached_calls=outcome.cached_calls,
+            provider_rejections=outcome.provider_rejections,
+            invented_ids_first_attempt=outcome.invented_ids_first_attempt,
+            entry_points_dropped=outcome.entry_points_dropped,
+            prompt_tokens=outcome.prompt_tokens, completion_tokens=outcome.completion_tokens,
+        )  # fmt: skip
+    return outcome
+
+
+def _extract(
+    llm: LLMClient,
+    model: ModelConfig,
+    template: PromptTemplate,
+    advisory: AdvisoryText,
+    inputs: Sequence[CandidateInput],
+    known_names: Set[str],
+    budget_tokens: int,
+    counter: TokenCounter,
+    max_hunk_lines: int,
+    max_candidates: int | None,
+    dotted_entry_points: bool,
+) -> ExtractionOutcome:
     prompt = render(
         template, advisory, inputs, budget_tokens, counter, max_hunk_lines, max_candidates
     )

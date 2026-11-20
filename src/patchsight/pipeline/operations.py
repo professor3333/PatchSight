@@ -11,7 +11,13 @@ from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict
 
-from patchsight.pipeline.sessions import KAGGLE_WEEKLY_GPU_HOURS, DayUse, Session, WeekUse
+from patchsight.pipeline.sessions import (
+    KAGGLE_WEEKLY_GPU_HOURS,
+    DayUse,
+    Session,
+    TracedRun,
+    WeekUse,
+)
 
 
 class HostedModel(BaseModel):
@@ -63,6 +69,7 @@ class OperationsReport(BaseModel):
     weeks: tuple[WeekUse, ...]
     hosted: tuple[HostedModel, ...]
     database: DatabaseView | None
+    local_runs: tuple[TracedRun, ...] = ()  # traces of runs on the machine that wrote this
 
 
 def _n(value: int | None) -> str:
@@ -84,6 +91,35 @@ def _sessions(sessions: Sequence[Session]) -> list[str]:
             f"{s.seconds_per_call_p50:.0f} / {s.seconds_per_call_p90:.0f} | {s.tokens:,} | "
             f"{_n(s.answered) if s.status else '—'} | {rate} | {_n(s.truncated)} | "
             f"{_n(s.provider_rejections)} |"
+        )
+    return lines
+
+
+def _seconds(value: float | None) -> str:
+    if value is None:
+        return "—"
+    return f"{value / 3600:.2f} h" if value >= 3600 else f"{value:.0f} s"
+
+
+def _runs(rows: Sequence[tuple[str, TracedRun]]) -> list[str]:
+    lines = [
+        "| Where | Command | Role | Started (UTC) | Outcome | Wall time | Calls (network / "
+        "cached) | Rejections | Extractions | s per answer (p50 / p90) | Generated tokens/s |",
+        "|---|---|---|---|---|---:|---|---:|---|---|---:|",
+    ]
+    for where, r in rows:
+        extractions = ", ".join(f"{k} {v:,}" for k, v in r.extractions.items()) or "—"
+        latency = "—" if r.latency_p50 is None else f"{r.latency_p50:.0f} / {r.latency_p90:.0f}"
+        speed = (
+            "—"
+            if r.completion_tokens_per_second is None
+            else f"{r.completion_tokens_per_second:.1f}"
+        )
+        lines.append(
+            f"| {where} | {r.command} | {r.role or '—'} | {r.started:%Y-%m-%d %H:%M} | "
+            f"{r.outcome or 'no end (killed)'} | {_seconds(r.seconds)} | "
+            f"{r.network_calls:,} / {r.cache_hits:,} | {r.rejections:,} | {extractions} | "
+            f"{latency} | {speed} |"
         )
     return lines
 
@@ -115,6 +151,25 @@ def render_markdown(report: OperationsReport) -> str:
         *(
             f"| {w.week} | {w.sessions} | {w.hours:.2f} | {w.hours / KAGGLE_WEEKLY_GPU_HOURS:.0%} |"
             for w in r.weeks
+        ),
+        "",
+        "## Traced runs",
+        "",
+        "Runs that wrote a trace (`data/interim/traces/`): one line per model call and per "
+        "extraction, with timings. Kaggle runs bring theirs home in the zip. A run with no end "
+        "was killed before it could write one.",
+        "",
+        *(
+            _runs(
+                [
+                    (f"Kaggle {s.mode} {s.part or ''}".strip(), run)
+                    for s in r.sessions
+                    for run in s.runs
+                ]
+                + [("this machine", run) for run in r.local_runs]
+            )
+            if any(s.runs for s in r.sessions) or r.local_runs
+            else ["No traced run yet."]
         ),
         "",
         "## Hosted models: tokens against the daily cap",

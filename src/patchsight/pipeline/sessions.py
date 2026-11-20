@@ -45,6 +45,65 @@ def _percentile(values: Sequence[float], share: float) -> float:
     return ordered[min(len(ordered) - 1, int(share * len(ordered)))] if ordered else 0.0
 
 
+class TracedRun(BaseModel):
+    """One run's trace (``pipeline/trace.py``), summarised."""
+
+    model_config = ConfigDict(frozen=True)
+
+    trace: str  # file name
+    command: str
+    role: str | None
+    model: str | None
+    started: datetime
+    outcome: str | None  # None: the run never wrote run_end (killed)
+    seconds: float | None
+    calls: int
+    network_calls: int
+    cache_hits: int
+    rejections: int
+    extractions: dict[str, int]
+    latency_p50: float | None  # seconds per answered network call
+    latency_p90: float | None
+    completion_tokens_per_second: float | None
+
+
+def load_trace(path: Path) -> TracedRun | None:
+    """A trace file as one run; None when it has no run_start."""
+    events = []
+    for line in path.read_text("utf-8").splitlines():
+        try:
+            events.append(json.loads(line))
+        except json.JSONDecodeError:
+            continue  # a line cut short when the session was killed
+    start = next((e for e in events if e.get("kind") == "run_start"), None)
+    if start is None:
+        return None
+    end = next((e for e in reversed(events) if e.get("kind") == "run_end"), None)
+    calls = [e for e in events if e.get("kind") == "llm_call"]
+    answered = [c for c in calls if not c.get("cached") and c.get("outcome") == "ok"]
+    seconds = [float(c.get("seconds") or 0) for c in answered]
+    generated = sum(int(c.get("completion_tokens") or 0) for c in answered)
+    statuses = Counter(str(e.get("status")) for e in events if e.get("kind") == "extraction")
+    return TracedRun(
+        trace=path.name, command=str(start.get("command")), role=start.get("role"),
+        model=start.get("model"), started=datetime.fromisoformat(str(start["ts"])),
+        outcome=None if end is None else str(end.get("outcome")),
+        seconds=None if end is None else float(end.get("seconds") or 0),
+        calls=len(calls), network_calls=sum(not c.get("cached") for c in calls),
+        cache_hits=sum(bool(c.get("cached")) for c in calls),
+        rejections=sum(c.get("outcome") == "rejected" for c in calls),
+        extractions=dict(sorted(statuses.items())),
+        latency_p50=round(statistics.median(seconds), 1) if seconds else None,
+        latency_p90=round(_percentile(seconds, 0.9), 1) if seconds else None,
+        completion_tokens_per_second=round(generated / sum(seconds), 1) if sum(seconds) else None,
+    )  # fmt: skip
+
+
+def load_traces(directory: Path) -> list[TracedRun]:
+    found = [load_trace(p) for p in sorted(directory.glob("*.jsonl"))]
+    return sorted((r for r in found if r is not None), key=lambda r: r.started)
+
+
 class _Summary(BaseModel):
     """The fields of a ``pypi-extract`` summary that a session reports."""
 
@@ -83,6 +142,7 @@ class Session(BaseModel):
     prompt_tokens: int | None = None
     completion_tokens: int | None = None
     provider_rejections: int | None = None
+    runs: tuple[TracedRun, ...] = ()  # the session's traces, when the notebook saved them
 
     @property
     def answered(self) -> int:
@@ -119,6 +179,7 @@ def load_session(run: Path) -> Session | None:
         seconds_per_call_p50=round(statistics.median(gaps), 1) if gaps else 0.0,
         seconds_per_call_p90=round(_percentile(gaps, 0.9), 1),
         **summary.model_dump(),
+        runs=tuple(load_traces(run / "data" / "interim" / "traces")),
     )  # fmt: skip
 
 

@@ -91,3 +91,25 @@ def test_the_committed_report_renders_from_its_json() -> None:
         pytest.skip("no committed operations report")
     report = operations.OperationsReport.model_validate_json(source.read_text())
     assert operations.render_markdown(report) == source.with_suffix(".md").read_text()
+
+
+def test_traced_runs_are_listed_with_where_they_ran(tmp_path: Path) -> None:
+    from patchsight.pipeline.sessions import TracedRun
+
+    run = TracedRun(
+        trace="t.jsonl", command="pypi-extract", role="second_opinion", model="m", started=NOW,
+        outcome=None, seconds=None, calls=3, network_calls=2, cache_hits=1, rejections=1,
+        extractions={"ok": 2}, latency_p50=12.0, latency_p90=40.0,
+        completion_tokens_per_second=55.5,
+    )  # fmt: skip
+    report = operations.OperationsReport(
+        generated_at=NOW, sessions=(), weeks=(), hosted=(), database=None, local_runs=(run,)
+    )
+    text = operations.render_markdown(report)
+    assert (
+        "| this machine | pypi-extract | second_opinion | 2026-11-20 00:00 | no end (killed) | — "
+        "| 2 / 1 | 1 | ok 2 | 12 / 40 | 55.5 |"
+    ) in text
+    empty = operations.OperationsReport(generated_at=NOW, sessions=(), weeks=(), hosted=(),
+                                        database=None)  # fmt: skip
+    assert "No traced run yet." in operations.render_markdown(empty)

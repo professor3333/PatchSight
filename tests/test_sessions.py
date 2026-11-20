@@ -90,3 +90,54 @@ def test_daily_use_against_a_cap() -> None:
 
 def test_a_missing_ledger_is_empty(tmp_path: Path) -> None:
     assert sessions.load_ledger(tmp_path / "absent.jsonl") == []
+
+
+def _trace(path: Path, events: list[dict[str, object]], cut: bool = False) -> Path:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    text = "".join(json.dumps(e) + "\n" for e in events)
+    path.write_text(text + ('{"kind": "llm_ca' if cut else ""))
+    return path
+
+
+RUN_START = {"ts": "2026-11-21T03:00:00.000+00:00", "kind": "run_start",
+             "command": "pypi-extract", "role": "kaggle_extractor", "model": "m"}  # fmt: skip
+
+
+def _call(cached: bool, outcome: str, seconds: float, out: int) -> dict[str, object]:
+    return {"kind": "llm_call", "cached": cached, "outcome": outcome, "seconds": seconds,
+            "completion_tokens": out}  # fmt: skip
+
+
+def test_a_trace_becomes_one_run(tmp_path: Path) -> None:
+    events = [RUN_START, _call(False, "ok", 30.0, 330), _call(False, "ok", 10.0, 110),
+              _call(True, "ok", 0.0, 50), _call(False, "rejected", 5.0, 0),
+              {"kind": "extraction", "status": "ok"},
+              {"kind": "extraction", "status": "dead_letter"},
+              {"kind": "run_end", "outcome": "time budget", "seconds": 36000.0}]  # fmt: skip
+    run = sessions.load_trace(_trace(tmp_path / "t.jsonl", events))
+    assert run is not None
+    assert (run.command, run.role, run.outcome, run.seconds) == (
+        "pypi-extract", "kaggle_extractor", "time budget", 36000.0,
+    )  # fmt: skip
+    assert (run.calls, run.network_calls, run.cache_hits, run.rejections) == (4, 3, 1, 1)
+    assert run.extractions == {"dead_letter": 1, "ok": 1}
+    assert (run.latency_p50, run.latency_p90) == (20.0, 30.0)  # answered network calls only
+    assert run.completion_tokens_per_second == 11.0  # 440 tokens in 40 s
+
+
+def test_a_killed_session_leaves_a_run_with_no_end(tmp_path: Path) -> None:
+    run = sessions.load_trace(_trace(tmp_path / "t.jsonl", [RUN_START, _call(False, "ok", 3, 9)],
+                                     cut=True))  # fmt: skip
+    assert run is not None
+    assert (run.outcome, run.seconds, run.calls) == (None, None, 1)
+    assert (
+        sessions.load_trace(_trace(tmp_path / "no-start.jsonl", [_call(True, "ok", 0, 1)])) is None
+    )
+
+
+def test_a_session_carries_the_traces_it_brought_home(tmp_path: Path) -> None:
+    run = _run(tmp_path, "patchsight-kaggle-run-pypi-shard4of4", INFO, [30])
+    _trace(run / "data/interim/traces/pypi-extract-x-20261121T030000Z.jsonl", [RUN_START])
+    session = sessions.load_session(run)
+    assert session is not None
+    assert [r.trace for r in session.runs] == ["pypi-extract-x-20261121T030000Z.jsonl"]

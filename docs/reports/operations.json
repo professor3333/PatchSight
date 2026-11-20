@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-20T12:28:08Z",
+  "generated_at": "2026-11-20T12:36:25Z",
   "sessions": [
     {
       "name": "patchsight-kaggle-run",
@@ -24,7 +24,8 @@
       "truncated": null,
       "prompt_tokens": null,
       "completion_tokens": null,
-      "provider_rejections": null
+      "provider_rejections": null,
+      "runs": []
     },
     {
       "name": "patchsight-kaggle-run-pypi-shard1of4",
@@ -53,7 +54,8 @@
       "truncated": 191,
       "prompt_tokens": 2202194,
       "completion_tokens": 337103,
-      "provider_rejections": 4
+      "provider_rejections": 4,
+      "runs": []
     },
     {
       "name": "patchsight-kaggle-run-pypi-shard2of4",
@@ -81,7 +83,8 @@
       "truncated": 205,
       "prompt_tokens": 2211343,
       "completion_tokens": 345403,
-      "provider_rejections": 0
+      "provider_rejections": 0,
+      "runs": []
     },
     {
       "name": "patchsight-kaggle-run-pypi-shard3of4",
@@ -109,7 +112,8 @@
       "truncated": 190,
       "prompt_tokens": 2013640,
       "completion_tokens": 301545,
-      "provider_rejections": 4
+      "provider_rejections": 4,
+      "runs": []
     }
   ],
   "weeks": [
@@ -224,5 +228,27 @@
       "too_broad": 18,
       "error": 11
     }
-  }
+  },
+  "local_runs": [
+    {
+      "trace": "pypi-extract-kaggle_extractor-shard3of4-20261120T123211Z.jsonl",
+      "command": "pypi-extract",
+      "role": "kaggle_extractor",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "started": "2026-11-20T12:32:11.366000Z",
+      "outcome": "complete",
+      "seconds": 65.1,
+      "calls": 846,
+      "network_calls": 0,
+      "cache_hits": 846,
+      "rejections": 4,
+      "extractions": {
+        "dead_letter": 5,
+        "ok": 836
+      },
+      "latency_p50": null,
+      "latency_p90": null,
+      "completion_tokens_per_second": null
+    }
+  ]
 }

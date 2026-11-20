@@ -42,7 +42,7 @@ from patchsight.pipeline.llm.client import (
 from patchsight.pipeline.llm.config import load_config
 from patchsight.pipeline.llm.tokens import HfTokenizer
 from patchsight.pipeline.pypi import PyPIClient
-from patchsight.pipeline.trace import Tracer, code_commit, trace_path
+from patchsight.pipeline.trace import TRACE_DIR, Tracer, code_commit, trace_path
 from patchsight.scan import dbcache
 
 app = typer.Typer(name="patchsight-pipeline", no_args_is_help=True, add_completion=False)
@@ -1408,6 +1408,7 @@ def operations_report_command(
         generated_at=datetime.now(UTC).replace(microsecond=0),
         sessions=tuple(found), weeks=tuple(sessions.gpu_weeks(found)), hosted=tuple(hosted),
         database=None if database is None else operations.database_view(database),
+        local_runs=tuple(sessions.load_traces(root / TRACE_DIR)),
     )  # fmt: skip
     target = root / "docs" / "reports" / "operations"
     target.with_name("operations.md").write_text(operations.render_markdown(report), "utf-8")

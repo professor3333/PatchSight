@@ -2249,16 +2249,13 @@ def gold_round_command(
     if target.exists():
         raise typer.BadParameter(f"{target.relative_to(root)} exists")
     sample = gold.Sample.model_validate_json((root / gold.SAMPLE).read_text("utf-8"))
+    scope = gold.declared(sample)
     if round_ == 3:
         result = gold.agreement(gold.load_labels(_gold_round(root, 1)),
-                                gold.load_labels(_gold_round(root, 2)))  # fmt: skip
-        wanted = {d.advisory for d in result.disagreements}
-        sample = sample.model_copy(
-            update={"items": tuple(i for i in sample.items if i.advisory in wanted)}
-        )
-    target.write_text(gold.stub_round(sample, round_), "utf-8")
-    entries = sum(len(i.packages) for i in sample.items)
-    typer.echo(f"{target.relative_to(root)}: {entries} entries to label")
+                                gold.load_labels(_gold_round(root, 2)), scope=scope)  # fmt: skip
+        scope = frozenset((d.advisory, d.package) for d in result.disagreements)
+    target.write_text(gold.stub_round(sample, round_, only=scope), "utf-8")
+    typer.echo(f"{target.relative_to(root)}: {len(scope)} entries to label")
 
 
 @app.command("gold-check")
@@ -2273,7 +2270,7 @@ def gold_check_command(
     labels = gold.load_labels(_gold_round(root, round_))
     done = Counter(label.status for label in labels)
     typer.echo(f"round {round_}: {dict(sorted(done.items()))}")
-    problems = gold.check_labels(labels, sample, round_)
+    problems = gold.check_labels(labels, sample, round_, gold.declared(sample))
     if round_ == 3:  # resolutions cover the disagreements only
         problems = [p for p in problems if not p.endswith(": missing")]
     for problem in problems:
@@ -2287,8 +2284,10 @@ def gold_agreement_command(root: Root = Path()) -> None:
     """Self-agreement between rounds 1 and 2, written to docs/reports."""
     from patchsight.pipeline.benchmarks import python_gold as gold
 
+    sample = gold.Sample.model_validate_json((root / gold.SAMPLE).read_text("utf-8"))
     result = gold.agreement(gold.load_labels(_gold_round(root, 1)),
-                            gold.load_labels(_gold_round(root, 2)))  # fmt: skip
+                            gold.load_labels(_gold_round(root, 2)),
+                            scope=gold.declared(sample))  # fmt: skip
     target = root / "docs" / "reports" / f"{gold.NAME}-agreement"
     target.with_suffix(".md").write_text(gold.render_agreement(result), "utf-8")
     target.with_suffix(".json").write_text(result.model_dump_json(indent=2) + "\n", "utf-8")
@@ -2309,9 +2308,10 @@ def gold_eval_command(
     from patchsight.pipeline.benchmarks import python_gold as gold
 
     third = _gold_round(root, 3)
+    sample = gold.Sample.model_validate_json((root / gold.SAMPLE).read_text("utf-8"))
     final, unresolved = gold.final_labels(
         gold.load_labels(_gold_round(root, 1)), gold.load_labels(_gold_round(root, 2)),
-        gold.load_labels(third) if third.exists() else [],
+        gold.load_labels(third) if third.exists() else [], scope=gold.declared(sample),
     )  # fmt: skip
     extractor: dict[str, set[str]] = {}
     for source in extractions:

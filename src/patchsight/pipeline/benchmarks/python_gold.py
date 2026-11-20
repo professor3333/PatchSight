@@ -33,6 +33,10 @@ DIRECTORY = Path("annotations/python-gold-v1")
 SAMPLE = DIRECTORY / "sample.json"
 SEED = 20261120
 SIZE = 120  # the guideline's 100 to 150, with room for advisories that turn out unlabellable
+# Declared on 2026-11-20, before any labelling: the first DECLARED entries of round 1's seeded
+# order are labelled in both rounds, and only they are scored. Extending the set (to 120) must
+# be decided before any score is run, in a commit that says so.
+DECLARED = 60
 
 
 class PackageVersions(BaseModel):
@@ -164,15 +168,38 @@ def load_labels(path: Path) -> list[Label]:
     return [Label.model_validate(entry) for entry in data.get("label", [])]
 
 
-def check_labels(labels: Sequence[Label], sample: Sample, round_: int) -> list[str]:
-    """Problems that keep a round's file from being reviewed: none means it is complete."""
+Entry = tuple[str, str]  # (advisory, package)
+
+
+def round_order(sample: Sample, round_: int) -> list[tuple[SampleItem, PackageVersions]]:
+    """Every entry in a round's own order, shuffled by the round's seed, so the second round
+    is not read in the first one's order."""
+    entries = [(i, p) for i in sample.items for p in i.packages]
+    random.Random(sample.seed + round_).shuffle(entries)  # noqa: S311 - an order, not a secret
+    return entries
+
+
+def declared(sample: Sample, size: int = DECLARED) -> frozenset[Entry]:
+    """The entries labelled and scored: the first ``size`` of round 1's order."""
+    return frozenset((i.advisory, p.name) for i, p in round_order(sample, 1)[:size])
+
+
+def check_labels(
+    labels: Sequence[Label], sample: Sample, round_: int, scope: Set[Entry] | None = None
+) -> list[str]:
+    """Problems that keep a round's file from being reviewed: none means it is complete.
+    Only entries in ``scope`` (default: all) must be finished; the rest are not checked."""
     problems = []
-    expected = {(i.advisory, p.name) for i in sample.items for p in i.packages}
+    every = {(i.advisory, p.name) for i in sample.items for p in i.packages}
+    expected = every if scope is None else set(scope)
     seen: set[tuple[str, str]] = set()
     for label in labels:
         key = (label.advisory, label.package)
-        if key not in expected:
+        if key not in every:
             problems.append(f"{label.advisory} {label.package}: not in the sample")
+            continue
+        if key not in expected:
+            continue
         if key in seen:
             problems.append(f"{label.advisory} {label.package}: labelled twice")
         seen.add(key)
@@ -192,18 +219,24 @@ def _toml_string(text: str) -> str:
     return '"' + text.replace("\\", "\\\\").replace('"', '\\"') + '"'
 
 
-def stub_round(sample: Sample, round_: int) -> str:
-    """A round's starting file: one ``todo`` entry per advisory and package, in a shuffled
-    order (seeded by the round), so the second round is not read in the first one's order."""
-    entries = [(i, p) for i in sample.items for p in i.packages]
-    random.Random(sample.seed + round_).shuffle(entries)  # noqa: S311 - an order, not a secret
+def stub_round(sample: Sample, round_: int, only: Set[Entry] | None = None) -> str:
+    """A round's starting file: one ``todo`` entry per advisory and package (or per entry in
+    ``only``), in the round's own order. Round 1's file marks where the declared set ends."""
+    entries = [(i, p) for i, p in round_order(sample, round_)
+               if only is None or (i.advisory, p.name) in only]  # fmt: skip
     lines = [
         f"# Python gold set, round {round_}. Follow docs/labelling-guideline.md.",
         "# Fill each entry, then set status: labelled, no_python_symbol or no_fix.",
         "# Never look at a model's answer, a database record or another round while labelling.",
         "",
     ]
-    for item, package in entries:
+    for index, (item, package) in enumerate(entries):
+        if round_ == 1 and only is None and index == DECLARED:
+            lines += [
+                f"# ---- The declared {DECLARED} end here. The entries below stay todo unless the",
+                "# ---- set is extended, which is decided before any score is run.",
+                "",
+            ]
         version = package.last_vulnerable or (
             f"before {package.fixed}" if package.fixed else "unknown"
         )
@@ -236,9 +269,13 @@ def worksheet(sample: Sample) -> str:
         "symbol data",
         f"- Snapshot SHA-256 `{sample.snapshot_sha256}`",
         "",
-        "| # | Advisory | Packages (last vulnerable version) | Fix links |",
-        "|---:|---|---|---|",
+        f"- **Declared {DECLARED}:** the entries labelled and scored are the first {DECLARED} "
+        "of `round1.toml`, marked here",
+        "",
+        "| # | Advisory | Packages (last vulnerable version) | Fix links | Declared |",
+        "|---:|---|---|---|:---:|",
     ]
+    chosen = declared(sample)
     for number, item in enumerate(sample.items, 1):
         packages = ", ".join(
             f"{p.name} {p.last_vulnerable or (f'< {p.fixed}' if p.fixed else '?')}"
@@ -251,9 +288,10 @@ def worksheet(sample: Sample) -> str:
             or "none linked"
         )
         mark = " (upstream symbols)" if item.upstream else ""
+        flag = "✓" if any((item.advisory, p.name) in chosen for p in item.packages) else ""
         lines.append(
             f"| {number} | [{item.advisory}](https://osv.dev/vulnerability/{item.advisory}){mark} "
-            f"| {packages} | {commits} |"
+            f"| {packages} | {commits} | {flag} |"
         )
     return "\n".join(lines) + "\n"
 
@@ -295,7 +333,11 @@ def _summary(label: Label) -> tuple[str, ...]:
 
 
 def agreement(
-    first: Sequence[Label], second: Sequence[Label], bootstrap: int = 2000, seed: int = SEED
+    first: Sequence[Label],
+    second: Sequence[Label],
+    bootstrap: int = 2000,
+    seed: int = SEED,
+    scope: Set[Entry] | None = None,
 ) -> Agreement:
     """Self-agreement over the entries both rounds finished: the exact-match share and the
     mean Jaccard overlap of the symbol sets, each with a bootstrap interval that resamples
@@ -306,6 +348,8 @@ def agreement(
     for a in first:
         b = later.get((a.advisory, a.package))
         if a.status == "todo" or b is None:
+            continue
+        if scope is not None and (a.advisory, a.package) not in scope:
             continue
         overlap = _overlap(a, b)
         by_advisory.setdefault(a.advisory, []).append(overlap)
@@ -340,7 +384,10 @@ def agreement(
 
 
 def final_labels(
-    first: Sequence[Label], second: Sequence[Label], resolved: Sequence[Label] = ()
+    first: Sequence[Label],
+    second: Sequence[Label],
+    resolved: Sequence[Label] = (),
+    scope: Set[Entry] | None = None,
 ) -> tuple[list[Label], list[tuple[str, str]]]:
     """The gold labels: an entry both rounds agree on exactly, or its recorded resolution
     (round 3) when they do not. Returns the labels and the entries still unresolved."""
@@ -349,6 +396,8 @@ def final_labels(
     final, unresolved = [], []
     for a in first:
         key = (a.advisory, a.package)
+        if scope is not None and key not in scope:
+            continue
         b = later.get(key)
         if a.status == "todo" or b is None or b.status == "todo":
             unresolved.append(key)

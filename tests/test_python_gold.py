@@ -106,8 +106,8 @@ def test_label_checks_name_every_problem() -> None:
     problems = gold.check_labels(labels, sample, 1)
     assert "GHSA-a pkg: labelled twice" in problems
     assert "GHSA-a pkg: round 2, not 1" in problems
-    assert "GHSA-z pkg: not in the sample" in problems
-    assert "GHSA-z pkg: labelled with no symbol" in problems
+    assert "GHSA-z pkg: not in the sample" in problems  # and nothing more about it
+    assert not [p for p in problems if p.startswith("GHSA-z") and "sample" not in p]
     assert "GHSA-b pkg: missing" in problems
     assert labels[0].qualified == frozenset({"pkg.core.load"})
 
@@ -251,5 +251,54 @@ def test_the_committed_sample_and_rounds_are_consistent() -> None:
     for round_ in (1, 2):
         path = root / gold.DIRECTORY / f"round{round_}.toml"
         if path.exists():  # unfinished entries are expected while a round is in progress
-            problems = gold.check_labels(gold.load_labels(path), sample, round_)
+            labels = gold.load_labels(path)
+            problems = gold.check_labels(labels, sample, round_, gold.declared(sample))
             assert [p for p in problems if not p.endswith("still todo")] == []
+    assert len(gold.declared(sample)) == gold.DECLARED == 60
+
+
+def _wide_sample(n: int) -> gold.Sample:
+    keys = [f"GHSA-{i:03d}" for i in range(n)]
+    by_id = {k: _advisory(k) for k in keys}
+    groups = [AliasGroup(key=k, advisory_ids=(k,), identifiers=(k,)) for k in keys]
+    return gold.draw(groups, by_id, keys, "0" * 64, size=n, seed=7)
+
+
+def test_the_declared_set_is_the_head_of_round_one_and_its_file_marks_the_end() -> None:
+    sample = _wide_sample(80)
+    chosen = gold.declared(sample)
+    order = [(i.advisory, p.name) for i, p in gold.round_order(sample, 1)]
+    assert chosen == frozenset(order[: gold.DECLARED])
+    text = gold.stub_round(sample, 1)
+    before, marker, after = text.partition(f"# ---- The declared {gold.DECLARED} end here.")
+    assert marker
+    assert before.count("[[label]]") == gold.DECLARED
+    assert after.count("[[label]]") == 80 - gold.DECLARED
+
+
+def test_round_two_holds_only_the_declared_entries_in_its_own_order() -> None:
+    sample = _wide_sample(80)
+    chosen = gold.declared(sample)
+    second = tomllib.loads(gold.stub_round(sample, 2, only=chosen))["label"]
+    keys = [(e["advisory"], e["package"]) for e in second]
+    assert set(keys) == chosen
+    first = [
+        k for k in ((i.advisory, p.name) for i, p in gold.round_order(sample, 1)) if k in chosen
+    ]
+    assert keys != first  # not read in round 1's order
+    assert "The declared" not in gold.stub_round(sample, 2, only=chosen)
+
+
+def test_only_the_declared_entries_must_be_finished_or_are_compared() -> None:
+    sample = _wide_sample(80)
+    chosen = gold.declared(sample)
+    entries = [(i.advisory, q.name) for i in sample.items for q in i.packages]
+    labels = [_label(a, 1, "pkg:load", package=p) if (a, p) in chosen
+              else _label(a, 1, status="todo", package=p) for a, p in entries]  # fmt: skip
+    assert gold.check_labels(labels, sample, 1, chosen) == []
+    assert any(p.endswith("still todo") for p in gold.check_labels(labels, sample, 1))
+    later = [_label(lb.advisory, 2, "pkg:load") for lb in labels]  # round 2 did all 80
+    assert gold.agreement(labels, later, bootstrap=10, scope=chosen).compared == gold.DECLARED
+    final, unresolved = gold.final_labels(labels, later, scope=chosen)
+    assert (len(final), unresolved) == (gold.DECLARED, [])
+    assert "| ✓ |" in gold.worksheet(sample)

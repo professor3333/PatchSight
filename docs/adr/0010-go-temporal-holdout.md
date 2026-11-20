@@ -57,5 +57,9 @@ The holdout is small. If about half the reports are high confidence, about 40 ca
 ## Consequences
 
 - **Two runs are needed:** the holdout on Kaggle (`MODE = "holdout"`, `MODEL = "qwen"`, about an hour), and the second opinion on Groq (`dunlap-extract --benchmark go-holdout-v1 --role second_opinion`, about a day of the free quota).
+- **Scoring takes no model calls.** After both runs:
+  1. `export-replay <tag> --benchmark go-holdout-v1 --role <role>` writes each run's replay bundle to `benchmarks/go-holdout-v1/`;
+  2. `dunlap-extract --benchmark go-holdout-v1 --role <role> --out docs/reports/extraction-go-holdout-v1-<tag>` writes each run's validated entry points, and the same with `--config configs/experiments/llm-dotted-entry-points.toml` and `--out …-<tag>-dotted` gives rule 2's;
+  3. `holdout-report --primary <Qwen tag> --secondary <gpt-oss tag>` writes `docs/reports/holdout-go-holdout-v1-<primary>-vs-<secondary>.md`: the criterion with its interval, every miss by cause (patch ceiling or model), coverage, and ChangedFuncs alongside.
 - **The holdout is never used to choose anything.** Later rules need a later holdout: `go-holdout-v2`, published after this one was frozen.
 - **The cutoff is a release date, not a measured knowledge cutoff.** If either model's provider publishes an earlier knowledge cutoff, this holdout stays valid; a later one would not exist, because weights cannot know data published after their release.

@@ -109,7 +109,10 @@ The scan makes two kinds of network call: the OSV query, and the database downlo
 
 - **Release gate** (`gate-db`): the builds ledger covers every vulnerability with a record; every record has between 1 and 500 symbols; every record is found by its own ID and every alias points at a record; no more than 2% of vulnerabilities (at least 10 allowed) lose their records at once; a high-confidence record whose inputs did not change stays high; and no record is high confidence while ADR 0008 withholds the tier.
 - **Releases are immutable.** Rollback is one commit that moves `latest.json` on `db-pointer` back ([ADR 0006](adr/0006-nightly-pipeline.md)). It was rehearsed and timed: users followed within 5 minutes ([report](reports/rollback-rehearsal-2026-11-18.md)).
-- **Planned:** tracing and token dashboards ([#60](https://github.com/professor3333/PatchSight/issues/60)), the Hugging Face dataset, OpenVEX output, and the injection and robustness suites ([#55](https://github.com/professor3333/PatchSight/issues/55)). The attacks they will measure are described in the [threat model](threat-model.md).
+- **Tracing** (`pipeline/trace.py`): every extraction run writes `data/interim/traces/<run>-<start>.jsonl`. It holds the run's start and end, one line per model call (model, prompt version, input hash, cache hit, outcome, tokens, seconds) and one per extraction. No prompt, answer or account detail is written, and a trace that cannot be written never stops the run. Kaggle runs bring their traces home in the zip.
+- **Operations dashboard** (`operations-report`, [report](reports/operations.md)): Kaggle sessions and GPU hours by week, traced runs, each hosted model's tokens against its daily cap, and what the published database holds: records by source and confidence, tier reasons and second-opinion coverage.
+- **Suites:** the injection suite and the deterministic robustness suite run as described in the [threat model](threat-model.md).
+- **Planned:** a Langfuse export of the traces ([#60](https://github.com/professor3333/PatchSight/issues/60)), the Hugging Face dataset and OpenVEX output.
 
 ## Design rules and where they are enforced
 

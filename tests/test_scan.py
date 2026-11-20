@@ -418,6 +418,12 @@ def test_scan_cli_end_to_end(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) ->
     as_json = runner.invoke(app, ["scan", str(project), "--db", str(database), "--format", "json"])
     verdicts = {a["package"]: a["verdict"] for a in json.loads(as_json.output)["alerts"]}
     assert verdicts == {"pyyaml": "CALLED", "requests": "UNKNOWN"}
+    as_markdown = runner.invoke(
+        app, ["scan", str(project), "--db", str(database), "--format", "markdown"]
+    )
+    assert as_markdown.exit_code == 0, as_markdown.output
+    assert as_markdown.output.startswith("<!-- patchsight -->\n## PatchSight: 2 dependency alerts")
+    assert "`app/config.py:4`" in as_markdown.output
 
 
 def test_scan_cli_errors(tmp_path: Path) -> None:

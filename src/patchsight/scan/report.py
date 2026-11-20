@@ -88,3 +88,100 @@ def render_json(
         },
         indent=2,
     )
+
+
+# The first line of every markdown report: the Action finds its own comment by it.
+MARKDOWN_MARKER = "<!-- patchsight -->"
+# GitHub refuses a comment over 65,536 characters; leave room for the closing lines.
+MARKDOWN_LIMIT = 60_000
+_MARKS = {"CALLED": "🔴", "IMPORTED_NOT_CALLED": "🟢", "NOT_IMPORTED": "⚪", "UNKNOWN": "🟡"}
+
+
+def _cell(text: str) -> str:
+    """Safe inside a markdown table cell: no pipe, no line break, no HTML."""
+    return " ".join(text.split()).replace("|", "\\|").replace("<", "&lt;")
+
+
+def _row(alert: Alert) -> str:
+    also = f" ({', '.join(alert.aliases)})" if alert.aliases else ""
+    where = ", ".join(f"`{_cell(e.path)}:{e.line}`" for e in alert.evidence[:3])
+    if len(alert.evidence) > 3:
+        where += f" +{len(alert.evidence) - 3}"
+    if alert.verdict == "CALLED":
+        detail = ", ".join(f"`{_cell(m)}`" for m in alert.matched[:4]) or "—"
+    else:
+        detail = _cell(alert.reason)
+    return (
+        f"| {_cell(alert.advisory + also)} | {_cell(alert.package)} {_cell(alert.version)} | "
+        f"{detail} | {where or '—'} |"
+    )
+
+
+def render_markdown(
+    alerts: Sequence[Alert],
+    dependencies: Sequence[Dependency],
+    lockfile: str,
+    db_meta: dict[str, str],
+    now: datetime | None = None,
+    limit: int = MARKDOWN_LIMIT,
+) -> str:
+    """A report for a pull-request comment or a job summary. Every verdict is counted; if
+    the list would pass ``limit`` characters, the least urgent rows are left out and the
+    report says how many, so no alert disappears without a trace."""
+    pinned = [d for d in dependencies if d.version]
+    unpinned = [d for d in dependencies if not d.version]
+    ordered = order(alerts)
+    groups = {v: [a for a in ordered if a.verdict == v] for v in DISPLAY_ORDER}
+    head = [
+        MARKDOWN_MARKER,
+        f"## PatchSight: {len(alerts)} dependency alert{'s' if len(alerts) != 1 else ''}",
+        "",
+        "| | Verdict | Alerts |",
+        "|:---:|:---|---:|",
+        *(f"| {_MARKS[v]} | {_HEADINGS[v]} | {len(groups[v])} |" for v in DISPLAY_ORDER),
+        "",
+        f"Lockfile `{_cell(lockfile)}` ({len(pinned)} pinned, {len(unpinned)} unpinned) · "
+        f"symbol database {_cell(db_meta.get('db_version', '?'))}",
+    ]
+    if warning := stale_warning(db_meta, now):
+        head += ["", f"> [!WARNING]\n> {warning}"]
+    tail = ["", f"*{FOOTNOTE}*", ""]
+    body: list[str] = []
+    # Room for the head, the tail and the closing notes; rows fill what is left.
+    used = sum(len(line) + 1 for line in head + tail) + 600
+    left_out = 0
+    for verdict in DISPLAY_ORDER:
+        group = groups[verdict]
+        if not group:
+            continue
+        title = f"{_MARKS[verdict]} {_HEADINGS[verdict]}: {len(group)}"
+        opening = f"### {title}" if verdict == "CALLED" else f"<details><summary>{title}</summary>"
+        second = "Matched" if verdict == "CALLED" else "Why"
+        section = ["", opening, "", f"| Advisory | Package | {second} | Your code |",
+                   "|---|---|---|---|"]  # fmt: skip
+        used += sum(len(line) + 1 for line in section) + 20
+        rows = 0
+        for alert in group:
+            row = _row(alert)
+            if used + len(row) + 1 > limit:
+                break
+            section.append(row)
+            used += len(row) + 1
+            rows += 1
+        if rows < len(group):
+            section.append(f"| … | {len(group) - rows} more | | |")
+            left_out += len(group) - rows
+        if verdict != "CALLED":
+            section += ["", "</details>"]
+        body += section
+    if unpinned:
+        names = ", ".join(_cell(d.raw_name) for d in unpinned[:30])
+        more = f" and {len(unpinned) - 30} more" if len(unpinned) > 30 else ""
+        body += ["", f"Not checked, no exact pin: {names}{more}"]
+    if left_out:
+        note = (
+            f"{left_out} alerts are counted above but not listed, to fit GitHub's comment "
+            "limit. Every alert is in the SARIF report and in `patchsight scan`."
+        )
+        body += ["", note]
+    return "\n".join(head + body + tail)

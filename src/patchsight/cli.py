@@ -103,7 +103,12 @@ def scan(
         typer.Option("--db", help="Symbol database (default: the one 'db update' downloaded)."),
     ] = None,
     output: Annotated[
-        str, typer.Option("--format", help="text, json, or sarif (for code scanning).")
+        str,
+        typer.Option(
+            "--format",
+            help="text, json, sarif (for code scanning) or markdown (for a pull-request "
+            "comment or a job summary).",
+        ),
     ] = "text",
     fail_on: Annotated[
         str, typer.Option(help="Exit 1 when an alert is: called, unknown (or called), or never.")
@@ -143,6 +148,10 @@ def scan(
         root = path if path.is_dir() else path.parent
         base = os.path.relpath(root.resolve(), Path.cwd().resolve())
         typer.echo(render_sarif(alerts, dependencies, shown, meta, base))
+    elif output == "markdown":
+        from patchsight.scan.report import render_markdown
+
+        typer.echo(render_markdown(alerts, dependencies, shown, meta))
     else:
         typer.echo(render_text(alerts, dependencies, shown, meta))
     failing = {"called": {"CALLED"}, "unknown": {"CALLED", "UNKNOWN"}}.get(fail_on, set())

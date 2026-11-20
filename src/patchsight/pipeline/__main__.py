@@ -825,7 +825,7 @@ def dunlap_split_command(root: Root = Path()) -> None:
 
 KAGGLE_RUN_PREFIXES = (
     ".cache/llm/", ".cache/http/github/", "docs/reports/", "pypi-run/", "run-info.json",
-    "llama-server.log",
+    "llama-server.log", "data/interim/traces/",
 )  # fmt: skip
 # Imported into the shared cache: model answers, and the GitHub answers a locator run fetched.
 KAGGLE_CACHE_PREFIXES = (".cache/llm/", ".cache/http/github/")

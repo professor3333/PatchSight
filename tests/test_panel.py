@@ -127,3 +127,25 @@ def test_the_committed_report_renders_from_its_json() -> None:
     for source in reports:
         report = panel.PanelReport.model_validate_json(source.read_text())
         assert panel.render_markdown(report) == source.with_suffix(".md").read_text()
+
+
+def test_the_panel_fetches_the_files_that_start_processes(tmp_path: Path) -> None:
+    import subprocess
+
+    from patchsight.eval.panel import SPARSE, unknown_reason
+
+    wanted = ["Dockerfile", "deploy/production.Dockerfile", "Procfile", "bin/docker-server",
+              ".github/workflows/ci.yml", "docker-compose.dev.yml", "scripts/start.sh",
+              "app/main.py"]  # fmt: skip
+    unwanted = ["README.md", "frontend/app.js"]
+    for name in wanted + unwanted:
+        (tmp_path / name).parent.mkdir(parents=True, exist_ok=True)
+        (tmp_path / name).write_text("x\n")
+    git = ["git", "-c", "user.name=t", "-c", "user.email=t@example.com"]
+    for args in (["init", "-q"], ["add", "-A"], ["commit", "-qm", "x"],
+                 ["sparse-checkout", "set", "--no-cone", *SPARSE]):  # fmt: skip
+        subprocess.run([*git, *args], cwd=tmp_path, check=True, capture_output=True)
+    present = {n for n in wanted + unwanted if (tmp_path / n).exists()}
+    assert present == set(wanted)
+    reason = "your project may run gunicorn as a command (bin/x names gunicorn); its code ..."
+    assert unknown_reason(reason) == "the project runs the package as a command"

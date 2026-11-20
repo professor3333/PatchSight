@@ -38,7 +38,14 @@ SPARSE = (
     "*.in",
     "*.lock",
     "*.toml",
-)
+    # Files that start processes (``ast_scanner.is_launch_file``). The scanner also reads
+    # extensionless scripts with a shebang anywhere; the panel fetches those from bin/ and
+    # scripts/ directories only.
+    "Dockerfile*", "*.Dockerfile", "*.dockerfile", "Containerfile*", "*.containerfile",
+    "Procfile*", "*compose*.yml", "*compose*.yaml", "*.sh", "*.bash", "*.zsh", "*.service",
+    "*.mk", "Makefile", "GNUmakefile", "justfile", "entrypoint", "app.yaml", "render.yaml",
+    ".gitlab-ci.yml", "*supervisor*.conf", ".github/workflows/*", "**/bin/*", "**/scripts/*",
+)  # fmt: skip
 
 
 class Repo(BaseModel):
@@ -101,6 +108,7 @@ UNKNOWN_REASONS = (
     ("your code uses .", "a vulnerable name on an untyped object"),
     ("a template uses", "a vulnerable name in a template"),
     ("the record lists no symbols", "a record with no symbols"),
+    ("your project may run", "the project runs the package as a command"),
 )
 
 

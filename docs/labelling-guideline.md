@@ -46,6 +46,18 @@ note = "Only reached when strict=False."
 round = 1                              # 1, or 2 for the repeat a week later
 ```
 
+## Working through the set
+
+The sample is frozen in `annotations/python-gold-v1/sample.json`: 120 advisories, seed 20261120, the two with upstream symbol data and a draw from the 3,505 whose fixes change Python definitions. [`worksheet.md`](../annotations/python-gold-v1/worksheet.md) links each advisory and its fixes.
+
+1. **Round 1:** fill `annotations/python-gold-v1/round1.toml`, one entry at a time. `python -m patchsight.pipeline gold-check --round 1` shows what is left and any entry that breaks a rule.
+2. **Round 2, at least a week later:** `gold-round --round 2` writes fresh stubs in a different order. Label them without opening round 1.
+3. **Agreement:** `gold-agreement` reports the exact-match share and the mean Jaccard overlap, with intervals, and lists each disagreement.
+4. **Resolution:** `gold-round --round 3` writes stubs for the disagreements only. Settle each one there, saying why in the note.
+5. **Scoring:** `gold-eval <pypi-extract outcomes> --db <database>` scores the extractor and the published records against the final labels.
+
+Each round's file goes in through its own pull request.
+
 ## Rules that protect the labels
 
 - **Never look at a model's answer, a database record or an earlier round** while labelling. The second round is done blind to the first.

@@ -1,0 +1,1253 @@
+# Python gold set, round 1. Follow docs/labelling-guideline.md.
+# Fill each entry, then set status: labelled, no_python_symbol or no_fix.
+# Never look at a model's answer, a database record or another round while labelling.
+
+[[label]]
+advisory = "GHSA-mg2x-mggj-6955"
+package = "apache-airflow-providers-cncf-kubernetes"
+version = "7.0.0rc2"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-p5w8-wqhj-9hhf"
+package = "sqlparse"
+version = "0.4.1"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-x8c6-gj59-6rx8"
+package = "libp2p"
+version = "0.2.2"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-84m7-p3x7-pcfv"
+package = "mcp"
+version = "1.29.1"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-fj7x-q9j7-g6q6"
+package = "black"
+version = "24.2.0"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-2ww3-72rp-wpp4"
+package = "semantic-kernel"
+version = "1.39.2"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-w9h2-px87-74vx"
+package = "vantage6"
+version = "4.2.0rc2"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-hwvq-6gjx-j797"
+package = "notebook"
+version = "5.7.10"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-fqvv-jvhr-g5jc"
+package = "firefighter-incident"
+version = "0.0.53"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-9vxf-mcm6-5m42"
+package = "rdiffweb"
+version = "2.4.5"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-mg2x-mggj-6955"
+package = "apache-airflow"
+version = "2.6.1rc3"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-2hmp-5wqg-f24h"
+package = "plotai"
+version = "0.0.6"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-6rrm-xxvh-7r87"
+package = "glance"
+version = "before 11.0.0a0"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-h47f-gmjp-m7rr"
+package = "compliance-trestle"
+version = "4.0.3"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-c87f-fq5g-63r2"
+package = "django-unicorn"
+version = "0.35.3"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-989c-m532-p2hv"
+package = "salt"
+version = "3007.3"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-39ph-wr67-j4xq"
+package = "loguru"
+version = "0.5.2"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-7mpr-5m44-h73r"
+package = "markdownify"
+version = "0.14.0"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-cfqr-cjx5-5jcm"
+package = "sqlparse"
+version = "0.5.5"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-8fp7-jwv2-49x9"
+package = "paddlepaddle"
+version = "1.8.5"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-m84c-4c34-28gf"
+package = "llama-index-core"
+version = "0.12.40"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-j36m-hv43-7w7m"
+package = "keystone"
+version = "9.3.0"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-3vgw-585j-4m45"
+package = "bbot"
+version = "2.8.4.7578rc0"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-74xw-82v7-hmrm"
+package = "python-dbusmock"
+version = "0.15"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-542m-9234-8gvf"
+package = "vllm"
+version = "0.31.0"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-37cf-r3w2-gjfw"
+package = "django-nopassword"
+version = "4.0.2"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-cvcq-gmc3-q6m8"
+package = "apache-airflow"
+version = "1.10.13rc1"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-3qmc-cj7q-62hv"
+package = "litestar"
+version = "2.21.1"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "PYSEC-2026-4009"
+package = "local-operator"
+version = "0.47.4"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-rv9x-wmw4-44qj"
+package = "pyload-ng"
+version = "0.5.0b3.dev35"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-fvw2-2pf7-77vw"
+package = "apache-airflow"
+version = "2.3.1rc1"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-xj96-63gp-2gmr"
+package = "pillow"
+version = "12.2.0"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-254f-3936-288h"
+package = "pillow"
+version = "12.3.0"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-v9w6-9hq9-33ch"
+package = "lightrag-hku"
+version = "1.3.7"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-g2jx-37x6-6438"
+package = "arcade-mcp-server"
+version = "1.8.0"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-cr45-98w9-gwqx"
+package = "archivebox"
+version = "0.8.6rc3"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-f26r-j276-ggg4"
+package = "mcp-atlassian"
+version = "0.21.1"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-pg36-wpm5-g57p"
+package = "waitress"
+version = "1.3.1"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-7c4h-w765-6pwg"
+package = "suricata-update"
+version = "1.0.0a1"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-jqmf-mx4f-hfr6"
+package = "vibe-trading-ai"
+version = "0.1.6"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-hfgr-h3vc-p6c2"
+package = "dockerspawner"
+version = "12.1.0"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-378x-6p4f-8jgm"
+package = "skops"
+version = "0.12.0"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-923m-gv2p-w5qp"
+package = "django"
+version = "5.2.14"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-mffc-9gx5-99g3"
+package = "kerberos"
+version = "1.2.5"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-2qfp-q593-8484"
+package = "brotli"
+version = "1.1.0"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-mffc-9gx5-99g3"
+package = "pykerberos"
+version = "1.1.5"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-rxff-vr5r-8cj5"
+package = "streamlit"
+version = "1.36.0"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-cm54-3vvf-f5p8"
+package = "nova"
+version = "before 12.0.0a0"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-cwqr-hh33-gh44"
+package = "filelock"
+version = "4.2.0"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-hhrp-gw25-jr43"
+package = "ray"
+version = "2.55.1"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-2cp2-2r3c-7p7r"
+package = "hydra-core"
+version = "1.3.3"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-jmp3-39vp-fwg8"
+package = "wagtail"
+version = "6.0.5"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-g67g-hvc3-xmvf"
+package = "omero-web"
+version = "5.11.0rc1"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-9mwf-mw74-9cv5"
+package = "apache-airflow-providers-apache-hive"
+version = "5.1.3rc1"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-vfgx-5q85-58q3"
+package = "openssl-encrypt"
+version = "1.4.0b8"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-gh7c-cg3x-pmcr"
+package = "pyftpdlib"
+version = "before 0.1.1"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-7m8f-hgjq-8gc9"
+package = "aiosend"
+version = "3.0.6"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-fp7w-m676-w7gc"
+package = "social-auth-core"
+version = "4.9.1"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-8h88-gxp3-j7pg"
+package = "openssl-encrypt"
+version = "1.4.0b8"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-c39v-8hrw-h448"
+package = "chainlit"
+version = "2.10.0"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-2qfp-q593-8484"
+package = "scrapy"
+version = "2.13.3"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-m9hc-vxjj-4x6q"
+package = "pghoard"
+version = "2.1.0"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-62mm-xwmv-crhg"
+package = "khoj"
+version = "2.0.0b25.dev10"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-rrgf-hcr9-jq6h"
+package = "tiny-scientist"
+version = "0.1.3"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-mjqp-26hc-grxg"
+package = "picklescan"
+version = "0.0.30"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-chg9-3c3p-ch23"
+package = "lemur"
+version = "before 0.1.5"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-pw95-88fg-3j6f"
+package = "langroid"
+version = "0.53.2"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-5jc6-h9w7-jm3p"
+package = "mobsf"
+version = "4.1.3"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-282v-666c-3fvg"
+package = "transformers"
+version = "4.29.2"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-m8j6-rc5x-wv36"
+package = "nono-py"
+version = "0.10.0"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-qh4q-fwf8-qqrw"
+package = "zope"
+version = "before 2.10.12"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-g67g-hvc3-xmvf"
+package = "omero-figure"
+version = "4.4.0"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-ch89-h4r2-c8f8"
+package = "praisonai"
+version = "4.6.57"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-hxf9-7h4c-f5jv"
+package = "django-anymail"
+version = "1.2"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-99w6-3xph-cx78"
+package = "ansible-core"
+version = "2.18.0"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-rwrf-2pqf-9j8j"
+package = "mcp"
+version = "2.1.1"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-m84c-4c34-28gf"
+package = "llama-index"
+version = "0.12.40"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-7372-q459-jxhr"
+package = "pyxdg"
+version = "0.25"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-3f6c-7fw2-ppm4"
+package = "vllm"
+version = "0.10.2"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "PYSEC-2026-3713"
+package = "apache-airflow-providers-amazon"
+version = "9.34.0rc2"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-h3ww-q6xx-w7x3"
+package = "open-webui"
+version = "0.8.12"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-55v6-g8pm-pw4c"
+package = "rembg"
+version = "2.0.74"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-5836-grcc-8j89"
+package = "openstack-heat"
+version = "20.0.0.0rc2"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-29h4-r29x-hchv"
+package = "redshift-connector"
+version = "2.1.13"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-c6xv-rcvw-v685"
+package = "open-webui"
+version = "0.6.36"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-hvp4-vrv2-8wrq"
+package = "kinto-attachment"
+version = "6.3.2"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-f8mr-jv2c-v8mg"
+package = "tuf"
+version = "0.12.dev2"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-r7r6-cc7p-4v5m"
+package = "python-ldap"
+version = "3.4.4"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-vq76-rxx3-4r4r"
+package = "nova"
+version = "15.1.5"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-96p9-rh4f-92cf"
+package = "winml-cli"
+version = "0.3.1"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-5644-2v3h-5w4x"
+package = "nova"
+version = "before 12.0.0a0"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-jm82-fx9c-mx94"
+package = "pypdf"
+version = "6.13.2"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-5m22-cfq9-86x6"
+package = "vantage6"
+version = "4.0.1"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-375m-5fvv-xq23"
+package = "vyper"
+version = "0.2.8"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-4558-3h8r-v8xp"
+package = "pillow"
+version = "12.3.0"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-8g9m-vv69-7j99"
+package = "rdiffweb"
+version = "2.4.11"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-wcjw-3v6p-4v3r"
+package = "mindsdb"
+version = "24.7.4.0"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-cj9g-27ph-4cgv"
+package = "wger"
+version = "2.1"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-w7h9-8wr4-hwqh"
+package = "horizon"
+version = "before 8.0.0a0"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-9pgc-3ccv-5297"
+package = "zeroconf"
+version = "0.149.4"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-6556-fwc2-fg2p"
+package = "picklescan"
+version = "0.0.32"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-37hp-765x-j95x"
+package = "django"
+version = "1.10.6"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-whvh-wf3x-g77j"
+package = "jupyterlab"
+version = "4.6.1"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-rcrv-228c-gprj"
+package = "bitlyshortener"
+version = "0.5.3"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-v5mq-3xhg-98m9"
+package = "unstructured"
+version = "0.24.0"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-9c6g-qpgj-rvxw"
+package = "streamlit"
+version = "0.80.0"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-v6g6-3cm3-vf6c"
+package = "mindsdb"
+version = "24.7.4.0"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-gh7p-78x6-jw6m"
+package = "open-webui"
+version = "0.9.6"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-v359-jj2v-j536"
+package = "vllm"
+version = "0.16.0"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-4rj2-9gcx-5qhx"
+package = "mlflow"
+version = "2.19.0rc0"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "PYSEC-2026-4010"
+package = "local-operator"
+version = "0.47.4"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-95rw-fx8r-36v6"
+package = "django"
+version = "2.2.26"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-4hh5-2678-83fx"
+package = "prefect"
+version = "2.16.4"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-52cq-7v8r-62c6"
+package = "gmaps-mcp"
+version = "0.1.2"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-232r-66cg-79px"
+package = "paramiko"
+version = "2.0.7"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-33c7-2mpw-hg34"
+package = "uvicorn"
+version = "0.11.6"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-8mpw-7fpc-4gqj"
+package = "nltk"
+version = "3.10.2"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-33wh-fxxf-88vv"
+package = "djangorestframework"
+version = "3.18.1"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-gqgw-jghv-mxwx"
+package = "tablib"
+version = "3.9.0"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-q97c-p368-75c4"
+package = "vllm"
+version = "0.31.0"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-8vcg-cfxj-p5m3"
+package = "weblate"
+version = "5.15"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-753j-mpmx-qq6g"
+package = "tornado"
+version = "6.4"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-4w7r-h757-3r74"
+package = "transformers"
+version = "4.52.4"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-f96h-pmfr-66vw"
+package = "starlette"
+version = "0.39.2"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1
+
+[[label]]
+advisory = "GHSA-xgh8-jp6q-p5x8"
+package = "pillow"
+version = "12.3.0"
+symbols = []
+entry_points = []
+status = "todo"
+note = ""
+round = 1

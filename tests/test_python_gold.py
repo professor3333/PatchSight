@@ -239,3 +239,17 @@ def test_a_new_round_starts_fresh_and_round_three_holds_the_disagreements(tmp_pa
     assert third.exit_code == 0, third.output
     stubs = gold.load_labels(directory / "round3.toml")
     assert [(s.advisory, s.status, s.round) for s in stubs] == [("GHSA-b", "todo", 3)]
+
+
+def test_the_committed_sample_and_rounds_are_consistent() -> None:
+    root = Path(__file__).resolve().parents[1]
+    if not (root / gold.SAMPLE).exists():
+        pytest.skip("no sample yet")
+    sample = gold.Sample.model_validate_json((root / gold.SAMPLE).read_text())
+    assert (len(sample.items), sample.seed) == (120, gold.SEED)
+    assert all(i.fix_links for i in sample.items)
+    for round_ in (1, 2):
+        path = root / gold.DIRECTORY / f"round{round_}.toml"
+        if path.exists():  # unfinished entries are expected while a round is in progress
+            problems = gold.check_labels(gold.load_labels(path), sample, round_)
+            assert [p for p in problems if not p.endswith("still todo")] == []

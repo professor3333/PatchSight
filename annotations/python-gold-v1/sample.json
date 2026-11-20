@@ -1,0 +1,2382 @@
+{
+ "name": "python-gold-v1",
+ "seed": 20261120,
+ "snapshot_sha256": "1de5d3c1dfe3e61366562dc984b533325d23b992b25f0840f3fbdd0d60050bf2",
+ "population": 3505,
+ "upstream": 2,
+ "items": [
+  {
+   "advisory": "GHSA-232r-66cg-79px",
+   "identifiers": [
+    "CVE-2018-7750",
+    "GHSA-232r-66cg-79px",
+    "PYSEC-2018-19"
+   ],
+   "packages": [
+    {
+     "name": "paramiko",
+     "last_vulnerable": "2.0.7",
+     "fixed": "2.0.8"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/paramiko/paramiko/commit/e9dfd854bdaf8af15d7834f7502a0451d217bb8c",
+    "https://github.com/paramiko/paramiko/commit/fa29bd8446c8eab237f5187d28787727b4610516"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-254f-3936-288h",
+   "identifiers": [
+    "BIT-pillow-2026-112391",
+    "CVE-2026-112391",
+    "GHSA-254f-3936-288h"
+   ],
+   "packages": [
+    {
+     "name": "pillow",
+     "last_vulnerable": "12.3.0",
+     "fixed": "13.0.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/python-pillow/Pillow/commit/94cb11c44ff7345414da17ebfea1598a529ad9cd"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-282v-666c-3fvg",
+   "identifiers": [
+    "CVE-2023-2800",
+    "GHSA-282v-666c-3fvg",
+    "PYSEC-2023-299"
+   ],
+   "packages": [
+    {
+     "name": "transformers",
+     "last_vulnerable": "4.29.2",
+     "fixed": "4.30.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/huggingface/transformers/commit/80ca92470938bbcc348e2d9cf4734c7c25cb1c43",
+    "https://github.com/huggingface/transformers/pull/23372"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-29h4-r29x-hchv",
+   "identifiers": [
+    "CVE-2026-8838",
+    "GHSA-29h4-r29x-hchv",
+    "PYSEC-2026-521"
+   ],
+   "packages": [
+    {
+     "name": "redshift-connector",
+     "last_vulnerable": "2.1.13",
+     "fixed": "2.1.14"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/aws/amazon-redshift-python-driver/commit/69a69dfdead75918e20384da52bcd760ded8dbca"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-2cp2-2r3c-7p7r",
+   "identifiers": [
+    "CVE-2026-68508",
+    "GHSA-2cp2-2r3c-7p7r",
+    "PYSEC-2026-3850"
+   ],
+   "packages": [
+    {
+     "name": "hydra-core",
+     "last_vulnerable": "1.3.3",
+     "fixed": "1.3.4"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/hydra-ecosystem/hydra/commit/7faad0dcedfb4c0a364aa1067c0080fd6fdf8dca",
+    "https://github.com/hydra-ecosystem/hydra/pull/3261"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-2hmp-5wqg-f24h",
+   "identifiers": [
+    "CVE-2025-1497",
+    "GHSA-2hmp-5wqg-f24h",
+    "PYSEC-2025-22"
+   ],
+   "packages": [
+    {
+     "name": "plotai",
+     "last_vulnerable": "0.0.6",
+     "fixed": "0.0.7"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/mljar/plotai/commit/bdcfb13484f0b85703a4c1ddfd71cb21840e7fde"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-2qfp-q593-8484",
+   "identifiers": [
+    "CVE-2025-6176",
+    "GHSA-2qfp-q593-8484",
+    "PYSEC-2026-1906",
+    "PYSEC-2026-2401"
+   ],
+   "packages": [
+    {
+     "name": "brotli",
+     "last_vulnerable": "1.1.0",
+     "fixed": "1.2.0"
+    },
+    {
+     "name": "scrapy",
+     "last_vulnerable": "2.13.3",
+     "fixed": "2.13.4"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/google/brotli/commit/67d78bc41db1a0d03f2e763497748f2f69946627",
+    "https://github.com/google/brotli/pull/1234",
+    "https://github.com/scrapy/scrapy/commit/14737e91edc513967f516fc839cc9c8a4f8d91da",
+    "https://github.com/scrapy/scrapy/pull/7134"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-2ww3-72rp-wpp4",
+   "identifiers": [
+    "CVE-2026-25592",
+    "GHSA-2ww3-72rp-wpp4",
+    "PYSEC-2026-531"
+   ],
+   "packages": [
+    {
+     "name": "semantic-kernel",
+     "last_vulnerable": "1.39.2",
+     "fixed": "1.39.3"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/microsoft/semantic-kernel/pull/13478/changes#diff-88d3cacba2bfa84eef8f2aa171b34f9940338cbb784a3ffc49f5fe3af1b8943d"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-33c7-2mpw-hg34",
+   "identifiers": [
+    "CVE-2020-7694",
+    "GHSA-33c7-2mpw-hg34",
+    "PYSEC-2020-150",
+    "SNYK-PYTHON-UVICORN-575560"
+   ],
+   "packages": [
+    {
+     "name": "uvicorn",
+     "last_vulnerable": "0.11.6",
+     "fixed": "0.11.7"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/encode/uvicorn/commit/895807f94ea9a8e588605c12076b7d7517cda503"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-33wh-fxxf-88vv",
+   "identifiers": [
+    "CVE-2026-114138",
+    "GHSA-33wh-fxxf-88vv"
+   ],
+   "packages": [
+    {
+     "name": "djangorestframework",
+     "last_vulnerable": "3.18.1",
+     "fixed": "3.18.2"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/encode/django-rest-framework/commit/148ab6523922d5a0c110f76615935e5220b63029"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-375m-5fvv-xq23",
+   "identifiers": [
+    "CVE-2021-48019",
+    "GHSA-375m-5fvv-xq23"
+   ],
+   "packages": [
+    {
+     "name": "vyper",
+     "last_vulnerable": "0.2.8",
+     "fixed": "0.2.9"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/vyperlang/vyper/pull/2281"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-378x-6p4f-8jgm",
+   "identifiers": [
+    "CVE-2025-54886",
+    "GHSA-378x-6p4f-8jgm",
+    "PYSEC-2026-1925"
+   ],
+   "packages": [
+    {
+     "name": "skops",
+     "last_vulnerable": "0.12.0",
+     "fixed": "0.13.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/skops-dev/skops/commit/29d61ea8a92f2bde6830e8f32cc72a1a87211cda"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-37cf-r3w2-gjfw",
+   "identifiers": [
+    "CVE-2019-10682",
+    "GHSA-37cf-r3w2-gjfw",
+    "PYSEC-2020-229"
+   ],
+   "packages": [
+    {
+     "name": "django-nopassword",
+     "last_vulnerable": "4.0.2",
+     "fixed": "5.0.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/relekang/django-nopassword/commit/d8b4615f5fbfe3997d96cf4cb3e342406396193c",
+    "https://github.com/relekang/django-nopassword/compare/v4.0.1...v5.0.0"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-37hp-765x-j95x",
+   "identifiers": [
+    "CVE-2017-7233",
+    "GHSA-37hp-765x-j95x",
+    "PYSEC-2017-9"
+   ],
+   "packages": [
+    {
+     "name": "django",
+     "last_vulnerable": "1.10.6",
+     "fixed": "1.10.7"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/django/django/commit/254326cb3682389f55f886804d2c43f7b9f23e4f",
+    "https://github.com/django/django/commit/8339277518c7d8ec280070a780915304654e3b66",
+    "https://github.com/django/django/commit/f824655bc2c50b19d2f202d7640785caabc82787"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-39ph-wr67-j4xq",
+   "identifiers": [
+    "CVE-2022-0338",
+    "GHSA-39ph-wr67-j4xq",
+    "PYSEC-2022-14"
+   ],
+   "packages": [
+    {
+     "name": "loguru",
+     "last_vulnerable": "0.5.2",
+     "fixed": "0.5.3"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/delgan/loguru/commit/ea39375e62f9b8f18e2ca798a5c0fb8c972b7eaa"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-3f6c-7fw2-ppm4",
+   "identifiers": [
+    "CVE-2025-6242",
+    "GHSA-3f6c-7fw2-ppm4",
+    "PYSEC-2026-2011"
+   ],
+   "packages": [
+    {
+     "name": "vllm",
+     "last_vulnerable": "0.10.2",
+     "fixed": "0.11.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/vllm-project/vllm/commit/9d9a2b77f19f68262d5e469c4e82c0f6365ad72d"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-3qmc-cj7q-62hv",
+   "identifiers": [
+    "CVE-2026-48061",
+    "GHSA-3qmc-cj7q-62hv",
+    "PYSEC-2026-2603"
+   ],
+   "packages": [
+    {
+     "name": "litestar",
+     "last_vulnerable": "2.21.1",
+     "fixed": "2.22.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/litestar-org/litestar/commit/6930a20ceb543912cd651b42deae5b9f3637a262"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-3vgw-585j-4m45",
+   "identifiers": [
+    "CVE-2026-12565",
+    "GHSA-3vgw-585j-4m45",
+    "PYSEC-2026-2392"
+   ],
+   "packages": [
+    {
+     "name": "bbot",
+     "last_vulnerable": "2.8.4.7578rc0",
+     "fixed": "2.8.5"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/blacklanternsecurity/bbot/commit/4fb38fd6e"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-4558-3h8r-v8xp",
+   "identifiers": [
+    "BIT-pillow-2026-112394",
+    "CVE-2026-112394",
+    "GHSA-4558-3h8r-v8xp",
+    "PYSEC-2026-4327"
+   ],
+   "packages": [
+    {
+     "name": "pillow",
+     "last_vulnerable": "12.3.0",
+     "fixed": "13.0.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/python-pillow/Pillow/commit/392ee6f0d19a4adb766a63e9a99f3c28193b8d31",
+    "https://github.com/python-pillow/Pillow/pull/9723"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-4hh5-2678-83fx",
+   "identifiers": [
+    "CVE-2023-6022",
+    "GHSA-4hh5-2678-83fx",
+    "PYSEC-2026-1799"
+   ],
+   "packages": [
+    {
+     "name": "prefect",
+     "last_vulnerable": "2.16.4",
+     "fixed": "2.16.5"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/prefecthq/prefect/commit/227dfcc7e3374c212a4bcd68b14e090b1c02d9d3"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-4rj2-9gcx-5qhx",
+   "identifiers": [
+    "BIT-mlflow-2025-1474",
+    "CVE-2025-1474",
+    "GHSA-4rj2-9gcx-5qhx",
+    "PYSEC-2025-17"
+   ],
+   "packages": [
+    {
+     "name": "mlflow",
+     "last_vulnerable": "2.19.0rc0",
+     "fixed": "2.19.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/mlflow/mlflow/commit/149c9e18aa219bc47e86b432e130e467a36f4a17"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-4w7r-h757-3r74",
+   "identifiers": [
+    "CVE-2025-6921",
+    "GHSA-4w7r-h757-3r74",
+    "PYSEC-2026-1980"
+   ],
+   "packages": [
+    {
+     "name": "transformers",
+     "last_vulnerable": "4.52.4",
+     "fixed": "4.53.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/huggingface/transformers/commit/47c34fba5c303576560cb29767efb452ff12b8be",
+    "https://github.com/huggingface/transformers/commit/d37f7517972f67e3f2194c000ed0f87f064e5099"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-52cq-7v8r-62c6",
+   "identifiers": [
+    "GHSA-52cq-7v8r-62c6"
+   ],
+   "packages": [
+    {
+     "name": "gmaps-mcp",
+     "last_vulnerable": "0.1.2",
+     "fixed": "0.1.3"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/arthurkatcher/google-maps-mcp/commit/00d872507c78e8116bbf9de7be7cd112945c0fd8",
+    "https://github.com/arthurkatcher/google-maps-mcp/commit/3ae32643da469f962e67e8ef9726cd4d9bf4587d"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-542m-9234-8gvf",
+   "identifiers": [
+    "CVE-2026-115911",
+    "GHSA-542m-9234-8gvf",
+    "PYSEC-2026-4344"
+   ],
+   "packages": [
+    {
+     "name": "vllm",
+     "last_vulnerable": "0.31.0",
+     "fixed": "0.32.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/vllm-project/vllm/commit/cff08b461e086523cee8bba5bd3c66d302625134",
+    "https://github.com/vllm-project/vllm/pull/50300"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-55v6-g8pm-pw4c",
+   "identifiers": [
+    "GHSA-55v6-g8pm-pw4c"
+   ],
+   "packages": [
+    {
+     "name": "rembg",
+     "last_vulnerable": "2.0.74",
+     "fixed": "2.0.75"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/danielgatis/rembg/commit/07ad0d493057bddf821dcc3e2410eb7e065257c0"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-5644-2v3h-5w4x",
+   "identifiers": [
+    "CVE-2013-4463",
+    "GHSA-5644-2v3h-5w4x",
+    "PYSEC-2026-865"
+   ],
+   "packages": [
+    {
+     "name": "nova",
+     "last_vulnerable": null,
+     "fixed": "12.0.0a0"
+    }
+   ],
+   "fix_links": [
+    "http://github.com/openstack/nova/commit/3cdfe894ab58f7b91bf7fb690fc5bc724e44066f",
+    "http://github.com/openstack/nova/commit/f6810be4ae1a6c93e7d8017ee67d5344dfdf4a30"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-5836-grcc-8j89",
+   "identifiers": [
+    "CVE-2023-1625",
+    "GHSA-5836-grcc-8j89",
+    "PYSEC-2026-1751"
+   ],
+   "packages": [
+    {
+     "name": "openstack-heat",
+     "last_vulnerable": "20.0.0.0rc2",
+     "fixed": "20.0.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/openstack/heat/commit/a49526c278e52823080c7f3fcb72785b93fd4dcb"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-5jc6-h9w7-jm3p",
+   "identifiers": [
+    "CVE-2024-53999",
+    "GHSA-5jc6-h9w7-jm3p",
+    "PYSEC-2026-1666"
+   ],
+   "packages": [
+    {
+     "name": "mobsf",
+     "last_vulnerable": "4.1.3",
+     "fixed": "4.2.9"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/MobSF/Mobile-Security-Framework-MobSF/commit/27d165872847f5ae7417caf09f37edeeba741e1e"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-5m22-cfq9-86x6",
+   "identifiers": [
+    "CVE-2023-23930",
+    "GHSA-5m22-cfq9-86x6",
+    "PYSEC-2023-196"
+   ],
+   "packages": [
+    {
+     "name": "vantage6",
+     "last_vulnerable": "4.0.1",
+     "fixed": "4.0.2"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/vantage6/vantage6/commit/e62f03bacf2247bd59eed217e2e7338c3a01a5f0"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-62mm-xwmv-crhg",
+   "identifiers": [
+    "GHSA-62mm-xwmv-crhg"
+   ],
+   "packages": [
+    {
+     "name": "khoj",
+     "last_vulnerable": "2.0.0b25.dev10",
+     "fixed": "2.0.0b25"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/khoj-ai/khoj/commit/21c51b9ace4eb59ce79ac0a93b917289824195cf",
+    "https://github.com/khoj-ai/khoj/commit/9801ffd2de642772f072ca496032b7c352013b6a"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-6556-fwc2-fg2p",
+   "identifiers": [
+    "CVE-2025-71339",
+    "GHSA-6556-fwc2-fg2p",
+    "PYSEC-2026-1783"
+   ],
+   "packages": [
+    {
+     "name": "picklescan",
+     "last_vulnerable": "0.0.32",
+     "fixed": "0.0.33"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/mmaitre314/picklescan/commit/70c1c6c31beb6baaf52c8db1b6c3c0e84a6f9dab",
+    "https://github.com/mmaitre314/picklescan/pull/53"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-6rrm-xxvh-7r87",
+   "identifiers": [
+    "CVE-2012-4573",
+    "GHSA-6rrm-xxvh-7r87"
+   ],
+   "packages": [
+    {
+     "name": "glance",
+     "last_vulnerable": null,
+     "fixed": "11.0.0a0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/openstack/glance/commit/6ab0992e5472ae3f9bef0d2ced41030655d9d2bc",
+    "https://github.com/openstack/glance/commit/90bcdc5a89e350a358cf320a03f5afe99795f6f6",
+    "https://github.com/openstack/glance/commit/efd7e75b1f419a52c7103c7840e24af8e5deb29d"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-7372-q459-jxhr",
+   "identifiers": [
+    "CVE-2014-1624",
+    "GHSA-7372-q459-jxhr",
+    "PYSEC-2014-95"
+   ],
+   "packages": [
+    {
+     "name": "pyxdg",
+     "last_vulnerable": "0.25",
+     "fixed": "0.26"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/takluyver/pyxdg/commit/bd999c1c3fe7ee5f30ede2cf704cf03e400347b4"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-74xw-82v7-hmrm",
+   "identifiers": [
+    "CVE-2015-1326",
+    "GHSA-74xw-82v7-hmrm",
+    "PYSEC-2019-155"
+   ],
+   "packages": [
+    {
+     "name": "python-dbusmock",
+     "last_vulnerable": "0.15",
+     "fixed": "0.15.1"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/martinpitt/python-dbusmock/commit/4e7d0df9093"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-753j-mpmx-qq6g",
+   "identifiers": [
+    "CVE-2024-14029",
+    "GHSA-753j-mpmx-qq6g"
+   ],
+   "packages": [
+    {
+     "name": "tornado",
+     "last_vulnerable": "6.4",
+     "fixed": "6.4.1"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/tornadoweb/tornado/commit/d65f6e71a77f53a1ff0a0dc55704be13f04eb572"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-7c4h-w765-6pwg",
+   "identifiers": [
+    "CVE-2018-1000167",
+    "GHSA-7c4h-w765-6pwg",
+    "PYSEC-2018-75"
+   ],
+   "packages": [
+    {
+     "name": "suricata-update",
+     "last_vulnerable": "1.0.0a1",
+     "fixed": "1.0.0b1"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/OISF/suricata-update/commit/76270e73128ca1299b4e33e7e2a74ac3d963a97a",
+    "https://github.com/OISF/suricata-update/pull/23"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-7m8f-hgjq-8gc9",
+   "identifiers": [
+    "CVE-2026-70646",
+    "GHSA-7m8f-hgjq-8gc9",
+    "PYSEC-2026-3626"
+   ],
+   "packages": [
+    {
+     "name": "aiosend",
+     "last_vulnerable": "3.0.6",
+     "fixed": "3.0.7"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/vovchic17/aiosend/commit/db20f0a742209dfac181863d398ec5112687efa4"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-7mpr-5m44-h73r",
+   "identifiers": [
+    "CVE-2025-46656",
+    "GHSA-7mpr-5m44-h73r",
+    "PYSEC-2026-1604"
+   ],
+   "packages": [
+    {
+     "name": "markdownify",
+     "last_vulnerable": "0.14.0",
+     "fixed": "0.14.1"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/matthewwithanm/python-markdownify/commit/959561879693bf4a576f99c6733b50b01186aa08",
+    "https://github.com/matthewwithanm/python-markdownify/compare/0.14.0...0.14.1"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-84m7-p3x7-pcfv",
+   "identifiers": [
+    "CVE-2026-59951",
+    "GHSA-84m7-p3x7-pcfv"
+   ],
+   "packages": [
+    {
+     "name": "mcp",
+     "last_vulnerable": "1.29.1",
+     "fixed": "1.30.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/modelcontextprotocol/python-sdk/commit/92120b4b0f50385af096592d7cee932fc1d994e7",
+    "https://github.com/modelcontextprotocol/python-sdk/commit/d2290ca3434731b68ea3e2270bc06a6e6575931b",
+    "https://github.com/modelcontextprotocol/python-sdk/pull/3395",
+    "https://github.com/modelcontextprotocol/python-sdk/pull/3426"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-8fp7-jwv2-49x9",
+   "identifiers": [
+    "CVE-2023-52309",
+    "GHSA-8fp7-jwv2-49x9",
+    "PYSEC-2024-141"
+   ],
+   "packages": [
+    {
+     "name": "paddlepaddle",
+     "last_vulnerable": "1.8.5",
+     "fixed": "2.6.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/PaddlePaddle/Paddle/commit/19da5c0c4d8c5e4dfef2a92e24141c3f51884dcc"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-8g9m-vv69-7j99",
+   "identifiers": [
+    "CVE-2022-3438",
+    "GHSA-8g9m-vv69-7j99",
+    "PYSEC-2022-43158"
+   ],
+   "packages": [
+    {
+     "name": "rdiffweb",
+     "last_vulnerable": "2.4.11",
+     "fixed": "2.5.0a4"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/ikus060/rdiffweb/commit/4d464b467f14b8eb9103d7f5f0774e49995527c7"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-8h88-gxp3-j7pg",
+   "identifiers": [
+    "CVE-2026-74876",
+    "GHSA-8h88-gxp3-j7pg",
+    "PYSEC-2026-3756"
+   ],
+   "packages": [
+    {
+     "name": "openssl-encrypt",
+     "last_vulnerable": "1.4.0b8",
+     "fixed": "1.4.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/jahlives/openssl_encrypt/commit/f4a1ba660063cd9e17883829e5272a248525a16b"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-8mpw-7fpc-4gqj",
+   "identifiers": [
+    "CVE-2026-81725",
+    "GHSA-8mpw-7fpc-4gqj",
+    "PYSEC-2026-3752"
+   ],
+   "packages": [
+    {
+     "name": "nltk",
+     "last_vulnerable": "3.10.2",
+     "fixed": "3.10.3"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/nltk/nltk/commit/7808692d451b962711005d954859bb83aabcf8fa"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-8vcg-cfxj-p5m3",
+   "identifiers": [
+    "CVE-2025-68398",
+    "GHSA-8vcg-cfxj-p5m3",
+    "PYSEC-2026-571"
+   ],
+   "packages": [
+    {
+     "name": "weblate",
+     "last_vulnerable": "5.15",
+     "fixed": "5.15.1"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/WeblateOrg/weblate/commit/4837a4154390f7c1d03c0e398aa6439dcfa361b4",
+    "https://github.com/WeblateOrg/weblate/commit/dd8c9d7b00eebe28770fa0e2cd96126791765ea7",
+    "https://github.com/WeblateOrg/weblate/pull/17330",
+    "https://github.com/WeblateOrg/weblate/pull/17345"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-923m-gv2p-w5qp",
+   "identifiers": [
+    "BIT-django-2026-48587",
+    "CVE-2026-48587",
+    "GHSA-923m-gv2p-w5qp",
+    "PYSEC-2026-198"
+   ],
+   "packages": [
+    {
+     "name": "django",
+     "last_vulnerable": "5.2.14",
+     "fixed": "5.2.15"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/django/django/commit/1721035a72624aad7b38dd19b14013efd94b24b8",
+    "https://github.com/django/django/commit/42aa0b3364d312e7c6472258d8b0e9c0277fbf22",
+    "https://github.com/django/django/commit/9b62b0af71a14c657d19d95371630ba839e83d9a"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-95rw-fx8r-36v6",
+   "identifiers": [
+    "BIT-django-2022-22818",
+    "CVE-2022-22818",
+    "GHSA-95rw-fx8r-36v6",
+    "PYSEC-2022-19"
+   ],
+   "packages": [
+    {
+     "name": "django",
+     "last_vulnerable": "2.2.26",
+     "fixed": "2.2.27"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/django/django/commit/01422046065d2b51f8f613409cad2c81b39487e5",
+    "https://github.com/django/django/commit/1a1e8278c46418bde24c86a65443b0674bae65e2",
+    "https://github.com/django/django/commit/c27a7eb9f40b64990398978152e62b6ff839c2e6"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-96p9-rh4f-92cf",
+   "identifiers": [
+    "CVE-2026-84452",
+    "GHSA-96p9-rh4f-92cf",
+    "PYSEC-2026-3944"
+   ],
+   "packages": [
+    {
+     "name": "winml-cli",
+     "last_vulnerable": "0.3.1",
+     "fixed": "0.4.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/microsoft/winml-cli/commit/f4073e0ef4700a25b623487e7e45c421ca0b9993",
+    "https://github.com/microsoft/winml-cli/pull/1321"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-989c-m532-p2hv",
+   "identifiers": [
+    "CVE-2025-22242",
+    "GHSA-989c-m532-p2hv",
+    "PYSEC-2026-1896"
+   ],
+   "packages": [
+    {
+     "name": "salt",
+     "last_vulnerable": "3007.3",
+     "fixed": "3007.4"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/saltstack/salt/commit/e39116fb87bf4db9bcb9aade8258c66df87d41fe"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-99w6-3xph-cx78",
+   "identifiers": [
+    "CVE-2024-11079",
+    "GHSA-99w6-3xph-cx78",
+    "PYSEC-2026-1123"
+   ],
+   "packages": [
+    {
+     "name": "ansible-core",
+     "last_vulnerable": "2.18.0",
+     "fixed": "2.18.1rc1"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/ansible/ansible/commit/2936b80dbbc7efb889934aeec80f6142c10266ce",
+    "https://github.com/ansible/ansible/commit/70e83e72b43e05e57eb42a6d52d01a4d9768f510",
+    "https://github.com/ansible/ansible/commit/98774d15d7748ebaaaf2e83942cc7e8d39f7280e",
+    "https://github.com/ansible/ansible/pull/84299",
+    "https://github.com/ansible/ansible/pull/84339"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-9c6g-qpgj-rvxw",
+   "identifiers": [
+    "CVE-2023-27494",
+    "GHSA-9c6g-qpgj-rvxw",
+    "PYSEC-2023-50"
+   ],
+   "packages": [
+    {
+     "name": "streamlit",
+     "last_vulnerable": "0.80.0",
+     "fixed": "0.81.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/streamlit/streamlit/commit/afcf880c60e5d7538936cc2d9721b9e1bc02b075"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-9mwf-mw74-9cv5",
+   "identifiers": [
+    "CVE-2023-25696",
+    "GHSA-9mwf-mw74-9cv5",
+    "PYSEC-2026-272"
+   ],
+   "packages": [
+    {
+     "name": "apache-airflow-providers-apache-hive",
+     "last_vulnerable": "5.1.3rc1",
+     "fixed": "5.1.3"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/apache/airflow/pull/29502"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-9pgc-3ccv-5297",
+   "identifiers": [
+    "CVE-2026-47180",
+    "GHSA-9pgc-3ccv-5297",
+    "PYSEC-2026-3436"
+   ],
+   "packages": [
+    {
+     "name": "zeroconf",
+     "last_vulnerable": "0.149.4",
+     "fixed": "0.149.5"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/python-zeroconf/python-zeroconf/pull/1719"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-9vxf-mcm6-5m42",
+   "identifiers": [
+    "CVE-2022-3233",
+    "GHSA-9vxf-mcm6-5m42",
+    "PYSEC-2022-285"
+   ],
+   "packages": [
+    {
+     "name": "rdiffweb",
+     "last_vulnerable": "2.4.5",
+     "fixed": "2.4.6"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/ikus060/rdiffweb/commit/18a5aabd48fa6d2d2771a25f95610c28a1a097ca"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-c39v-8hrw-h448",
+   "identifiers": [
+    "CVE-2026-56104",
+    "GHSA-c39v-8hrw-h448",
+    "PYSEC-2026-4028"
+   ],
+   "packages": [
+    {
+     "name": "chainlit",
+     "last_vulnerable": "2.10.0",
+     "fixed": "2.10.1"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/Chainlit/chainlit/commit/5effb664f1e0af4a4f0a42fe63ea979676039a7f",
+    "https://github.com/Chainlit/chainlit/pull/2857"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-c6xv-rcvw-v685",
+   "identifiers": [
+    "CVE-2025-65958",
+    "GHSA-c6xv-rcvw-v685",
+    "PYSEC-2026-1726"
+   ],
+   "packages": [
+    {
+     "name": "open-webui",
+     "last_vulnerable": "0.6.36",
+     "fixed": "0.6.37"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/open-webui/open-webui/commit/02238d3113e966c353fce18f1b65117380896774"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-c87f-fq5g-63r2",
+   "identifiers": [
+    "CVE-2021-42053",
+    "GHSA-c87f-fq5g-63r2",
+    "PYSEC-2021-357"
+   ],
+   "packages": [
+    {
+     "name": "django-unicorn",
+     "last_vulnerable": "0.35.3",
+     "fixed": "0.36.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/adamghill/django-unicorn/commit/aa5b9835d946bd9893ef02e556859e3ea62cc5e2",
+    "https://github.com/adamghill/django-unicorn/compare/0.35.3...0.36.0",
+    "https://github.com/adamghill/django-unicorn/pull/288",
+    "https://github.com/adamghill/django-unicorn/pull/288/files"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-cfqr-cjx5-5jcm",
+   "identifiers": [
+    "CVE-2026-84305",
+    "GHSA-cfqr-cjx5-5jcm",
+    "PYSEC-2026-3923"
+   ],
+   "packages": [
+    {
+     "name": "sqlparse",
+     "last_vulnerable": "0.5.5",
+     "fixed": "0.6.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/andialbrecht/sqlparse/commit/a51df6d9e2d31b44be9adb6bc8732517db6bf96b"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-ch89-h4r2-c8f8",
+   "identifiers": [
+    "CVE-2026-55540",
+    "GHSA-ch89-h4r2-c8f8",
+    "PYSEC-2026-3888"
+   ],
+   "packages": [
+    {
+     "name": "praisonai",
+     "last_vulnerable": "4.6.57",
+     "fixed": "4.6.58"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/MervinPraison/PraisonAI/commit/2f9677abb2ea68eab864ee8b6a828fd0141612e1"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-chg9-3c3p-ch23",
+   "identifiers": [
+    "CVE-2015-7764",
+    "GHSA-chg9-3c3p-ch23",
+    "PYSEC-2017-50"
+   ],
+   "packages": [
+    {
+     "name": "lemur",
+     "last_vulnerable": null,
+     "fixed": "0.1.5"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/Netflix/lemur/commit/394e18f76e5eb534d95160945ebc231ec3b4c794"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-cj9g-27ph-4cgv",
+   "identifiers": [
+    "CVE-2026-43977",
+    "GHSA-cj9g-27ph-4cgv",
+    "PYSEC-2026-3421"
+   ],
+   "packages": [
+    {
+     "name": "wger",
+     "last_vulnerable": "2.1",
+     "fixed": null
+    }
+   ],
+   "fix_links": [
+    "https://github.com/wger-project/wger/commit/47d646c24178783eb6787ecf26e79dc8f4a394c6"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-cm54-3vvf-f5p8",
+   "identifiers": [
+    "CVE-2012-3361",
+    "GHSA-cm54-3vvf-f5p8"
+   ],
+   "packages": [
+    {
+     "name": "nova",
+     "last_vulnerable": null,
+     "fixed": "12.0.0a0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/openstack/nova/commit/2427d4a99bed35baefd8f17ba422cb7aae8dcca7",
+    "https://github.com/openstack/nova/commit/b0feaffdb2b1c51182b8dce41b367f3449af5dd9"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-cr45-98w9-gwqx",
+   "identifiers": [
+    "CVE-2023-45815",
+    "GHSA-cr45-98w9-gwqx",
+    "PYSEC-2023-229"
+   ],
+   "packages": [
+    {
+     "name": "archivebox",
+     "last_vulnerable": "0.8.6rc3",
+     "fixed": "0.9.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/ArchiveBox/ArchiveBox/commit/a6548df8d0aae1d3d326deb1191b128232708166",
+    "https://github.com/ArchiveBox/ArchiveBox/pull/1773"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-cvcq-gmc3-q6m8",
+   "identifiers": [
+    "BIT-airflow-2020-17511",
+    "CVE-2020-17511",
+    "GHSA-cvcq-gmc3-q6m8",
+    "PYSEC-2020-262"
+   ],
+   "packages": [
+    {
+     "name": "apache-airflow",
+     "last_vulnerable": "1.10.13rc1",
+     "fixed": "1.10.13"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/apache/airflow/commit/4e32546faf227a6497ce8b282fff7450cae6f665"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-cwqr-hh33-gh44",
+   "identifiers": [
+    "CVE-2026-112915",
+    "GHSA-cwqr-hh33-gh44"
+   ],
+   "packages": [
+    {
+     "name": "filelock",
+     "last_vulnerable": "4.2.0",
+     "fixed": "4.2.1"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/tox-dev/filelock/commit/5e3f2ec0c5fb17cb2635b60b2b68bc63ab81ca2d",
+    "https://github.com/tox-dev/filelock/pull/834"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-f26r-j276-ggg4",
+   "identifiers": [
+    "CVE-2026-77270",
+    "GHSA-f26r-j276-ggg4",
+    "PYSEC-2026-4090"
+   ],
+   "packages": [
+    {
+     "name": "mcp-atlassian",
+     "last_vulnerable": "0.21.1",
+     "fixed": "0.22.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/sooperset/mcp-atlassian/commit/b041733473f95119dd539542a43c280737a8e460",
+    "https://github.com/sooperset/mcp-atlassian/pull/1448"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-f8mr-jv2c-v8mg",
+   "identifiers": [
+    "CVE-2020-15163",
+    "GHSA-f8mr-jv2c-v8mg",
+    "PYSEC-2020-145"
+   ],
+   "packages": [
+    {
+     "name": "tuf",
+     "last_vulnerable": "0.12.dev2",
+     "fixed": "0.12.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/theupdateframework/tuf/commit/3d342e648fbacdf43a13d7ba8886aaaf07334af7",
+    "https://github.com/theupdateframework/tuf/pull/885"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-f96h-pmfr-66vw",
+   "identifiers": [
+    "CVE-2024-47874",
+    "GHSA-f96h-pmfr-66vw",
+    "PYSEC-2026-1943"
+   ],
+   "packages": [
+    {
+     "name": "starlette",
+     "last_vulnerable": "0.39.2",
+     "fixed": "0.40.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/encode/starlette/commit/fd038f3070c302bff17ef7d173dbb0b007617733"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-fj7x-q9j7-g6q6",
+   "identifiers": [
+    "CVE-2024-21503",
+    "GHSA-fj7x-q9j7-g6q6",
+    "PYSEC-2024-48"
+   ],
+   "packages": [
+    {
+     "name": "black",
+     "last_vulnerable": "24.2.0",
+     "fixed": "24.3.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/psf/black/commit/f00093672628d212b8965a8993cee8bedf5fe9b8"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-fp7w-m676-w7gc",
+   "identifiers": [
+    "CVE-2026-57176",
+    "GHSA-fp7w-m676-w7gc",
+    "PYSEC-2026-4166"
+   ],
+   "packages": [
+    {
+     "name": "social-auth-core",
+     "last_vulnerable": "4.9.1",
+     "fixed": "5.0.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/python-social-auth/social-core/commit/dee7ad1785877afd355dd6860598823d2631b76e",
+    "https://github.com/python-social-auth/social-core/pull/1795"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-fqvv-jvhr-g5jc",
+   "identifiers": [
+    "CVE-2026-42864",
+    "GHSA-fqvv-jvhr-g5jc",
+    "PYSEC-2026-339"
+   ],
+   "packages": [
+    {
+     "name": "firefighter-incident",
+     "last_vulnerable": "0.0.53",
+     "fixed": "0.0.54"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/ManoManoTech/firefighter-incident/commit/2586679e6f32c12d223668b73e98f4c4de7b771f"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-fvw2-2pf7-77vw",
+   "identifiers": [
+    "BIT-airflow-2022-27949",
+    "CVE-2022-27949",
+    "GHSA-fvw2-2pf7-77vw",
+    "PYSEC-2022-42981"
+   ],
+   "packages": [
+    {
+     "name": "apache-airflow",
+     "last_vulnerable": "2.3.1rc1",
+     "fixed": "2.3.1"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/apache/airflow/commit/09be0c5c7e847dda1d0be5776f8d5e327ff2281a",
+    "https://github.com/apache/airflow/commit/1cbb0ad26dd17f218c6ab1c2ae59b262c443a443",
+    "https://github.com/apache/airflow/pull/22754"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-g2jx-37x6-6438",
+   "identifiers": [
+    "CVE-2025-66454",
+    "GHSA-g2jx-37x6-6438",
+    "PYSEC-2026-1192"
+   ],
+   "packages": [
+    {
+     "name": "arcade-mcp-server",
+     "last_vulnerable": "1.8.0",
+     "fixed": "1.9.1"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/ArcadeAI/arcade-mcp/commit/44660d18ceb220600401303df860a31ca766c817",
+    "https://github.com/ArcadeAI/arcade-mcp/commit/7fb097f20fbea35e382a1b78da6fd90609c55a9e",
+    "https://github.com/ArcadeAI/arcade-mcp/pull/691"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-g67g-hvc3-xmvf",
+   "identifiers": [
+    "CVE-2021-41132",
+    "GHSA-g67g-hvc3-xmvf",
+    "PYSEC-2021-372",
+    "PYSEC-2021-379"
+   ],
+   "packages": [
+    {
+     "name": "omero-figure",
+     "last_vulnerable": "4.4.0",
+     "fixed": "4.4.1"
+    },
+    {
+     "name": "omero-web",
+     "last_vulnerable": "5.11.0rc1",
+     "fixed": "5.11.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/ome/omero-web/commit/0168067accde5e635341b3c714b1d53ae92ba424"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-gh7c-cg3x-pmcr",
+   "identifiers": [
+    "CVE-2007-6738",
+    "GHSA-gh7c-cg3x-pmcr",
+    "PYSEC-2010-22"
+   ],
+   "packages": [
+    {
+     "name": "pyftpdlib",
+     "last_vulnerable": null,
+     "fixed": "0.1.1"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/giampaolo/pyftpdlib/commit/d171bdc4ef7ac769671946a8a3e5eaafc39a9202"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-gh7p-78x6-jw6m",
+   "identifiers": [
+    "CVE-2026-59222",
+    "GHSA-gh7p-78x6-jw6m",
+    "PYSEC-2026-3598"
+   ],
+   "packages": [
+    {
+     "name": "open-webui",
+     "last_vulnerable": "0.9.6",
+     "fixed": "0.10.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/open-webui/open-webui/commit/fbcdcf146b99b5002705060a8243eee769108f9e"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-gqgw-jghv-mxwx",
+   "identifiers": [
+    "CVE-2026-9318",
+    "GHSA-gqgw-jghv-mxwx",
+    "PYSEC-2026-3702"
+   ],
+   "packages": [
+    {
+     "name": "tablib",
+     "last_vulnerable": "3.9.0",
+     "fixed": "3.10.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/jazzband/tablib/pull/668"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-h3ww-q6xx-w7x3",
+   "identifiers": [
+    "CVE-2026-45675",
+    "GHSA-h3ww-q6xx-w7x3",
+    "PYSEC-2026-2730"
+   ],
+   "packages": [
+    {
+     "name": "open-webui",
+     "last_vulnerable": "0.8.12",
+     "fixed": "0.9.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/open-webui/open-webui/commit/96a0b3239b1aadb23fc359bf10849c9ba12fd6ec",
+    "https://github.com/open-webui/open-webui/pull/23626"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-h47f-gmjp-m7rr",
+   "identifiers": [
+    "CVE-2026-52776",
+    "GHSA-h47f-gmjp-m7rr",
+    "PYSEC-2026-3659"
+   ],
+   "packages": [
+    {
+     "name": "compliance-trestle",
+     "last_vulnerable": "4.0.3",
+     "fixed": "4.1.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/oscal-compass/compliance-trestle/commit/d107cd16efe8eb15d46be3c1d97f1ec73d32447c"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-hfgr-h3vc-p6c2",
+   "identifiers": [
+    "CVE-2023-48311",
+    "GHSA-hfgr-h3vc-p6c2",
+    "PYSEC-2026-1312"
+   ],
+   "packages": [
+    {
+     "name": "dockerspawner",
+     "last_vulnerable": "12.1.0",
+     "fixed": "13.0.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/jupyterhub/dockerspawner/commit/3ba4b665b6ca6027ea7a032d7ca3eab977574626"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-hhrp-gw25-jr43",
+   "identifiers": [
+    "CVE-2026-57516",
+    "GHSA-hhrp-gw25-jr43",
+    "PYSEC-2026-2273"
+   ],
+   "packages": [
+    {
+     "name": "ray",
+     "last_vulnerable": "2.55.1",
+     "fixed": "2.56.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/ray-project/ray/commit/41443a18f9e6403a072de69098a279c23e2d943c",
+    "https://github.com/ray-project/ray/pull/63469",
+    "https://github.com/ray-project/ray/pull/63470"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-hvp4-vrv2-8wrq",
+   "identifiers": [
+    "CVE-2024-1314",
+    "GHSA-hvp4-vrv2-8wrq",
+    "PYSEC-2026-1494"
+   ],
+   "packages": [
+    {
+     "name": "kinto-attachment",
+     "last_vulnerable": "6.3.2",
+     "fixed": "6.4.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/Kinto/kinto-attachment/commit/f4a31484f5925cbc02b59ebd37554538ab826ca1"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-hwvq-6gjx-j797",
+   "identifiers": [
+    "BIT-jupyter-base-notebook-2021-32798",
+    "BIT-jupyter-notebook-2021-32798",
+    "CVE-2021-32798",
+    "GHSA-hwvq-6gjx-j797",
+    "PYSEC-2021-118"
+   ],
+   "packages": [
+    {
+     "name": "notebook",
+     "last_vulnerable": "5.7.10",
+     "fixed": "5.7.11"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/jupyter/notebook/commit/79fc76e890a8ec42f73a3d009e44ef84c14ef0d5"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-hxf9-7h4c-f5jv",
+   "identifiers": [
+    "CVE-2018-6596",
+    "GHSA-hxf9-7h4c-f5jv",
+    "PYSEC-2018-7"
+   ],
+   "packages": [
+    {
+     "name": "django-anymail",
+     "last_vulnerable": "1.2",
+     "fixed": "1.2.1"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/anymail/django-anymail/commit/c07998304b4a31df4c61deddcb03d3607a04691b",
+    "https://github.com/anymail/django-anymail/commit/db586ede1fbb41dce21310ea28ae15a1cf1286c5"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-j36m-hv43-7w7m",
+   "identifiers": [
+    "CVE-2017-2673",
+    "GHSA-j36m-hv43-7w7m",
+    "PYSEC-2018-152"
+   ],
+   "packages": [
+    {
+     "name": "keystone",
+     "last_vulnerable": "9.3.0",
+     "fixed": null
+    }
+   ],
+   "fix_links": [
+    "https://github.com/openstack/keystone/commit/05a129e54573b6cbda1ec095f4526f2b9ba90a90",
+    "https://github.com/openstack/keystone/commit/2139639eeabc8f6941f4461fc87d609cde3118c2"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-jm82-fx9c-mx94",
+   "identifiers": [
+    "CVE-2026-57204",
+    "GHSA-jm82-fx9c-mx94"
+   ],
+   "packages": [
+    {
+     "name": "pypdf",
+     "last_vulnerable": "6.13.2",
+     "fixed": "6.13.3"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/py-pdf/pypdf/pull/3871"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-jmp3-39vp-fwg8",
+   "identifiers": [
+    "CVE-2024-39317",
+    "GHSA-jmp3-39vp-fwg8",
+    "PYSEC-2024-86"
+   ],
+   "packages": [
+    {
+     "name": "wagtail",
+     "last_vulnerable": "6.0.5",
+     "fixed": "6.0.6"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/wagtail/wagtail/commit/31b1e8532dfb1b70d8d37d22aff9cbde9109cdf2",
+    "https://github.com/wagtail/wagtail/commit/3c941136f79c48446e3858df46e5b668d7f83797",
+    "https://github.com/wagtail/wagtail/commit/b783c096b6d4fd2cfc05f9137a0be288850e99a2"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-jqmf-mx4f-hfr6",
+   "identifiers": [
+    "CVE-2026-114107",
+    "GHSA-jqmf-mx4f-hfr6"
+   ],
+   "packages": [
+    {
+     "name": "vibe-trading-ai",
+     "last_vulnerable": "0.1.6",
+     "fixed": "0.1.7"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/HKUDS/Vibe-Trading/commit/9454d4a27a763b80e1d6eb5763b86c88e9e4e714"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-m84c-4c34-28gf",
+   "identifiers": [
+    "CVE-2025-3108",
+    "GHSA-m84c-4c34-28gf",
+    "PYSEC-2025-249",
+    "PYSEC-2026-1564"
+   ],
+   "packages": [
+    {
+     "name": "llama-index",
+     "last_vulnerable": "0.12.40",
+     "fixed": "0.12.41"
+    },
+    {
+     "name": "llama-index-core",
+     "last_vulnerable": "0.12.40",
+     "fixed": "0.12.41"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/run-llama/llama_index/commit/702e4340623092fac4cf2fe95eb9465034856da3"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-m8j6-rc5x-wv36",
+   "identifiers": [
+    "GHSA-m8j6-rc5x-wv36"
+   ],
+   "packages": [
+    {
+     "name": "nono-py",
+     "last_vulnerable": "0.10.0",
+     "fixed": "0.10.1"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/nolabs-ai/nono-py/commit/2897ee20df0d75afd298d94840b9d135b3b3a6e9",
+    "https://github.com/nolabs-ai/nono-py/commit/807fb4bce2385b9e88185bf160e0792b588813c7"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-m9hc-vxjj-4x6q",
+   "identifiers": [
+    "CVE-2024-56142",
+    "GHSA-m9hc-vxjj-4x6q",
+    "PYSEC-2026-1778"
+   ],
+   "packages": [
+    {
+     "name": "pghoard",
+     "last_vulnerable": "2.1.0",
+     "fixed": "2.6.1rc0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/Aiven-Open/pghoard/commit/fe9947642cc73bcacf6d19b93eb98f442223fb47"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-mffc-9gx5-99g3",
+   "identifiers": [
+    "CVE-2015-3206",
+    "GHSA-mffc-9gx5-99g3",
+    "PYSEC-2017-49",
+    "PYSEC-2017-66"
+   ],
+   "packages": [
+    {
+     "name": "kerberos",
+     "last_vulnerable": "1.2.5",
+     "fixed": null
+    },
+    {
+     "name": "pykerberos",
+     "last_vulnerable": "1.1.5",
+     "fixed": "1.1.6"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/apple/ccs-pykerberos/commit/9cb61c93f9b24dd18a0a315f3df5445529c5c333"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-mg2x-mggj-6955",
+   "identifiers": [
+    "BIT-airflow-2023-51702",
+    "CVE-2023-51702",
+    "GHSA-mg2x-mggj-6955",
+    "PYSEC-2026-1144",
+    "PYSEC-2026-2350"
+   ],
+   "packages": [
+    {
+     "name": "apache-airflow",
+     "last_vulnerable": "2.6.1rc3",
+     "fixed": "2.6.1"
+    },
+    {
+     "name": "apache-airflow-providers-cncf-kubernetes",
+     "last_vulnerable": "7.0.0rc2",
+     "fixed": "7.0.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/apache/airflow/pull/29498",
+    "https://github.com/apache/airflow/pull/30110",
+    "https://github.com/apache/airflow/pull/36492"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-mjqp-26hc-grxg",
+   "identifiers": [
+    "CVE-2025-10156",
+    "GHSA-mjqp-26hc-grxg",
+    "PYSEC-2025-152"
+   ],
+   "packages": [
+    {
+     "name": "picklescan",
+     "last_vulnerable": "0.0.30",
+     "fixed": "0.0.31"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/mmaitre314/picklescan/commit/28a7b4ef753466572bda3313737116eeb9b4e5c5"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-p5w8-wqhj-9hhf",
+   "identifiers": [
+    "CVE-2021-32839",
+    "GHSA-p5w8-wqhj-9hhf",
+    "PYSEC-2021-333"
+   ],
+   "packages": [
+    {
+     "name": "sqlparse",
+     "last_vulnerable": "0.4.1",
+     "fixed": "0.4.2"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/andialbrecht/sqlparse/commit/8238a9e450ed1524e40cb3a8b0b3c00606903aeb"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-pg36-wpm5-g57p",
+   "identifiers": [
+    "CVE-2019-16785",
+    "GHSA-pg36-wpm5-g57p",
+    "PYSEC-2019-136"
+   ],
+   "packages": [
+    {
+     "name": "waitress",
+     "last_vulnerable": "1.3.1",
+     "fixed": "1.4.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/Pylons/waitress/commit/8eba394ad75deaf9e5cd15b78a3d16b12e6b0eba"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-pw95-88fg-3j6f",
+   "identifiers": [
+    "CVE-2025-46726",
+    "GHSA-pw95-88fg-3j6f",
+    "PYSEC-2026-1532"
+   ],
+   "packages": [
+    {
+     "name": "langroid",
+     "last_vulnerable": "0.53.2",
+     "fixed": "0.53.4"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/langroid/langroid/commit/36e7e7db4dd1636de225c2c66c84052b1e9ac3c3"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-q97c-p368-75c4",
+   "identifiers": [
+    "CVE-2026-115916",
+    "GHSA-q97c-p368-75c4",
+    "PYSEC-2026-4347"
+   ],
+   "packages": [
+    {
+     "name": "vllm",
+     "last_vulnerable": "0.31.0",
+     "fixed": "0.32.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/vllm-project/vllm/commit/37cecc8141e2dcba9dd534897a164d4baaf27229",
+    "https://github.com/vllm-project/vllm/pull/59491"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-qh4q-fwf8-qqrw",
+   "identifiers": [
+    "CVE-2010-3198",
+    "GHSA-qh4q-fwf8-qqrw",
+    "PYSEC-2010-32"
+   ],
+   "packages": [
+    {
+     "name": "zope",
+     "last_vulnerable": null,
+     "fixed": "2.10.12"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/zopefoundation/Zope/commit/0f2f56f63e4a4d695ee670e02b317e900550dbac",
+    "https://github.com/zopefoundation/Zope/commit/e03a5f036d42ed2426886c9035fe018eeec65de4"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-r7r6-cc7p-4v5m",
+   "identifiers": [
+    "CVE-2025-61911",
+    "GHSA-r7r6-cc7p-4v5m",
+    "PYSEC-2026-1847"
+   ],
+   "packages": [
+    {
+     "name": "python-ldap",
+     "last_vulnerable": "3.4.4",
+     "fixed": "3.4.5"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/python-ldap/python-ldap/commit/3957526fb1852e84b90f423d9fef34c7af25b85a"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-rcrv-228c-gprj",
+   "identifiers": [
+    "GHSA-rcrv-228c-gprj"
+   ],
+   "packages": [
+    {
+     "name": "bitlyshortener",
+     "last_vulnerable": "0.5.3",
+     "fixed": "0.6.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/impredicative/bitlyshortener/commit/b307d70bedf745305fa0dd3c5c600d8cb88d09b5"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-rrgf-hcr9-jq6h",
+   "identifiers": [
+    "CVE-2025-55149",
+    "GHSA-rrgf-hcr9-jq6h",
+    "PYSEC-2026-1967"
+   ],
+   "packages": [
+    {
+     "name": "tiny-scientist",
+     "last_vulnerable": "0.1.3",
+     "fixed": null
+    }
+   ],
+   "fix_links": [
+    "https://github.com/ulab-uiuc/tiny-scientist/commit/7fd42873603012acb8c55a4fc3eaac9ab18e6559"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-rv9x-wmw4-44qj",
+   "identifiers": [
+    "CVE-2023-0227",
+    "GHSA-rv9x-wmw4-44qj",
+    "PYSEC-2026-906"
+   ],
+   "packages": [
+    {
+     "name": "pyload-ng",
+     "last_vulnerable": "0.5.0b3.dev35",
+     "fixed": "0.5.0b3.dev36"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/pyload/pyload/commit/c035714c0596b704b11af0f8a669352f128ad2d9"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-rwrf-2pqf-9j8j",
+   "identifiers": [
+    "CVE-2026-116686",
+    "GHSA-rwrf-2pqf-9j8j"
+   ],
+   "packages": [
+    {
+     "name": "mcp",
+     "last_vulnerable": "2.1.1",
+     "fixed": "2.2.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/modelcontextprotocol/python-sdk/commit/5ebdfed4060d8e5b11b8e2348f86bad4d1fb8836",
+    "https://github.com/modelcontextprotocol/python-sdk/commit/6705402e246dc4eb1fcdf4d9902b78d3c9c36e1b",
+    "https://github.com/modelcontextprotocol/python-sdk/pull/3394",
+    "https://github.com/modelcontextprotocol/python-sdk/pull/3396"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-rxff-vr5r-8cj5",
+   "identifiers": [
+    "CVE-2024-42474",
+    "GHSA-rxff-vr5r-8cj5",
+    "PYSEC-2024-153"
+   ],
+   "packages": [
+    {
+     "name": "streamlit",
+     "last_vulnerable": "1.36.0",
+     "fixed": "1.37.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/streamlit/streamlit/commit/3a639859cfdfba2187c81897d44a3e33825eb0a3"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-v359-jj2v-j536",
+   "identifiers": [
+    "CVE-2026-25960",
+    "GHSA-v359-jj2v-j536",
+    "PYSEC-2026-3411"
+   ],
+   "packages": [
+    {
+     "name": "vllm",
+     "last_vulnerable": "0.16.0",
+     "fixed": "0.17.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/vllm-project/vllm/commit/6f3b2047abd4a748e3db4a68543f8221358002c0",
+    "https://github.com/vllm-project/vllm/pull/34743"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-v5mq-3xhg-98m9",
+   "identifiers": [
+    "CVE-2026-104250",
+    "GHSA-v5mq-3xhg-98m9"
+   ],
+   "packages": [
+    {
+     "name": "unstructured",
+     "last_vulnerable": "0.24.0",
+     "fixed": "0.24.1"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/Unstructured-IO/unstructured/commit/cda16b3f2170019be9c6ea5635946fb3eaa2d66f",
+    "https://github.com/Unstructured-IO/unstructured/pull/4394"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-v6g6-3cm3-vf6c",
+   "identifiers": [
+    "CVE-2024-45850",
+    "GHSA-v6g6-3cm3-vf6c",
+    "PYSEC-2024-80"
+   ],
+   "packages": [
+    {
+     "name": "mindsdb",
+     "last_vulnerable": "24.7.4.0",
+     "fixed": "24.7.4.1"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/mindsdb/mindsdb/commit/11a4db792ad36cf704f7307c7602128b17752c80"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-v9w6-9hq9-33ch",
+   "identifiers": [
+    "CVE-2025-6773",
+    "GHSA-v9w6-9hq9-33ch",
+    "PYSEC-2026-1539"
+   ],
+   "packages": [
+    {
+     "name": "lightrag-hku",
+     "last_vulnerable": "1.3.7",
+     "fixed": "1.3.8"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/HKUDS/LightRAG/commit/60777d535b719631680bcf5d0969bdef79ca4eaf"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-vfgx-5q85-58q3",
+   "identifiers": [
+    "CVE-2026-74874",
+    "GHSA-vfgx-5q85-58q3",
+    "PYSEC-2026-3754"
+   ],
+   "packages": [
+    {
+     "name": "openssl-encrypt",
+     "last_vulnerable": "1.4.0b8",
+     "fixed": "1.4.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/jahlives/openssl_encrypt/commit/09e96e090417d34d2f533f6810d3cd4f77810101"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-vq76-rxx3-4r4r",
+   "identifiers": [
+    "CVE-2017-17051",
+    "GHSA-vq76-rxx3-4r4r",
+    "PYSEC-2026-692"
+   ],
+   "packages": [
+    {
+     "name": "nova",
+     "last_vulnerable": "15.1.5",
+     "fixed": "16.0.4"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/openstack/nova/commit/25a1d78e83065c5bea5d8e0a017fd9d0914d41d9",
+    "https://github.com/openstack/nova/commit/fed660c1189fdf4159d97badfdc8c5b35ad14f23"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-w7h9-8wr4-hwqh",
+   "identifiers": [
+    "CVE-2012-2144",
+    "GHSA-w7h9-8wr4-hwqh"
+   ],
+   "packages": [
+    {
+     "name": "horizon",
+     "last_vulnerable": null,
+     "fixed": "8.0.0a0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/openstack/horizon/commit/041b1c44c7d6cf5429505067c32f8f35166a8bab"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-w9h2-px87-74vx",
+   "identifiers": [
+    "CVE-2024-21649",
+    "GHSA-w9h2-px87-74vx",
+    "PYSEC-2024-30"
+   ],
+   "packages": [
+    {
+     "name": "vantage6",
+     "last_vulnerable": "4.2.0rc2",
+     "fixed": "4.2.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/vantage6/vantage6/commit/eac19db737145d3ca987adf037a454fae0790ddd"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-wcjw-3v6p-4v3r",
+   "identifiers": [
+    "CVE-2024-45846",
+    "GHSA-wcjw-3v6p-4v3r",
+    "PYSEC-2024-77"
+   ],
+   "packages": [
+    {
+     "name": "mindsdb",
+     "last_vulnerable": "24.7.4.0",
+     "fixed": "24.7.4.1"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/mindsdb/mindsdb/commit/11a4db792ad36cf704f7307c7602128b17752c80"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-whvh-wf3x-g77j",
+   "identifiers": [
+    "BIT-jupyterlab-2026-73626",
+    "CVE-2026-73626",
+    "GHSA-whvh-wf3x-g77j"
+   ],
+   "packages": [
+    {
+     "name": "jupyterlab",
+     "last_vulnerable": "4.6.1",
+     "fixed": "4.6.2"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/jupyterlab/jupyterlab/commit/be9303f5bcd5308eaeae953c5a3c903046682c2c",
+    "https://github.com/jupyterlab/jupyterlab/commit/f1beab4a2027af4719d6edc07d52d6cf5a39a432",
+    "https://github.com/jupyterlab/jupyterlab/pull/19184",
+    "https://github.com/jupyterlab/jupyterlab/pull/19185",
+    "https://github.com/jupyterlab/jupyterlab/pull/19186"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-x8c6-gj59-6rx8",
+   "identifiers": [
+    "CVE-2025-29606",
+    "GHSA-x8c6-gj59-6rx8",
+    "PYSEC-2026-1536"
+   ],
+   "packages": [
+    {
+     "name": "libp2p",
+     "last_vulnerable": "0.2.2",
+     "fixed": "0.2.3"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/libp2p/py-libp2p/commit/e150d3153af30530ce61d751bc166e099f1ead7a",
+    "https://github.com/libp2p/py-libp2p/compare/v0.2.2...v0.2.3",
+    "https://github.com/libp2p/py-libp2p/pull/531/files"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-xgh8-jp6q-p5x8",
+   "identifiers": [
+    "BIT-pillow-2026-112901",
+    "CVE-2026-112901",
+    "GHSA-xgh8-jp6q-p5x8",
+    "PYSEC-2026-4335"
+   ],
+   "packages": [
+    {
+     "name": "pillow",
+     "last_vulnerable": "12.3.0",
+     "fixed": "13.0.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/python-pillow/Pillow/commit/2852a3e3d568997ddec745fc800991f138878f4b"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "GHSA-xj96-63gp-2gmr",
+   "identifiers": [
+    "BIT-pillow-2026-59197",
+    "CVE-2026-59197",
+    "GHSA-xj96-63gp-2gmr",
+    "PYSEC-2026-3454"
+   ],
+   "packages": [
+    {
+     "name": "pillow",
+     "last_vulnerable": "12.2.0",
+     "fixed": "12.3.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/python-pillow/Pillow/commit/cce3bdb867c77a3420261ed1bfdb6b0787ec8fc1",
+    "https://github.com/python-pillow/Pillow/pull/9695"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "PYSEC-2026-3713",
+   "identifiers": [
+    "CVE-2026-68872",
+    "PYSEC-2026-3713"
+   ],
+   "packages": [
+    {
+     "name": "apache-airflow-providers-amazon",
+     "last_vulnerable": "9.34.0rc2",
+     "fixed": "9.34.0"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/apache/airflow/pull/70878"
+   ],
+   "upstream": false
+  },
+  {
+   "advisory": "PYSEC-2026-4009",
+   "identifiers": [
+    "GHSA-22mg-8gw7-636x",
+    "PYSEC-2026-4009"
+   ],
+   "packages": [
+    {
+     "name": "local-operator",
+     "last_vulnerable": "0.47.4",
+     "fixed": "0.47.5"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/damianvtran/local-operator/commit/29fc4c68a3ed1d238b8abf6b6a6136a3361416a5",
+    "https://github.com/damianvtran/local-operator/pull/643"
+   ],
+   "upstream": true
+  },
+  {
+   "advisory": "PYSEC-2026-4010",
+   "identifiers": [
+    "GHSA-3xjw-9qpc-53mh",
+    "PYSEC-2026-4010"
+   ],
+   "packages": [
+    {
+     "name": "local-operator",
+     "last_vulnerable": "0.47.4",
+     "fixed": "0.47.5"
+    }
+   ],
+   "fix_links": [
+    "https://github.com/damianvtran/local-operator/commit/29fc4c68a3ed1d238b8abf6b6a6136a3361416a5",
+    "https://github.com/damianvtran/local-operator/pull/643"
+   ],
+   "upstream": true
+  }
+ ]
+}

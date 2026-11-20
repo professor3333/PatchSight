@@ -173,3 +173,40 @@ def test_systems_are_scored_strictly_and_on_a_dotted_boundary() -> None:
     assert extractor.lenient.recall == 1.0  # ...but matches on a dotted boundary
     assert (changed.strict.true_positives, changed.strict.false_positives) == (1, 1)
     assert changed.lenient.miss_rate == 0.5  # B has no prediction at all
+
+
+def test_the_commands_check_a_round_and_measure_agreement(tmp_path: Path) -> None:
+    from typer.testing import CliRunner
+
+    from patchsight.pipeline.__main__ import app
+
+    directory = tmp_path / gold.DIRECTORY
+    directory.mkdir(parents=True)
+    sample = _sample()
+    (tmp_path / gold.SAMPLE).write_text(sample.model_dump_json())
+    (directory / "round1.toml").write_text(gold.stub_round(sample, 1))
+    runner = CliRunner()
+    todo = runner.invoke(app, ["gold-check", "--round", "1", "--root", str(tmp_path)])
+    assert todo.exit_code == 1
+    assert "round 1: {'todo': 2}" in todo.output
+    for round_, symbols in ((1, '["pkg.core:load"]'), (2, '["pkg.core:load", "pkg:x"]')):
+        text = gold.stub_round(sample, round_).replace("symbols = []", f"symbols = {symbols}")
+        (directory / f"round{round_}.toml").write_text(text.replace('"todo"', '"labelled"'))
+    done = runner.invoke(app, ["gold-check", "--round", "2", "--root", str(tmp_path)])
+    assert done.exit_code == 0, done.output
+    (tmp_path / "docs" / "reports").mkdir(parents=True)
+    measured = runner.invoke(app, ["gold-agreement", "--root", str(tmp_path)])
+    assert measured.exit_code == 0, measured.output
+    assert "2 entries in both rounds: exact match 0.0%, mean Jaccard 0.500; 2 to resolve" in (
+        measured.output
+    )
+    report = (tmp_path / "docs" / "reports" / f"{gold.NAME}-agreement.md").read_text()
+    assert "**Exact match:** 0.0%" in report
+
+
+def test_the_scores_report_names_each_system() -> None:
+    labels = [_label("A", 1, "pkg:load")]
+    scores = gold.score_against(labels, {"Extractor alone": {"A/pkg": {"pkg.load"}}}, 50)
+    text = gold.render_scores(scores, labelled=1, unresolved=2)
+    assert "| Extractor alone | 1.000 | 1.000 | 1.000" in text
+    assert "still unresolved and not scored: 2" in text

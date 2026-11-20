@@ -2230,6 +2230,88 @@ def gold_sample_command(
     )
 
 
+def _gold_round(root: Path, round_: int) -> Path:
+    from patchsight.pipeline.benchmarks import python_gold as gold
+
+    return root / gold.DIRECTORY / f"round{round_}.toml"
+
+
+@app.command("gold-check")
+def gold_check_command(
+    round_: Annotated[int, typer.Option("--round", help="1, 2, or 3 for resolutions.")] = 1,
+    root: Root = Path(),
+) -> None:
+    """Show a round's progress and every problem in it; exit 1 while any remains."""
+    from patchsight.pipeline.benchmarks import python_gold as gold
+
+    sample = gold.Sample.model_validate_json((root / gold.SAMPLE).read_text("utf-8"))
+    labels = gold.load_labels(_gold_round(root, round_))
+    done = Counter(label.status for label in labels)
+    typer.echo(f"round {round_}: {dict(sorted(done.items()))}")
+    problems = gold.check_labels(labels, sample, round_)
+    if round_ == 3:  # resolutions cover the disagreements only
+        problems = [p for p in problems if not p.endswith(": missing")]
+    for problem in problems:
+        typer.echo(f"  {problem}")
+    if problems:
+        raise typer.Exit(code=1)
+
+
+@app.command("gold-agreement")
+def gold_agreement_command(root: Root = Path()) -> None:
+    """Self-agreement between rounds 1 and 2, written to docs/reports."""
+    from patchsight.pipeline.benchmarks import python_gold as gold
+
+    result = gold.agreement(gold.load_labels(_gold_round(root, 1)),
+                            gold.load_labels(_gold_round(root, 2)))  # fmt: skip
+    target = root / "docs" / "reports" / f"{gold.NAME}-agreement"
+    target.with_suffix(".md").write_text(gold.render_agreement(result), "utf-8")
+    target.with_suffix(".json").write_text(result.model_dump_json(indent=2) + "\n", "utf-8")
+    typer.echo(
+        f"{result.compared} entries in both rounds: exact match {result.exact_match:.1%}, "
+        f"mean Jaccard {result.mean_jaccard:.3f}; {len(result.disagreements)} to resolve"
+    )
+
+
+@app.command("gold-eval")
+def gold_eval_command(
+    extractions: Annotated[list[Path], typer.Argument(help="pypi-extract outcome files.")],
+    database: Annotated[Path, typer.Option("--db", help="The published database to score.")],
+    root: Root = Path(),
+) -> None:
+    """Score the extractor and the published records against the final gold labels."""
+    from patchsight.pipeline import llm_records
+    from patchsight.pipeline.benchmarks import python_gold as gold
+
+    third = _gold_round(root, 3)
+    final, unresolved = gold.final_labels(
+        gold.load_labels(_gold_round(root, 1)), gold.load_labels(_gold_round(root, 2)),
+        gold.load_labels(third) if third.exists() else [],
+    )  # fmt: skip
+    extractor: dict[str, set[str]] = {}
+    for source in extractions:
+        for key, run in llm_records.load(root / source).items():
+            for package in run.packages:
+                extractor[f"{key}/{package}"] = {s.qualified_name for s in run.vulnerable_symbols}
+    published: dict[str, set[str]] = {}
+    for record in db.SymbolDatabase(database).all_records():
+        published[f"{record.vulnerability}/{record.package}"] = {
+            s.qualified_name for s in record.symbols
+        } | set(record.entry_points)
+    scores = gold.score_against(final, {"Extractor alone": extractor,
+                                        "Published records": published})  # fmt: skip
+    labelled = sum(label.status == "labelled" for label in final)
+    target = root / "docs" / "reports" / f"{gold.NAME}-eval"
+    target.with_suffix(".md").write_text(
+        gold.render_scores(scores, labelled, len(unresolved)), "utf-8"
+    )
+    target.with_suffix(".json").write_text(
+        json.dumps([s.model_dump(mode="json") for s in scores], indent=2) + "\n", "utf-8"
+    )
+    for s in scores:
+        typer.echo(f"{s.system}: F1 {s.strict.f1:.3f}, lenient recall {s.lenient.recall:.3f}")
+
+
 @app.command("regression-freeze")
 def regression_freeze_command(
     sources: Annotated[list[Path], typer.Argument(help="pypi-extract outcome files (JSONL).")],

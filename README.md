@@ -96,6 +96,7 @@ patchsight scan .                     # scan the lockfile and the code under .
 patchsight scan . --lockfile requirements/prod.txt        # a specific lockfile
 patchsight scan . --format json                           # machine-readable output
 patchsight scan . --format sarif > patchsight.sarif       # SARIF 2.1.0, for code scanning
+patchsight scan . --format markdown > patchsight.md       # every alert, for a PR comment or job summary
 patchsight scan . --fail-on called                        # exit 1 if any alert is CALLED (CI gate)
 patchsight explain GHSA-87cj-px37-rc3x                    # why these symbols, with evidence
 patchsight report GHSA-87cj-px37-rc3x                     # draft an issue if the symbols look wrong
@@ -127,7 +128,7 @@ UNKNOWN (no symbol data, low confidence, or dynamic use)  8
 
 ## In CI: the GitHub Action
 
-The action installs PatchSight in its own environment, downloads the database, scans, writes a verdict table to the job summary and uploads a SARIF report to GitHub code scanning. CALLED alerts appear as errors at the line that references the vulnerable code; the rest appear as warnings or notes on the lockfile.
+The action installs PatchSight in its own environment, downloads the database, scans, writes the full report to the job summary and uploads a SARIF report to GitHub code scanning. CALLED alerts appear as errors at the line that references the vulnerable code; the rest appear as warnings or notes on the lockfile. With `comment: "true"`, a pull request also gets the report as one comment, updated on each push.
 
 ```yaml
 # .github/workflows/patchsight.yml
@@ -136,14 +137,16 @@ on: [push, pull_request]
 permissions:
   contents: read
   security-events: write   # to upload the SARIF report to code scanning
+  pull-requests: write     # only with comment: "true"
 jobs:
   scan:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: professor3333/PatchSight@v0.7.0
+      - uses: professor3333/PatchSight@v0.8.0
         with:
           fail-on: called   # fail the job if any alert is CALLED
+          comment: "true"   # keep one pull-request comment up to date
 ```
 
 | Input | Default | What it does |
@@ -153,8 +156,10 @@ jobs:
 | `fail-on` | `never` | `called`, or `unknown` (unknown or called) |
 | `sarif-file` | `patchsight.sarif` | Where to write the report |
 | `upload-sarif` | `true` | Upload to code scanning; set `false` to keep the file only |
+| `comment` | `false` | On a pull request, post the report as a comment and update it on later pushes. A pull request from a fork gets a read-only token, so there it only warns |
+| `github-token` | the job's token | Token for the comment |
 
-Outputs: `sarif-file`, `alerts`, `called` and `unknown`.
+Outputs: `sarif-file`, `report-file` (the markdown report), `alerts`, `called` and `unknown`.
 
 ## Reading the verdicts
 
@@ -247,7 +252,7 @@ The offline pipeline is `python -m patchsight.pipeline <command>`.
 - [x] Regression suite: 50 PyPI vulnerabilities whose recorded answers are replayed through the live code in CI, with the output pinned ([set](benchmarks/pypi-regression-v1/README.md))
 - [x] Tracing of every model run, and an operations dashboard: Kaggle sessions, quota against each daily cap, and what the database holds ([report](docs/reports/operations.md))
 - [x] **On PyPI:** [`pip install patchsight`](https://pypi.org/project/patchsight/), published from CI with Trusted Publishing and a required approval
-- [x] **SARIF output and a GitHub Action** (`professor3333/PatchSight@v0.7.0`), with a [smoke test](.github/workflows/action-smoke.yml) on every change
+- [x] **SARIF output and a GitHub Action, with a pull-request comment** (`professor3333/PatchSight@v0.8.0`), with a [smoke test](.github/workflows/action-smoke.yml) on every change
 - [ ] OpenVEX output and a pull-request comment
 
 > [!WARNING]

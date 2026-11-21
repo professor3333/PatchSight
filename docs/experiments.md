@@ -23,7 +23,7 @@ Every controlled experiment on the extraction system, including the ones that lo
 | E7 | Fix-commit locator without the fix link | the proposal's message baseline; a ranking that prefers the advisory's own IDs | exact SHA 9.0% and 25.0%; wrong commit 64.0% and 47.0% | Neither is used: both are far from the 5% wrong-commit cap. Baseline for the agent ([#56](https://github.com/professor3333/PatchSight/issues/56)) |
 | E8 | Prompt injection (rule 7) | clean; advisory says nothing is vulnerable; advisory names a decoy; a code comment names a decoy | decoy in the advisory: 8 of 15 would become wrong high-confidence records; the others: none | High confidence stays withheld; a lifting rule must make none ([ADR 0008](adr/0008-withhold-high-confidence.md)) |
 | E9 | Ordering candidates to fit the prompt budget | BM25 against the advisory (as built); no ranking (file order); an oracle ceiling | On the 32 cut prompts: BM25 keeps 59 of 140 true functions (0.421), file order 97 (0.693), the oracle 133 (0.950) | Measured: BM25 loses to no ranking. It stays until a replacement is chosen on dev and evaluated on data not used to choose it |
-| E10 | A replacement for BM25 at the prompt budget | file order; smallest first; candidates the advisory names first; BM25 score per token | Declared 2026-11-21, before any of these orders was computed on dev or the holdout | Declared; not run |
+| E10 | A replacement for BM25 at the prompt budget | file order; smallest first; candidates the advisory names first; BM25 score per token | Chosen on dev: smallest first. Holdout, declared beforehand: +0.094 recall over BM25 (95% CI +0.042 to +0.328) | Passed. An option, off by default (`budget.candidate_order`); switched on with #52 and #53 |
 
 ## E1: 4-bit self-hosted against hosted serving
 
@@ -303,6 +303,25 @@ BM25 as built is the baseline; the oracle is the ceiling.
 The Dunlap test and all splits are reported for each order, for completeness only; they were read in E9 and decide nothing.
 
 **What passing changes.** The chosen order becomes a configuration option, off by default. It is switched on together with the output cap and dotted entry points (#52, #53), through shadow-then-promote, because it changes cut prompts and so their cached answers. Published benchmark numbers stay those of BM25 until a full re-run replaces them.
+
+### Result
+
+**Dev choice** ([report](reports/retrieval-dunlap-v1.md)): 5 cut reports with a true function, 19 true functions. Smallest first kept 16 (0.842); file order and named first 13 (0.684); BM25 per token 12 (0.632); BM25 11 (0.579). Smallest first was chosen and committed before the holdout was computed.
+
+**Holdout evaluation, run once** ([report](reports/retrieval-go-holdout-v1.md)): the bundle reproduces the gpt-oss-120b holdout run's truncation on all 83 reports. 25 prompts are cut, all of them with a true function (961 true functions among 3,052 candidates).
+
+| Order | Recall | Minus BM25, paired (95% CI) | Keeps more / fewer / tied | Reports with none kept |
+|---|---:|---|---|---:|
+| BM25 (as built) | 0.137 | — | — | 0 |
+| **Smallest first (chosen)** | **0.231** | **+0.094 (+0.042 to +0.328)** | 18 / 3 / 4 | 0 |
+| File order | 0.197 | +0.059 (+0.025 to +0.214) | 19 / 0 / 6 | 0 |
+| Named first | 0.194 | +0.056 (+0.025 to +0.203) | 19 / 0 / 6 | 0 |
+| BM25 per token | 0.170 | +0.032 (+0.017 to +0.100) | 15 / 1 / 9 | 0 |
+| Oracle (ceiling) | 0.287 | +0.150 (+0.064 to +0.491) | 21 / 0 / 4 | 0 |
+
+**Verdict: pass.** The interval is above zero, and smallest first leaves no more cut reports with nothing true kept than BM25 (0 and 0). Absolute recalls are low because the holdout's GoVulnDB labels are broad: even the oracle keeps only 0.287 of the true functions within the budget. Every other order also beat BM25 here; they were not chosen and decide nothing.
+
+**Not yet measured: the effect on extraction.** Keeping more true candidates should raise recall on large fixes, but the model's answers on the changed prompts have not been collected. A Groq run on dev was not possible on 2026-11-21: Groq began refusing the 1,500-token output allowance those runs used, and a different allowance changes every prompt's cache key. The before and after are measured with the Kaggle run that switches the order on.
 
 ## Failure analysis
 

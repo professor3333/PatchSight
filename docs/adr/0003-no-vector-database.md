@@ -36,3 +36,5 @@ Add an embedding ranker only if a measurement shows BM25 losing recall. The meas
 The measurement above was run on the Dunlap benchmark ([E9](../experiments.md#e9-ordering-candidates-to-fit-the-prompt-budget), [report](../reports/retrieval-dunlap-v1.md)). On the 32 of 280 prompts that are cut, BM25 keeps 0.421 of the true vulnerable functions among the candidates, against 0.693 with no ranking at all (paired difference −0.271, 95% CI −0.405 to −0.109) and 0.950 for an oracle order.
 
 So BM25 loses recall, but to no ranking, not to a missing embedding model. The decision stands: no vector database and no embeddings. The ranker itself is the next thing to change, chosen on dev and evaluated on data not used to choose it.
+
+A replacement was then chosen on dev and evaluated once on the Go temporal holdout ([E10](../experiments.md#e10-a-replacement-for-bm25-at-the-prompt-budget-declared-before-measuring)): keeping the smallest candidates first beat BM25 by +0.094 recall (95% CI +0.042 to +0.328). It needs no embeddings either. It is the configuration option `budget.candidate_order`, off by default until it is switched on through shadow-then-promote.

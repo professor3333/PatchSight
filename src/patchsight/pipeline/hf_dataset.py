@@ -221,6 +221,24 @@ def describe_token(whoami: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+def describe_error(error: Exception) -> str:
+    """An HTTP error from the Hub as status and message, with anything shaped like a token
+    redacted, so a refused token and a rate limit can be told apart in a public log."""
+    import re
+
+    response = getattr(error, "response", None)
+    status = getattr(response, "status_code", None)
+    text = ""
+    if response is not None:
+        try:
+            body = response.json()
+            text = str(body.get("error") or body) if isinstance(body, dict) else str(body)
+        except Exception:  # not JSON: keep the start of the text
+            text = str(getattr(response, "text", ""))
+    text = re.sub(r"hf_[A-Za-z0-9]{8,}", "hf_[redacted]", text or str(error))
+    return f"{type(error).__name__}, HTTP {status}: {text.strip()[:300]}"
+
+
 def publish(hub: Hub, folder: Path, summary: Published, repo: str = REPO) -> bool:
     """Upload the folder as one commit and tag it. False, with nothing uploaded, when the tag
     already exists: a published version is never replaced."""

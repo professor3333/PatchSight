@@ -2217,16 +2217,18 @@ def hf_publish_command(
     api = HfApi(token=token)
     try:
         published = hf_dataset.publish(api, root / out, summary, target)
-    except RepositoryNotFoundError:
+    except RepositoryNotFoundError as missing:
         # Hugging Face says "not found" both for a missing repository and for one the token
         # may not see, so say what the token may do (never the token itself).
-        typer.echo(f"Hugging Face cannot find dataset {target} with this token.", err=True)
+        typer.echo(
+            f"Hugging Face cannot find dataset {target} with this token "
+            f"({hf_dataset.describe_error(missing)}).",
+            err=True,
+        )
         try:
             typer.echo(hf_dataset.describe_token(api.whoami()), err=True)
         except Exception as error:  # a diagnosis only: any failure is reported
-            typer.echo(
-                f"whoami failed too ({type(error).__name__}): the token itself is refused", err=True
-            )
+            typer.echo(f"whoami failed too: {hf_dataset.describe_error(error)}", err=True)
         raise typer.Exit(code=1) from None
     if published:
         typer.echo(f"published {summary.tag} to https://huggingface.co/datasets/{target}")

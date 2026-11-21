@@ -124,3 +124,18 @@ def test_a_token_is_described_by_its_scope_and_never_shown() -> None:
     ]
     bare = {"name": "owner", "auth": {"accessToken": {"displayName": "t", "role": "fineGrained"}}}
     assert hf_dataset.describe_token(bare).endswith("scoped to no repository")
+
+
+def test_an_hub_error_is_described_without_any_token() -> None:
+    class _Response:
+        status_code = 401
+
+        def json(self) -> dict[str, str]:
+            return {"error": "Invalid credentials in Authorization header hf_abcdefghijklmnop"}
+
+    error = RuntimeError("refused")
+    error.response = _Response()  # type: ignore[attr-defined]
+    text = hf_dataset.describe_error(error)
+    assert (
+        text == "RuntimeError, HTTP 401: Invalid credentials in Authorization header hf_[redacted]"
+    )

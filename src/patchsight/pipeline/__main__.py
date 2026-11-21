@@ -2634,6 +2634,7 @@ def package_db_command(
     import gzip
     import shutil
 
+    database = root / database  # like every other command; an absolute path is kept
     opened = db.SymbolDatabase(database)
     meta = dict(opened.meta)
     records = opened.record_count()

@@ -122,6 +122,10 @@ def test_package_db_is_deterministic(tmp_path: Path) -> None:
         )
         hashes.append(pointer["sha256"])
     assert hashes[0] == hashes[1]
+    # A relative path is read against --root, as in every other pipeline command.
+    relative = runner.invoke(pipeline_app, ["package-db", "built.sqlite", "--root", str(tmp_path)])
+    assert relative.exit_code == 0, relative.output
+    assert json.loads((tmp_path / "releases" / "latest.json").read_text())["sha256"] == hashes[0]
 
 
 def test_pointer_falls_back_only_when_the_first_is_not_found(tmp_path: Path) -> None:

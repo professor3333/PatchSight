@@ -1,4 +1,4 @@
-# --- Source snapshots and raw data (re-downloadable; DVC versions what must be kept) ---
+# --- Source snapshots and raw data (re-downloadable from manifests/snapshot.json) ---
 data/raw/
 data/interim/
 data/processed/
@@ -46,10 +46,6 @@ site/dist/
 .env.*
 !.env.example
 .venv/
-
-# --- DVC internals ---
-.dvc/cache/
-.dvc/tmp/
 
 # --- Python ---
 __pycache__/

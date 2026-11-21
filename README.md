@@ -229,6 +229,7 @@ The offline pipeline is `python -m patchsight.pipeline <command>`.
 | `reachability-report` | Score the reachability fixtures, with labelled records or a published database |
 | `panel-report` | Scan the 20-project panel: symbol-data coverage, verdicts and scan time |
 | `regression-freeze`, `regression-check` | Freeze the PyPI regression set from finished runs, and replay it offline |
+| `eval-sets` | Check every frozen evaluation set against its SHA-256 pin |
 | `operations-report` | The operations dashboard, from run traces, usage ledgers and a database |
 | `update-db`, `gate-db`, `release-notes` | The nightly: rebuild only what changed, run the release gate, write the notes |
 | `pypi-extract`, `merge-llm` | LLM extraction for PyPI advisories, and merging it into a published database |

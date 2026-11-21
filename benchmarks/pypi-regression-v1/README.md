@@ -26,8 +26,9 @@ the one repaired answer, 8 truncated prompts, 10 answers with entry points, 6 fi
 several packages or commits, and 20 ordinary answers.
 
 No source code is included. The file's SHA-256 is pinned in
-`src/patchsight/pipeline/benchmarks/pypi_regression.py`: re-freezing changes it on purpose, in a
-commit that says why.
+`src/patchsight/pipeline/benchmarks/pypi_regression.py` and in `manifests/eval-sets.json`:
+re-freezing changes both on purpose (`eval-sets --repin pypi-regression-v1`), in a commit that
+says why.
 
 ## What it does not check
 

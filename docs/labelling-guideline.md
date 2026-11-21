@@ -58,7 +58,7 @@ The sample is frozen in `annotations/python-gold-v1/sample.json`: 120 advisories
 4. **Resolution:** `gold-round --round 3` writes stubs for the disagreements only. Settle each one there, saying why in the note.
 5. **Scoring:** `gold-eval <pypi-extract outcomes> --db <database>` scores the extractor and the published records against the final labels.
 
-Each round's file goes in through its own pull request.
+Each round's file goes in through its own pull request. Once a round is complete, the same pull request pins it in `manifests/eval-sets.json` (`eval-sets --repin`, or a new entry for a new file), so it cannot change afterwards without the change being seen ([ADR 0014](adr/0014-evaluation-sets-pinned-in-git.md)).
 
 ## Rules that protect the labels
 

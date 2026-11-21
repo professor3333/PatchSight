@@ -234,6 +234,7 @@ The offline pipeline is `python -m patchsight.pipeline <command>`.
 | `update-db`, `gate-db`, `release-notes` | The nightly: rebuild only what changed, run the release gate, write the notes |
 | `pypi-extract`, `merge-llm` | LLM extraction for PyPI advisories, and merging it into a published database |
 | `export-kaggle-inputs`, `restore-kaggle-inputs`, `import-kaggle-run` | Move the backfill's inputs to Kaggle and its answers back |
+| `hf-publish` | Publish a release to the Hugging Face dataset, tagged like its GitHub release |
 
 </details>
 
@@ -265,6 +266,7 @@ The offline pipeline is `python -m patchsight.pipeline <command>`.
 
 - **Every night**, [`nightly.yml`](.github/workflows/nightly.yml) snapshots OSV, rebuilds only the advisories whose extraction inputs changed, and runs a [release gate](src/patchsight/pipeline/gate.py) against the previous release.
 - **A passing build** becomes a dated, immutable release (`db-YYYY.MM.DD`), and the pointer `latest.json` on the [`db-pointer`](https://github.com/professor3333/PatchSight/tree/db-pointer) branch moves to it. `patchsight db update` follows that pointer and verifies the download's SHA-256.
+- **The same version goes to Hugging Face** as the dataset [`professor3333/patchsight`](https://huggingface.co/datasets/professor3333/patchsight), tagged like its GitHub release, with the records as JSONL (from `db-2026.11.21.1` on).
 - **A failing build** publishes nothing and opens an issue. A deliberately damaged build was blocked in a [recorded rehearsal](docs/reports/gate-rehearsal-2026-11-18.md).
 - **Rollback** is one commit: revert the pointer move on `db-pointer`. Releases are never deleted. In a [timed rehearsal](docs/reports/rollback-rehearsal-2026-11-18.md), users' `db update` followed within 5 minutes.
 

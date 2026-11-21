@@ -1,6 +1,6 @@
 # Dataset card: PatchSight symbol database
 
-A versioned SQLite database that maps PyPI security advisories to the functions, methods and classes their fix commits changed, and, where a language model has read the fix, to the ones it judged vulnerable. `patchsight scan` joins it with your lockfile and your code. It is built offline and published as [GitHub Releases](https://github.com/professor3333/PatchSight/releases) tagged `db-*`.
+A versioned SQLite database that maps PyPI security advisories to the functions, methods and classes their fix commits changed, and, where a language model has read the fix, to the ones it judged vulnerable. `patchsight scan` joins it with your lockfile and your code. It is built offline and published as [GitHub Releases](https://github.com/professor3333/PatchSight/releases) tagged `db-*` and, from `db-2026.11.21.1` on, as the same tagged versions of the Hugging Face dataset [`professor3333/patchsight`](https://huggingface.co/datasets/professor3333/patchsight), where the records are also JSONL.
 
 ```bash
 patchsight db update   # follows the release pointer, verifies SHA-256 and schema version

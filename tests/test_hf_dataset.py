@@ -109,3 +109,18 @@ def test_the_command_checks_the_asset_against_its_release(tmp_path: Path) -> Non
     no_token = runner.invoke(app, [*base, "--expect-sha256", sha], env={"HF_TOKEN": ""})
     assert no_token.exit_code == 2
     assert "set HF_TOKEN" in no_token.output
+
+
+def test_a_token_is_described_by_its_scope_and_never_shown() -> None:
+    whoami = {"name": "owner", "auth": {"accessToken": {
+        "displayName": "patchsight-actions", "role": "fineGrained",
+        "fineGrained": {"scoped": [{"entity": {"type": "model", "name": "owner/other"},
+                                    "permissions": ["repo.write", "repo.content.read"]}]},
+    }}}  # fmt: skip
+    text = hf_dataset.describe_token(whoami)
+    assert text.splitlines() == [
+        "account: owner; token: patchsight-actions (fineGrained)",
+        "  scoped to model owner/other: repo.content.read, repo.write",
+    ]
+    bare = {"name": "owner", "auth": {"accessToken": {"displayName": "t", "role": "fineGrained"}}}
+    assert hf_dataset.describe_token(bare).endswith("scoped to no repository")

@@ -202,6 +202,25 @@ class Hub(Protocol):
     ) -> None: ...
 
 
+def describe_token(whoami: dict[str, Any]) -> str:
+    """What a token may do, from ``whoami``: its account, its type and, for a fine-grained
+    token, the repositories it is scoped to. Never the token itself."""
+    token = (whoami.get("auth") or {}).get("accessToken") or {}
+    lines = [
+        f"account: {whoami.get('name', '?')}; token: {token.get('displayName', '?')} "
+        f"({token.get('role', '?')})"
+    ]
+    for scope in (token.get("fineGrained") or {}).get("scoped") or []:
+        entity = scope.get("entity") or {}
+        permissions = ", ".join(sorted(scope.get("permissions") or [])) or "none"
+        lines.append(
+            f"  scoped to {entity.get('type', '?')} {entity.get('name', '?')}: {permissions}"
+        )
+    if len(lines) == 1 and token.get("role") == "fineGrained":
+        lines.append("  scoped to no repository")
+    return "\n".join(lines)
+
+
 def publish(hub: Hub, folder: Path, summary: Published, repo: str = REPO) -> bool:
     """Upload the folder as one commit and tag it. False, with nothing uploaded, when the tag
     already exists: a published version is never replaced."""

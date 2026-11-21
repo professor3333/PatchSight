@@ -2211,9 +2211,24 @@ def hf_publish_command(
     if not token:
         raise typer.BadParameter("set HF_TOKEN to publish (or pass --dry-run)")
     from huggingface_hub import HfApi
+    from huggingface_hub.errors import RepositoryNotFoundError
 
     target = repo or hf_dataset.REPO
-    if hf_dataset.publish(HfApi(token=token), root / out, summary, target):
+    api = HfApi(token=token)
+    try:
+        published = hf_dataset.publish(api, root / out, summary, target)
+    except RepositoryNotFoundError:
+        # Hugging Face says "not found" both for a missing repository and for one the token
+        # may not see, so say what the token may do (never the token itself).
+        typer.echo(f"Hugging Face cannot find dataset {target} with this token.", err=True)
+        try:
+            typer.echo(hf_dataset.describe_token(api.whoami()), err=True)
+        except Exception as error:  # a diagnosis only: any failure is reported
+            typer.echo(
+                f"whoami failed too ({type(error).__name__}): the token itself is refused", err=True
+            )
+        raise typer.Exit(code=1) from None
+    if published:
         typer.echo(f"published {summary.tag} to https://huggingface.co/datasets/{target}")
     else:
         typer.echo(f"{summary.tag} is already on {target}; it is not published again")

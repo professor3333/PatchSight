@@ -1,0 +1,62 @@
+name: hf-publish
+
+# Publish one existing database release to the Hugging Face dataset (by hand). The nightly
+# does the same for each release it publishes. The asset must match the SHA-256 its GitHub
+# release states, and a version already on Hugging Face is left as it is.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Database release tag, e.g. db-2026.11.21.1"
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hf-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      TAG: ${{ inputs.tag }}
+    steps:
+      - name: Check the tag
+        run: |
+          if ! printf '%s' "$TAG" | grep -Eq '^db-[0-9]{4}\.[0-9]{2}\.[0-9]{2}(\.[0-9]+)?$'; then
+            echo "not a database release tag: $TAG"
+            exit 1
+          fi
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+
+      - name: Install
+        run: uv sync --locked --all-extras
+
+      - name: Download the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" \
+            --pattern "patchsight-db-${TAG#db-}.sqlite.gz" --dir "$RUNNER_TEMP/release"
+          gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json body -q .body \
+            | grep -E '^- Asset SHA-256:' | grep -oE '[0-9a-f]{64}' | head -1 \
+            > "$RUNNER_TEMP/release/sha256"
+          test -s "$RUNNER_TEMP/release/sha256"
+
+      - name: Publish to Hugging Face
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: >
+          uv run python -m patchsight.pipeline hf-publish
+          "$RUNNER_TEMP/release/patchsight-db-${TAG#db-}.sqlite.gz" --tag "$TAG"
+          --expect-sha256 "$(cat "$RUNNER_TEMP/release/sha256")"

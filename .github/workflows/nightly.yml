@@ -4,7 +4,8 @@ name: nightly
 # current release incrementally, run the release gate, publish a dated release and move the
 # pointer on the db-pointer branch. With the GROQ_API_KEY secret, the night's changed
 # vulnerabilities, then those still waiting for model picks, are also extracted and their
-# picks merged before the gate (ADR 0013); without it, the run makes no model call.
+# picks merged before the gate (ADR 0013); without it, the run makes no model call. With the
+# HF_TOKEN secret, each published release also goes to the Hugging Face dataset.
 
 on:
   schedule:
@@ -30,6 +31,7 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       GITHUB_TOKEN: ${{ github.token }} # update-db reads public commits with it
       HAS_GROQ: ${{ secrets.GROQ_API_KEY != '' }} # whether to extract (ADR 0013); not the key
+      HAS_HF: ${{ secrets.HF_TOKEN != '' }} # whether to publish to Hugging Face; not the token
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -160,6 +162,18 @@ jobs:
             git push --quiet origin db-pointer
             echo "the pointer now names $TAG"
           fi
+
+      - name: Publish to Hugging Face
+        # The same release as a Hugging Face dataset version, tagged like it; skipped without
+        # the HF_TOKEN secret.
+        if: steps.publish.outputs.published == 'true' && env.HAS_HF == 'true'
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          TAG: ${{ steps.publish.outputs.tag }}
+        run: |
+          sha=$(uv run python -c "import json; print(json.load(open('releases/latest.json'))['sha256'])")
+          uv run python -m patchsight.pipeline hf-publish \
+            "data/build/release/patchsight-db-${TAG#db-}.sqlite.gz" --tag "$TAG" --expect-sha256 "$sha"
 
       - name: Keep the reports
         if: always()

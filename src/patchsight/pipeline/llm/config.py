@@ -33,6 +33,9 @@ class ModelConfig(BaseModel):
     # its own. A request whose output allowance exceeds it is refused outright, so
     # max_output_tokens must fit; the client also paces requests to stay under it.
     output_tokens_per_minute: int | None = None
+    # This role's own output-capacity cap, in place of budget.output_tokens_per_candidate:
+    # a prompt holds at most max_output_tokens // this many candidates.
+    output_tokens_per_candidate: int | None = None
 
     @model_validator(mode="after")
     def _output_fits(self) -> "ModelConfig":
@@ -94,11 +97,13 @@ class LLMConfig(BaseModel):
         return max(0, min(limits))
 
     def candidate_limit(self, role: str) -> int | None:
-        """Most candidates whose answers fit the role's output limit, or None for no limit."""
-        per_candidate = self.budget.output_tokens_per_candidate
+        """Most candidates whose answers fit the role's output limit, or None for no limit.
+        A role's own ``output_tokens_per_candidate`` takes the place of the budget's."""
+        model = self.models[role]
+        per_candidate = model.output_tokens_per_candidate or self.budget.output_tokens_per_candidate
         if per_candidate is None:
             return None
-        return max(1, self.models[role].max_output_tokens // per_candidate)
+        return max(1, model.max_output_tokens // per_candidate)
 
 
 def load_config(path: Path) -> LLMConfig:

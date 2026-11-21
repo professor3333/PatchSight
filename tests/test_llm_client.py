@@ -255,8 +255,13 @@ def test_the_shipped_extractor_fits_groqs_output_limit_with_the_same_prompts() -
     extractor = config.models["extractor"]
     assert extractor.output_tokens_per_minute == 1000  # measured on Groq, 2026-11-21
     assert extractor.max_output_tokens <= extractor.output_tokens_per_minute
-    # Every role keeps the 4,600-token prompt budget, so prompts are the same everywhere.
+    # Every role keeps the 4,600-token prompt budget.
     assert {config.prompt_budget(role) for role in config.models} == {4600}
+    # Only the nightly's Groq extractor is capped, so its answers fit 1,000 tokens; the
+    # Kaggle roles' prompts, and so the backfill and the benchmarks, are unchanged (#52).
+    assert config.candidate_limit("extractor") == 9
+    assert config.candidate_limit("kaggle_extractor") is None
+    assert config.candidate_limit("kaggle_second_opinion") is None
 
 
 def test_candidate_limit_follows_the_output_limit() -> None:
@@ -275,6 +280,11 @@ def test_candidate_limit_follows_the_output_limit() -> None:
         )  # fmt: skip
 
     assert config().candidate_limit("m") is None  # off unless configured
+    role_cap = LLMConfig.model_validate(
+        {**config().model_dump(), "models": {"m": {"provider": "p", "model": "x",
+         "max_output_tokens": 1000, "seed": 1, "output_tokens_per_candidate": 105}}}
+    )  # fmt: skip
+    assert role_cap.candidate_limit("m") == 9  # the role's own cap: 1,000 // 105
     assert config(output_tokens_per_candidate=105).candidate_limit("m") == 14  # 1,500 // 105
     assert config(output_tokens_per_candidate=5000).candidate_limit("m") == 1
 

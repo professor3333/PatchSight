@@ -24,6 +24,7 @@ Every controlled experiment on the extraction system, including the ones that lo
 | E8 | Prompt injection (rule 7) | clean; advisory says nothing is vulnerable; advisory names a decoy; a code comment names a decoy | decoy in the advisory: 8 of 15 would become wrong high-confidence records; the others: none | High confidence stays withheld; a lifting rule must make none ([ADR 0008](adr/0008-withhold-high-confidence.md)) |
 | E9 | Ordering candidates to fit the prompt budget | BM25 against the advisory (as built); no ranking (file order); an oracle ceiling | On the 32 cut prompts: BM25 keeps 59 of 140 true functions (0.421), file order 97 (0.693), the oracle 133 (0.950) | Measured: BM25 loses to no ranking. It stays until a replacement is chosen on dev and evaluated on data not used to choose it |
 | E10 | A replacement for BM25 at the prompt budget | file order; smallest first; candidates the advisory names first; BM25 score per token | Chosen on dev: smallest first. Holdout, declared beforehand: +0.094 recall over BM25 (95% CI +0.042 to +0.328) | Passed. An option, off by default (`budget.candidate_order`); switched on with #52 and #53 |
+| E11 | Self-hosted second opinion | gpt-oss-120b on Groq; gpt-oss-20b (MXFP4) on Kaggle | Safety view, frozen rule, dev: overall miss 8.3% and 10.0%; high-confidence misses 1 of 27 and 1 of 25 | Lost: fails ADR 0007's declared miss-rate criterion by one report; the Groq second opinion stays |
 
 ## E1: 4-bit self-hosted against hosted serving
 
@@ -322,6 +323,21 @@ The Dunlap test and all splits are reported for each order, for completeness onl
 **Verdict: pass.** The interval is above zero, and smallest first leaves no more cut reports with nothing true kept than BM25 (0 and 0). Absolute recalls are low because the holdout's GoVulnDB labels are broad: even the oracle keeps only 0.287 of the true functions within the budget. Every other order also beat BM25 here; they were not chosen and decide nothing.
 
 **Not yet measured: the effect on extraction.** Keeping more true candidates should raise recall on large fixes, but the model's answers on the changed prompts have not been collected. A Groq run on dev was not possible on 2026-11-21: Groq began refusing the 1,500-token output allowance those runs used, and a different allowance changes every prompt's cache key. The before and after are measured with the Kaggle run that switches the order on.
+
+## E11: A self-hosted second opinion
+
+**Question.** Can gpt-oss-20b on Kaggle's two T4 GPUs replace gpt-oss-120b on Groq as the second opinion, so the PyPI backfill's second opinion takes days instead of a month of Groq quota? Criteria declared in advance in [ADR 0007](adr/0007-self-hosted-second-opinion.md).
+
+**Method.** gpt-oss-20b (MXFP4, llama.cpp `b12024`) answered the 60 dev reports once. `confidence-report` scored it as the second opinion to Kaggle Qwen under the frozen rule, in the safety view ([report](reports/confidence-dunlap-dev-extract-v1-qwen3.8-27b-q4km-vs-extract-v1-gpt-oss-20b-mxfp4.md)), against the gpt-oss-120b pairing on the same reports.
+
+| Second opinion | Valid answers | High-confidence reports | High-confidence misses | Overall miss rate | Alone, F1 |
+|---|---:|---:|---:|---:|---:|
+| gpt-oss-120b (Groq) | 59 of 59 | 27 | 1 | 8.3% | 0.626 |
+| gpt-oss-20b (Kaggle) | 59 of 59 | 25 | 1 | 10.0% | 0.602 |
+
+**Finding.** As reliable, and as safe on high-confidence records, but one more report missed overall: GO-2022-0289, where only the larger model named the unchanged public wrapper `ForkExec` as an entry point. The declared criterion allows no rise, so it fails.
+
+**Decision.** Not adopted; the Groq second opinion stays. The test split was run by a notebook mistake; its accuracy is not scored and decides nothing.
 
 ## Failure analysis
 

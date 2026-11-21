@@ -1,6 +1,6 @@
 # ADR 0007: A self-hosted second opinion for the PyPI backfill
 
-- **Status:** proposed. The adoption criteria below are declared before any measurement.
+- **Status:** rejected on 2026-11-21 by its declared dev evaluation (see the result below). The adoption criteria were declared before any measurement.
 - **Date:** 2026-11-17
 
 ## Context
@@ -52,3 +52,19 @@ with the numbers. If any criterion fails, keep the Groq second opinion and recor
   fit in one or two Kaggle sessions.
 - **The pypi mode of the notebook** needs the list of vulnerabilities to check (those where the
   extractor alone could reach high confidence). That path is built only after adoption.
+
+## Result, 2026-11-21: not adopted
+
+The declared run: gpt-oss-20b (`ggml-org/gpt-oss-20b-GGUF@41e8a94d`, MXFP4) on Kaggle, llama.cpp `b12024`, PatchSight `752bbdd`, Dunlap dev split, scored with Kaggle Qwen as the extractor and the frozen rule (`subset` plus a public symbol) in the safety view ([report](../reports/confidence-dunlap-dev-extract-v1-qwen3.8-27b-q4km-vs-extract-v1-gpt-oss-20b-mxfp4.md)).
+
+| Criterion | Required | gpt-oss-120b pairing | gpt-oss-20b pairing | Result |
+|---|---|---|---|---|
+| Valid answers, dev reports with candidates | at least 58 of 59 | 59 of 59 | 59 of 59 | pass |
+| High-confidence misses | at most 1 | 1 of 27 | 1 of 25 | pass |
+| Overall miss rate | at most 8.3% | 8.3% (5 of 60) | 10.0% (6 of 60) | **fail** |
+
+The one report between them is GO-2022-0289. Its vulnerable symbol is the public `ForkExec`, which the fix did not change; the fix changed the private `forkExec`. gpt-oss-120b named `ForkExec` as an entry point and gpt-oss-20b did not, so the 20b pairing's low-confidence record misses it. Alone, gpt-oss-20b scored F1 0.602 on dev (120b: 0.626).
+
+**Decision:** the Groq gpt-oss-120b stays the second opinion. While ADR 0008 withholds high confidence, a second opinion changes no published record, so the backfill's second opinion is not urgent; it runs on Groq when a lifting rule needs it.
+
+**The test split was also run, by mistake, and is not used.** The notebook's `dunlap` mode ran every other split after the chosen one, which was meant only for `SPLIT = "all"` (replays from the cache), so it also called the model on the test split. Their accuracy was not scored and decides nothing; the operations dashboard lists the session's calls and answer statuses, as it does for every traced run. The notebook now runs only the chosen split.

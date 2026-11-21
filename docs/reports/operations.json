@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-21T13:42:37Z",
+  "generated_at": "2026-11-21T16:54:16Z",
   "sessions": [
     {
       "name": "patchsight-kaggle-run",
@@ -164,6 +164,74 @@
           "completion_tokens_per_second": 9.5
         }
       ]
+    },
+    {
+      "name": "patchsight-kaggle-run-dunlap-gpt-oss-20b",
+      "mode": "dunlap",
+      "part": "dev",
+      "model": "ggml-org/gpt-oss-20b-GGUF:gpt-oss-20b-MXFP4.gguf",
+      "code_commit": "752bbddd000b",
+      "gpus": [
+        "Tesla T4, 15360 MiB",
+        "Tesla T4, 15360 MiB"
+      ],
+      "first_answer": "2026-11-21T13:55:31.363531Z",
+      "last_answer": "2026-11-21T14:32:06.428255Z",
+      "hours": 0.61,
+      "calls": 278,
+      "tokens": 520816,
+      "seconds_per_call_p50": 6.0,
+      "seconds_per_call_p90": 14.4,
+      "vulnerabilities": null,
+      "complete": null,
+      "status": {},
+      "truncated": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "provider_rejections": null,
+      "runs": [
+        {
+          "trace": "dunlap-extract-dunlap-v1-dev-kaggle_second_opinion-20261121T135523Z.jsonl",
+          "command": "dunlap-extract",
+          "role": "kaggle_second_opinion",
+          "model": "ggml-org/gpt-oss-20b-GGUF@41e8a94d:MXFP4",
+          "started": "2026-11-21T13:55:23.540000Z",
+          "outcome": "complete",
+          "seconds": 482.6,
+          "calls": 59,
+          "network_calls": 59,
+          "cache_hits": 0,
+          "rejections": 0,
+          "extractions": {
+            "no_candidates": 1,
+            "ok": 59
+          },
+          "latency_p50": 5.7,
+          "latency_p90": 12.4,
+          "completion_tokens_per_second": 51.0
+        },
+        {
+          "trace": "dunlap-extract-dunlap-v1-test-kaggle_second_opinion-20261121T140330Z.jsonl",
+          "command": "dunlap-extract",
+          "role": "kaggle_second_opinion",
+          "model": "ggml-org/gpt-oss-20b-GGUF@41e8a94d:MXFP4",
+          "started": "2026-11-21T14:03:30.508000Z",
+          "outcome": "complete",
+          "seconds": 1716.4,
+          "calls": 219,
+          "network_calls": 219,
+          "cache_hits": 0,
+          "rejections": 0,
+          "extractions": {
+            "no_candidates": 3,
+            "ok": 215,
+            "repaired": 2
+          },
+          "latency_p50": 5.1,
+          "latency_p90": 11.7,
+          "completion_tokens_per_second": 50.8
+        }
+      ]
     }
   ],
   "weeks": [
@@ -174,8 +242,8 @@
     },
     {
       "week": "2026-W47",
-      "hours": 38.25,
-      "sessions": 4
+      "hours": 38.86,
+      "sessions": 5
     }
   ],
   "hosted": [
@@ -445,6 +513,26 @@
       "extractions": {
         "dead_letter": 5,
         "ok": 869
+      },
+      "latency_p50": null,
+      "latency_p90": null,
+      "completion_tokens_per_second": null
+    },
+    {
+      "trace": "dunlap-extract-dunlap-v1-dev-kaggle_second_opinion-20261121T165203Z.jsonl",
+      "command": "dunlap-extract",
+      "role": "kaggle_second_opinion",
+      "model": "ggml-org/gpt-oss-20b-GGUF@41e8a94d:MXFP4",
+      "started": "2026-11-21T16:52:03.475000Z",
+      "outcome": "complete",
+      "seconds": 2.7,
+      "calls": 59,
+      "network_calls": 0,
+      "cache_hits": 59,
+      "rejections": 0,
+      "extractions": {
+        "no_candidates": 1,
+        "ok": 59
       },
       "latency_p50": null,
       "latency_p90": null,

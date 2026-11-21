@@ -2,7 +2,7 @@
 
 import tomllib
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict
 
@@ -40,6 +40,9 @@ class BudgetConfig(BaseModel):
     # reasoning models their reasoning). When set, a prompt holds at most
     # max_output_tokens // this many candidates, so the answer fits the output limit.
     output_tokens_per_candidate: int | None = None
+    # How candidates are ordered when a prompt must be cut to its budget (experiment E10):
+    # BM25 against the advisory, or the smallest first, which kept more true functions.
+    candidate_order: Literal["bm25", "smallest_first"] = "bm25"
 
 
 class ValidationConfig(BaseModel):

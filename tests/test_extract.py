@@ -102,6 +102,24 @@ def test_tight_budget_keeps_the_best_bm25_match_and_records_drops() -> None:
     assert set(rendered.dropped) == {"helper", "FormatDocs"}
 
 
+def test_smallest_first_keeps_the_cheapest_and_changes_nothing_that_fits() -> None:
+    counter = CharEstimate(3.0)
+    plan = prompts.budget_plan(TEMPLATE, ADVISORY, INPUTS, counter, 80)
+    cheapest = min(range(len(INPUTS)), key=lambda i: (plan.costs[i], i))
+    cut = prompts.render(TEMPLATE, ADVISORY, INPUTS, 1, counter, 80, None, "smallest_first")
+    assert [c.name for c in cut.candidates] == [INPUTS[cheapest].name]
+    assert cut.truncated
+    # Not cut: the same prompt, byte for byte, as under BM25 (so the same cached answers).
+    whole = prompts.render(TEMPLATE, ADVISORY, INPUTS, 5000, counter, 80, None, "smallest_first")
+    assert whole == _render()
+    # The retrieval measurement applies exactly the renderer's order and fit.
+    for budget in range(plan.base_tokens, plan.base_tokens + sum(plan.costs) + 1, 7):
+        kept = prompts.fit(prompts.smallest_first(plan.costs), plan.costs, plan.base_tokens, budget)
+        rendered = prompts.render(TEMPLATE, ADVISORY, INPUTS, budget, counter, 80, None,
+                                  "smallest_first")  # fmt: skip
+        assert {c.name for c in rendered.candidates} == {INPUTS[i].name for i in kept}
+
+
 def test_candidate_limit_keeps_the_best_ranked_and_records_drops() -> None:
     rendered = prompts.render(TEMPLATE, ADVISORY, INPUTS, 5000, CharEstimate(3.0), 80, 2)
     assert [c.name for c in rendered.candidates] == ["ParseHeader", "helper"]
@@ -363,3 +381,13 @@ def test_an_extraction_and_its_calls_are_traced_under_its_advisory(tmp_path: Pat
     assert (final["status"], final["calls"], final["invented_ids_first_attempt"]) == (
         "repaired", 2, 1,
     )  # fmt: skip
+
+
+def test_the_shipped_config_keeps_bm25_until_the_switch_on() -> None:
+    from patchsight.pipeline.llm.config import load_config
+
+    # E10's order changes cut prompts and so their cached answers: it is switched on with
+    # #52 and #53 through shadow-then-promote, not by editing this default.
+    assert load_config(ROOT / "configs" / "llm.toml").budget.candidate_order == "bm25"
+    experiment = ROOT / "configs" / "experiments" / "llm-smallest-first.toml"
+    assert load_config(experiment).budget.candidate_order == "smallest_first"

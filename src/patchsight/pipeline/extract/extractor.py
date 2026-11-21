@@ -8,6 +8,7 @@ from pydantic import BaseModel, ConfigDict
 from patchsight.pipeline.extract.prompt import (
     AdvisoryText,
     CandidateInput,
+    CandidateOrder,
     HunkRef,
     PromptTemplate,
     RenderedPrompt,
@@ -119,11 +120,13 @@ def extract(
     max_hunk_lines: int,
     max_candidates: int | None = None,
     dotted_entry_points: bool = False,
+    candidate_order: CandidateOrder = "bm25",
 ) -> ExtractionOutcome:
     """Extract one advisory; its model calls and its outcome go to the client's trace."""
     prompt = render(
-        template, advisory, inputs, budget_tokens, counter, max_hunk_lines, max_candidates
-    )
+        template, advisory, inputs, budget_tokens, counter, max_hunk_lines, max_candidates,
+        candidate_order,
+    )  # fmt: skip
     return extract_prompt(llm, model, advisory.id, prompt, known_names, dotted_entry_points)
 
 

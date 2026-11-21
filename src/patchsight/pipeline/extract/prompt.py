@@ -15,6 +15,7 @@ import re
 from collections import Counter
 from collections.abc import Sequence
 from pathlib import Path
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict
 
@@ -223,6 +224,14 @@ def budget_plan(
     )
 
 
+CandidateOrder = Literal["bm25", "smallest_first"]
+
+
+def smallest_first(costs: Sequence[int]) -> tuple[int, ...]:
+    """Candidate indices by token cost, cheapest first, ties in file order (E10)."""
+    return tuple(sorted(range(len(costs)), key=lambda i: (costs[i], i)))
+
+
 def fit(
     order: Sequence[int],
     costs: Sequence[int],
@@ -251,10 +260,13 @@ def render(
     counter: TokenCounter,
     max_hunk_lines: int,
     max_candidates: int | None = None,
+    candidate_order: CandidateOrder = "bm25",
 ) -> RenderedPrompt:
     """Render the prompt, keeping as many candidates as fit within ``budget_tokens``.
 
     ``max_candidates`` caps the count as well, so the model's answer fits its output limit.
+    ``candidate_order`` decides which are kept when not all fit; a prompt that is not cut is
+    the same under either.
     """
 
     def estimate(text: str) -> int:
@@ -267,7 +279,8 @@ def render(
         return _block(cid, item, hunk_id, max_hunk_lines)
 
     plan = budget_plan(template, advisory, inputs, counter, max_hunk_lines)
-    kept = fit(plan.order, plan.costs, plan.base_tokens, budget_tokens, max_candidates)
+    order = plan.order if candidate_order == "bm25" else smallest_first(plan.costs)
+    kept = fit(order, plan.costs, plan.base_tokens, budget_tokens, max_candidates)
     kept_in_order = [i for i in range(len(inputs)) if i in kept]
 
     candidates: list[Candidate] = []

@@ -143,6 +143,7 @@ def select(
     """A seeded sample of attackable reports. No model calls."""
     budget, limit = config.prompt_budget(role), config.candidate_limit(role)
     eligible: list[Plan] = []
+    layout = (config.budget.max_hunk_lines, limit, config.budget.candidate_order)
     for report in sorted(reports, key=lambda r: r.id):
         mappings = [
             map_commit(github, c.github_repo, c.sha, include=dunlap.paper_path_filter)
@@ -156,10 +157,7 @@ def select(
             plant(a, advisories[report.id], inputs, chosen) for a in ATTACKS
         ]
         if any(
-            render(
-                template, adv, inp, budget, counter, config.budget.max_hunk_lines, limit
-            ).truncated
-            for adv, inp in variants
+            render(template, adv, inp, budget, counter, *layout).truncated for adv, inp in variants
         ):
             continue
         eligible.append(chosen)
@@ -201,13 +199,13 @@ def run(
         for attack, advisory, attacked in variants:
             dotted = config.validation.dotted_entry_points
             hunk_lines = config.budget.max_hunk_lines
-            args = (template, advisory, attacked, known, budget, counter, hunk_lines, limit, dotted)
+            order = config.budget.candidate_order
+            args = (template, advisory, attacked, known, budget, counter, hunk_lines, limit, dotted,
+                    order)  # fmt: skip
             outcome = extract(llm, model, *args)
             recorder = _Recorder(cache_dir, counter)
             extract(recorder, model, *args)  # the same answers, now recorded from the cache
-            prompt = render(
-                template, advisory, attacked, budget, counter, config.budget.max_hunk_lines, limit
-            )
+            prompt = render(template, advisory, attacked, budget, counter, hunk_lines, limit, order)
             identifier = case_id(report.id, attack)
             exported.append(
                 ReplayReport(

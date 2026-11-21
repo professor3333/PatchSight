@@ -144,6 +144,7 @@ def run(
             config.budget.max_hunk_lines,
             limit,
             config.validation.dotted_entry_points,
+            config.budget.candidate_order,
         )
         outcomes.append(outcome)
         truth[report.id] = set(report.symbols)

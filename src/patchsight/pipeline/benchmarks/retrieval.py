@@ -29,7 +29,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict
 
 from patchsight.eval.metrics import Interval
-from patchsight.pipeline.extract.prompt import fit
+from patchsight.pipeline.extract.prompt import fit, smallest_first
 
 Ranking = Literal["bm25", "file_order", "smallest_first", "named_first", "bm25_per_token", "oracle"]
 # E10's candidates, in its declared order: ties at the dev choice go to the earlier one.
@@ -94,7 +94,7 @@ def order(case: Case, ranking: Ranking) -> list[int]:
     if ranking == "file_order":
         return indices
     if ranking == "smallest_first":
-        return sorted(indices, key=lambda i: (items[i].tokens, i))
+        return list(smallest_first([i.tokens for i in items]))  # the renderer's own order
     if ranking == "named_first":
         return sorted(indices, key=lambda i: (not items[i].named, i))
     if ranking == "bm25_per_token":

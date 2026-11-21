@@ -112,7 +112,7 @@ def plan_vulnerability(
     full = render(template, advisory, inputs, 10**9, counter, lines)
     sent = render(
         template, advisory, inputs, config.prompt_budget(role), counter, lines,
-        config.candidate_limit(role),
+        config.candidate_limit(role), config.budget.candidate_order,
     )  # fmt: skip
     return PromptPlan(
         vulnerability=group.key,
@@ -247,6 +247,7 @@ def extract_vulnerability(
             llm, config.models[role], template, advisory_text(group, by_id), inputs, known,
             config.prompt_budget(role), counter, config.budget.max_hunk_lines,
             config.candidate_limit(role), config.validation.dotted_entry_points,
+            config.budget.candidate_order,
         )  # fmt: skip
     except ResponseNotCachedError:
         return "not_cached"  # cache-only replay of a run made elsewhere: never a model call

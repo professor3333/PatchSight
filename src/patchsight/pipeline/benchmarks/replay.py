@@ -113,12 +113,12 @@ def export(
         inputs, known = candidate_inputs(mappings)
         prompt = render(
             template, advisories[report.id], inputs, budget, counter,
-            config.budget.max_hunk_lines, limit,
+            config.budget.max_hunk_lines, limit, config.budget.candidate_order,
         )  # fmt: skip
         recorder = _Recorder(llm_cache, counter)
         extract(
             recorder, model, template, advisories[report.id], inputs, known, budget, counter,
-            config.budget.max_hunk_lines, limit,
+            config.budget.max_hunk_lines, limit, candidate_order=config.budget.candidate_order,
         )  # fmt: skip
         exported.append(
             ReplayReport(

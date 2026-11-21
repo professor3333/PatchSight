@@ -2648,7 +2648,7 @@ def regression_freeze_command(
             rendered = render(
                 template, pypi_extract.advisory_text(group, by_id), inputs,
                 llm_config.prompt_budget(role), counter, llm_config.budget.max_hunk_lines,
-                llm_config.candidate_limit(role),
+                llm_config.candidate_limit(role), llm_config.budget.candidate_order,
             )  # fmt: skip
             recorder = _Recorder(root / cache / "llm", counter)
             extract_prompt(recorder, model, key, rendered, known,

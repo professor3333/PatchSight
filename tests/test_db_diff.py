@@ -68,3 +68,21 @@ def test_identical_databases_have_nothing_to_review(tmp_path: Path) -> None:
     result = db_diff.diff(_write(tmp_path / "a.sqlite", records, "1"),
                           _write(tmp_path / "b.sqlite", records, "2"))  # fmt: skip
     assert (result.unchanged, result.kinds, result.review) == (2, {}, ())
+
+
+def test_the_command_writes_a_dotted_name_into_a_fresh_root(tmp_path: Path) -> None:
+    from typer.testing import CliRunner
+
+    from patchsight.pipeline.__main__ import app
+
+    old = _write(tmp_path / "old.sqlite", [_record("A", picks=("pkg.load",))], "2026.11.21")
+    new = _write(tmp_path / "new.sqlite", [_record("A")], "2026.11.22")
+    result = CliRunner().invoke(app, [
+        "db-diff", str(old), str(new), "--name", "cap-2026.11.22", "--purpose", "a test",
+        "--root", str(tmp_path / "fresh"),
+    ])  # fmt: skip
+    assert result.exit_code == 0, result.output
+    reports = tmp_path / "fresh" / "docs" / "reports"
+    assert sorted(p.name for p in reports.iterdir()) == [
+        "shadow-cap-2026.11.22.json", "shadow-cap-2026.11.22.md",
+    ]  # fmt: skip

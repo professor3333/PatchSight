@@ -2122,8 +2122,14 @@ def db_diff_command(
 
     result = db_diff.diff(production, shadow, review=review)
     target = root / "docs" / "reports" / f"shadow-{name}"
-    target.with_suffix(".md").write_text(db_diff.render_markdown(result, purpose), "utf-8")
-    target.with_suffix(".json").write_text(result.model_dump_json(indent=2) + "\n", "utf-8")
+    target.parent.mkdir(parents=True, exist_ok=True)
+    # with_name, not with_suffix: a name such as "cap-2026.11.22" has dots of its own.
+    target.with_name(target.name + ".md").write_text(
+        db_diff.render_markdown(result, purpose), "utf-8"
+    )
+    target.with_name(target.name + ".json").write_text(
+        result.model_dump_json(indent=2) + "\n", "utf-8"
+    )
     typer.echo(
         f"{result.production} -> {result.shadow}: {result.unchanged:,} unchanged, "
         f"{result.kinds or 'no change'}; fields {result.fields}; "

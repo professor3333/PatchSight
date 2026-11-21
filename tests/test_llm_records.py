@@ -385,14 +385,91 @@ def test_a_nightly_merges_picks_into_its_own_version_and_stays_an_update(tmp_pat
     assert "## Changes since 2026.11.22" not in text
 
 
+def _report(*to_extract: str) -> Any:
+    from patchsight.pipeline import update_db
+
+    return update_db.UpdateReport(
+        previous_version="a", db_version="b", carried=0, rebuilt=2, new=2, removed=0,
+        aliases_added=0, aliases_removed=0, status={}, to_extract=to_extract,
+    )  # fmt: skip
+
+
 def test_the_nights_targets_are_stable_and_capped() -> None:
     from patchsight.pipeline import update_db
 
-    report = update_db.UpdateReport(
-        previous_version="a", db_version="b", carried=0, rebuilt=2, new=2, removed=0,
-        aliases_added=0, aliases_removed=0, status={},
-        to_extract=("GHSA-c", "GHSA-a", "GHSA-b", "GHSA-a"),
+    report = _report("GHSA-c", "GHSA-a", "GHSA-b", "GHSA-a")
+    assert update_db.extraction_targets(report, 2).targets == ("GHSA-a", "GHSA-b")
+    assert update_db.extraction_targets(report, 25).targets == ("GHSA-a", "GHSA-b", "GHSA-c")
+    assert update_db.extraction_targets(report, 0).targets == ()
+    # The night's own changes come first; the backlog fills what the cap leaves.
+    both = update_db.extraction_targets(report, 4, ["GHSA-z", "GHSA-b", "GHSA-y"])
+    assert (both.fresh, both.backlog) == (3, 2)
+    assert both.targets == ("GHSA-a", "GHSA-b", "GHSA-c", "GHSA-z")
+
+
+def _waiting(key: str, day: int, **update: Any) -> Record:
+    when = datetime(2026, 11, day, tzinfo=UTC)
+    return _fallback().model_copy(update={"vulnerability": key, "advisory_modified": when,
+                                          **update})  # fmt: skip
+
+
+def test_the_backlog_is_what_still_lacks_picks_and_was_not_tried() -> None:
+    from patchsight.db import BuildEntry
+
+    tried = llm_records.failed_note("qwen", "extract-v1", "dead_letter")
+    records = [
+        _waiting("GHSA-old", 1), _waiting("GHSA-new", 20),
+        _waiting("GHSA-new", 3, package="other"),  # its newest advisory date counts
+        _waiting("GHSA-mid", 10),
+        _waiting("GHSA-tried", 21, tier_reason=tried),
+        _waiting("GHSA-other-prompt", 21, tier_reason=tried.replace("extract-v1", "extract-v0")),
+        _waiting("GHSA-picked", 21, source="llm", model="qwen", tier_reason="no valid second"),
+        _waiting("GHSA-module", 21),
+        _waiting("GHSA-unledgered", 21),
+    ]  # fmt: skip
+    status = {"GHSA-module": "module_level_references"}
+    ledger = {
+        r.vulnerability: BuildEntry(
+            vulnerability=r.vulnerability,
+            input_hash="h1",
+            status=status.get(r.vulnerability, "built"),
+        )
+        for r in records
+        if r.vulnerability != "GHSA-unledgered"
+    }
+    assert llm_records.backlog(records, ledger, "qwen", "extract-v1") == [
+        "GHSA-other-prompt", "GHSA-new", "GHSA-mid", "GHSA-old",
+    ]  # fmt: skip
+    assert "GHSA-tried" in llm_records.backlog(records, ledger, "gpt-oss", "extract-v1")
+
+
+def test_nightly_targets_follow_the_changes_with_the_backlog(tmp_path: Path) -> None:
+    from typer.testing import CliRunner
+
+    from patchsight.db import BuildEntry
+    from patchsight.pipeline import update_db
+    from patchsight.pipeline.__main__ import app
+
+    records = [_waiting("GHSA-a", 2), _waiting("GHSA-b", 5), _waiting("GHSA-c", 9)]
+    db.write(
+        tmp_path / "night.sqlite", records, {r.vulnerability: r.vulnerability for r in records},
+        {"db_version": "2026.11.22"},
+        builds=[BuildEntry(vulnerability=r.vulnerability, input_hash="h1", status="built")
+                for r in records],
     )  # fmt: skip
-    assert update_db.extraction_targets(report, 2) == ["GHSA-a", "GHSA-b"]
-    assert update_db.extraction_targets(report, 25) == ["GHSA-a", "GHSA-b", "GHSA-c"]
-    assert update_db.extraction_targets(report, 0) == []
+    (tmp_path / "update.json").write_text(_report("GHSA-a").model_dump_json())
+    result = CliRunner().invoke(app, [
+        "nightly-targets", "update.json", "--db", "night.sqlite", "--limit", "2",
+        "--report", "targets.json", "--root", str(tmp_path),
+        "--config", str(Path("configs/llm.toml").resolve()),
+        "--prompt", str(Path("prompts/extract_v1.md").resolve()),
+    ])  # fmt: skip
+    assert result.exit_code == 0, result.output
+    assert result.stdout.splitlines()[0] == "GHSA-a,GHSA-c"  # tonight's, then the newest waiting
+    assert "2 to extract tonight (1 changed tonight, 2 waiting from before); 1 left" in (
+        result.stderr
+    )
+    written = update_db.NightlyTargets.model_validate_json((tmp_path / "targets.json").read_text())
+    assert (written.fresh, written.backlog, written.targets) == (1, 2, ("GHSA-a", "GHSA-c"))
+    plain = CliRunner().invoke(app, ["nightly-targets", "update.json", "--root", str(tmp_path)])
+    assert plain.stdout.splitlines()[0] == "GHSA-a"  # without --db, only the night's changes

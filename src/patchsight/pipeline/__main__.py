@@ -1842,19 +1842,47 @@ def merge_llm_command(
 @app.command("nightly-targets")
 def nightly_targets_command(
     update: Annotated[Path, typer.Argument(help="The update-db report.")],
+    database: Annotated[
+        Path | None,
+        typer.Option(
+            "--db", help="The night's database: its records still without model picks follow."
+        ),
+    ] = None,
     limit: Annotated[int, typer.Option(help="At most this many vulnerabilities a night.")] = 25,
+    role: Annotated[str, typer.Option(help="Model role that will extract.")] = "extractor",
+    config: Annotated[Path, typer.Option(help="LLM config.")] = Path("configs/llm.toml"),
+    prompt: Annotated[Path, typer.Option(help="Prompt template.")] = Path("prompts/extract_v1.md"),
+    report: Annotated[
+        Path | None, typer.Option(help="Also write the counts and targets here (JSON).")
+    ] = None,
     root: Root = Path(),
 ) -> None:
     """Print the vulnerabilities to extract tonight, comma-separated (ADR 0013): the night's
-    rebuilt or new vulnerabilities that have a record, capped so other work keeps its quota.
-    Prints nothing when there are none."""
-    from patchsight.pipeline import update_db
+    rebuilt or new vulnerabilities that have a record, then, with --db, those still on
+    fallback records that this model and prompt have not failed on, newest first; capped so
+    other work keeps its quota. Prints nothing when there are none."""
+    from patchsight.pipeline import llm_records, update_db
 
-    report = update_db.UpdateReport.model_validate_json((root / update).read_text("utf-8"))
-    targets = update_db.extraction_targets(report, limit)
-    typer.echo(",".join(targets))
-    left = len(report.to_extract) - len(targets)
-    typer.echo(f"{len(targets)} to extract tonight; {left} left for a later run", err=True)
+    changes = update_db.UpdateReport.model_validate_json((root / update).read_text("utf-8"))
+    waiting: list[str] = []
+    if database is not None:
+        model = load_config(root / config).models[role].model
+        version = load_template(root / prompt).version
+        night = db.SymbolDatabase(root / database)
+        try:
+            waiting = llm_records.backlog(night.all_records(), night.build_ledger(), model, version)
+        finally:
+            night.close()
+    targets = update_db.extraction_targets(changes, limit, waiting)
+    if report is not None:
+        (root / report).write_text(targets.model_dump_json(indent=2) + "\n", "utf-8")
+    typer.echo(",".join(targets.targets))
+    left = targets.fresh + targets.backlog - len(targets.targets)
+    typer.echo(
+        f"{len(targets.targets)} to extract tonight ({targets.fresh} changed tonight, "
+        f"{targets.backlog} waiting from before); {left} left for a later run",
+        err=True,
+    )
 
 
 @app.command("import-names")

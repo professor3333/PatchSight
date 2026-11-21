@@ -29,7 +29,7 @@ from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict
 
-from patchsight.db import Record, Symbol, SymbolEvidence
+from patchsight.db import BuildEntry, Record, Symbol, SymbolEvidence
 from patchsight.eval.confidence import VALID, Answer, Decision, decide, is_public
 from patchsight.pipeline.pypi_extract import PyPIExtraction
 
@@ -93,6 +93,31 @@ def answer(extraction: PyPIExtraction) -> Answer:
         truncated=outcome.truncated,
         entry_points=frozenset(extraction.entry_points),
     )
+
+
+# Ledger statuses whose records come from changed definitions the extractor can judge. The
+# others (module-level references) leave it nothing to judge.
+EXTRACTABLE = frozenset({"built"})
+
+
+def backlog(
+    records: Iterable[Record], ledger: Mapping[str, BuildEntry], model: str, prompt_version: str
+) -> list[str]:
+    """Vulnerabilities still on fallback records that this model and prompt have not failed
+    on, newest advisory first (ADR 0013): the work a nightly picks up once the night's own
+    changes are done, so nothing over the cap or after a quota stop is left behind."""
+    by_vulnerability: dict[str, list[Record]] = {}
+    for record in records:
+        by_vulnerability.setdefault(record.vulnerability, []).append(record)
+    waiting = {
+        vulnerability: max(r.advisory_modified for r in group)
+        for vulnerability, group in by_vulnerability.items()
+        if (entry := ledger.get(vulnerability)) is not None
+        and entry.status in EXTRACTABLE
+        and all(r.source == "fallback" for r in group)
+        and not any(attempted(r, model, prompt_version) for r in group)
+    }
+    return sorted(sorted(waiting), key=lambda v: waiting[v], reverse=True)
 
 
 def merge(

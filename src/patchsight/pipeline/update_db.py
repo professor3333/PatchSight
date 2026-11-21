@@ -147,8 +147,24 @@ def update(
     return records, aliases, builds, report
 
 
-def extraction_targets(report: UpdateReport, limit: int) -> list[str]:
-    """The night's extraction targets (ADR 0013): rebuilt or new vulnerabilities that have a
-    record, in a stable order, at most ``limit``. Those left over keep the fallback until a
-    later run extracts them."""
-    return sorted(set(report.to_extract))[: max(0, limit)]
+class NightlyTargets(BaseModel):
+    """What a nightly extracts (ADR 0013), for its reports and the operations dashboard."""
+
+    model_config = ConfigDict(frozen=True)
+
+    fresh: int  # the night's rebuilt or new vulnerabilities with a record
+    backlog: int  # others still waiting for model picks
+    targets: tuple[str, ...]
+
+
+def extraction_targets(
+    report: UpdateReport, limit: int, backlog: Sequence[str] = ()
+) -> NightlyTargets:
+    """The night's extraction targets (ADR 0013), at most ``limit``: first the rebuilt or new
+    vulnerabilities that have a record, in a stable order, then the ``backlog`` in its own
+    order. Whatever is left over keeps the fallback, and a later night's backlog has it."""
+    fresh = sorted(set(report.to_extract))
+    waiting = [v for v in dict.fromkeys(backlog) if v not in set(fresh)]
+    return NightlyTargets(
+        fresh=len(fresh), backlog=len(waiting), targets=tuple((fresh + waiting)[: max(0, limit)])
+    )

@@ -124,14 +124,15 @@ def terms(text: str) -> list[str]:
 SCORE_DECIMALS = 9
 
 
-def bm25_rank(query: str, documents: Sequence[str], k1: float = 1.5, b: float = 0.75) -> list[int]:
-    """Document indices, best match first. Ties keep the original order.
+def bm25_scores(
+    query: str, documents: Sequence[str], k1: float = 1.5, b: float = 0.75
+) -> list[float]:
+    """Each document's BM25 score against ``query``, rounded so it is the same everywhere.
 
     The ranking must not depend on the process or the platform (rule 12): it decides which
     candidates a truncated prompt keeps, and so the prompt's cache key. Query terms are
     visited in sorted order, each score is summed exactly (``math.fsum``), and scores are
-    compared after rounding, so a last-bit difference between platforms' ``math.log`` cannot
-    reorder a tie either.
+    rounded, so a last-bit difference between platforms' ``math.log`` cannot reorder a tie.
     """
     tokenised = [terms(doc) for doc in documents]
     count = len(tokenised)
@@ -141,7 +142,7 @@ def bm25_rank(query: str, documents: Sequence[str], k1: float = 1.5, b: float = 
     frequency = Counter(term for t in tokenised for term in set(t))
     query_terms = sorted(set(terms(query)))
     scores = []
-    for index, tokens in enumerate(tokenised):
+    for tokens in tokenised:
         counts = Counter(tokens)
         parts = []
         for term in query_terms:
@@ -150,8 +151,14 @@ def bm25_rank(query: str, documents: Sequence[str], k1: float = 1.5, b: float = 
                 continue
             idf = math.log(1 + (count - frequency[term] + 0.5) / (frequency[term] + 0.5))
             parts.append(idf * tf * (k1 + 1) / (tf + k1 * (1 - b + b * len(tokens) / average)))
-        scores.append((-round(math.fsum(parts), SCORE_DECIMALS), index))
-    return [index for _, index in sorted(scores)]
+        scores.append(round(math.fsum(parts), SCORE_DECIMALS))
+    return scores
+
+
+def bm25_rank(query: str, documents: Sequence[str], k1: float = 1.5, b: float = 0.75) -> list[int]:
+    """Document indices, best match first. Ties keep the original order."""
+    scores = bm25_scores(query, documents, k1, b)
+    return [index for _, index in sorted((-score, index) for index, score in enumerate(scores))]
 
 
 def _hunk_block(hunk_id: str, hunk: Hunk, max_lines: int) -> str:
@@ -194,6 +201,7 @@ class BudgetPlan(BaseModel):
     base_tokens: int
     costs: tuple[int, ...]
     order: tuple[int, ...]  # candidate indices, best match first
+    scores: tuple[float, ...]  # each candidate's BM25 score, as ranked
 
 
 def budget_plan(
@@ -206,15 +214,12 @@ def budget_plan(
     advisory_text = _advisory_text(advisory)
     hunk_id = _hunk_ids(inputs)
     base = template.system + template.user.replace("{{advisory}}", advisory_text)
+    documents = [f"{i.name} {' '.join(h for x in i.hunks for h in x.lines)}" for i in inputs]
     return BudgetPlan(
         base_tokens=counter.count(base) + 2 * MESSAGE_OVERHEAD,
         costs=tuple(counter.count(_block("F0000", i, hunk_id, max_hunk_lines)) for i in inputs),
-        order=tuple(
-            bm25_rank(
-                advisory_text,
-                [f"{i.name} {' '.join(h for x in i.hunks for h in x.lines)}" for i in inputs],
-            )
-        ),
+        order=tuple(bm25_rank(advisory_text, documents)),
+        scores=tuple(bm25_scores(advisory_text, documents)),
     )
 
 

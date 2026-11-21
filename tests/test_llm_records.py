@@ -107,16 +107,31 @@ def test_no_extraction_keeps_the_fallback() -> None:
     assert (record, outcome) == (_fallback(), "fallback: no extraction")
 
 
+def test_an_extraction_from_older_inputs_keeps_the_fallback() -> None:
+    record, outcome = _merge(_extraction(("load",), digest="old"))
+    assert (record, outcome) == (_fallback(), "fallback: extraction made from older inputs")
+
+
 @pytest.mark.parametrize(
-    ("primary", "expected"),
-    [
-        (_extraction(("load",), digest="old"), "fallback: extraction made from older inputs"),
-        (_extraction((), status="dead_letter"), "fallback: extraction failed validation"),
-    ],
-)
-def test_unusable_extractions_keep_the_fallback(primary: PyPIExtraction, expected: str) -> None:
-    record, outcome = _merge(primary)
-    assert (record, outcome) == (_fallback(), expected)
+    ("status", "why"),
+    [("dead_letter", "no valid answer after one repair"),
+     ("no_candidates", "no changed definition to judge")],
+)  # fmt: skip
+def test_a_failed_extraction_keeps_the_fallback_and_says_who_tried(status: str, why: str) -> None:
+    record, outcome = _merge(_extraction((), status=status))
+    assert outcome == "fallback: extraction failed validation"
+    note = f"fallback: extraction by qwen (prompt extract-v1) failed: {why}"
+    assert record == _fallback().model_copy(update={"tier_reason": note})
+    assert (record.source, record.model, record.symbols) == ("fallback", None, _fallback().symbols)
+    assert llm_records.attempted(record, "qwen", "extract-v1")
+    assert not llm_records.attempted(record, "qwen", "extract-v2")  # a new prompt tries again
+    assert not llm_records.attempted(record, "gpt-oss", "extract-v1")
+    assert not llm_records.attempted(_fallback(), "qwen", "extract-v1")
+    # A later valid answer replaces the note; a failure never takes away picks already made.
+    picked, _ = _merge(_extraction(("load",)), fallback=record)
+    assert (picked.source, picked.tier_reason) == ("llm", "no valid second opinion")
+    again, _ = _merge(_extraction((), status=status), fallback=picked)
+    assert again == picked
 
 
 def test_agreement_with_a_public_symbol_is_high_and_keeps_only_agreed_symbols() -> None:

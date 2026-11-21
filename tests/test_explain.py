@@ -95,6 +95,24 @@ def test_low_fallback_record_says_it_cannot_lower_an_alert(tmp_path: Path) -> No
     assert "symbols (1): yaml.constructor.FullConstructor.find_python_name" in result.output
 
 
+def test_a_failed_extraction_is_named_without_claiming_its_picks(tmp_path: Path) -> None:
+    from patchsight.pipeline.llm_records import failed_note
+
+    path = tmp_path / "db.sqlite"
+    note = failed_note("qwen", "extract-v1", "dead_letter")
+    fallback = _record(
+        confidence="low", source="fallback", model=None, prompt_version=None, entry_points=(),
+        second_opinion_model=None, tier_reason=note, evidence=(),
+    )  # fmt: skip
+    db.write(path, [fallback], {"GHSA-8q59-q68h-6hv4": "GHSA-8q59-q68h-6hv4"}, {})
+    result = CliRunner().invoke(app, ["explain", "GHSA-8q59-q68h-6hv4", "--db", str(path)])
+    assert (
+        "LOW confidence (fallback: extraction by qwen (prompt extract-v1) failed: no valid "
+        "answer after one repair)"
+    ) in result.output
+    assert "extracted by" not in result.output  # the symbols are every changed definition
+
+
 def test_unknown_advisory_exits_1_without_claiming_safety(database: Path) -> None:
     result = CliRunner().invoke(app, ["explain", "GHSA-0000-0000-0000", "--db", str(database)])
     assert result.exit_code == 1

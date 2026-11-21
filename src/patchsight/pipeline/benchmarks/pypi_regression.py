@@ -42,7 +42,7 @@ from patchsight.pipeline.pypi_extract import PyPIExtraction, qualify_with, symbo
 NAME = "pypi-regression-v1"
 FROZEN = Path("benchmarks/pypi-regression-v1/cases.json")
 # Re-freezing changes this on purpose, in a commit that says why.
-FROZEN_SHA256 = "6be7576909f75806a9edffd564f39b953f5c3d64708d098b1133dd466bb81f79"
+FROZEN_SHA256 = "f71a8b1c8bb22973707229574d09926f068f78365ee990d84928f7b83fefaab8"
 
 
 class ExpectedRecord(BaseModel):

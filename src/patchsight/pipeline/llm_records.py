@@ -9,8 +9,10 @@ extractor has a valid answer made from the same inputs:
 * otherwise **low** confidence: every changed definition plus the entry points, so the
   record is never worse than the fallback at containing the vulnerable symbol.
 
-An extractor answer that failed validation, or was made from different inputs (its
-``input_hash`` no longer matches the advisory), leaves the fallback record unchanged.
+An extractor answer made from different inputs (its ``input_hash`` no longer matches the
+advisory) leaves the fallback record unchanged. One that failed (a dead letter, or no
+candidates to judge) keeps the fallback symbols too, and its tier reason says which model and
+prompt tried, so a nightly does not spend its quota on the same attempt again (ADR 0013).
 
 **High confidence is withheld** (ADR 0008): the rule missed its safety target in its declared
 test evaluation, so a record the rule would make high is kept low, with every changed
@@ -36,6 +38,27 @@ from patchsight.pipeline.pypi_extract import PyPIExtraction
 # on data not used to choose it, published databases hold no high-confidence records.
 PUBLISH_HIGH = False
 WITHHELD = "high confidence withheld (ADR 0008)"
+FAILURES = {
+    "dead_letter": "no valid answer after one repair",
+    "no_candidates": "no changed definition to judge",
+}
+
+
+def _tried(model: str, prompt_version: str) -> str:
+    return f"fallback: extraction by {model} (prompt {prompt_version}) failed"
+
+
+def failed_note(model: str, prompt_version: str, status: str) -> str:
+    """The tier reason of a fallback record whose extraction failed."""
+    return f"{_tried(model, prompt_version)}: {FAILURES.get(status, status)}"
+
+
+def attempted(record: Record, model: str, prompt_version: str) -> bool:
+    """Whether this model and prompt already failed on the record's current inputs. A
+    rebuilt record starts again without the note, so new inputs are always tried."""
+    return record.source == "fallback" and (record.tier_reason or "").startswith(
+        _tried(model, prompt_version)
+    )
 
 
 def load(path: Path) -> dict[str, PyPIExtraction]:
@@ -86,7 +109,14 @@ def merge(
     if any(r.input_hash != primary.input_hash for r in fallback):
         return list(fallback), "fallback: extraction made from older inputs"
     if primary.outcome.status not in VALID:
-        return list(fallback), "fallback: extraction failed validation"
+        note = failed_note(
+            primary.outcome.model, primary.outcome.prompt_version, primary.outcome.status
+        )
+        kept = [
+            r.model_copy(update={"tier_reason": note}) if r.source == "fallback" else r
+            for r in fallback
+        ]
+        return kept, "fallback: extraction failed validation"
     if secondary is not None and secondary.input_hash != primary.input_hash:
         secondary = None  # a stale second opinion counts as none
     decision: Decision = decide(

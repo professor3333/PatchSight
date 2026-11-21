@@ -5781,7 +5781,7 @@
       "package": "mobsf",
       "confidence": "low",
       "source": "fallback",
-      "tier_reason": null,
+      "tier_reason": "fallback: extraction by ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M (prompt extract-v1) failed: no valid answer after one repair",
       "symbols": [
        "APITester.views.APIFuzzer",
        "APITester.views.StartScan",
@@ -8614,7 +8614,7 @@
       "package": "glance",
       "confidence": "low",
       "source": "fallback",
-      "tier_reason": null,
+      "tier_reason": "fallback: extraction by ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M (prompt extract-v1) failed: no valid answer after one repair",
       "symbols": [
        "glance.api.authorization.ImageMemberRepoProxy.save",
        "glance.api.policy.ImageMemberRepoProxy.save",
@@ -14973,7 +14973,7 @@
       "package": "docassemble-webapp",
       "confidence": "low",
       "source": "fallback",
-      "tier_reason": null,
+      "tier_reason": "fallback: extraction by ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M (prompt extract-v1) failed: no valid answer after one repair",
       "symbols": [
        "docassemble_base.docassemble.base.error.DASourceError",
        "docassemble_base.docassemble.base.pandoc.concatenate_files",
@@ -20853,7 +20853,7 @@
       "package": "vyper",
       "confidence": "low",
       "source": "fallback",
-      "tier_reason": null,
+      "tier_reason": "fallback: extraction by ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M (prompt extract-v1) failed: no valid answer after one repair",
       "symbols": [
        "vyper.builtins.functions.ECRecover.build_IR",
        "vyper.codegen.core.copy_bytes"
@@ -21478,7 +21478,7 @@
       "package": "keystone",
       "confidence": "low",
       "source": "fallback",
-      "tier_reason": null,
+      "tier_reason": "fallback: extraction by ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M (prompt extract-v1) failed: no valid answer after one repair",
       "symbols": [
        "keystone.identity.core.UserController.set_user_password",
        "keystone.identity.core.UserController.update_user",

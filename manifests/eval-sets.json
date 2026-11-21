@@ -41,6 +41,14 @@
       "what": "Go temporal holdout: 83 GoVulnDB reports published after the model's training cutoff"
     },
     {
+      "name": "go-holdout-v1-retrieval",
+      "path": "benchmarks/go-holdout-v1/retrieval.json",
+      "kind": "file",
+      "sha256": "5ae3a70ece4a8353fa929662777d05ec95f46ca9995bcedd7da54937e447bb7b",
+      "frozen": "2026-11-21",
+      "what": "Go holdout retrieval at the prompt budget: token costs, labels, BM25 scores and order (E10)"
+    },
+    {
       "name": "pypi-regression-v1",
       "path": "benchmarks/pypi-regression-v1/cases.json",
       "kind": "file",

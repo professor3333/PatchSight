@@ -2,6 +2,7 @@
 
 from pathlib import Path
 
+import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 
@@ -77,18 +78,36 @@ def test_no_order_keeps_more_true_functions_than_the_oracle(
         assert retrieval.kept_true(bundle, case, ranking)[0] <= best
 
 
-def test_the_committed_report_regenerates_exactly(tmp_path: Path) -> None:
-    """CI recomputes the report from the frozen bundle alone: no diffs, no model."""
+@pytest.mark.parametrize("benchmark", ["dunlap-v1", "go-holdout-v1"])
+def test_the_committed_report_regenerates_exactly(tmp_path: Path, benchmark: str) -> None:
+    """CI recomputes each report from its frozen bundle alone: no diffs, no model."""
     from typer.testing import CliRunner
 
     from patchsight.pipeline.__main__ import app
 
     (tmp_path / "benchmarks").symlink_to(REPO / "benchmarks")
-    result = CliRunner().invoke(app, ["retrieval-report", "--root", str(tmp_path)])
+    result = CliRunner().invoke(
+        app, ["retrieval-report", "--benchmark", benchmark, "--root", str(tmp_path)]
+    )
     assert result.exit_code == 0, result.output
     for suffix in (".md", ".json"):
-        produced = (tmp_path / "docs" / "reports" / f"retrieval-dunlap-v1{suffix}").read_text()
-        assert produced == (REPO / "docs" / "reports" / f"retrieval-dunlap-v1{suffix}").read_text()
+        name = f"retrieval-{benchmark}{suffix}"
+        produced = (tmp_path / "docs" / "reports" / name).read_text()
+        assert produced == (REPO / "docs" / "reports" / name).read_text()
+
+
+def test_e10_chose_on_dev_and_passed_on_the_holdout() -> None:
+    """The declared decision, recomputed from the committed reports."""
+    reports = REPO / "docs" / "reports"
+    dunlap = retrieval.Report.model_validate_json(
+        (reports / "retrieval-dunlap-v1.json").read_text()
+    )
+    holdout = retrieval.Report.model_validate_json(
+        (reports / "retrieval-go-holdout-v1.json").read_text()
+    )
+    chosen = retrieval.choose_on_dev(dunlap)
+    assert chosen == "smallest_first"
+    assert retrieval.holdout_verdict(holdout, chosen) == "pass"
 
 
 def test_the_declared_orders() -> None:

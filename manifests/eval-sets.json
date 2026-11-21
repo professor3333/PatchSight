@@ -28,7 +28,7 @@
       "name": "dunlap-v1-retrieval",
       "path": "benchmarks/dunlap-v1/retrieval.json",
       "kind": "file",
-      "sha256": "36b3b60ec46954bb6b83bda4ed58793491eabc9fd4eef1ed52dcf2597945da90",
+      "sha256": "5c576cd4f911aa85eaac4ddfea715fcdc2b98f9ac5e0c3d81dc18a0f55360eb9",
       "frozen": "2026-11-21",
       "what": "Retrieval at the prompt budget: token costs, labels and BM25 order per candidate"
     },

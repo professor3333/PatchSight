@@ -8,16 +8,20 @@ candidates each order keeps, with exactly the extractor's token costs:
 
 * ``bm25``: BM25 against the advisory text, as the extractor ranks;
 * ``file_order``: no ranking, in the order the path filter and the mapping produce them;
+* ``smallest_first``, ``named_first`` and ``bm25_per_token``: the replacements experiment
+  E10 declared before they were measured (``docs/experiments.md``);
 * ``oracle``: true functions first, cheapest first, the most any order can keep at this
   budget.
 
-``freeze`` writes a bundle with, per report, each candidate's name, path, token cost and
-label, the BM25 order and the prompt's fixed cost: no code and no advisory text (rule 13).
+The bundle holds, per report, each candidate's name, path, token cost, label, BM25 score and
+whether the advisory names it, with the BM25 order and the prompt's fixed cost: no code and
+no advisory text (rule 13).
 ``score`` and ``render_markdown`` work from the bundle alone, so CI can regenerate the
 committed report.
 """
 
 import random
+import re
 from collections.abc import Callable, Sequence
 from functools import partial
 from typing import Literal
@@ -27,8 +31,10 @@ from pydantic import BaseModel, ConfigDict
 from patchsight.eval.metrics import Interval
 from patchsight.pipeline.extract.prompt import fit
 
-Ranking = Literal["bm25", "file_order", "oracle"]
-RANKINGS: tuple[Ranking, ...] = ("bm25", "file_order", "oracle")
+Ranking = Literal["bm25", "file_order", "smallest_first", "named_first", "bm25_per_token", "oracle"]
+# E10's candidates, in its declared order: ties at the dev choice go to the earlier one.
+CANDIDATES: tuple[Ranking, ...] = ("file_order", "smallest_first", "named_first", "bm25_per_token")
+RANKINGS: tuple[Ranking, ...] = ("bm25", *CANDIDATES, "oracle")
 TOP_K = (1, 2, 3, 5, 10)
 BOOTSTRAP = 2000
 SEED = 20261121
@@ -41,6 +47,8 @@ class Item(BaseModel):
     path: str
     tokens: int
     vulnerable: bool
+    bm25_score: float
+    named: bool  # the advisory names it (E10's rule: ``named_in``)
 
 
 class Case(BaseModel):
@@ -69,12 +77,28 @@ class Bundle(BaseModel):
         return [c for c in self.cases if len(_kept(self, c, "bm25")) < len(c.items)]
 
 
+def named_in(name: str, text: str) -> bool:
+    """Whether ``text`` names the candidate: its full name, or the part after its last dot,
+    as a whole word, case-sensitively (E10, declared before measuring)."""
+    parts = {name, name.rsplit(".", 1)[-1]}
+    return any(
+        re.search(rf"(?<![A-Za-z0-9_]){re.escape(p)}(?![A-Za-z0-9_])", text) for p in parts if p
+    )
+
+
 def order(case: Case, ranking: Ranking) -> list[int]:
     indices = list(range(len(case.items)))
+    items = case.items
     if ranking == "bm25":
         return list(case.bm25)
     if ranking == "file_order":
         return indices
+    if ranking == "smallest_first":
+        return sorted(indices, key=lambda i: (items[i].tokens, i))
+    if ranking == "named_first":
+        return sorted(indices, key=lambda i: (not items[i].named, i))
+    if ranking == "bm25_per_token":
+        return sorted(indices, key=lambda i: (-items[i].bm25_score / max(items[i].tokens, 1), i))
     # The cheapest candidate of each true name first, cheapest first: the most true names any
     # order can keep (each name counts once, so a second candidate of a name would waste room).
     first: dict[str, int] = {}
@@ -141,7 +165,7 @@ class SplitScore(BaseModel):
     true_functions: int  # in cut reports, among their candidates
     candidates: int  # in cut reports
     rankings: tuple[RankingScore, ...]
-    bm25_vs_file_order: Difference | None
+    against_bm25: tuple[Difference, ...]  # each other order minus BM25, paired by report
 
 
 def _ci(values: list[float]) -> Interval:
@@ -194,24 +218,25 @@ def score_split(bundle: Bundle, split: str) -> SplitScore:
                 recall_at_k={k: n / total_true if total_true else 0.0 for k, n in at_k.items()},
             )
         )
-    difference = None
-    if with_truth:
-        sides = [(b, f) for (b, _), (f, _) in zip(pairs["bm25"], pairs["file_order"], strict=True)]
+    differences = []
+    for other in RANKINGS[1:]:
+        sides = [(a, b) for (a, _), (b, _) in zip(pairs[other], pairs["bm25"], strict=True)]
 
-        def gap(draw: Sequence[int]) -> float:
-            return recall("bm25", draw) - recall("file_order", draw)
+        def gap(draw: Sequence[int], first: Ranking = other) -> float:
+            return recall(first, draw) - recall("bm25", draw)
 
-        difference = Difference(
-            first="bm25", second="file_order",
-            first_keeps_more=sum(a > b for a, b in sides),
-            second_keeps_more=sum(a < b for a, b in sides), tied=sum(a == b for a, b in sides),
-            recall_difference=gap(everyone),
-            ci95=_bootstrap(len(with_truth), gap, SEED) or Interval(low=0.0, high=0.0),
-        )  # fmt: skip
+        if with_truth:
+            differences.append(Difference(
+                first=other, second="bm25",
+                first_keeps_more=sum(a > b for a, b in sides),
+                second_keeps_more=sum(a < b for a, b in sides),
+                tied=sum(a == b for a, b in sides), recall_difference=gap(everyone),
+                ci95=_bootstrap(len(with_truth), gap, SEED) or Interval(low=0.0, high=0.0),
+            ))  # fmt: skip
     return SplitScore(
         split=split, reports=len(chosen), truncated=len(cut), truncated_with_truth=len(with_truth),
         true_functions=total_true, candidates=sum(len(c.items) for c in cut),
-        rankings=tuple(scores), bm25_vs_file_order=difference,
+        rankings=tuple(scores), against_bm25=tuple(differences),
     )  # fmt: skip
 
 
@@ -232,19 +257,51 @@ def score(bundle: Bundle) -> Report:
         benchmark=bundle.benchmark, split_sha256=bundle.split_sha256,
         prompt_version=bundle.prompt_version, tokenizer=bundle.tokenizer,
         budget_tokens=bundle.budget_tokens, max_candidates=bundle.max_candidates,
-        splits=tuple(score_split(bundle, s) for s in ("all", "dev", "test")),
+        splits=tuple(
+            score_split(bundle, s) for s in ("all", "dev", "test")
+            if s == "all" or any(c.split == s for c in bundle.cases)
+        ),
     )  # fmt: skip
+
+
+def _split(report: Report, name: str) -> SplitScore:
+    return next(s for s in report.splits if s.split == name)
+
+
+def choose_on_dev(report: Report) -> Ranking:
+    """E10's choice, on dev only: the highest recall; then fewer reports with no true
+    function kept; then the earlier order in ``CANDIDATES``."""
+    dev = {g.ranking: g for g in _split(report, "dev").rankings}
+    return min(
+        CANDIDATES,
+        key=lambda r: (-dev[r].recall, dev[r].reports_with_none_kept, CANDIDATES.index(r)),
+    )
+
+
+Verdict = Literal["pass", "fail", "inconclusive"]
+MIN_REPORTS = 10
+
+
+def holdout_verdict(report: Report, chosen: Ranking) -> Verdict:
+    """E10's one evaluation: pass if ``chosen`` minus BM25 has a 95% interval above zero and
+    leaves no more cut reports with nothing true kept; inconclusive below 10 such reports."""
+    whole = _split(report, "all")
+    if whole.truncated_with_truth < MIN_REPORTS:
+        return "inconclusive"
+    by = {g.ranking: g for g in whole.rankings}
+    difference = next(d for d in whole.against_bm25 if d.first == chosen)
+    fewer_lost = by[chosen].reports_with_none_kept <= by["bm25"].reports_with_none_kept
+    return "pass" if difference.ci95.low > 0 and fewer_lost else "fail"
 
 
 LABELS = {
     "bm25": "BM25 against the advisory (as built)",
     "file_order": "No ranking: path filter and file order",
+    "smallest_first": "Smallest first (E10)",
+    "named_first": "Candidates the advisory names first (E10)",
+    "bm25_per_token": "BM25 score per token (E10)",
     "oracle": "Oracle: true functions first (ceiling)",
 }
-
-
-def _reports(n: int) -> str:
-    return f"{n} report" if n == 1 else f"{n} reports"
 
 
 def _interval(i: Interval | None) -> str:
@@ -292,15 +349,19 @@ def render_markdown(report: Report, source: str) -> str:
                 f"{g.candidates_kept} | "
                 + " | ".join(f"{g.recall_at_k[k]:.3f}" for k in TOP_K) + " |"
             )  # fmt: skip
-        if s.bm25_vs_file_order is not None:
-            d = s.bm25_vs_file_order
+        if s.against_bm25:
             lines += [
                 "",
-                f"BM25 minus file order, paired by report: {d.recall_difference:+.3f} "
-                f"(95% CI {d.ci95.low:+.3f} to {d.ci95.high:+.3f}). BM25 keeps more true "
-                f"functions in {_reports(d.first_keeps_more)}, file order in "
-                f"{_reports(d.second_keeps_more)}; they tie in {_reports(d.tied)}.",
+                "| Order minus BM25, paired by report | Recall difference (95% CI) | "
+                "Keeps more | BM25 keeps more | Tied |",
+                "|---|---|---:|---:|---:|",
             ]
+            for d in s.against_bm25:
+                lines.append(
+                    f"| {LABELS[d.first]} | {d.recall_difference:+.3f} "
+                    f"({d.ci95.low:+.3f} to {d.ci95.high:+.3f}) | {d.first_keeps_more} | "
+                    f"{d.second_keeps_more} | {d.tied} |"
+                )
         lines.append("")
     lines += [
         "Recall@k ranks by count of candidates and ignores tokens: how often a true function "

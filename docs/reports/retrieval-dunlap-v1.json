@@ -51,6 +51,60 @@
           }
         },
         {
+          "ranking": "smallest_first",
+          "kept_true": 93,
+          "recall": 0.6642857142857143,
+          "recall_ci95": {
+            "low": 0.5119012605042016,
+            "high": 0.8135729030856149
+          },
+          "reports_with_none_kept": 5,
+          "candidates_kept": 476,
+          "recall_at_k": {
+            "1": 0.08571428571428572,
+            "2": 0.1357142857142857,
+            "3": 0.19285714285714287,
+            "5": 0.3,
+            "10": 0.4857142857142857
+          }
+        },
+        {
+          "ranking": "named_first",
+          "kept_true": 97,
+          "recall": 0.6928571428571428,
+          "recall_ci95": {
+            "low": 0.6029297588600657,
+            "high": 0.8026445296311645
+          },
+          "reports_with_none_kept": 3,
+          "candidates_kept": 330,
+          "recall_at_k": {
+            "1": 0.12142857142857143,
+            "2": 0.16428571428571428,
+            "3": 0.22857142857142856,
+            "5": 0.34285714285714286,
+            "10": 0.6357142857142857
+          }
+        },
+        {
+          "ranking": "bm25_per_token",
+          "kept_true": 82,
+          "recall": 0.5857142857142857,
+          "recall_ci95": {
+            "low": 0.4823529411764706,
+            "high": 0.7121212121212122
+          },
+          "reports_with_none_kept": 4,
+          "candidates_kept": 354,
+          "recall_at_k": {
+            "1": 0.07857142857142857,
+            "2": 0.1357142857142857,
+            "3": 0.2,
+            "5": 0.3,
+            "10": 0.5214285714285715
+          }
+        },
+        {
           "ranking": "oracle",
           "kept_true": 133,
           "recall": 0.95,
@@ -69,18 +123,68 @@
           }
         }
       ],
-      "bm25_vs_file_order": {
-        "first": "bm25",
-        "second": "file_order",
-        "recall_difference": -0.2714285714285714,
-        "ci95": {
-          "low": -0.40489595770083575,
-          "high": -0.10936789772727276
+      "against_bm25": [
+        {
+          "first": "file_order",
+          "second": "bm25",
+          "recall_difference": 0.2714285714285714,
+          "ci95": {
+            "low": 0.10936789772727272,
+            "high": 0.4048959577008357
+          },
+          "first_keeps_more": 14,
+          "second_keeps_more": 6,
+          "tied": 9
         },
-        "first_keeps_more": 6,
-        "second_keeps_more": 14,
-        "tied": 9
-      }
+        {
+          "first": "smallest_first",
+          "second": "bm25",
+          "recall_difference": 0.24285714285714283,
+          "ci95": {
+            "low": 0.04713735502856153,
+            "high": 0.3966503218362885
+          },
+          "first_keeps_more": 14,
+          "second_keeps_more": 9,
+          "tied": 6
+        },
+        {
+          "first": "named_first",
+          "second": "bm25",
+          "recall_difference": 0.2714285714285714,
+          "ci95": {
+            "low": 0.10686837619506417,
+            "high": 0.40909853569249544
+          },
+          "first_keeps_more": 14,
+          "second_keeps_more": 5,
+          "tied": 10
+        },
+        {
+          "first": "bm25_per_token",
+          "second": "bm25",
+          "recall_difference": 0.1642857142857143,
+          "ci95": {
+            "low": 0.031987401574803176,
+            "high": 0.28226179808841095
+          },
+          "first_keeps_more": 10,
+          "second_keeps_more": 3,
+          "tied": 16
+        },
+        {
+          "first": "oracle",
+          "second": "bm25",
+          "recall_difference": 0.5285714285714285,
+          "ci95": {
+            "low": 0.37232395029184717,
+            "high": 0.6479294570843864
+          },
+          "first_keeps_more": 19,
+          "second_keeps_more": 0,
+          "tied": 10
+        }
+      ]
     },
     {
       "split": "dev",
@@ -127,6 +231,60 @@
           }
         },
         {
+          "ranking": "smallest_first",
+          "kept_true": 16,
+          "recall": 0.8421052631578947,
+          "recall_ci95": {
+            "low": 0.5263157894736842,
+            "high": 1.0
+          },
+          "reports_with_none_kept": 0,
+          "candidates_kept": 94,
+          "recall_at_k": {
+            "1": 0.2631578947368421,
+            "2": 0.3684210526315789,
+            "3": 0.42105263157894735,
+            "5": 0.5263157894736842,
+            "10": 0.7368421052631579
+          }
+        },
+        {
+          "ranking": "named_first",
+          "kept_true": 13,
+          "recall": 0.6842105263157895,
+          "recall_ci95": {
+            "low": 0.5151515151515151,
+            "high": 1.0
+          },
+          "reports_with_none_kept": 0,
+          "candidates_kept": 66,
+          "recall_at_k": {
+            "1": 0.21052631578947367,
+            "2": 0.2631578947368421,
+            "3": 0.3684210526315789,
+            "5": 0.42105263157894735,
+            "10": 0.7368421052631579
+          }
+        },
+        {
+          "ranking": "bm25_per_token",
+          "kept_true": 12,
+          "recall": 0.631578947368421,
+          "recall_ci95": {
+            "low": 0.4666666666666667,
+            "high": 0.7897368421052617
+          },
+          "reports_with_none_kept": 1,
+          "candidates_kept": 68,
+          "recall_at_k": {
+            "1": 0.15789473684210525,
+            "2": 0.2631578947368421,
+            "3": 0.3157894736842105,
+            "5": 0.47368421052631576,
+            "10": 0.7368421052631579
+          }
+        },
+        {
           "ranking": "oracle",
           "kept_true": 19,
           "recall": 1.0,
@@ -145,18 +303,68 @@
           }
         }
       ],
-      "bm25_vs_file_order": {
-        "first": "bm25",
-        "second": "file_order",
-        "recall_difference": -0.10526315789473684,
-        "ci95": {
-          "low": -0.6363636363636364,
-          "high": 0.07999999999999996
+      "against_bm25": [
+        {
+          "first": "file_order",
+          "second": "bm25",
+          "recall_difference": 0.10526315789473684,
+          "ci95": {
+            "low": -0.07999999999999996,
+            "high": 0.6363636363636364
+          },
+          "first_keeps_more": 2,
+          "second_keeps_more": 1,
+          "tied": 2
         },
-        "first_keeps_more": 1,
-        "second_keeps_more": 2,
-        "tied": 2
-      }
+        {
+          "first": "smallest_first",
+          "second": "bm25",
+          "recall_difference": 0.26315789473684204,
+          "ci95": {
+            "low": -0.23076923076923084,
+            "high": 0.6363636363636364
+          },
+          "first_keeps_more": 3,
+          "second_keeps_more": 1,
+          "tied": 1
+        },
+        {
+          "first": "named_first",
+          "second": "bm25",
+          "recall_difference": 0.10526315789473684,
+          "ci95": {
+            "low": -0.07999999999999996,
+            "high": 0.6363636363636364
+          },
+          "first_keeps_more": 2,
+          "second_keeps_more": 1,
+          "tied": 2
+        },
+        {
+          "first": "bm25_per_token",
+          "second": "bm25",
+          "recall_difference": 0.05263157894736836,
+          "ci95": {
+            "low": 0.0,
+            "high": 0.22222222222222227
+          },
+          "first_keeps_more": 1,
+          "second_keeps_more": 0,
+          "tied": 4
+        },
+        {
+          "first": "oracle",
+          "second": "bm25",
+          "recall_difference": 0.42105263157894735,
+          "ci95": {
+            "low": 0.23529411764705888,
+            "high": 0.6363636363636364
+          },
+          "first_keeps_more": 4,
+          "second_keeps_more": 0,
+          "tied": 1
+        }
+      ]
     },
     {
       "split": "test",
@@ -203,6 +411,60 @@
           }
         },
         {
+          "ranking": "smallest_first",
+          "kept_true": 77,
+          "recall": 0.6363636363636364,
+          "recall_ci95": {
+            "low": 0.46470240852246414,
+            "high": 0.793822013341419
+          },
+          "reports_with_none_kept": 5,
+          "candidates_kept": 382,
+          "recall_at_k": {
+            "1": 0.05785123966942149,
+            "2": 0.09917355371900827,
+            "3": 0.15702479338842976,
+            "5": 0.2644628099173554,
+            "10": 0.4462809917355372
+          }
+        },
+        {
+          "ranking": "named_first",
+          "kept_true": 84,
+          "recall": 0.6942148760330579,
+          "recall_ci95": {
+            "low": 0.5871559633027523,
+            "high": 0.8155339805825242
+          },
+          "reports_with_none_kept": 3,
+          "candidates_kept": 264,
+          "recall_at_k": {
+            "1": 0.10743801652892562,
+            "2": 0.1487603305785124,
+            "3": 0.2066115702479339,
+            "5": 0.3305785123966942,
+            "10": 0.6198347107438017
+          }
+        },
+        {
+          "ranking": "bm25_per_token",
+          "kept_true": 70,
+          "recall": 0.5785123966942148,
+          "recall_ci95": {
+            "low": 0.4653128712871287,
+            "high": 0.7203593546284223
+          },
+          "reports_with_none_kept": 3,
+          "candidates_kept": 286,
+          "recall_at_k": {
+            "1": 0.06611570247933884,
+            "2": 0.11570247933884298,
+            "3": 0.18181818181818182,
+            "5": 0.2727272727272727,
+            "10": 0.48760330578512395
+          }
+        },
+        {
           "ranking": "oracle",
           "kept_true": 114,
           "recall": 0.9421487603305785,
@@ -221,18 +483,68 @@
           }
         }
       ],
-      "bm25_vs_file_order": {
-        "first": "bm25",
-        "second": "file_order",
-        "recall_difference": -0.2975206611570248,
-        "ci95": {
-          "low": -0.4375,
-          "high": -0.11762796027501923
+      "against_bm25": [
+        {
+          "first": "file_order",
+          "second": "bm25",
+          "recall_difference": 0.2975206611570248,
+          "ci95": {
+            "low": 0.11762796027501912,
+            "high": 0.4375
+          },
+          "first_keeps_more": 12,
+          "second_keeps_more": 5,
+          "tied": 7
         },
-        "first_keeps_more": 5,
-        "second_keeps_more": 12,
-        "tied": 7
-      }
+        {
+          "first": "smallest_first",
+          "second": "bm25",
+          "recall_difference": 0.23966942148760328,
+          "ci95": {
+            "low": 0.03156266956049923,
+            "high": 0.4096587843912963
+          },
+          "first_keeps_more": 11,
+          "second_keeps_more": 8,
+          "tied": 5
+        },
+        {
+          "first": "named_first",
+          "second": "bm25",
+          "recall_difference": 0.2975206611570248,
+          "ci95": {
+            "low": 0.12493055555555556,
+            "high": 0.43872678396871945
+          },
+          "first_keeps_more": 12,
+          "second_keeps_more": 4,
+          "tied": 8
+        },
+        {
+          "first": "bm25_per_token",
+          "second": "bm25",
+          "recall_difference": 0.18181818181818177,
+          "ci95": {
+            "low": 0.032599929873772825,
+            "high": 0.3030558968058967
+          },
+          "first_keeps_more": 9,
+          "second_keeps_more": 3,
+          "tied": 12
+        },
+        {
+          "first": "oracle",
+          "second": "bm25",
+          "recall_difference": 0.5454545454545454,
+          "ci95": {
+            "low": 0.37497614503816795,
+            "high": 0.6717618320610687
+          },
+          "first_keeps_more": 15,
+          "second_keeps_more": 0,
+          "tied": 9
+        }
+      ]
     }
   ]
 }

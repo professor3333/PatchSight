@@ -1377,6 +1377,19 @@ def reachability_report_command(
         raise typer.Exit(1)
 
 
+@app.command("fetch-nightly")
+def fetch_nightly_command(
+    root: Root = Path(),
+    repo: Annotated[str, typer.Option(help="The repository.")] = "professor3333/PatchSight",
+    limit: Annotated[int, typer.Option(help="The latest runs to look at.")] = 30,
+) -> None:
+    """Download the reports of nightly runs not fetched yet (needs GITHUB_TOKEN)."""
+    from patchsight.pipeline import nightly_runs
+
+    fetched = nightly_runs.fetch(_github_token(), repo, root, limit)
+    typer.echo(f"{len(fetched)} nightly runs fetched into {nightly_runs.DIRECTORY}")
+
+
 @app.command("operations-report")
 def operations_report_command(
     database: Annotated[
@@ -1390,7 +1403,7 @@ def operations_report_command(
     cache: Annotated[Path, typer.Option(help="Cache root.")] = Path(".cache"),
 ) -> None:
     """The operations dashboard (#60): Kaggle sessions, quota use and the database, offline."""
-    from patchsight.pipeline import operations, sessions
+    from patchsight.pipeline import nightly_runs, operations, sessions
 
     found = sessions.load_sessions(root / kaggle)
     llm_config = load_config(root / config)
@@ -1410,6 +1423,7 @@ def operations_report_command(
         sessions=tuple(found), weeks=tuple(sessions.gpu_weeks(found)), hosted=tuple(hosted),
         database=None if database is None else operations.database_view(database),
         local_runs=tuple(sessions.load_traces(root / TRACE_DIR)),
+        nightly=tuple(nightly_runs.load_runs(root)),
     )  # fmt: skip
     target = root / "docs" / "reports" / "operations"
     target.with_name("operations.md").write_text(operations.render_markdown(report), "utf-8")

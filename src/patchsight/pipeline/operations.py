@@ -11,6 +11,7 @@ from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict
 
+from patchsight.pipeline.nightly_runs import NightlyRun
 from patchsight.pipeline.sessions import (
     KAGGLE_WEEKLY_GPU_HOURS,
     DayUse,
@@ -70,6 +71,7 @@ class OperationsReport(BaseModel):
     hosted: tuple[HostedModel, ...]
     database: DatabaseView | None
     local_runs: tuple[TracedRun, ...] = ()  # traces of runs on the machine that wrote this
+    nightly: tuple[NightlyRun, ...] = ()
 
 
 def _n(value: int | None) -> str:
@@ -124,6 +126,32 @@ def _runs(rows: Sequence[tuple[str, TracedRun]]) -> list[str]:
     return lines
 
 
+def _nightly(runs: Sequence[NightlyRun]) -> list[str]:
+    if not runs:
+        return ["No nightly report fetched yet (`fetch-nightly`)."]
+    lines = [
+        "| Started (UTC) | Trigger | Result | Release | Carried / rebuilt / new / removed | "
+        "Gate | To extract | Extraction | Dead letters |",
+        "|---|---|---|---|---|---|---:|---|---:|",
+    ]
+    for r in runs:
+        release = f"`{r.db_version}`" + ("" if r.published else " (not published)")
+        changes = (
+            "—" if r.carried is None
+            else f"{r.carried:,} / {r.rebuilt:,} / {r.new:,} / {r.removed:,}"
+        )  # fmt: skip
+        gate = "—" if r.gate_passed is None else ("pass" if r.gate_passed else "**fail**")
+        extraction = ", ".join(f"{k} {v:,}" for k, v in sorted(r.extraction.items())) or "—"
+        rate = "—" if r.dead_letter_rate is None else f"{r.dead_letter_rate:.1%}"
+        to_extract = "—" if r.to_extract is None else f"{r.to_extract:,}"
+        lines.append(
+            f"| {r.started:%Y-%m-%d %H:%M} | {r.event} | {r.conclusion or '—'} | "
+            f"{release if r.db_version else '—'} | {changes} | {gate} | {to_extract} | "
+            f"{extraction} | {rate} |"
+        )
+    return lines
+
+
 def render_markdown(report: OperationsReport) -> str:
     r = report
     lines = [
@@ -166,11 +194,20 @@ def render_markdown(report: OperationsReport) -> str:
                     for s in r.sessions
                     for run in s.runs
                 ]
+                + [(f"nightly {n.started:%Y-%m-%d}", run) for n in r.nightly for run in n.runs]
                 + [("this machine", run) for run in r.local_runs]
             )
-            if any(s.runs for s in r.sessions) or r.local_runs
+            if any(s.runs for s in r.sessions) or r.local_runs or any(n.runs for n in r.nightly)
             else ["No traced run yet."]
         ),
+        "",
+        "## Nightly runs",
+        "",
+        "From the reports each run keeps (`fetch-nightly`). Since ADR 0013 a run with the Groq "
+        "secret also extracts its changed vulnerabilities; the dead-letter target is under 2% "
+        "after retries.",
+        "",
+        *_nightly(r.nightly),
         "",
         "## Hosted models: tokens against the daily cap",
         "",

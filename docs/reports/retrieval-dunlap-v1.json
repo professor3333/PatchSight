@@ -1,0 +1,238 @@
+{
+  "benchmark": "dunlap-v1",
+  "split_sha256": "c1ec2476e0acf0660114389c7cba7a3435b48e90dfc63445f2582eea614867c0",
+  "prompt_version": "extract-v1",
+  "tokenizer": "Qwen/Qwen3.8-27B@37561816e66b5b9153b1b64c10968c18c1e6f4a0",
+  "budget_tokens": 4600,
+  "max_candidates": null,
+  "splits": [
+    {
+      "split": "all",
+      "reports": 280,
+      "truncated": 32,
+      "truncated_with_truth": 29,
+      "true_functions": 140,
+      "candidates": 1818,
+      "rankings": [
+        {
+          "ranking": "bm25",
+          "kept_true": 59,
+          "recall": 0.42142857142857143,
+          "recall_ci95": {
+            "low": 0.28123929794520547,
+            "high": 0.6082685098406746
+          },
+          "reports_with_none_kept": 4,
+          "candidates_kept": 244,
+          "recall_at_k": {
+            "1": 0.08571428571428572,
+            "2": 0.15,
+            "3": 0.2,
+            "5": 0.2785714285714286,
+            "10": 0.4928571428571429
+          }
+        },
+        {
+          "ranking": "file_order",
+          "kept_true": 97,
+          "recall": 0.6928571428571428,
+          "recall_ci95": {
+            "low": 0.6057090432503277,
+            "high": 0.8039266221952699
+          },
+          "reports_with_none_kept": 4,
+          "candidates_kept": 334,
+          "recall_at_k": {
+            "1": 0.11428571428571428,
+            "2": 0.17142857142857143,
+            "3": 0.2357142857142857,
+            "5": 0.35,
+            "10": 0.6571428571428571
+          }
+        },
+        {
+          "ranking": "oracle",
+          "kept_true": 133,
+          "recall": 0.95,
+          "recall_ci95": {
+            "low": 0.8926121400050974,
+            "high": 1.0
+          },
+          "reports_with_none_kept": 0,
+          "candidates_kept": 342,
+          "recall_at_k": {
+            "1": 0.20714285714285716,
+            "2": 0.35714285714285715,
+            "3": 0.4785714285714286,
+            "5": 0.65,
+            "10": 0.8928571428571429
+          }
+        }
+      ],
+      "bm25_vs_file_order": {
+        "first": "bm25",
+        "second": "file_order",
+        "recall_difference": -0.2714285714285714,
+        "ci95": {
+          "low": -0.40489595770083575,
+          "high": -0.10936789772727276
+        },
+        "first_keeps_more": 6,
+        "second_keeps_more": 14,
+        "tied": 9
+      }
+    },
+    {
+      "split": "dev",
+      "reports": 60,
+      "truncated": 7,
+      "truncated_with_truth": 5,
+      "true_functions": 19,
+      "candidates": 268,
+      "rankings": [
+        {
+          "ranking": "bm25",
+          "kept_true": 11,
+          "recall": 0.5789473684210527,
+          "recall_ci95": {
+            "low": 0.36363636363636365,
+            "high": 0.7647058823529411
+          },
+          "reports_with_none_kept": 1,
+          "candidates_kept": 56,
+          "recall_at_k": {
+            "1": 0.10526315789473684,
+            "2": 0.15789473684210525,
+            "3": 0.21052631578947367,
+            "5": 0.2631578947368421,
+            "10": 0.7368421052631579
+          }
+        },
+        {
+          "ranking": "file_order",
+          "kept_true": 13,
+          "recall": 0.6842105263157895,
+          "recall_ci95": {
+            "low": 0.5151515151515151,
+            "high": 1.0
+          },
+          "reports_with_none_kept": 0,
+          "candidates_kept": 65,
+          "recall_at_k": {
+            "1": 0.21052631578947367,
+            "2": 0.2631578947368421,
+            "3": 0.3684210526315789,
+            "5": 0.42105263157894735,
+            "10": 0.7368421052631579
+          }
+        },
+        {
+          "ranking": "oracle",
+          "kept_true": 19,
+          "recall": 1.0,
+          "recall_ci95": {
+            "low": 1.0,
+            "high": 1.0
+          },
+          "reports_with_none_kept": 0,
+          "candidates_kept": 67,
+          "recall_at_k": {
+            "1": 0.2631578947368421,
+            "2": 0.42105263157894735,
+            "3": 0.5789473684210527,
+            "5": 0.7894736842105263,
+            "10": 1.0
+          }
+        }
+      ],
+      "bm25_vs_file_order": {
+        "first": "bm25",
+        "second": "file_order",
+        "recall_difference": -0.10526315789473684,
+        "ci95": {
+          "low": -0.6363636363636364,
+          "high": 0.07999999999999996
+        },
+        "first_keeps_more": 1,
+        "second_keeps_more": 2,
+        "tied": 2
+      }
+    },
+    {
+      "split": "test",
+      "reports": 220,
+      "truncated": 25,
+      "truncated_with_truth": 24,
+      "true_functions": 121,
+      "candidates": 1550,
+      "rankings": [
+        {
+          "ranking": "bm25",
+          "kept_true": 48,
+          "recall": 0.39669421487603307,
+          "recall_ci95": {
+            "low": 0.2424093879976233,
+            "high": 0.6039776652083811
+          },
+          "reports_with_none_kept": 3,
+          "candidates_kept": 188,
+          "recall_at_k": {
+            "1": 0.08264462809917356,
+            "2": 0.1487603305785124,
+            "3": 0.19834710743801653,
+            "5": 0.2809917355371901,
+            "10": 0.45454545454545453
+          }
+        },
+        {
+          "ranking": "file_order",
+          "kept_true": 84,
+          "recall": 0.6942148760330579,
+          "recall_ci95": {
+            "low": 0.5905443460192475,
+            "high": 0.8155403679100663
+          },
+          "reports_with_none_kept": 4,
+          "candidates_kept": 269,
+          "recall_at_k": {
+            "1": 0.09917355371900827,
+            "2": 0.15702479338842976,
+            "3": 0.21487603305785125,
+            "5": 0.33884297520661155,
+            "10": 0.6446280991735537
+          }
+        },
+        {
+          "ranking": "oracle",
+          "kept_true": 114,
+          "recall": 0.9421487603305785,
+          "recall_ci95": {
+            "low": 0.8796866326891053,
+            "high": 1.0
+          },
+          "reports_with_none_kept": 0,
+          "candidates_kept": 275,
+          "recall_at_k": {
+            "1": 0.19834710743801653,
+            "2": 0.34710743801652894,
+            "3": 0.4628099173553719,
+            "5": 0.628099173553719,
+            "10": 0.8760330578512396
+          }
+        }
+      ],
+      "bm25_vs_file_order": {
+        "first": "bm25",
+        "second": "file_order",
+        "recall_difference": -0.2975206611570248,
+        "ci95": {
+          "low": -0.4375,
+          "high": -0.11762796027501923
+        },
+        "first_keeps_more": 5,
+        "second_keeps_more": 12,
+        "tied": 7
+      }
+    }
+  ]
+}

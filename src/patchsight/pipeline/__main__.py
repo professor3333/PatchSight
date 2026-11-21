@@ -494,6 +494,119 @@ def dunlap_extract_command(
     )
 
 
+RETRIEVAL_BUNDLE = Path("benchmarks/dunlap-v1/retrieval.json")
+RETRIEVAL_REPORT = Path("docs/reports/retrieval-dunlap-v1")
+
+
+@app.command("retrieval-freeze")
+def retrieval_freeze_command(
+    root: Root = Path(),
+    role: Annotated[str, typer.Option(help="Model role whose budget is measured.")] = (
+        "kaggle_extractor"
+    ),
+    config: Annotated[Path, typer.Option(help="LLM config.")] = Path("configs/llm.toml"),
+    prompt: Annotated[Path, typer.Option(help="Prompt template.")] = Path("prompts/extract_v1.md"),
+    cache: Annotated[Path, typer.Option(help="Cache root (HTTP and tokenizer).")] = Path(".cache"),
+    against: Annotated[
+        Path | None,
+        typer.Option(help="An extraction report whose truncation the bundle must reproduce."),
+    ] = Path("docs/reports/extraction-dunlap-all-extract-v1-qwen3.8-27b-q4km.json"),
+    out: Annotated[Path, typer.Option(help="Bundle to write.")] = RETRIEVAL_BUNDLE,
+) -> None:
+    """Freeze the retrieval bundle for the Dunlap benchmark, offline from the HTTP cache:
+    each candidate's name, path, token cost and label, the BM25 order and the prompt's fixed
+    cost. No code and no advisory text are stored."""
+    from patchsight.pipeline.benchmarks import retrieval
+    from patchsight.pipeline.diffs.commits import map_commit
+    from patchsight.pipeline.extract.prompt import budget_plan, fit
+
+    chosen = _load_benchmark(root, "dunlap-v1", "all")
+    frozen = splits.load_split(root / DUNLAP_SPLIT)
+    dev = frozen.split.ids("dev")
+    llm_config = load_config(root / config)
+    template = load_template(root / prompt)
+    counter = HfTokenizer(llm_config.tokenizer, root / cache / "tokenizer")
+    budget, cap = llm_config.prompt_budget(role), llm_config.candidate_limit(role)
+    lines = llm_config.budget.max_hunk_lines
+    github = GitHubClient(root / cache / "http" / "github", offline=True)
+    cases = []
+    try:
+        for report in sorted(chosen.reports, key=lambda r: r.id):
+            if chosen.ids is not None and report.id not in chosen.ids:
+                continue
+            mappings = [
+                map_commit(github, c.github_repo, c.sha, include=dunlap.paper_path_filter)
+                for c in report.commits
+            ]
+            inputs, _ = extraction.candidate_inputs(mappings)
+            plan = budget_plan(template, chosen.advisories[report.id], inputs, counter, lines)
+            truth = set(report.symbols)
+            cases.append(
+                retrieval.Case(
+                    report=report.id,
+                    split="dev" if report.id in dev else "test",
+                    base_tokens=plan.base_tokens,
+                    bm25=plan.order,
+                    items=tuple(
+                        retrieval.Item(
+                            name=i.name, path=i.path, tokens=cost, vulnerable=i.name in truth
+                        )
+                        for i, cost in zip(inputs, plan.costs, strict=True)
+                    ),
+                )
+            )
+    finally:
+        github.close()
+    bundle = retrieval.Bundle(
+        benchmark="dunlap-v1", split_sha256=frozen.sha256, prompt_version=template.version,
+        tokenizer=f"{llm_config.tokenizer.repo}@{llm_config.tokenizer.revision}",
+        budget_tokens=budget, max_candidates=cap, cases=tuple(cases),
+    )  # fmt: skip
+    if against is not None:
+        recorded = extraction.ExtractionRun.model_validate_json((root / against).read_text("utf-8"))
+        by_id = {o.advisory_id: o for o in recorded.outcomes}
+        for case in bundle.cases:
+            kept = fit(case.bm25, [i.tokens for i in case.items], case.base_tokens, budget, cap)
+            dropped = tuple(case.items[i].name for i in range(len(case.items)) if i not in kept)
+            outcome = by_id[case.report]
+            if dropped != tuple(outcome.dropped_candidates):
+                raise typer.BadParameter(
+                    f"{case.report}: the bundle drops {dropped}, the run dropped "
+                    f"{outcome.dropped_candidates}; nothing written"
+                )
+        typer.echo(f"truncation matches {against} for all {len(bundle.cases)} reports")
+    (root / out).write_text(bundle.model_dump_json(indent=1) + "\n", "utf-8")
+    typer.echo(f"{out}: {len(bundle.cases)} reports, {len(bundle.truncated())} cut at {budget}")
+
+
+@app.command("retrieval-report")
+def retrieval_report_command(
+    root: Root = Path(),
+    bundle: Annotated[Path, typer.Option(help="Retrieval bundle.")] = RETRIEVAL_BUNDLE,
+    out: Annotated[Path, typer.Option(help="Report path, without extension.")] = RETRIEVAL_REPORT,
+) -> None:
+    """Score retrieval at the prompt budget from the frozen bundle: BM25 against file order
+    and the oracle ceiling, on the reports whose prompts are cut. Offline, no model call."""
+    import hashlib
+
+    from patchsight.pipeline.benchmarks import retrieval
+
+    raw = (root / bundle).read_bytes()
+    report = retrieval.score(retrieval.Bundle.model_validate_json(raw))
+    source = f"Bundle: `{bundle.as_posix()}` SHA-256 `{hashlib.sha256(raw).hexdigest()}`"
+    target = root / out
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.with_name(target.name + ".json").write_text(
+        report.model_dump_json(indent=2) + "\n", "utf-8"
+    )
+    target.with_name(target.name + ".md").write_text(
+        retrieval.render_markdown(report, source), "utf-8"
+    )
+    for split in report.splits:
+        recalls = ", ".join(f"{g.ranking} {g.recall:.3f}" for g in split.rankings)
+        typer.echo(f"{split.split}: {split.truncated}/{split.reports} cut; recall {recalls}")
+
+
 @app.command("holdout-freeze")
 def holdout_freeze_command(
     root: Root = Path(),

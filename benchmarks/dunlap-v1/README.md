@@ -30,6 +30,13 @@ stored, because prompts contain the fix diffs.
 |---|---|---|---|
 | `extract-v1-qwen3.8-27b-q4km` | `ggml-org/Qwen3.8-27B-GGUF@c1869413` (Q4_K_M) | `extract-v1` | Kaggle, 2× T4, llama.cpp `b12024` (`docs/reports/kaggle-run-extract-v1-qwen3.8-27b-q4km.json`) |
 
+## Retrieval at the prompt budget
+
+`retrieval.json` holds, for every report, each candidate's name, path, token cost (as the prompt
+renderer counts it, with the pinned Qwen tokenizer) and label, the BM25 order and the prompt's
+fixed cost. `retrieval-report` scores BM25, file order and an oracle order from it alone
+(`docs/reports/retrieval-dunlap-v1.md`). No code and no advisory text are stored.
+
 ## Sources and licences
 
 - **Benchmark and ground truth:** Dunlap et al., "Pairing Security Advisories with Vulnerable
@@ -47,4 +54,5 @@ stored, because prompts contain the fix diffs.
 python -m patchsight.pipeline fetch-dunlap
 GITHUB_TOKEN=... python -m patchsight.pipeline export-dunlap-bundle
 GITHUB_TOKEN=... python -m patchsight.pipeline export-replay <tag>   # needs that run's response cache
+python -m patchsight.pipeline retrieval-freeze   # offline, from the HTTP cache of the fix diffs
 ```

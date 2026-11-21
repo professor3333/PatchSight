@@ -1,9 +1,10 @@
 """Nightly runs for the operations dashboard (issue #60), from the reports each run keeps.
 
 Every nightly run uploads a ``nightly-reports`` artifact: the update report, the gate's
-result, the release notes when it published, and, since ADR 0013, the extraction's summary,
-the merge report and the run's trace. ``fetch`` downloads them through the GitHub API into
-``data/interim/nightly/<run id>/``, once each, and ``load_run`` turns a folder into a row.
+result, the release notes when it published, and, since ADR 0013, the targets it chose, the
+extraction's summary, the merge report and the run's trace. ``fetch`` downloads them through
+the GitHub API into ``data/interim/nightly/<run id>/``, once each, and ``load_run`` turns a
+folder into a row.
 
 Offline pipeline only. Only the expected report files are taken from an artifact; anything
 else in it is refused.
@@ -27,7 +28,8 @@ DIRECTORY = Path("data/interim/nightly")
 API = "https://api.github.com"
 REPORTS = frozenset({
     "nightly-update.json", "nightly-import-names.json", "gate.json", "gate.md",
-    "release-notes.md", "nightly-extract-extractor-summary.json", "nightly-merged-merge.json",
+    "release-notes.md", "nightly-targets.json", "nightly-extract-extractor-summary.json",
+    "nightly-merged-merge.json",
 })  # fmt: skip
 
 
@@ -111,6 +113,7 @@ class NightlyRun(BaseModel):
     new: int | None = None
     removed: int | None = None
     to_extract: int | None = None
+    backlog: int | None = None  # vulnerabilities waiting from earlier nights (ADR 0013)
     gate_passed: bool | None = None
     published: bool = False
     extraction: dict[str, int] = {}  # outcome statuses, when the night extracted
@@ -131,6 +134,7 @@ def load_run(folder: Path) -> NightlyRun:
     update = _json(folder / "nightly-update.json") or {}
     gate = _json(folder / "gate.json")
     summary = _json(folder / "nightly-extract-extractor-summary.json") or {}
+    targets = _json(folder / "nightly-targets.json") or {}
     return NightlyRun(
         run_id=int(meta["id"]), event=str(meta.get("event")), conclusion=meta.get("conclusion"),
         started=datetime.fromisoformat(str(meta["created_at"]).replace("Z", "+00:00")),
@@ -138,6 +142,7 @@ def load_run(folder: Path) -> NightlyRun:
         carried=update.get("carried"), rebuilt=update.get("rebuilt"), new=update.get("new"),
         removed=update.get("removed"),
         to_extract=len(update["to_extract"]) if "to_extract" in update else None,
+        backlog=targets.get("backlog"),
         gate_passed=None if gate is None else bool(gate.get("passed")),
         published=(folder / "release-notes.md").exists(),
         extraction=dict(summary.get("status") or {}),

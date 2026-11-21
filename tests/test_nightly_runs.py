@@ -29,6 +29,7 @@ UPDATE = {"previous_version": "2026.11.21", "db_version": "2026.11.22", "carried
     ("name", "place"),
     [("nightly-update.json", "nightly-update.json"), ("build/gate.json", "gate.json"),
      ("interim/traces/pypi-extract-x.jsonl", "traces/pypi-extract-x.jsonl"),
+     ("build/nightly-targets.json", "nightly-targets.json"),
      ("build/other.sqlite", None), ("../gate.json", None), ("/etc/gate.json", None),
      ("traces/../../x.jsonl", None)],
 )  # fmt: skip
@@ -57,6 +58,8 @@ def test_a_night_with_extraction_becomes_one_row(tmp_path: Path) -> None:
         "build/nightly-update.json": json.dumps(UPDATE),
         "build/gate.json": json.dumps({"passed": True}),
         "build/release-notes.md": "notes",
+        "build/nightly-targets.json": json.dumps(
+            {"fresh": 3, "backlog": 40, "targets": ["GHSA-a", "GHSA-b", "GHSA-c", "GHSA-z"]}),
         "build/nightly-extract-extractor-summary.json": json.dumps(
             {"status": {"ok": 2, "dead_letter": 1}}),
         "interim/traces/pypi-extract-extractor-20261122T114000Z.jsonl": trace,
@@ -65,13 +68,13 @@ def test_a_night_with_extraction_becomes_one_row(tmp_path: Path) -> None:
     assert not (folder / "unrelated.bin").exists()
     run = nightly_runs.load_run(folder)
     assert (run.db_version, run.previous_version, run.to_extract) == ("2026.11.22", "2026.11.21", 3)
-    assert (run.gate_passed, run.published) == (True, True)
+    assert (run.gate_passed, run.published, run.backlog) == (True, True, 40)
     assert run.dead_letter_rate == pytest.approx(1 / 3)
     assert [r.command for r in run.runs] == ["pypi-extract"]
     text = render_markdown(OperationsReport(generated_at=run.started, sessions=(), weeks=(),
                                             hosted=(), database=None, nightly=(run,)))  # fmt: skip
     assert ("| 2026-11-22 11:30 | schedule | success | `2026.11.22` | 10 / 2 / 1 / 0 | pass | 3 "
-            "| dead_letter 1, ok 2 | 33.3% |") in text  # fmt: skip
+            "| 40 | dead_letter 1, ok 2 | 33.3% |") in text  # fmt: skip
     assert "| nightly 2026-11-22 | pypi-extract | extractor |" in text
 
 

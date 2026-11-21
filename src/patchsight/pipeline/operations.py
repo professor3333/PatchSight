@@ -131,8 +131,8 @@ def _nightly(runs: Sequence[NightlyRun]) -> list[str]:
         return ["No nightly report fetched yet (`fetch-nightly`)."]
     lines = [
         "| Started (UTC) | Trigger | Result | Release | Carried / rebuilt / new / removed | "
-        "Gate | To extract | Extraction | Dead letters |",
-        "|---|---|---|---|---|---|---:|---|---:|",
+        "Gate | To extract | Backlog | Extraction | Dead letters |",
+        "|---|---|---|---|---|---|---:|---:|---|---:|",
     ]
     for r in runs:
         release = f"`{r.db_version}`" + ("" if r.published else " (not published)")
@@ -144,10 +144,11 @@ def _nightly(runs: Sequence[NightlyRun]) -> list[str]:
         extraction = ", ".join(f"{k} {v:,}" for k, v in sorted(r.extraction.items())) or "—"
         rate = "—" if r.dead_letter_rate is None else f"{r.dead_letter_rate:.1%}"
         to_extract = "—" if r.to_extract is None else f"{r.to_extract:,}"
+        backlog = "—" if r.backlog is None else f"{r.backlog:,}"
         lines.append(
             f"| {r.started:%Y-%m-%d %H:%M} | {r.event} | {r.conclusion or '—'} | "
             f"{release if r.db_version else '—'} | {changes} | {gate} | {to_extract} | "
-            f"{extraction} | {rate} |"
+            f"{backlog} | {extraction} | {rate} |"
         )
     return lines
 
@@ -204,8 +205,9 @@ def render_markdown(report: OperationsReport) -> str:
         "## Nightly runs",
         "",
         "From the reports each run keeps (`fetch-nightly`). Since ADR 0013 a run with the Groq "
-        "secret also extracts its changed vulnerabilities; the dead-letter target is under 2% "
-        "after retries.",
+        "secret also extracts, at most 25 a night: its changed vulnerabilities (to extract), "
+        "then those waiting from earlier nights for model picks (backlog). The dead-letter "
+        "target is under 2% after retries.",
         "",
         *_nightly(r.nightly),
         "",

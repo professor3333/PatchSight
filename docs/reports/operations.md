@@ -34,17 +34,17 @@ Runs that wrote a trace (`data/interim/traces/`): one line per model call and pe
 
 ## Nightly runs
 
-From the reports each run keeps (`fetch-nightly`). Since ADR 0013 a run with the Groq secret also extracts its changed vulnerabilities; the dead-letter target is under 2% after retries.
+From the reports each run keeps (`fetch-nightly`). Since ADR 0013 a run with the Groq secret also extracts, at most 25 a night: its changed vulnerabilities (to extract), then those waiting from earlier nights for model picks (backlog). The dead-letter target is under 2% after retries.
 
-| Started (UTC) | Trigger | Result | Release | Carried / rebuilt / new / removed | Gate | To extract | Extraction | Dead letters |
-|---|---|---|---|---|---|---:|---|---:|
-| 2026-11-17 07:18 | workflow_dispatch | success | `2026.11.17` (not published) | 4,820 / 0 / 0 / 0 | — | 0 | — | — |
-| 2026-11-18 06:22 | workflow_dispatch | success | `2026.11.18` | 4,811 / 9 / 2 / 0 | pass | 11 | — | — |
-| 2026-11-18 11:34 | schedule | success | `2026.11.18` (not published) | 4,822 / 0 / 0 / 0 | — | 0 | — | — |
-| 2026-11-18 16:35 | workflow_dispatch | success | `2026.11.18` (not published) | 4,685 / 137 / 0 / 0 | pass | 84 | — | — |
-| 2026-11-19 11:31 | schedule | success | `2026.11.19` | 4,683 / 139 / 3 / 0 | pass | 89 | — | — |
-| 2026-11-20 11:29 | schedule | success | `2026.11.20` | 4,819 / 6 / 42 / 0 | pass | 45 | — | — |
-| 2026-11-21 03:27 | workflow_dispatch | success | `2026.11.21` | 4,867 / 0 / 9 / 0 | pass | 9 | — | — |
+| Started (UTC) | Trigger | Result | Release | Carried / rebuilt / new / removed | Gate | To extract | Backlog | Extraction | Dead letters |
+|---|---|---|---|---|---|---:|---:|---|---:|
+| 2026-11-17 07:18 | workflow_dispatch | success | `2026.11.17` (not published) | 4,820 / 0 / 0 / 0 | — | 0 | — | — | — |
+| 2026-11-18 06:22 | workflow_dispatch | success | `2026.11.18` | 4,811 / 9 / 2 / 0 | pass | 11 | — | — | — |
+| 2026-11-18 11:34 | schedule | success | `2026.11.18` (not published) | 4,822 / 0 / 0 / 0 | — | 0 | — | — | — |
+| 2026-11-18 16:35 | workflow_dispatch | success | `2026.11.18` (not published) | 4,685 / 137 / 0 / 0 | pass | 84 | — | — | — |
+| 2026-11-19 11:31 | schedule | success | `2026.11.19` | 4,683 / 139 / 3 / 0 | pass | 89 | — | — | — |
+| 2026-11-20 11:29 | schedule | success | `2026.11.20` | 4,819 / 6 / 42 / 0 | pass | 45 | — | — | — |
+| 2026-11-21 03:27 | workflow_dispatch | success | `2026.11.21` | 4,867 / 0 / 9 / 0 | pass | 9 | — | — | — |
 
 ## Hosted models: tokens against the daily cap
 

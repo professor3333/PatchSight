@@ -104,7 +104,7 @@ The scan makes two kinds of network call: the OSV query, and the database downlo
 | Workflow | Trigger | What it does |
 |---|---|---|
 | [`ci.yml`](../.github/workflows/ci.yml) | every push and pull request | ruff, mypy, offline pytest, `reproduce` of the benchmark table, and `regression-check` of the PyPI regression set. No secrets |
-| [`nightly.yml`](../.github/workflows/nightly.yml) | 03:17 UTC daily, or by hand | snapshot, `update-db`, release gate, dated release, pointer move by `github-actions[bot]`; an issue on failure |
+| [`nightly.yml`](../.github/workflows/nightly.yml) | 03:17 UTC daily, or by hand | snapshot, `update-db`, extraction of the night's changed vulnerabilities when the Groq secret is set ([ADR 0013](adr/0013-llm-extraction-in-the-nightly.md)), release gate, dated release, pointer move by `github-actions[bot]`; an issue on failure |
 | [`release.yml`](../.github/workflows/release.yml) | a `v*` tag | full tests, `reproduce`, build, clean-install smoke test, then PyPI through Trusted Publishing after the owner approves, and the GitHub Release |
 
 - **Release gate** (`gate-db`): the builds ledger covers every vulnerability with a record; every record has between 1 and 500 symbols; every record is found by its own ID and every alias points at a record; no more than 2% of vulnerabilities (at least 10 allowed) lose their records at once; a high-confidence record whose inputs did not change stays high; and no record is high confidence while ADR 0008 withholds the tier.

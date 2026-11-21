@@ -172,15 +172,13 @@ def render_markdown(report: OperationsReport) -> str:
         "",
         *_sessions(r.sessions),
         "",
-        f"GPU hours by ISO week, against Kaggle's weekly quota of {KAGGLE_WEEKLY_GPU_HOURS} hours "
-        "(a lower bound on what each week used):",
+        "GPU hours by ISO week (a lower bound on what each week used). Kaggle's quota is "
+        f"{KAGGLE_WEEKLY_GPU_HOURS} hours a week, but its week does not follow ISO weeks, so one "
+        "ISO week can hold the end of one quota and the start of the next.",
         "",
-        "| Week | Sessions | Hours answering | Share of the quota |",
-        "|---|---:|---:|---:|",
-        *(
-            f"| {w.week} | {w.sessions} | {w.hours:.2f} | {w.hours / KAGGLE_WEEKLY_GPU_HOURS:.0%} |"
-            for w in r.weeks
-        ),
+        "| Week | Sessions | Hours answering |",
+        "|---|---:|---:|",
+        *(f"| {w.week} | {w.sessions} | {w.hours:.2f} |" for w in r.weeks),
         "",
         "## Traced runs",
         "",
@@ -244,7 +242,8 @@ def render_markdown(report: OperationsReport) -> str:
             "|---|---:|",
             *(f"| {k} | {v:,} |" for k, v in d.records.items()),
             "",
-            "Why records with model picks are at their tier:",
+            "Tier reasons on the records: why a record with model picks has its tier, and "
+            "which extractions failed:",
             "",
             "| Tier reason | Records |",
             "|---|---:|",

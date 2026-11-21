@@ -23,6 +23,7 @@ Every controlled experiment on the extraction system, including the ones that lo
 | E7 | Fix-commit locator without the fix link | the proposal's message baseline; a ranking that prefers the advisory's own IDs | exact SHA 9.0% and 25.0%; wrong commit 64.0% and 47.0% | Neither is used: both are far from the 5% wrong-commit cap. Baseline for the agent ([#56](https://github.com/professor3333/PatchSight/issues/56)) |
 | E8 | Prompt injection (rule 7) | clean; advisory says nothing is vulnerable; advisory names a decoy; a code comment names a decoy | decoy in the advisory: 8 of 15 would become wrong high-confidence records; the others: none | High confidence stays withheld; a lifting rule must make none ([ADR 0008](adr/0008-withhold-high-confidence.md)) |
 | E9 | Ordering candidates to fit the prompt budget | BM25 against the advisory (as built); no ranking (file order); an oracle ceiling | On the 32 cut prompts: BM25 keeps 59 of 140 true functions (0.421), file order 97 (0.693), the oracle 133 (0.950) | Measured: BM25 loses to no ranking. It stays until a replacement is chosen on dev and evaluated on data not used to choose it |
+| E10 | A replacement for BM25 at the prompt budget | file order; smallest first; candidates the advisory names first; BM25 score per token | Declared 2026-11-21, before any of these orders was computed on dev or the holdout | Declared; not run |
 
 ## E1: 4-bit self-hosted against hosted serving
 
@@ -273,6 +274,35 @@ diffs) and a wider search (commit search by advisory ID). Report:
 - **No published record.** Every record is low confidence and lists every changed definition, and a truncated prompt can never be high confidence. What changes is which picks the model can make on large fixes: truncation accounts for 8 of Qwen's 42 dev misses.
 - **No embeddings are called for.** An order that ignores the advisory already does better, so ADR 0003 stands.
 - **Next.** A cost-aware or structural order (for example BM25 score per token, or the files a fix's message or advisory names first), chosen on dev and evaluated once on data not used to choose it. Truncation affects 790 of the 3,505 PyPI backfill prompts, so a better order would be worth a top-up backfill run.
+
+## E10: A replacement for BM25 at the prompt budget (declared before measuring)
+
+**Declared on 2026-11-21, before any order below was computed on any data except as stated.** E9 measured only BM25, file order and the oracle, on all three Dunlap splits. Nothing has been computed on the Go temporal holdout's retrieval; only its count of cut prompts is known (25 of 83, from the gpt-oss-120b run), and that count is the same under every order.
+
+**Question.** Which candidate order should replace BM25 when a prompt is cut to its budget?
+
+**Orders compared,** each applied with the renderer's own fitting rule (the first candidate is always kept, the others while they fit) to the same token costs:
+
+1. `file_order`: no ranking, as the path filter and the mapping produce candidates.
+2. `smallest_first`: fewest tokens first, ties in file order. It keeps the most candidates.
+3. `named_first`: candidates the advisory names first, then the rest, each group in file order. A candidate is named when its full name, or the part after its last dot, appears in the advisory's summary or details as a whole word, case-sensitively. This is the proposal's keyword baseline used as an order.
+4. `bm25_per_token`: BM25 score divided by token cost, highest first, ties in file order.
+
+BM25 as built is the baseline; the oracle is the ceiling.
+
+**Measure.** As in E9: true functions kept among the candidates of cut prompts with at least one true function, with a bootstrap over reports (2,000 draws, seed 20261121).
+
+**Choosing, on dev only.** The order with the highest dev recall. Ties go to fewer dev reports with no true function kept, then to the earlier order in the list above (the simpler one). Dev has 5 cut reports with a true function, so this choice is weak; the evaluation below is what counts.
+
+**Evaluating, once, on the Go temporal holdout** (`benchmarks/go-holdout-v1`, all 83 reports, Qwen tokenizer, 4,600-token budget, as in E9). The holdout bundle must reproduce the gpt-oss-120b holdout run's truncation for every report, as E9's does for the Kaggle run.
+
+- **It passes** if the chosen order's recall minus BM25's, paired by report, has a 95% interval entirely above zero, **and** the chosen order leaves no more cut reports with no true function kept than BM25 does.
+- **It is inconclusive** if fewer than 10 cut holdout reports have a true function. BM25 then stays.
+- **Otherwise it fails,** and BM25 stays.
+
+The Dunlap test and all splits are reported for each order, for completeness only; they were read in E9 and decide nothing.
+
+**What passing changes.** The chosen order becomes a configuration option, off by default. It is switched on together with the output cap and dotted entry points (#52, #53), through shadow-then-promote, because it changes cut prompts and so their cached answers. Published benchmark numbers stay those of BM25 until a full re-run replaces them.
 
 ## Failure analysis
 

@@ -1874,6 +1874,30 @@ def import_names_command(
     )
 
 
+@app.command("db-diff")
+def db_diff_command(
+    production: Annotated[Path, typer.Argument(help="The production database.")],
+    shadow: Annotated[Path, typer.Argument(help="The shadow database built with the change.")],
+    name: Annotated[str, typer.Option(help="Report name: docs/reports/shadow-<name>.md.")],
+    purpose: Annotated[str, typer.Option(help="One sentence: what the change is.")],
+    root: Root = Path(),
+    review: Annotated[int, typer.Option(help="Changed records to review by hand.")] = 20,
+) -> None:
+    """Compare a shadow database with production, and draw the records to review before
+    the change is promoted."""
+    from patchsight.pipeline import db_diff
+
+    result = db_diff.diff(production, shadow, review=review)
+    target = root / "docs" / "reports" / f"shadow-{name}"
+    target.with_suffix(".md").write_text(db_diff.render_markdown(result, purpose), "utf-8")
+    target.with_suffix(".json").write_text(result.model_dump_json(indent=2) + "\n", "utf-8")
+    typer.echo(
+        f"{result.production} -> {result.shadow}: {result.unchanged:,} unchanged, "
+        f"{result.kinds or 'no change'}; fields {result.fields}; "
+        f"{len(result.review)} to review -> {target.relative_to(root)}.md"
+    )
+
+
 @app.command("gate-db")
 def gate_db_command(
     candidate: Annotated[Path, typer.Argument(help="The candidate database.")],

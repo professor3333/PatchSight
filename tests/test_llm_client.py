@@ -89,6 +89,38 @@ def test_limiter_uses_actual_usage_once_known() -> None:
     assert clock.now == 0.0
 
 
+def test_limiter_paces_output_tokens_per_minute() -> None:
+    clock = FakeClock()
+    limiter = RateLimiter(100_000, 100, clock=clock, sleep=clock.sleep,
+                          output_tokens_per_minute=1000)  # fmt: skip
+    limiter.acquire(2000, output=600)
+    limiter.settle(1500, output=300)  # the answer used 300 of its 600 allowance
+    limiter.acquire(2000, output=600)  # 300 + 600 fits under 1,000: no wait
+    assert clock.now == 0.0
+    limiter.acquire(2000, output=600)  # 300 + 600 + 600 does not: wait out the first
+    assert clock.now == pytest.approx(60.05)
+    # Without the limit, output is not paced at all.
+    free = RateLimiter(100_000, 100, clock=clock, sleep=clock.sleep)
+    for _ in range(5):
+        free.acquire(10, output=1000)
+    assert clock.now == pytest.approx(60.05)
+
+
+def test_the_client_reserves_each_requests_output_allowance(tmp_path: Path) -> None:
+    clock = FakeClock()
+
+    def backend(request: LLMRequest) -> tuple[str, int, int]:
+        return '{"ok": true}', 100, 900  # a long answer
+
+    limiter = RateLimiter(100_000, 100, clock=clock, sleep=clock.sleep,
+                          output_tokens_per_minute=1000)  # fmt: skip
+    client = LLMClient(backend, limiter, tmp_path)
+    client.complete(_request(max_tokens=1000))
+    assert clock.now == 0.0
+    client.complete(_request(max_tokens=1000, seed=2))  # 900 used: wait for the minute to pass
+    assert clock.now == pytest.approx(60.05)
+
+
 def test_limiter_stops_at_the_daily_request_cap() -> None:
     limiter = RateLimiter(10_000, 2)
     limiter.acquire(1)
@@ -201,6 +233,30 @@ def test_prompt_budget_leaves_room_for_the_repair_round() -> None:
     )  # fmt: skip
     # TPM: 8,000 - 2 x 1,500 - 400 = 4,600. ITPM: 5,000 - 1,500 - 400 = 3,100 (binding).
     assert config.prompt_budget("m") == 3100
+
+
+def test_an_output_allowance_over_the_providers_limit_is_refused() -> None:
+    from pydantic import ValidationError
+
+    from patchsight.pipeline.llm.config import ModelConfig
+
+    fields = {"provider": "groq", "model": "q", "seed": 1, "output_tokens_per_minute": 1000}
+    assert (
+        ModelConfig.model_validate({**fields, "max_output_tokens": 1000}).max_output_tokens == 1000
+    )
+    with pytest.raises(ValidationError, match="every request would be refused"):
+        ModelConfig.model_validate({**fields, "max_output_tokens": 1500})
+
+
+def test_the_shipped_extractor_fits_groqs_output_limit_with_the_same_prompts() -> None:
+    from patchsight.pipeline.llm.config import load_config
+
+    config = load_config(Path(__file__).resolve().parents[1] / "configs" / "llm.toml")
+    extractor = config.models["extractor"]
+    assert extractor.output_tokens_per_minute == 1000  # measured on Groq, 2026-11-21
+    assert extractor.max_output_tokens <= extractor.output_tokens_per_minute
+    # Every role keeps the 4,600-token prompt budget, so prompts are the same everywhere.
+    assert {config.prompt_budget(role) for role in config.models} == {4600}
 
 
 def test_candidate_limit_follows_the_output_limit() -> None:

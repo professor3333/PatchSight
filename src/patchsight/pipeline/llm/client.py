@@ -97,8 +97,13 @@ class RateLimiter:
         clock: Callable[[], float] = time.monotonic,
         sleep: Callable[[float], None] = time.sleep,
         wall: Callable[[], float] = time.time,
+        output_tokens_per_minute: int | None = None,
     ) -> None:
         self.tokens_per_minute = tokens_per_minute
+        self.output_tokens_per_minute = output_tokens_per_minute
+        # Output tokens in the last 60 seconds: each request's allowance until it returns,
+        # then what it actually produced.
+        self._output: deque[tuple[float, int]] = deque()
         self.requests_per_day = requests_per_day
         self.tokens_per_day = tokens_per_day
         self._ledger = ledger
@@ -130,7 +135,14 @@ class RateLimiter:
             self._window.popleft()
         return sum(tokens for _, tokens in self._window)
 
-    def acquire(self, tokens: int) -> None:
+    def _output_used(self, now: float) -> int:
+        while self._output and now - self._output[0][0] >= 60.0:
+            self._output.popleft()
+        return sum(tokens for _, tokens in self._output)
+
+    def acquire(self, tokens: int, output: int = 0) -> None:
+        """Wait until a call of about ``tokens`` in all, ``output`` of them its output
+        allowance, fits the per-minute limits; stop if it would pass a daily cap."""
         day = self._last_day()
         requests_today = len(day) if self._ledger is not None else self.requests
         if requests_today >= self.requests_per_day:
@@ -148,13 +160,24 @@ class RateLimiter:
             self.waited += wait
             self._sleep(wait)
         self._window.append((self._clock(), tokens))
+        if self.output_tokens_per_minute is not None:
+            reserve = min(output, self.output_tokens_per_minute)
+            while self._output_used(self._clock()) + reserve > self.output_tokens_per_minute:
+                wait = 60.0 - (self._clock() - self._output[0][0]) + 0.05
+                self.waited += wait
+                self._sleep(wait)
+            self._output.append((self._clock(), reserve))
         self.requests += 1
 
-    def settle(self, actual: int) -> None:
-        """Record the tokens the provider reported for the most recent call."""
+    def settle(self, actual: int, output: int | None = None) -> None:
+        """Record the tokens the provider reported for the most recent call, and of them the
+        output; without ``output`` the call keeps its whole output allowance."""
         if self._window:
             when, _ = self._window.pop()
             self._window.append((when, min(actual, self.tokens_per_minute)))
+        if output is not None and self._output:
+            when, _ = self._output.pop()
+            self._output.append((when, output))
         entry = (self._wall(), actual)
         self._day.append(entry)
         if self._ledger is not None:
@@ -260,7 +283,7 @@ class LLMClient:
 
         prompt_text = "".join(m["content"] for m in request.messages)
         estimate = self.estimate_tokens(prompt_text) + request.max_tokens
-        self._limiter.acquire(estimate)
+        self._limiter.acquire(estimate, output=request.max_tokens)
         started = time.monotonic()
         try:
             content, prompt_tokens, completion_tokens = self._backend(request)
@@ -277,7 +300,7 @@ class LLMClient:
             raise
         seconds = time.monotonic() - started
         self.network_calls += 1
-        self._limiter.settle(prompt_tokens + completion_tokens)
+        self._limiter.settle(prompt_tokens + completion_tokens, completion_tokens)
 
         record = {
             "content": content,
@@ -323,6 +346,7 @@ def client_for(
         provider.requests_per_day,
         tokens_per_day=provider.tokens_per_day,
         ledger=ledger,
+        output_tokens_per_minute=model.output_tokens_per_minute,
     )
     backend = openai_backend(provider.base_url, api_key)
     return LLMClient(backend, limiter, cache_dir, counter), model.model

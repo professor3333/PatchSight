@@ -4,7 +4,7 @@ import tomllib
 from pathlib import Path
 from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, model_validator
 
 from patchsight.pipeline.llm.tokens import TokenizerConfig
 
@@ -29,6 +29,20 @@ class ModelConfig(BaseModel):
     max_output_tokens: int
     seed: int
     extra: dict[str, Any] = {}
+    # Output tokens per minute the provider allows this model, when it enforces a limit of
+    # its own. A request whose output allowance exceeds it is refused outright, so
+    # max_output_tokens must fit; the client also paces requests to stay under it.
+    output_tokens_per_minute: int | None = None
+
+    @model_validator(mode="after")
+    def _output_fits(self) -> "ModelConfig":
+        limit = self.output_tokens_per_minute
+        if limit is not None and self.max_output_tokens > limit:
+            raise ValueError(
+                f"{self.model}: max_output_tokens {self.max_output_tokens} exceeds the "
+                f"provider's {limit} output tokens per minute, so every request would be refused"
+            )
+        return self
 
 
 class BudgetConfig(BaseModel):

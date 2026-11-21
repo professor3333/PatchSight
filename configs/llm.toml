@@ -15,7 +15,12 @@ input_tokens_per_minute = 7000
 [models.extractor]
 provider = "groq"
 model = "qwen/qwen3.8-27b"
-max_output_tokens = 1500
+# Groq has enforced 1,000 output tokens per minute for this model since 2026-11-21: a request
+# with max_tokens 1,500 is refused outright ("Request too large ... OTPM"), even for a short
+# answer, and 1,000 is accepted (measured 2026-11-21). 3.2% of backfill answers were longer;
+# those become dead letters here and keep the fallback. The prompt budget stays 4,600.
+max_output_tokens = 1000
+output_tokens_per_minute = 1000
 seed = 20261114
 # No chain-of-thought: Dunlap et al. found it about 13x slower for similar F1.
 extra = { reasoning_effort = "none" }
@@ -23,8 +28,9 @@ extra = { reasoning_effort = "none" }
 [models.second_opinion]
 provider = "groq"
 model = "openai/gpt-oss-120b"
-# gpt-oss cannot disable reasoning, and its reasoning counts as output tokens. The same
-# output allowance as the extractor keeps every role's prompt budget, and so its prompts, equal.
+# gpt-oss cannot disable reasoning, and its reasoning counts as output tokens. With 1,500
+# output tokens its prompt budget is still the 4,600 every role has, so its prompts equal the
+# extractor's. Groq accepted max_tokens 1,500 for this model on 2026-11-21.
 max_output_tokens = 1500
 seed = 20261114
 extra = { reasoning_effort = "low" }

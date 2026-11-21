@@ -3,8 +3,8 @@ name: nightly
 # The offline pipeline, every night (ADR 0006): snapshot today's OSV PyPI data, update the
 # current release incrementally, run the release gate, publish a dated release and move the
 # pointer on the db-pointer branch. With the GROQ_API_KEY secret, the night's changed
-# vulnerabilities are also extracted and their picks merged before the gate (ADR 0013);
-# without it, the run makes no model call.
+# vulnerabilities, then those still waiting for model picks, are also extracted and their
+# picks merged before the gate (ADR 0013); without it, the run makes no model call.
 
 on:
   schedule:
@@ -58,14 +58,31 @@ jobs:
           echo "changed=$changed" >> "$GITHUB_OUTPUT"
           echo "changed: $changed"
 
-      - name: Extract the night's changed vulnerabilities
-        # ADR 0013: at most 25 a night; skipped without the GROQ_API_KEY secret.
+      - name: Check that tonight's release is new
+        # A second run on the same UTC date publishes nothing, so it spends no model quota.
+        id: release
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          version=$(uv run python -c "import sqlite3; print(dict(sqlite3.connect('data/build/nightly.sqlite').execute('SELECT key, value FROM meta'))['db_version'])")
+          if gh release view "db-$version" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            echo "db-$version is already published: this run publishes nothing and extracts nothing"
+            echo "new=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "new=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Extract the night's changes and the backlog
+        # ADR 0013: at most 25 a night, the night's changes first, then vulnerabilities still
+        # waiting for model picks; skipped without the GROQ_API_KEY secret.
         id: extract
-        if: steps.changes.outputs.changed == 'true' && env.HAS_GROQ == 'true'
+        if: >
+          steps.changes.outputs.changed == 'true' && steps.release.outputs.new == 'true'
+          && env.HAS_GROQ == 'true'
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         run: |
-          ids=$(uv run python -m patchsight.pipeline nightly-targets data/build/nightly-update.json --limit 25)
+          ids=$(uv run python -m patchsight.pipeline nightly-targets data/build/nightly-update.json \
+            --db data/build/nightly.sqlite --limit 25 --report data/build/nightly-targets.json)
           if [ -z "$ids" ]; then
             echo "nothing to extract tonight"
             exit 0
@@ -155,6 +172,7 @@ jobs:
             data/build/gate.md
             data/build/gate.json
             data/build/release-notes.md
+            data/build/nightly-targets.json
             data/build/nightly-extract-extractor-summary.json
             data/build/nightly-merged-merge.json
             data/interim/traces/*.jsonl

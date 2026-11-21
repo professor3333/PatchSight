@@ -15,7 +15,7 @@
 
 After `update-db`, the nightly extracts the night's changed vulnerabilities and merges the picks into that night's release, before the import names and the gate.
 
-- **What is extracted:** `nightly-targets` reads the update report and lists the rebuilt or new vulnerabilities that have a record, sorted, **at most 25 a night**. At about 2,800 tokens a prompt, with repairs, that is roughly a third of Groq's 200,000-token daily cap for the model, so other work keeps the rest. Anything over the cap keeps the fallback record until a later run.
+- **What is extracted:** `nightly-targets` lists the night's rebuilt or new vulnerabilities that have a record, sorted, then the backlog (see the amendment below), **at most 25 a night**. At about 2,800 tokens a prompt, with repairs, that is roughly a third of Groq's 200,000-token daily cap for the model, so other work keeps the rest. Anything over the cap keeps the fallback record until a later night's backlog reaches it.
 - **The model:** the `extractor` role, Qwen3.8-27B on Groq, with prompt `extract-v1`: the same prompt as the backfill. Groq does not publish the precision it serves the weights at. The [parity check](../reports/parity-dunlap-dev-extract-v1-qwen3.8-27b-q4km-vs-extract-v1-qwen3.8-27b.md) found it the more inclusive of the two, and every record names the model that made its picks.
 - **No second opinion yet.** While [ADR 0008](0008-withhold-high-confidence.md) withholds high confidence, a second opinion changes no published record; it would only spend the other model's quota. It is turned on with the rule that lifts ADR 0008.
 - **A quota stop loses nothing.** Groq's daily cap can be reached mid-run, since its ledger also counts work done elsewhere. The live pass then stops cleanly, and a second, cache-only pass collects every answer that did come back. The merge takes those; the rest keep the fallback.
@@ -29,3 +29,13 @@ After `update-db`, the nightly extracts the night's changed vulnerabilities and 
 - Groq's JSON rejections (24% of calls on the first dev run) cost repair calls and some dead letters. Each one keeps the fallback, which is the safe direction.
 - The nightly's runtime grows by about 30 seconds a vulnerability, so 15 minutes at most for 25, within its 330-minute limit.
 - The owner adds the secret. Until then, nothing changes.
+
+## Amendment, 2026-11-21: the backlog
+
+As first built, `nightly-targets` offered only the night's own changes. A vulnerability over the cap, or left unanswered by a quota stop, was carried unchanged the next night and never offered again, so the decision's "until a later run" did not hold. On the nights a builder revision rebuilt 84 to 89 vulnerabilities, about 60 would have kept the fallback until the next backfill.
+
+- **The backlog.** After the night's changes, the targets continue with the vulnerabilities in the night's database whose records hold no model picks, whose fix changes definitions (ledger status `built`), and that the extracting model and prompt have not already failed on, **newest advisory first**. On db-2026.11.21 that was 994, of which 892 are in backfill shard 4; once shard 4 is merged, about a hundred remain.
+- **Failed attempts are recorded in the release.** A dead letter, or a prompt with no candidates, keeps the fallback symbols, and the record's tier reason names the model and prompt that tried, for example `fallback: extraction by <model> (prompt extract-v1) failed: no valid answer after one repair`. The backlog skips it, so the quota is not spent on the same attempt every night. A rebuilt record starts without the note, and a new model or prompt tries again (ADR 0001: those are extraction inputs).
+- **Only a release that will be published spends quota.** A run on a UTC date whose release already exists (a second run, or a rehearsal by dispatch) publishes nothing, so it skips extraction.
+- **A night with no change extracts nothing.** The backlog waits for the next night that publishes; at 7.7 new vulnerabilities a day, that is almost every night.
+- The run's reports keep `nightly-targets.json`: the night's changes, the backlog and the targets chosen.

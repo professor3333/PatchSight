@@ -5,71 +5,71 @@
 [[label]]
 advisory = "GHSA-mg2x-mggj-6955"
 package = "apache-airflow-providers-cncf-kubernetes"
-version = "7.0.0rc2"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+version = "6.1.0"
+symbols = ["airflow.providers.cncf.kubernetes.operators.pod:KubernetesPodOperator.execute_async", "airflow.providers.cncf.kubernetes.operators.pod:KubernetesPodOperator.invoke_defer_method", "airflow.providers.cncf.kubernetes.triggers.pod:KubernetesPodTrigger.serialize"]
+entry_points = ["airflow.providers.cncf.kubernetes.operators.pod.KubernetesPodOperator"]
+status = "labelled"
+note = "Deferrable pod tasks can send kubeconfig contents with trigger arguments. The seeded 7.0.0rc2 and 6.2.0rc1 already pass the path, so I checked 6.1.0."
 round = 1
 
 [[label]]
 advisory = "GHSA-p5w8-wqhj-9hhf"
 package = "sqlparse"
 version = "0.4.1"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["sqlparse.filters.others:StripCommentsFilter._process._get_insert_token"]
+entry_points = ["sqlparse.format"]
+status = "labelled"
+note = "Applies when comment stripping is enabled. The costly regular expression is inside the local token helper."
 round = 1
 
 [[label]]
 advisory = "GHSA-x8c6-gj59-6rx8"
 package = "libp2p"
 version = "0.2.2"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["libp2p.crypto.rsa:RSAPublicKey.from_bytes", "libp2p.crypto.rsa:RSAPublicKey.__init__"]
+entry_points = ["libp2p.crypto.serialization.deserialize_public_key"]
+status = "labelled"
+note = "RSA public-key import accepts oversized keys without a size bound."
 round = 1
 
 [[label]]
 advisory = "GHSA-84m7-p3x7-pcfv"
 package = "mcp"
 version = "1.29.1"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["mcp.server.streamable_http_manager:StreamableHTTPSessionManager._handle_stateful_request", "mcp.server.streamable_http:StreamableHTTPServerTransport._handle_delete_request"]
+entry_points = ["mcp.server.fastmcp.FastMCP.run", "mcp.server.fastmcp.FastMCP.streamable_http_app"]
+status = "labelled"
+note = "Stateful Streamable HTTP can retain sessions after requests end. The manager holds the registry and the transport handles session termination."
 round = 1
 
 [[label]]
 advisory = "GHSA-fj7x-q9j7-g6q6"
 package = "black"
 version = "24.2.0"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["black.strings:lines_with_leading_tabs_expanded"]
+entry_points = ["black.format_str", "black.main"]
+status = "labelled"
+note = "Reached when Black normalizes docstring indentation."
 round = 1
 
 [[label]]
 advisory = "GHSA-2ww3-72rp-wpp4"
 package = "semantic-kernel"
 version = "1.39.2"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["semantic_kernel.core_plugins.sessions_python_tool.sessions_python_plugin:SessionsPythonTool.download_file"]
+entry_points = ["semantic_kernel.core_plugins.sessions_python_tool.sessions_python_plugin.SessionsPythonTool.download_file"]
+status = "labelled"
+note = "The advisory narrative describes .NET. Its affected list also includes PyPI, and the Python release has its own unconfined local download destination."
 round = 1
 
 [[label]]
 advisory = "GHSA-w9h2-px87-74vx"
 package = "vantage6"
-version = "4.2.0rc2"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+version = "4.1.3"
+symbols = ["vantage6.node.docker.task_manager:DockerTaskManager._setup_environment_vars"]
+entry_points = ["vantage6.cli.node.start.cli_node_start"]
+status = "labelled"
+note = "The node passes task-supplied environment values without the later validation. The seeded 4.2.0rc2 companion source already has the fix."
 round = 1
 
 [[label]]
@@ -78,118 +78,118 @@ package = "notebook"
 version = "5.7.10"
 symbols = []
 entry_points = []
-status = "todo"
-note = ""
+status = "no_python_symbol"
+note = "The rendering and sanitization flaw is in the browser's JavaScript. The Python changes package the replacement sanitizer."
 round = 1
 
 [[label]]
 advisory = "GHSA-fqvv-jvhr-g5jc"
 package = "firefighter-incident"
 version = "0.0.53"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["firefighter.raid.serializers:LandbotIssueRequestSerializer.create", "firefighter.raid.views:CreateJiraBotView"]
+entry_points = ["firefighter.raid.views.CreateJiraBotView.post"]
+status = "labelled"
+note = "The serializer retrieves attachments without constraining destinations, and the view supplies the permissive access policy."
 round = 1
 
 [[label]]
 advisory = "GHSA-9vxf-mcm6-5m42"
 package = "rdiffweb"
 version = "2.4.5"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["rdiffweb.controller.pref_notification:NotificationPref.render_prefs_panel"]
+entry_points = ["rdiffweb.controller.pref_notification.NotificationPref.render_prefs_panel"]
+status = "labelled"
+note = "The preferences handler permits a state change without requiring the normal form submission method."
 round = 1
 
 [[label]]
 advisory = "GHSA-mg2x-mggj-6955"
 package = "apache-airflow"
 version = "2.6.1rc3"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["airflow.models.trigger:Trigger.from_object"]
+entry_points = ["airflow.models.baseoperator.BaseOperator.defer"]
+status = "labelled"
+note = "The release already avoids logging the trigger representation as a name. Serialized trigger arguments still go into metadata in plaintext when supplied by an affected provider."
 round = 1
 
 [[label]]
 advisory = "GHSA-2hmp-5wqg-f24h"
 package = "plotai"
 version = "0.0.6"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["plotai.code.executor:Executor.run"]
+entry_points = ["plotai.PlotAI.make"]
+status = "labelled"
+note = "The plotting workflow passes generated Python to the executor."
 round = 1
 
 [[label]]
 advisory = "GHSA-6rrm-xxvh-7r87"
 package = "glance"
 version = "before 11.0.0a0"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["glance.api.v1.images:Controller.delete"]
+entry_points = ["glance.api.v1.images.Controller.delete"]
+status = "labelled"
+note = "Checked the parent of the linked Grizzly fix because the package range is open-ended. The v1 controller can delete backing data before the registry completes its checks."
 round = 1
 
 [[label]]
 advisory = "GHSA-h47f-gmjp-m7rr"
 package = "compliance-trestle"
 version = "4.0.3"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["trestle.core.remote.security:URLSecurityValidator._parse_ip_address", "trestle.core.remote.security:URLSecurityValidator._check_blocked_networks", "trestle.core.remote.security:URLSecurityValidator._check_private_networks"]
+entry_points = ["trestle.core.remote.security.URLSecurityValidator.validate_url", "trestle.core.remote.cache.HTTPSFetcher", "trestle.core.remote.cache.SFTPFetcher"]
+status = "labelled"
+note = "Equivalent address forms can evade the existing network classification rules."
 round = 1
 
 [[label]]
 advisory = "GHSA-c87f-fq5g-63r2"
 package = "django-unicorn"
 version = "0.35.3"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["django_unicorn.components.unicorn_view:UnicornView.get_frontend_context_variables"]
+entry_points = ["django_unicorn.components.unicorn_view.UnicornView.render"]
+status = "labelled"
+note = "The generated component context includes the unescaped name."
 round = 1
 
 [[label]]
 advisory = "GHSA-989c-m532-p2hv"
 package = "salt"
 version = "3007.3"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["salt.master:AESFuncs.pub_ret"]
+entry_points = ["salt.master.AESFuncs.pub_ret"]
+status = "labelled"
+note = "The master uses the supplied job identifier to build the cache path. The same commit hardens other master methods."
 round = 1
 
 [[label]]
 advisory = "GHSA-39ph-wr67-j4xq"
 package = "loguru"
 version = "0.5.2"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["loguru._logger:Logger._log", "loguru._better_exceptions:ExceptionFormatter._extract_frames"]
+entry_points = ["loguru.logger.info", "loguru.logger.exception", "loguru.logger.add"]
+status = "labelled"
+note = "The disclosure is broad and the linked change documents several risks. Message formatting and exception diagnostics both put sensitive values into logs."
 round = 1
 
 [[label]]
 advisory = "GHSA-7mpr-5m44-h73r"
 package = "markdownify"
 version = "0.14.0"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["markdownify:MarkdownConverter.convert_hn"]
+entry_points = ["markdownify.markdownify", "markdownify.MarkdownConverter.convert"]
+status = "labelled"
+note = "Heading conversion can allocate a prefix from an unchecked heading level."
 round = 1
 
 [[label]]
 advisory = "GHSA-cfqr-cjx5-5jcm"
 package = "sqlparse"
 version = "0.5.5"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["sqlparse.filters.reindent:ReindentFilter._get_offset", "sqlparse.filters.reindent:ReindentFilter._flatten_up_to_token"]
+entry_points = ["sqlparse.format"]
+status = "labelled"
+note = "With reindentation enabled, repeated whole-prefix walks make formatting tuple lists expensive."
 round = 1
 
 [[label]]
@@ -198,238 +198,238 @@ package = "paddlepaddle"
 version = "1.8.5"
 symbols = []
 entry_points = []
-status = "todo"
-note = ""
+status = "no_python_symbol"
+note = "The advisory describes a heap overflow in native operator or binding code. The linked fix changes C++."
 round = 1
 
 [[label]]
 advisory = "GHSA-m84c-4c34-28gf"
 package = "llama-index-core"
 version = "0.12.40"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["llama_index.core.workflow.context_serializers:JsonPickleSerializer.deserialize"]
+entry_points = ["llama_index.core.workflow.JsonPickleSerializer.deserialize", "llama_index.core.workflow.Context.from_dict"]
+status = "labelled"
+note = "The caller must select the pickle-capable serializer or invoke it directly. The linked change documents that trust requirement."
 round = 1
 
 [[label]]
 advisory = "GHSA-j36m-hv43-7w7m"
 package = "keystone"
 version = "9.3.0"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["keystone.assignment.core:Manager.get_roles_for_groups"]
+entry_points = ["keystone.assignment.core.Manager.get_roles_for_groups"]
+status = "labelled"
+note = "The empty-group case can reach the assignment query during federated scoping."
 round = 1
 
 [[label]]
 advisory = "GHSA-3vgw-585j-4m45"
 package = "bbot"
 version = "2.8.4.7578rc0"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["bbot.modules.internal.unarchive:unarchive.extract_file"]
+entry_points = ["bbot.Scanner"]
+status = "labelled"
+note = "Applies when the unarchive module handles downloaded archives. The commit's pickle-cache change addresses a separate issue."
 round = 1
 
 [[label]]
 advisory = "GHSA-74xw-82v7-hmrm"
 package = "python-dbusmock"
 version = "0.15"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["dbusmock.mockobject:load_module"]
+entry_points = ["dbusmock.DBusMockObject.AddTemplate", "dbusmock.DBusTestCase.spawn_server_template"]
+status = "labelled"
+note = "Both template-loading interfaces reach the same loader."
 round = 1
 
 [[label]]
 advisory = "GHSA-542m-9234-8gvf"
 package = "vllm"
 version = "0.31.0"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["vllm.renderers.hf:HfRenderer.render_messages_async", "vllm.renderers.hf:safe_apply_chat_template"]
+entry_points = ["vllm.renderers.hf.HfRenderer.render_messages_async"]
+status = "labelled"
+note = "The Hugging Face renderer submits unbounded template work to a shared executor."
 round = 1
 
 [[label]]
 advisory = "GHSA-37cf-r3w2-gjfw"
 package = "django-nopassword"
 version = "4.0.2"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["nopassword.models:LoginCode", "nopassword.models:LoginCode.create_code_for_user"]
+entry_points = ["nopassword.forms.LoginForm.save", "nopassword.models.LoginCode.create_code_for_user"]
+status = "labelled"
+note = "The model and writer persist the login secret in cleartext."
 round = 1
 
 [[label]]
 advisory = "GHSA-cvcq-gmc3-q6m8"
 package = "apache-airflow"
-version = "1.10.13rc1"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+version = "1.10.12"
+symbols = ["airflow.utils.cli:_build_metrics"]
+entry_points = ["airflow.bin.cli.create_user", "airflow.bin.cli.connections"]
+status = "labelled"
+note = "CLI action metrics include password arguments. The seeded release candidate already masks them."
 round = 1
 
 [[label]]
 advisory = "GHSA-3qmc-cj7q-62hv"
 package = "litestar"
 version = "2.21.1"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["litestar.middleware.allowed_hosts:AllowedHostsMiddleware.__call__"]
+entry_points = ["litestar.middleware.allowed_hosts.AllowedHostsMiddleware"]
+status = "labelled"
+note = "The middleware accepts forwarded host data as a fallback for validation."
 round = 1
 
 [[label]]
 advisory = "PYSEC-2026-4009"
 package = "local-operator"
 version = "0.47.4"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["local_operator.agents:AgentRegistry.import_agent"]
+entry_points = ["local_operator.agents.AgentRegistry.import_agent", "local_operator.server.routes.agents.import_agent"]
+status = "labelled"
+note = "Agent import trusts archive metadata when choosing the destination directory."
 round = 1
 
 [[label]]
 advisory = "GHSA-rv9x-wmw4-44qj"
 package = "pyload-ng"
 version = "0.5.0b3.dev35"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["pyload.webui.app.helpers:is_authenticated"]
+entry_points = ["pyload.webui.app.helpers.is_authenticated"]
+status = "labelled"
+note = "The authentication helper trusts a stored session after its user has been removed."
 round = 1
 
 [[label]]
 advisory = "GHSA-fvw2-2pf7-77vw"
 package = "apache-airflow"
-version = "2.3.1rc1"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+version = "2.3.0"
+symbols = ["airflow.models.taskinstance:TaskInstance.get_rendered_template_fields"]
+entry_points = ["airflow.www.views.Airflow.rendered_templates"]
+status = "labelled"
+note = "The web UI renders fields for tasks that have yet to run. The seeded release candidate already enables masking for that path."
 round = 1
 
 [[label]]
 advisory = "GHSA-xj96-63gp-2gmr"
 package = "pillow"
 version = "12.2.0"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["PIL.ImageFilter:RankFilter.__init__", "PIL.ImageFilter:RankFilter.filter"]
+entry_points = ["PIL.Image.Image.filter", "PIL.ImageFilter.RankFilter", "PIL.ImageFilter.MedianFilter"]
+status = "labelled"
+note = "The constructor accepts an out-of-range size, and the filter passes its margin to the native expansion routine, where the overflow occurs."
 round = 1
 
 [[label]]
 advisory = "GHSA-254f-3936-288h"
 package = "pillow"
 version = "12.3.0"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["PIL.PdfParser:PdfParser.get_value", "PIL.PdfParser:PdfParser.read_indirect", "PIL.PdfParser:PdfParser.linearize_page_tree"]
+entry_points = ["PIL.Image.Image.save", "PIL.PdfParser.PdfParser"]
+status = "labelled"
+note = "Appending to an existing PDF reads it first. The value parser and page tree traversal can recurse without an effective bound."
 round = 1
 
 [[label]]
 advisory = "GHSA-v9w6-9hq9-33ch"
 package = "lightrag-hku"
 version = "1.3.7"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["lightrag.api.routers.document_routes:create_document_routes.upload_to_input_dir"]
+entry_points = ["lightrag.api.routers.document_routes.create_document_routes"]
+status = "labelled"
+note = "The document upload handler uses the submitted name when constructing a path under the input directory."
 round = 1
 
 [[label]]
 advisory = "GHSA-g2jx-37x6-6438"
 package = "arcade-mcp-server"
 version = "1.8.0"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["arcade_mcp_server.settings:ArcadeSettings", "arcade_mcp_server.worker:create_arcade_mcp"]
+entry_points = ["arcade_mcp_server.run_arcade_mcp", "arcade_mcp_server.create_arcade_mcp"]
+status = "labelled"
+note = "The settings provide a shared fallback secret and the HTTP worker enables its routes with that setting."
 round = 1
 
 [[label]]
 advisory = "GHSA-cr45-98w9-gwqx"
 package = "archivebox"
 version = "0.8.6rc3"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["archivebox.core.views:SnapshotView.get", "archivebox.misc.serve_static:serve_static_with_byterange_support"]
+entry_points = ["archivebox.core.views.SnapshotView.get"]
+status = "labelled"
+note = "Archived pages can be served as active content on the same origin as the admin site."
 round = 1
 
 [[label]]
 advisory = "GHSA-f26r-j276-ggg4"
 package = "mcp-atlassian"
 version = "0.21.1"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["mcp_atlassian.confluence.attachments:AttachmentsMixin.upload_attachment", "mcp_atlassian.jira.attachments:AttachmentsMixin.upload_attachment"]
+entry_points = ["mcp_atlassian.confluence.ConfluenceFetcher.upload_attachment", "mcp_atlassian.jira.JiraFetcher.upload_attachment"]
+status = "labelled"
+note = "Both attachment upload implementations accept local paths without confining them to approved files."
 round = 1
 
 [[label]]
 advisory = "GHSA-pg36-wpm5-g57p"
 package = "waitress"
 version = "1.3.1"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["waitress.parser:HTTPRequestParser.received", "waitress.parser:HTTPRequestParser.parse_header", "waitress.parser:get_header_lines", "waitress.utilities:find_double_newline", "waitress.receiver:ChunkedReceiver.received"]
+entry_points = ["waitress.serve", "waitress.create_server"]
+status = "labelled"
+note = "Header and chunk parsing accept line endings that can be interpreted differently by an upstream HTTP parser."
 round = 1
 
 [[label]]
 advisory = "GHSA-7c4h-w765-6pwg"
 package = "suricata-update"
 version = "1.0.0a1"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["suricata.update.main:Config.load", "suricata.update.sources:Index.reload", "suricata.update.sources:get_enabled_sources"]
+entry_points = ["suricata.update.main.main"]
+status = "labelled"
+note = "The affected release uses the unsafe YAML loader for configuration and source metadata. The linked patch uses a later layout for the configuration loader."
 round = 1
 
 [[label]]
 advisory = "GHSA-jqmf-mx4f-hfr6"
 package = "vibe-trading-ai"
 version = "0.1.6"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["agent.src.tools.bash_tool:BashTool.execute", "agent.src.tools.background_tools:BackgroundManager._execute", "agent.backtest.runner:_load_module_from_file", "agent.src.tools.web_reader_tool:read_url", "agent.src.shadow_account.codegen:_env"]
+entry_points = ["agent.src.tools.bash_tool.BashTool.execute", "agent.src.tools.background_tools.BackgroundRunTool.execute", "agent.backtest.runner.main", "agent.src.tools.web_reader_tool.WebReaderTool.execute", "agent.src.shadow_account.codegen.render_signal_engine"]
+status = "labelled"
+note = "The advisory covers five distinct tool and code-generation paths. The linked patch also changes API defaults and tool registration."
 round = 1
 
 [[label]]
 advisory = "GHSA-hfgr-h3vc-p6c2"
 package = "dockerspawner"
 version = "12.1.0"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["dockerspawner.dockerspawner:DockerSpawner.check_allowed"]
+entry_points = ["dockerspawner.DockerSpawner.start"]
+status = "labelled"
+note = "The image check accepts a user-selected image when the allowlist is empty."
 round = 1
 
 [[label]]
 advisory = "GHSA-378x-6p4f-8jgm"
 package = "skops"
 version = "0.12.0"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["skops.card._model_card:_load_model"]
+entry_points = ["skops.card.Card.get_model"]
+status = "labelled"
+note = "Loading a model from a pickle-based format reaches unsafe deserialization."
 round = 1
 
 [[label]]
 advisory = "GHSA-923m-gv2p-w5qp"
 package = "django"
 version = "5.2.14"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["django.utils.cache:has_vary_header"]
+entry_points = ["django.utils.cache.has_vary_header", "django.middleware.cache.UpdateCacheMiddleware.process_response"]
+status = "labelled"
+note = "Whitespace in Vary values can cause the header check to miss a match."
 round = 1
 
 [[label]]
@@ -437,9 +437,9 @@ advisory = "GHSA-mffc-9gx5-99g3"
 package = "kerberos"
 version = "1.2.5"
 symbols = []
-entry_points = []
-status = "todo"
-note = ""
+entry_points = ["kerberos.checkPassword"]
+status = "no_python_symbol"
+note = "The importable function is provided by the native extension. The linked Python change updates its documentation."
 round = 1
 
 [[label]]
@@ -447,9 +447,9 @@ advisory = "GHSA-2qfp-q593-8484"
 package = "brotli"
 version = "1.1.0"
 symbols = []
-entry_points = []
-status = "todo"
-note = ""
+entry_points = ["brotli.Decompressor.process"]
+status = "no_python_symbol"
+note = "The unbounded output allocation is in the native Brotli binding. The applicable Python middleware fix is in the separate Scrapy package."
 round = 1
 
 [[label]]
@@ -457,149 +457,149 @@ advisory = "GHSA-mffc-9gx5-99g3"
 package = "pykerberos"
 version = "1.1.5"
 symbols = []
-entry_points = []
-status = "todo"
-note = ""
+entry_points = ["kerberos.checkPassword"]
+status = "no_python_symbol"
+note = "The pykerberos distribution exposes the same native password check. The linked Python change updates documentation."
 round = 1
 
 [[label]]
 advisory = "GHSA-rxff-vr5r-8cj5"
 package = "streamlit"
 version = "1.36.0"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["streamlit.web.server.app_static_file_handler:AppStaticFileHandler.validate_absolute_path"]
+entry_points = ["streamlit.web.server.app_static_file_handler.AppStaticFileHandler"]
+status = "labelled"
+note = "The ordering of the path checks leaves a Windows-specific static-file traversal issue."
 round = 1
 
 [[label]]
 advisory = "GHSA-cm54-3vvf-f5p8"
 package = "nova"
 version = "before 12.0.0a0"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["nova.virt.disk.api:_inject_file_into_fs", "nova.virt.disk.api:_inject_key_into_fs", "nova.virt.disk.api:_inject_net_into_fs", "nova.virt.disk.api:_inject_admin_password_into_fs"]
+entry_points = ["nova.virt.disk.api.inject_data", "nova.virt.disk.api.inject_files"]
+status = "labelled"
+note = "Checked the parent of the linked fix because the package range is open-ended. Guest paths used for writes can resolve outside the mounted guest filesystem."
 round = 1
 
 [[label]]
 advisory = "GHSA-cwqr-hh33-gh44"
 package = "filelock"
 version = "4.2.0"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["filelock._read_write:ReadWriteLock._configure_and_begin"]
+entry_points = ["filelock.ReadWriteLock.acquire_read", "filelock.ReadWriteLock.acquire_write", "filelock.AsyncReadWriteLock.acquire_read", "filelock.AsyncReadWriteLock.acquire_write"]
+status = "labelled"
+note = "Acquisition makes SQLite load an untrusted lock database schema before the lock timeout can bound the work."
 round = 1
 
 [[label]]
 advisory = "GHSA-hhrp-gw25-jr43"
 package = "ray"
 version = "2.55.1"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["ray.data._internal.datasource.webdataset_datasource:_default_decoder"]
+entry_points = ["ray.data.read_webdataset"]
+status = "labelled"
+note = "The default WebDataset decoder deserializes unsafe formats. The linked Parquet work covers a separate reader."
 round = 1
 
 [[label]]
 advisory = "GHSA-2cp2-2r3c-7p7r"
 package = "hydra-core"
 version = "1.3.3"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["hydra._internal.instantiate._instantiate2:_resolve_target", "hydra._internal.instantiate._instantiate2:_call_target"]
+entry_points = ["hydra.utils.instantiate"]
+status = "labelled"
+note = "The caller must pass configuration from an untrusted source. Target resolution and invocation both participate."
 round = 1
 
 [[label]]
 advisory = "GHSA-jmp3-39vp-fwg8"
 package = "wagtail"
 version = "6.0.5"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["wagtail.search.utils:separate_filters_from_query"]
+entry_points = ["wagtail.search.utils.parse_query_string"]
+status = "labelled"
+note = "Search-filter parsing can do excessive work when scanning a query."
 round = 1
 
 [[label]]
 advisory = "GHSA-g67g-hvc3-xmvf"
 package = "omero-web"
 version = "5.11.0rc1"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["omeroweb.webclient.views:load_metadata_preview"]
+entry_points = ["omeroweb.webclient.views.load_metadata_preview"]
+status = "labelled"
+note = "The view returns an unescaped owner field. Other paths in the same advisory are in templates and JavaScript."
 round = 1
 
 [[label]]
 advisory = "GHSA-9mwf-mw74-9cv5"
 package = "apache-airflow-providers-apache-hive"
-version = "5.1.3rc1"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+version = "5.1.2"
+symbols = ["airflow.providers.apache.hive.hooks.hive:HiveCliHook._prepare_cli_cmd"]
+entry_points = ["airflow.providers.apache.hive.hooks.hive.HiveCliHook.run_cli"]
+status = "labelled"
+note = "The Beeline command is constructed without validating connection parameters. The seeded release candidate already calls the validator."
 round = 1
 
 [[label]]
 advisory = "GHSA-vfgx-5q85-58q3"
 package = "openssl-encrypt"
 version = "1.4.0b8"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["openssl_encrypt.plugins.steganography.core.utils:SteganographyUtils.generate_pseudorandom_sequence", "openssl_encrypt.plugins.steganography.core.base:SteganographyBase.__init__", "openssl_encrypt.plugins.steganography.formats.image:LSBImageStego.hide_data", "openssl_encrypt.plugins.steganography.formats.image:LSBImageStego.extract_data", "openssl_encrypt.plugins.steganography.formats.tiff:TIFFSteganography._hide_in_tiff", "openssl_encrypt.plugins.steganography.formats.tiff:TIFFSteganography._extract_from_tiff", "openssl_encrypt.plugins.steganography.formats.flac:FLACSteganography._hide_in_flac_samples", "openssl_encrypt.plugins.steganography.formats.flac:FLACSteganography._extract_from_flac_samples", "openssl_encrypt.plugins.steganography.formats.mp3:MP3Steganography._hide_in_mp3_frames", "openssl_encrypt.plugins.steganography.formats.mp3:MP3Steganography._extract_from_mp3_frames", "openssl_encrypt.plugins.steganography.formats.wav:WAVSteganography._hide_in_wav_samples", "openssl_encrypt.plugins.steganography.formats.wav:WAVSteganography._extract_from_wav_samples", "openssl_encrypt.plugins.steganography.formats.webp:WEBPSteganography._hide_in_lossless_webp", "openssl_encrypt.plugins.steganography.formats.webp:WEBPSteganography._extract_from_lossless_webp"]
+entry_points = ["openssl_encrypt.plugins.steganography.formats.image.LSBImageStego.hide_data", "openssl_encrypt.plugins.steganography.formats.image.LSBImageStego.extract_data"]
+status = "labelled"
+note = "The shared seed and generator and the format-specific pixel or sample selection use predictable randomness."
 round = 1
 
 [[label]]
 advisory = "GHSA-gh7c-cg3x-pmcr"
 package = "pyftpdlib"
-version = "before 0.1.1"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+version = "0.1.0"
+symbols = ["pyftpdlib.FTPServer:passive_dtp.__init__"]
+entry_points = ["pyftpdlib.FTPServer.ftp_handler.ftp_PASV"]
+status = "labelled"
+note = "The passive data listener selects predictable ports. Checked the maintainer’s archived 0.1.0 release."
 round = 1
 
 [[label]]
 advisory = "GHSA-7m8f-hgjq-8gc9"
 package = "aiosend"
 version = "3.0.6"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["aiosend.webhook.base:WebhookHandler.feed_update"]
+entry_points = ["aiosend.webhook.WebhookHandler.feed_update", "aiosend.webhook.AiohttpManager.register_handler", "aiosend.webhook.FastAPIManager.register_handler"]
+status = "labelled"
+note = "The shared webhook handler parses the body before checking its signature."
 round = 1
 
 [[label]]
 advisory = "GHSA-fp7w-m676-w7gc"
 package = "social-auth-core"
 version = "4.9.1"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["social_core.backends.vend:VendOAuth2.user_data"]
+entry_points = ["social_core.backends.vend.VendOAuth2.auth_complete"]
+status = "labelled"
+note = "Vend supplies a shop-local identifier to the shared ID lookup without shop scoping. The fix adds a Vend-specific lookup."
 round = 1
 
 [[label]]
 advisory = "GHSA-8h88-gxp3-j7pg"
 package = "openssl-encrypt"
 version = "1.4.0b8"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["openssl_encrypt.modules.key_bundle:PublicKeyBundle.from_dict", "openssl_encrypt.modules.key_bundle:PublicKeyBundle.to_identity"]
+entry_points = ["openssl_encrypt.modules.key_bundle.PublicKeyBundle.from_dict", "openssl_encrypt.modules.key_bundle.PublicKeyBundle.to_identity"]
+status = "labelled"
+note = "An imported bundle can become an identity without signature verification."
 round = 1
 
 [[label]]
 advisory = "GHSA-c39v-8hrw-h448"
 package = "chainlit"
 version = "2.10.0"
-symbols = []
-entry_points = []
-status = "todo"
-note = ""
+symbols = ["chainlit.socket:restore_existing_session", "chainlit.socket:connect"]
+entry_points = ["chainlit.socket.connect"]
+status = "labelled"
+note = "WebSocket restoration reattaches the saved session without checking ownership."
 round = 1
 
 # ---- The declared 60 end here. The entries below stay todo unless the

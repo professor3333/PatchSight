@@ -1,5 +1,6 @@
 """LLM extraction merged into database records, with confidence tiers (ADR 0004)."""
 
+import json
 import sqlite3
 from datetime import UTC, datetime
 from pathlib import Path
@@ -326,3 +327,57 @@ def test_merge_llm_upgrades_a_published_database(tmp_path: Path) -> None:
     assert report.after == llm_records.Picks(vulnerabilities=2, records=2)
     assert report.tiers == {"high": 1, "low": 1}  # only the record that was already high
     assert sum(report.outcomes.values()) == 2  # one outcome per vulnerability
+
+
+def test_a_nightly_merges_picks_into_its_own_version_and_stays_an_update(tmp_path: Path) -> None:
+    from typer.testing import CliRunner
+
+    from patchsight.db import BuildEntry
+    from patchsight.pipeline.__main__ import app
+
+    db.write(
+        tmp_path / "nightly.sqlite", [_fallback()],
+        {"GHSA-xxxx-yyyy-zzzz": "GHSA-xxxx-yyyy-zzzz"},
+        {"db_version": "2026.11.22", "builder": "fallback-v1", "updated_from": "2026.11.21"},
+        builds=[BuildEntry(vulnerability="GHSA-xxxx-yyyy-zzzz", input_hash="h1", status="built")],
+    )  # fmt: skip
+    (tmp_path / "tonight.jsonl").write_text(_extraction(("load",)).model_dump_json() + "\n")
+    runner = CliRunner()
+    result = runner.invoke(app, [
+        "merge-llm", "nightly.sqlite", "--version", "2026.11.22", "--llm", "tonight.jsonl",
+        "--root", str(tmp_path), "--out", "merged",
+    ])  # fmt: skip
+    assert result.exit_code == 0, result.output
+    merged = db.SymbolDatabase(tmp_path / "merged.sqlite")
+    try:
+        assert merged.meta["updated_from"] == "2026.11.21"  # still the night's update
+        assert "merged_into" not in merged.meta
+    finally:
+        merged.close()
+    pointer = tmp_path / "latest.json"
+    pointer.write_text(json.dumps({"db_version": "2026.11.22", "schema_version": 1,
+                                   "url": "https://example.org/x.sqlite.gz", "sha256": "0" * 64,
+                                   "size": 1, "built_at": "2026-11-22T00:00:00+00:00",
+                                   "records": 1}))  # fmt: skip
+    notes = runner.invoke(app, [
+        "release-notes", "merged.sqlite", "--pointer", "latest.json",
+        "--merge", "merged-merge.json", "--root", str(tmp_path), "--out", "notes.md",
+    ])  # fmt: skip
+    assert notes.exit_code == 0, notes.output
+    text = (tmp_path / "notes.md").read_text()
+    assert "Symbol database **2026.11.22**, updated from 2026.11.21." in text
+    assert "## Model picks extracted for this release" in text
+    assert "## Changes since 2026.11.22" not in text
+
+
+def test_the_nights_targets_are_stable_and_capped() -> None:
+    from patchsight.pipeline import update_db
+
+    report = update_db.UpdateReport(
+        previous_version="a", db_version="b", carried=0, rebuilt=2, new=2, removed=0,
+        aliases_added=0, aliases_removed=0, status={},
+        to_extract=("GHSA-c", "GHSA-a", "GHSA-b", "GHSA-a"),
+    )  # fmt: skip
+    assert update_db.extraction_targets(report, 2) == ["GHSA-a", "GHSA-b"]
+    assert update_db.extraction_targets(report, 25) == ["GHSA-a", "GHSA-b", "GHSA-c"]
+    assert update_db.extraction_targets(report, 0) == []

@@ -145,3 +145,10 @@ def update(
         without_fix=len(unfixed),
     )
     return records, aliases, builds, report
+
+
+def extraction_targets(report: UpdateReport, limit: int) -> list[str]:
+    """The night's extraction targets (ADR 0013): rebuilt or new vulnerabilities that have a
+    record, in a stable order, at most ``limit``. Those left over keep the fallback until a
+    later run extracts them."""
+    return sorted(set(report.to_extract))[: max(0, limit)]

@@ -1797,14 +1797,19 @@ def merge_llm_command(
         ["git", "-C", str(root), "rev-parse", "HEAD"],  # noqa: S607
         capture_output=True, text=True, check=False,
     ).stdout.strip()  # fmt: skip
-    meta.pop("updated_from", None)  # the source's own origin; this build is a merge
+    # Merging into a new version makes a new build, so the source's origin no longer applies.
+    # Merging into the database's own version (the nightly: picks for the night's changes)
+    # keeps it: the release is still that night's update.
+    in_place = meta.get("db_version") == version
+    if not in_place:
+        meta.pop("updated_from", None)
+        meta["merged_into"] = meta.get("db_version", "?")
     meta.update(
         {
             "db_version": version,
             "built_at": datetime.now(UTC).isoformat(),
             "builder": "llm-v1",
             "code_commit": commit,
-            "merged_into": meta.get("db_version", "?"),
             "records_by_tier": json.dumps(dict(Counter(r.confidence for r in merged))),
         }
     )
@@ -1815,9 +1820,27 @@ def merge_llm_command(
         report.model_dump_json(indent=2) + "\n", "utf-8"
     )
     typer.echo(
-        f"db {version} merged into {meta['merged_into']}: {len(merged)} records; "
+        f"db {version} merged into {meta.get('merged_into', version)}: {len(merged)} records; "
         f"{dict(Counter(r.confidence for r in merged))}; {outcomes}"
     )
+
+
+@app.command("nightly-targets")
+def nightly_targets_command(
+    update: Annotated[Path, typer.Argument(help="The update-db report.")],
+    limit: Annotated[int, typer.Option(help="At most this many vulnerabilities a night.")] = 25,
+    root: Root = Path(),
+) -> None:
+    """Print the vulnerabilities to extract tonight, comma-separated (ADR 0013): the night's
+    rebuilt or new vulnerabilities that have a record, capped so other work keeps its quota.
+    Prints nothing when there are none."""
+    from patchsight.pipeline import update_db
+
+    report = update_db.UpdateReport.model_validate_json((root / update).read_text("utf-8"))
+    targets = update_db.extraction_targets(report, limit)
+    typer.echo(",".join(targets))
+    left = len(report.to_extract) - len(targets)
+    typer.echo(f"{len(targets)} to extract tonight; {left} left for a later run", err=True)
 
 
 @app.command("import-names")
@@ -1997,8 +2020,13 @@ def release_notes_command(
             if merged.second_opinion_models
             else ""
         )
+        title = (
+            "## Model picks extracted for this release"
+            if merged.previous_version == version
+            else f"## Changes since {merged.previous_version}"
+        )
         lines += [
-            f"## Changes since {merged.previous_version}",
+            title,
             "",
             "- Merges model picks from "
             + ", ".join(f"`{m}`" for m in merged.models)

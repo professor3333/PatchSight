@@ -27,7 +27,7 @@ After `update-db`, the nightly extracts the night's changed vulnerabilities and 
 
 - A release can hold picks from two servings of the same model: the Kaggle backfill (Q4_K_M, llama.cpp) and the nightly (Groq). The two agreed on 47 of 55 dev reports; where they differed, Groq's set contained Kaggle's.
 - Groq's JSON rejections (24% of calls on the first dev run) cost repair calls and some dead letters. Each one keeps the fallback, which is the safe direction.
-- The nightly's runtime grows by about 30 seconds a vulnerability, so 15 minutes at most for 25, within its 330-minute limit.
+- The nightly's runtime grows by about 30 seconds a vulnerability, so 15 minutes at most for 25, within its 330-minute limit. (Since Groq's output limit, about a minute each: see the amendment below.)
 - The owner adds the secret. Until then, nothing changes.
 
 ## Amendment, 2026-11-21: the backlog
@@ -39,3 +39,11 @@ As first built, `nightly-targets` offered only the night's own changes. A vulner
 - **Only a release that will be published spends quota.** A run on a UTC date whose release already exists (a second run, or a rehearsal by dispatch) publishes nothing, so it skips extraction.
 - **A night with no change extracts nothing.** The backlog waits for the next night that publishes; at 7.7 new vulnerabilities a day, that is almost every night.
 - The run's reports keep `nightly-targets.json`: the night's changes, the backlog and the targets chosen.
+
+## Amendment, 2026-11-21: Groq's output limit
+
+On 2026-11-21 Groq began enforcing **1,000 output tokens per minute** for `qwen/qwen3.8-27b`. A request whose output allowance is 1,500 tokens, as the extractor's was, is refused outright as "too large", even when its answer would be two tokens; an allowance of 1,000 is accepted (measured that day). The first night with extraction would have been refused on its first request. `gpt-oss-120b` still accepted 1,500.
+
+- **The extractor asks for at most 1,000 output tokens.** `output_tokens_per_minute` on the model's config records the limit, and a config whose allowance exceeds it is refused at load. The prompt budget stays 4,600 tokens for every role, so prompts, and the Kaggle backfill's, are unchanged.
+- **The client paces output.** Each request reserves its allowance in a 60-second window until its answer's real size is known. On this model that is about one request a minute, so a night of 25 takes about half an hour, well within the job's limit. Checked live: two extractions, 2 calls, 65 seconds, no refusal.
+- **The cost: longer answers fail.** 3.2% of the backfill's answers (84 of 2,609) were over 1,000 tokens. On the nightly such an answer is cut off, the repair is cut off too, and the record keeps the fallback, with the failure named on it. That alone puts the nightly's dead-letter rate above the 2% target. The output-capacity cap (#52), which limits candidates to what the answer can hold, is the fix once it is switched on.

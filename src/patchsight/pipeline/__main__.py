@@ -20,6 +20,7 @@ import typer
 from patchsight import db
 from patchsight.eval.metrics import SetScores, score
 from patchsight.pipeline import build_db, fix_sample, week1
+from patchsight.pipeline.attribution import ATTRIBUTION
 from patchsight.pipeline.benchmarks import (
     bundle,
     changedfuncs,
@@ -2167,23 +2168,55 @@ def gate_db_command(
         raise typer.Exit(code=1)
 
 
-ATTRIBUTION = """## Attribution and licence
+@app.command("hf-publish")
+def hf_publish_command(
+    asset: Annotated[
+        Path, typer.Argument(help="A release asset, patchsight-db-<version>.sqlite.gz.")
+    ],
+    tag: Annotated[str, typer.Option(help="Its GitHub release tag, e.g. db-2026.11.21.1.")],
+    expect_sha256: Annotated[
+        str, typer.Option(help="The asset's SHA-256 as its GitHub release states it.")
+    ],
+    repo: Annotated[str, typer.Option(help="Hugging Face dataset repository.")] = "",
+    out: Annotated[Path, typer.Option(help="Where to build the dataset folder.")] = Path(
+        "data/build/hf"
+    ),
+    dry_run: Annotated[
+        bool, typer.Option("--dry-run", help="Build the folder only; upload nothing.")
+    ] = False,
+    root: Root = Path(),
+) -> None:
+    """Publish one database release to the Hugging Face dataset: records and aliases as JSONL,
+    the asset itself and the dataset card, as one commit tagged like the release. Needs
+    HF_TOKEN unless --dry-run. A tag that already exists is left as it is."""
+    import os
 
-Advisory identifiers and affected-package data come from [OSV.dev](https://osv.dev), which \
-aggregates the [GitHub Advisory Database](https://github.com/github/advisory-database) and the \
-[PyPA Advisory Database](https://github.com/pypa/advisory-database). All three are licensed \
-CC BY 4.0.
+    from patchsight.pipeline import hf_dataset
 
-**Changes made:** PatchSight resolved each advisory's fix commit on GitHub, mapped the changed \
-lines to function names with tree-sitter, and, where shown, had language models choose the \
-vulnerable ones. It stores those names with file paths, line ranges and commit SHAs. No \
-third-party source code is included.
+    source = root / asset
+    actual = hf_dataset.asset_sha256(source)
+    if actual != expect_sha256.strip().lower():
+        raise typer.BadParameter(
+            f"{asset.name} has SHA-256 {actual}, not the release's {expect_sha256}; "
+            "nothing published"
+        )
+    summary = hf_dataset.build(source, tag, root / out)
+    typer.echo(
+        f"{summary.tag}: {summary.records:,} records, {summary.vulnerabilities:,} vulnerabilities, "
+        f"{summary.identifiers:,} IDs -> {out} ({', '.join(summary.files)})"
+    )
+    if dry_run:
+        return
+    token = os.environ.get("HF_TOKEN")
+    if not token:
+        raise typer.BadParameter("set HF_TOKEN to publish (or pass --dry-run)")
+    from huggingface_hub import HfApi
 
-**Licence:** the PatchSight symbol database is licensed under \
-[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). If you share it, or data derived from \
-it, credit "PatchSight symbol database" with the release, keep the attribution above, and say \
-what you changed.
-"""
+    target = repo or hf_dataset.REPO
+    if hf_dataset.publish(HfApi(token=token), root / out, summary, target):
+        typer.echo(f"published {summary.tag} to https://huggingface.co/datasets/{target}")
+    else:
+        typer.echo(f"{summary.tag} is already on {target}; it is not published again")
 
 
 @app.command("release-notes")

@@ -44,7 +44,7 @@ A reference is a fix candidate when it is a commit or pull-request URL on GitHub
 
 - **Fallback records** list every changed definition. They need no model. When a fix changes only module-level code, such as registration calls or a module-level pattern list, its record lists the definitions those lines name or use (ledger status `module_level_references`).
 - **LLM records** add the model's picks among those definitions, each with a one-sentence rationale and the hunks it cites, plus public entry points that resolve to a definition. They come from Qwen3.8-27B (4-bit, `ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M`) with prompt `extract-v1`, run on Kaggle in four shards. The method, its validation and its measured accuracy are in the [model card](model_card.md).
-- In `db-2026.11.17.1`, **1,855 records (1,770 vulnerabilities) carry model picks** from shards 1 and 2 of 4. The other 1,830 records are fallback only.
+- In `db-2026.11.21.1`, **3,605 records (3,447 vulnerabilities) carry model picks** from all four shards. The other 204 records (202 vulnerabilities) are fallback only: 25 whose extraction failed, named on the record; 32 whose advisory changed after the backfill's inputs were frozen; 74 new since then; and 71 built from module-level references, which leave the model nothing to judge. The nightly extracts new and changed vulnerabilities, and the first three groups from its backlog ([ADR 0013](adr/0013-llm-extraction-in-the-nightly.md)).
 
 ## Confidence tiers
 

@@ -246,7 +246,7 @@ The offline pipeline is `python -m patchsight.pipeline <command>`.
 - [x] `patchsight scan` for `requirements.txt`, `uv.lock` and `poetry.lock`, with `patchsight explain`, `db update` and `db info`
 - [x] Confidence tiers from two model families, chosen on the dev split ([ADR 0004](docs/adr/0004-fall-back-to-the-baseline.md))
 - [x] **Public symbol database:** [releases](https://github.com/professor3333/PatchSight/releases), updated **every night** by the [nightly pipeline](.github/workflows/nightly.yml) after a release gate ([ADR 0006](docs/adr/0006-nightly-pipeline.md)). About 3,500 PyPI vulnerabilities, all low confidence so far
-- [ ] LLM-extracted records for PyPI: the pipeline, confidence tiers and per-symbol evidence are built; the self-hosted backfill is running on Kaggle (3 of 4 shards merged)
+- [x] LLM-extracted records for PyPI: the self-hosted backfill is merged (4 of 4 Kaggle shards, about 38 GPU hours). In [`db-2026.11.21.1`](https://github.com/professor3333/PatchSight/releases/tag/db-2026.11.21.1), 3,447 vulnerabilities (3,605 records) carry model picks with a rationale and cited hunks; the nightly extracts new and changed ones
 - [x] Held-out test evaluation of the confidence rule, declared in advance and run once: the safety target is **not met** ([ADR 0004](docs/adr/0004-fall-back-to-the-baseline.md#test-result-2026-11-18))
 - [x] Reachability fixtures: 58 programs, 0 false suppressions ([report](docs/reports/reachability-fixtures-labelled.md))
 - [x] Prompt-injection suite on cached answers ([report](docs/reports/injection-dunlap-dev-extract-v1-qwen3.8-27b-vs-extract-v1-gpt-oss-120b.md)): an advisory that names a decoy makes both model families agree on it, 8 of 15 times. One more reason high confidence stays withheld

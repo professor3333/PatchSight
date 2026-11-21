@@ -66,7 +66,7 @@ The LLM stages run in two places today:
 - **The Kaggle backfill.** Qwen3.8-27B (4-bit) on llama.cpp, two T4 GPUs, one shard of the PyPI vulnerabilities per session. It works offline from a private input bundle (`export-kaggle-inputs`), because the bundle holds third-party code. Its answers come home as a zip and are replayed locally with no model calls (`import-kaggle-run`, `pypi-extract --cache-only`). `merge-llm` then folds them into the published database under a new version.
 - **The benchmark.** `dunlap-extract` runs the same extractor on the Dunlap Go benchmark. Replay bundles in `benchmarks/dunlap-v1/` hold the answers and candidate metadata, with no source code, so `reproduce` rebuilds the results table in CI with no network and no key.
 
-The nightly workflow builds fallback records for new and changed advisories and carries every unchanged record forward, including the backfill's model picks. Nightly LLM extraction is *planned* ([#58](https://github.com/professor3333/PatchSight/issues/58)).
+The nightly workflow builds fallback records for new and changed advisories and carries every unchanged record forward, including the backfill's model picks. With the `GROQ_API_KEY` secret it also extracts, with Qwen3.8-27B on Groq, the night's changed vulnerabilities and then those still waiting for picks, at most 25 a night, and merges the picks into that night's release before the gate ([ADR 0013](adr/0013-llm-extraction-in-the-nightly.md)).
 
 ## The symbol database
 

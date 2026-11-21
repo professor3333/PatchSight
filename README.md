@@ -225,6 +225,7 @@ The offline pipeline is `python -m patchsight.pipeline <command>`.
 | `export-replay`, `confidence-report`, `reproduce` | Replay committed model answers offline, compare confidence rules, rebuild the tables |
 | `parity-report` | Compare two runs of the same prompt, such as the self-hosted 4-bit model against the hosted one |
 | `failure-report` | Break benchmark misses down by cause |
+| `retrieval-freeze`, `retrieval-report` | Which candidates a prompt cut to its token budget keeps, under BM25, no ranking and an oracle |
 | `reachability-report` | Score the reachability fixtures, with labelled records or a published database |
 | `panel-report` | Scan the 20-project panel: symbol-data coverage, verdicts and scan time |
 | `regression-freeze`, `regression-check` | Freeze the PyPI regression set from finished runs, and replay it offline |
@@ -249,6 +250,7 @@ The offline pipeline is `python -m patchsight.pipeline <command>`.
 - [x] Reachability fixtures: 58 programs, 0 false suppressions ([report](docs/reports/reachability-fixtures-labelled.md))
 - [x] Prompt-injection suite on cached answers ([report](docs/reports/injection-dunlap-dev-extract-v1-qwen3.8-27b-vs-extract-v1-gpt-oss-120b.md)): an advisory that names a decoy makes both model families agree on it, 8 of 15 times. One more reason high confidence stays withheld
 - [x] A panel of 20 real projects: 75.6% of alerts with symbol data, and scan time within target ([report](docs/reports/panel-db-2026.11.20.md))
+- [x] Retrieval at the prompt budget: on the 32 benchmark prompts cut to fit, BM25 keeps 42% of the true functions and no ranking keeps 69% ([experiment](docs/experiments.md#e9-ordering-candidates-to-fit-the-prompt-budget)). The ranker is the next thing to fix
 - [x] Regression suite: 50 PyPI vulnerabilities whose recorded answers are replayed through the live code in CI, with the output pinned ([set](benchmarks/pypi-regression-v1/README.md))
 - [x] Tracing of every model run, and an operations dashboard: Kaggle sessions, quota against each daily cap, and what the database holds ([report](docs/reports/operations.md))
 - [x] **On PyPI:** [`pip install patchsight`](https://pypi.org/project/patchsight/), published from CI with Trusted Publishing and a required approval

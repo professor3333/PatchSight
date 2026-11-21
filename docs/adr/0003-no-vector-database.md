@@ -13,7 +13,7 @@ What the extractor has to look up:
 - **The fix diff, by commit SHA.** Again an exact key.
 - **Which changed functions to show the model.** This set is small and fixed per advisory.
 
-On the Dunlap benchmark, PatchSight's pipeline found 2,330 candidate functions across 280 reports (`docs/reports/changedfuncs-baseline.md`). The median report has 2 candidates and the largest has 24 (`benchmarks/dunlap-v1/`).
+On the Dunlap benchmark, PatchSight's pipeline found 2,330 candidate functions across 280 reports (`docs/reports/changedfuncs-baseline.md`). The median report has 2 candidates. (This ADR first said the largest has 24; the retrieval bundle shows 353, in GO-2021-0100. See the measurement below.)
 
 ## Decision
 
@@ -30,3 +30,9 @@ When a prompt would exceed the token budget, candidates are ranked with BM25 aga
 ## When to revisit
 
 Add an embedding ranker only if a measurement shows BM25 losing recall. The measurement is the recall of true vulnerable functions among the candidates kept at the budget's cut-off, on truncated reports (proposal §10, "Retrieval"). Record that measurement in a new ADR if it changes this decision.
+
+## Measured, 2026-11-21
+
+The measurement above was run on the Dunlap benchmark ([E9](../experiments.md#e9-ordering-candidates-to-fit-the-prompt-budget), [report](../reports/retrieval-dunlap-v1.md)). On the 32 of 280 prompts that are cut, BM25 keeps 0.421 of the true vulnerable functions among the candidates, against 0.693 with no ranking at all (paired difference −0.271, 95% CI −0.405 to −0.109) and 0.950 for an oracle order.
+
+So BM25 loses recall, but to no ranking, not to a missing embedding model. The decision stands: no vector database and no embeddings. The ranker itself is the next thing to change, chosen on dev and evaluated on data not used to choose it.

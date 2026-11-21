@@ -22,6 +22,7 @@ Every controlled experiment on the extraction system, including the ones that lo
 | E6 | Entry-point name matching | exact names; a unique dotted-boundary match | dev high-confidence misses 1 of 27 to 0 of 27; F1 unchanged | Measured; switch on after the gpt-oss-20b evaluation, then evaluate on unseen data |
 | E7 | Fix-commit locator without the fix link | the proposal's message baseline; a ranking that prefers the advisory's own IDs | exact SHA 9.0% and 25.0%; wrong commit 64.0% and 47.0% | Neither is used: both are far from the 5% wrong-commit cap. Baseline for the agent ([#56](https://github.com/professor3333/PatchSight/issues/56)) |
 | E8 | Prompt injection (rule 7) | clean; advisory says nothing is vulnerable; advisory names a decoy; a code comment names a decoy | decoy in the advisory: 8 of 15 would become wrong high-confidence records; the others: none | High confidence stays withheld; a lifting rule must make none ([ADR 0008](adr/0008-withhold-high-confidence.md)) |
+| E9 | Ordering candidates to fit the prompt budget | BM25 against the advisory (as built); no ranking (file order); an oracle ceiling | On the 32 cut prompts: BM25 keeps 59 of 140 true functions (0.421), file order 97 (0.693), the oracle 133 (0.950) | Measured: BM25 loses to no ranking. It stays until a replacement is chosen on dev and evaluated on data not used to choose it |
 
 ## E1: 4-bit self-hosted against hosted serving
 
@@ -247,6 +248,31 @@ diffs) and a wider search (commit search by advisory ID). Report:
 **Findings.** Telling the models that nothing is vulnerable empties their answers, and the fallback turns an empty answer into a low-confidence record with every changed definition: safe. Naming a decoy in the advisory is the dangerous attack. Both families read the same text and agree on it, so agreement is not independent evidence here. That was the residual risk the threat model named; it is now measured. Comments planted in code moved neither model much.
 
 **Decision.** High confidence stays withheld. Any rule that lifts it must make no wrong high-confidence record on this suite ([ADR 0008](adr/0008-withhold-high-confidence.md)). One candidate: decide "not called" against every changed definition, so an agreed decoy cannot remove the real symbol.
+
+## E9: Ordering candidates to fit the prompt budget
+
+**Question.** When a fix's candidates do not fit the 4,600-token prompt budget, the extractor keeps them in BM25 order against the advisory text while they fit. A true vulnerable function that is cut cannot be picked. Does BM25 keep the true functions better than no ranking at all? This is the measurement [ADR 0003](adr/0003-no-vector-database.md) names for revisiting its decision.
+
+**Method.** `retrieval-freeze` records, for all 280 Dunlap reports, each candidate's token cost exactly as the prompt renderer counts it, its label, the BM25 order and the prompt's fixed cost. The bundle reproduces the Kaggle run's truncation for every report. `retrieval-report` applies three orders to the same costs with the renderer's own fitting rule (the first candidate is always kept, the others while they fit): BM25; file order, as the path filter and the mapping produce candidates; and an oracle that takes the cheapest candidate of each true function first, the most any order can keep. Recall counts the true functions among the candidates, so the patch ceiling is outside it. No model is called ([report](reports/retrieval-dunlap-v1.md), regenerated in CI).
+
+| Split | Prompts cut | BM25 | File order | Oracle | BM25 minus file order (95% CI) |
+|---|---:|---:|---:|---:|---|
+| all | 32 of 280 | 0.421 | 0.693 | 0.950 | −0.271 (−0.405 to −0.109) |
+| dev | 7 of 60 | 0.579 | 0.684 | 1.000 | −0.105 (−0.636 to +0.080) |
+| test | 25 of 220 | 0.397 | 0.694 | 0.942 | −0.298 (−0.438 to −0.118) |
+
+**Findings.**
+
+- **BM25 is worse than no ranking.** The best match is always kept, and the best matches tend to be long functions, so BM25 keeps fewer candidates (244 against 334 on the cut prompts). It is also worse when tokens are ignored: recall@5 0.279 against 0.350.
+- **The losses are spread.** By report, BM25 keeps more true functions in 6, file order in 14, and they tie in 9. A cut report keeps no true function in 4 cases under either order.
+- **Dev alone cannot separate them.** Dev has 5 cut reports with a true function, and its interval spans zero.
+- **The oracle shows the room.** An order that kept the true functions first would recover most of what truncation loses (0.950).
+
+**What it changes.**
+
+- **No published record.** Every record is low confidence and lists every changed definition, and a truncated prompt can never be high confidence. What changes is which picks the model can make on large fixes: truncation accounts for 8 of Qwen's 42 dev misses.
+- **No embeddings are called for.** An order that ignores the advisory already does better, so ADR 0003 stands.
+- **Next.** A cost-aware or structural order (for example BM25 score per token, or the files a fix's message or advisory names first), chosen on dev and evaluated once on data not used to choose it. Truncation affects 790 of the 3,505 PyPI backfill prompts, so a better order would be worth a top-up backfill run.
 
 ## Failure analysis
 

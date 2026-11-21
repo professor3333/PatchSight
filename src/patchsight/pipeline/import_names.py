@@ -251,33 +251,51 @@ def relabel(record: Record, names: ImportNames | None) -> Record:
 
     Without wheel names the record is returned unchanged. Symbols outside every root
     (repository helpers that are not installed) keep their path-derived module. Entry
-    points qualified with a path-derived module move with it. Idempotent.
+    points and model picks named after a path-derived module or symbol move with it,
+    also when the record's symbols were relabelled before (a merge of new picks into a
+    release that already has import names). Idempotent.
     """
     if names is None or not names.names:
         return record
+    # From every symbol's path: its path-derived module, and its path-derived name, mapped to
+    # the wheel's. Taken from all symbols, not only those still to move, so that picks and
+    # entry points merged again into an already relabelled record move too.
     renamed: dict[str, str] = {}
+    raw_names: dict[str, set[str]] = {}
     symbols = []
     for symbol in record.symbols:
         module = module_under(symbol.path, names.names)
         old = module_for_path(symbol.path)
-        if module is None or module == symbol.module:
-            symbols.append(symbol)
-            continue
-        if old is not None and old != module:
+        # A name must never move twice, so a module never maps to one that extends it.
+        if module is not None and old is not None and not f"{module}.".startswith(f"{old}."):
             renamed[old] = module
-        symbols.append(
-            Symbol(
+        if module is None or module == symbol.module:
+            moved = symbol
+        else:
+            moved = Symbol(
                 qualified_name=f"{module}.{symbol.name}",
                 module=module,
                 name=symbol.name,
                 kind=symbol.kind,
                 path=symbol.path,
             )
-        )
-    by_old_name = {
-        old.qualified_name: new.qualified_name
-        for old, new in zip(record.symbols, symbols, strict=True)
-    }
+        symbols.append(moved)
+        raw = f"{old}.{symbol.name}" if old else symbol.name
+        raw_names.setdefault(raw, set()).add(moved.qualified_name)
+    # Paths only the picks still cite (a second path that installs as the same module, whose
+    # symbol an earlier relabel merged into one) move the same way.
+    for path in sorted({h.path for item in record.evidence for h in item.hunks}):
+        module = module_under(path, names.names)
+        old = module_for_path(path)
+        if module is not None and old is not None and not f"{module}.".startswith(f"{old}."):
+            renamed.setdefault(old, module)
+    by_old_name = {raw: next(iter(new)) for raw, new in raw_names.items() if len(new) == 1}
+    by_old_name.update(
+        {
+            old.qualified_name: new.qualified_name
+            for old, new in zip(record.symbols, symbols, strict=True)
+        }
+    )
 
     def move(name: str) -> str:
         if name in by_old_name:

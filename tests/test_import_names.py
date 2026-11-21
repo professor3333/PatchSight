@@ -185,6 +185,64 @@ def test_relabel_moves_symbols_entry_points_and_evidence_under_the_wheel_roots()
     assert relabel(_record(), unread) == _record()
 
 
+def test_picks_merged_again_into_a_relabelled_record_move_too() -> None:
+    """A merge into a release that already has import names keeps the relabelled symbols
+    but brings the extraction's path-derived picks and entry points back: they must move."""
+    names = ImportNames(package="keras", names=("keras",), source="keras-3.15.1-py3-none-any.whl")
+    relabelled = relabel(_record(), names)
+    remerged = relabelled.model_copy(update={
+        "entry_points": ("saving.saving_lib.load_model",),
+        "evidence": _record().evidence,  # path-derived, as the extraction names it
+    })  # fmt: skip
+    again = relabel(remerged, names)
+    assert again.entry_points == ("keras.src.saving.saving_lib.load_model",)
+    assert again.evidence[0].qualified_name == "keras.src.saving.saving_lib.H5IOStore.get"
+    assert again == relabel(again, names)  # still idempotent
+
+
+def test_a_bare_pick_moves_when_its_path_gives_no_module() -> None:
+    # A hyphenated folder gives no path-derived module, so the extraction names the symbol
+    # bare; the wheel's root places it.
+    path = "src/praisonai-agents/praisonaiagents/tools/web_crawl_tools.py"
+    symbol = Symbol(qualified_name="_crawl_with_httpx", module=None, name="_crawl_with_httpx",
+                    kind="function", path=path)  # fmt: skip
+    evidence = SymbolEvidence(qualified_name="_crawl_with_httpx", rationale="r", hunks=())
+    record = _record(package="praisonaiagents", symbols=(symbol,), entry_points=(),
+                     evidence=(evidence,))  # fmt: skip
+    names = ImportNames(package="praisonaiagents", names=("praisonaiagents",), source="w.whl")
+    first = relabel(record, names)
+    qualified = "praisonaiagents.tools.web_crawl_tools._crawl_with_httpx"
+    assert first.evidence[0].qualified_name == qualified
+    remerged = first.model_copy(update={"evidence": (evidence,)})
+    assert relabel(remerged, names).evidence[0].qualified_name == qualified
+
+
+def test_a_pick_on_a_path_merged_away_moves_by_its_cited_hunk() -> None:
+    # python2/ and python3/ install as one httplib2; the first relabel keeps one symbol, so
+    # only the pick's cited hunk still names the python3 path.
+    def symbol(version: str) -> Symbol:
+        path = f"{version}/httplib2/__init__.py"
+        return Symbol(qualified_name=f"{version}.httplib2.Http.request",
+                      module=f"{version}.httplib2", name="Http.request", kind="method",
+                      path=path)  # fmt: skip
+
+    hunk = HunkLocation(commit="a" * 40, path="python3/httplib2/__init__.py", old_start=1,
+                        old_count=1, new_start=1, new_count=1)  # fmt: skip
+    evidence = SymbolEvidence(qualified_name="python3.httplib2.Http.request", rationale="r",
+                              hunks=(hunk,))  # fmt: skip
+    entry = ("python3.httplib2.Http.request",)
+    record = _record(package="httplib2", symbols=(symbol("python2"), symbol("python3")),
+                     entry_points=entry, evidence=(evidence,))  # fmt: skip
+    names = ImportNames(package="httplib2", names=("httplib2",), source="w.whl")
+    first = relabel(record, names)
+    assert [s.qualified_name for s in first.symbols] == ["httplib2.Http.request"]
+    remerged = first.model_copy(update={"entry_points": record.entry_points,
+                                        "evidence": (evidence,)})  # fmt: skip
+    again = relabel(remerged, names)
+    assert again.entry_points == ("httplib2.Http.request",)
+    assert [e.qualified_name for e in again.evidence] == ["httplib2.Http.request"]
+
+
 def test_annotate_reuses_earlier_names_and_reports_failures(tmp_path: Path) -> None:
     asked: list[str] = []
 

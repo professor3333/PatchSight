@@ -1,0 +1,92 @@
+{
+  "sets": [
+    {
+      "name": "dunlap-v1-split",
+      "path": "splits/dunlap-v1.json",
+      "kind": "file",
+      "sha256": "3850e7f4d984b17913e49d2707e162d73d77e1ea7a0c6181a948bbd72c376228",
+      "frozen": "2026-11-15",
+      "what": "Dunlap benchmark split: dev 60 reports, test 220, commit-sharing groups kept whole"
+    },
+    {
+      "name": "dunlap-v1-candidates",
+      "path": "benchmarks/dunlap-v1/candidates.json",
+      "kind": "file",
+      "sha256": "53092c97cc2a23f4cba1b3cef4a4a9da5ee7f445c9322464d51b3dcd5c64c410",
+      "frozen": "2026-11-15",
+      "what": "Dunlap benchmark: ground-truth symbols, fix commits and candidate functions per report"
+    },
+    {
+      "name": "dunlap-v1-injection-plans",
+      "path": "benchmarks/dunlap-v1/injection-plans-dev.json",
+      "kind": "file",
+      "sha256": "03bdf9da9d66cb34c8e11c59b3e9f42bac24c51987e6b2917de1b8edde6670f9",
+      "frozen": "2026-11-18",
+      "what": "Injection suite: the target and decoy planted in each attackable dev report"
+    },
+    {
+      "name": "dunlap-v1-retrieval",
+      "path": "benchmarks/dunlap-v1/retrieval.json",
+      "kind": "file",
+      "sha256": "36b3b60ec46954bb6b83bda4ed58793491eabc9fd4eef1ed52dcf2597945da90",
+      "frozen": "2026-11-21",
+      "what": "Retrieval at the prompt budget: token costs, labels and BM25 order per candidate"
+    },
+    {
+      "name": "go-holdout-v1",
+      "path": "benchmarks/go-holdout-v1/reports.json",
+      "kind": "file",
+      "sha256": "7de5b019b6559c6f38846d9b09f56df577fc0ae0ca86ef814df094253e4507ac",
+      "frozen": "2026-11-19",
+      "what": "Go temporal holdout: 83 GoVulnDB reports published after the model's training cutoff"
+    },
+    {
+      "name": "pypi-regression-v1",
+      "path": "benchmarks/pypi-regression-v1/cases.json",
+      "kind": "file",
+      "sha256": "f71a8b1c8bb22973707229574d09926f068f78365ee990d84928f7b83fefaab8",
+      "frozen": "2026-11-20",
+      "what": "PyPI regression set: 50 vulnerabilities with recorded answers and pinned output"
+    },
+    {
+      "name": "python-gold-v1-sample",
+      "path": "annotations/python-gold-v1/sample.json",
+      "kind": "file",
+      "sha256": "b7ea59f2b2e61cd56af2a14d5c5188034e03d4de270c3c1bec810ccdcc6f3b46",
+      "frozen": "2026-11-20",
+      "what": "Python gold set: the seeded sample of 120 advisories, frozen before any labelling"
+    },
+    {
+      "name": "python-gold-v1-round1",
+      "path": "annotations/python-gold-v1/round1.toml",
+      "kind": "file",
+      "sha256": "1e0ad15c0fd4b9e43afb8f00aa1d4fadeb809e9cc5cd857c0e0c6fdf00199fb7",
+      "frozen": "2026-11-20",
+      "what": "Python gold set: the owner's round 1 labels for the declared 60"
+    },
+    {
+      "name": "reachability-fixtures",
+      "path": "tests/fixtures/reachability",
+      "kind": "folder",
+      "sha256": "968301f161d9e716c579f4686a4bf34d1a89f09cfa780667c6c13989222f561c",
+      "frozen": "2026-11-18",
+      "what": "Reachability fixtures: 58 programs pinned to vulnerable packages, with their labels"
+    },
+    {
+      "name": "locator-masked-v1",
+      "path": "benchmarks/locator/masked-v1.json",
+      "kind": "file",
+      "sha256": "6b51ee9507588c4ed1699bb1058f4c13dff4284d827e62d885dad1a914c7f38d",
+      "frozen": "2026-11-18",
+      "what": "Fix-commit locator: 200 vulnerabilities with the fix link hidden"
+    },
+    {
+      "name": "panel-v1",
+      "path": "benchmarks/panel-v1.toml",
+      "kind": "file",
+      "sha256": "68d09d865bd19d933247bec1c15dc22f3904a709a85d71c0067728907c4f8015",
+      "frozen": "2026-11-18",
+      "what": "Repository panel: 20 projects pinned to their last commit before 2024-06-01"
+    }
+  ]
+}

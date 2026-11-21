@@ -44,3 +44,6 @@ jobs:
 
       - name: Replay the PyPI regression set
         run: uv run python -m patchsight.pipeline regression-check
+
+      - name: Check the frozen evaluation sets
+        run: uv run python -m patchsight.pipeline eval-sets

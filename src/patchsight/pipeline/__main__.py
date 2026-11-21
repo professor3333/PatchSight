@@ -494,6 +494,34 @@ def dunlap_extract_command(
     )
 
 
+@app.command("eval-sets")
+def eval_sets_command(
+    root: Root = Path(),
+    repin: Annotated[
+        list[str] | None,
+        typer.Option(help="Pin this set to its current contents (deliberate; say why)."),
+    ] = None,
+) -> None:
+    """Check every frozen evaluation set against its SHA-256 in manifests/eval-sets.json
+    (ADR 0014). Exits 1 if any set changed. CI runs it on every push."""
+    from patchsight.pipeline.benchmarks import frozen
+
+    manifest = frozen.load(root / frozen.MANIFEST)
+    if repin:
+        try:
+            manifest = frozen.repin(root, manifest, repin)
+        except KeyError as error:
+            raise typer.BadParameter(str(error.args[0])) from None
+        frozen.write(root / frozen.MANIFEST, manifest)
+        typer.echo(f"re-pinned {', '.join(repin)} in {frozen.MANIFEST}")
+    problems = frozen.check(root, manifest)
+    for problem in problems:
+        typer.echo(f"changed: {problem}", err=True)
+    if problems:
+        raise typer.Exit(code=1)
+    typer.echo(f"{len(manifest.sets)} evaluation sets match their pins in {frozen.MANIFEST}")
+
+
 RETRIEVAL_BUNDLE = Path("benchmarks/dunlap-v1/retrieval.json")
 RETRIEVAL_REPORT = Path("docs/reports/retrieval-dunlap-v1")
 

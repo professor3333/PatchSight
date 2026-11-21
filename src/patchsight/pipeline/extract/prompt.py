@@ -163,6 +163,81 @@ def _hunk_block(hunk_id: str, hunk: Hunk, max_lines: int) -> str:
     return f'<hunk id="{hunk_id}">\n{body}\n</hunk>'
 
 
+def _advisory_text(advisory: AdvisoryText) -> str:
+    return neutralise(f"{advisory.summary}\n\n{advisory.details}".strip())
+
+
+def _hunk_ids(inputs: Sequence[CandidateInput]) -> dict[tuple[str, str, int], str]:
+    # Hunk IDs are global, in file and hunk order, so a hunk shared by two candidates has
+    # one ID that both can cite.
+    keys = sorted({(c.source, c.path, h.index) for c in inputs for h in c.hunks})
+    return {key: f"H{n}" for n, key in enumerate(keys, 1)}
+
+
+def _block(
+    cid: str, item: CandidateInput, hunk_id: dict[tuple[str, str, int], str], max_lines: int
+) -> str:
+    hunks = "\n".join(
+        _hunk_block(hunk_id[(item.source, item.path, h.index)], h, max_lines)
+        for h in sorted(item.hunks, key=lambda h: h.index)
+    )
+    attributes = f'id="{cid}" file="{neutralise(item.path)}" name="{neutralise(item.name)}"'
+    return f'<candidate {attributes} kind="{item.kind}">\n{hunks}\n</candidate>'
+
+
+class BudgetPlan(BaseModel):
+    """What fitting a prompt to its budget works from: the tokens every prompt spends on the
+    instructions and the advisory, each candidate's own tokens, and the BM25 rank order."""
+
+    model_config = ConfigDict(frozen=True)
+
+    base_tokens: int
+    costs: tuple[int, ...]
+    order: tuple[int, ...]  # candidate indices, best match first
+
+
+def budget_plan(
+    template: PromptTemplate,
+    advisory: AdvisoryText,
+    inputs: Sequence[CandidateInput],
+    counter: TokenCounter,
+    max_hunk_lines: int,
+) -> BudgetPlan:
+    advisory_text = _advisory_text(advisory)
+    hunk_id = _hunk_ids(inputs)
+    base = template.system + template.user.replace("{{advisory}}", advisory_text)
+    return BudgetPlan(
+        base_tokens=counter.count(base) + 2 * MESSAGE_OVERHEAD,
+        costs=tuple(counter.count(_block("F0000", i, hunk_id, max_hunk_lines)) for i in inputs),
+        order=tuple(
+            bm25_rank(
+                advisory_text,
+                [f"{i.name} {' '.join(h for x in i.hunks for h in x.lines)}" for i in inputs],
+            )
+        ),
+    )
+
+
+def fit(
+    order: Sequence[int],
+    costs: Sequence[int],
+    base_tokens: int,
+    budget_tokens: int,
+    max_candidates: int | None = None,
+) -> set[int]:
+    """The candidates a prompt keeps, taken in ``order``: the first always, the others
+    while they fit the budget (and, with ``max_candidates``, the output limit)."""
+    kept: set[int] = set()
+    used = base_tokens
+    for index in order:
+        full = max_candidates is not None and len(kept) >= max_candidates
+        if kept and (full or used + costs[index] > budget_tokens):
+            continue
+        kept.add(index)
+        used += costs[index]
+    return kept
+
+
 def render(
     template: PromptTemplate,
     advisory: AdvisoryText,
@@ -180,37 +255,14 @@ def render(
     def estimate(text: str) -> int:
         return counter.count(text)
 
-    advisory_text = neutralise(f"{advisory.summary}\n\n{advisory.details}".strip())
-
-    # Hunk IDs are global, in file and hunk order, so a hunk shared by two candidates has
-    # one ID that both can cite.
-    hunk_key = sorted({(c.source, c.path, h.index) for c in inputs for h in c.hunks})
-    hunk_id = {key: f"H{n}" for n, key in enumerate(hunk_key, 1)}
+    advisory_text = _advisory_text(advisory)
+    hunk_id = _hunk_ids(inputs)
 
     def block(cid: str, item: CandidateInput) -> str:
-        hunks = "\n".join(
-            _hunk_block(hunk_id[(item.source, item.path, h.index)], h, max_hunk_lines)
-            for h in sorted(item.hunks, key=lambda h: h.index)
-        )
-        attributes = f'id="{cid}" file="{neutralise(item.path)}" name="{neutralise(item.name)}"'
-        return f'<candidate {attributes} kind="{item.kind}">\n{hunks}\n</candidate>'
+        return _block(cid, item, hunk_id, max_hunk_lines)
 
-    base = template.system + template.user.replace("{{advisory}}", advisory_text)
-    base_tokens = estimate(base) + 2 * MESSAGE_OVERHEAD
-    costs = [estimate(block("F0000", item)) for item in inputs]
-    order = bm25_rank(
-        advisory_text, [f"{i.name} {' '.join(h for x in i.hunks for h in x.lines)}" for i in inputs]
-    )
-
-    kept: set[int] = set()
-    used = base_tokens
-    for index in order:
-        # The best-ranked candidate is always kept; others only while they fit.
-        full = max_candidates is not None and len(kept) >= max_candidates
-        if kept and (full or used + costs[index] > budget_tokens):
-            continue
-        kept.add(index)
-        used += costs[index]
+    plan = budget_plan(template, advisory, inputs, counter, max_hunk_lines)
+    kept = fit(plan.order, plan.costs, plan.base_tokens, budget_tokens, max_candidates)
     kept_in_order = [i for i in range(len(inputs)) if i in kept]
 
     candidates: list[Candidate] = []

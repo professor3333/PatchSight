@@ -253,7 +253,7 @@ The offline pipeline is `python -m patchsight.pipeline <command>`.
 - [x] Tracing of every model run, and an operations dashboard: Kaggle sessions, quota against each daily cap, and what the database holds ([report](docs/reports/operations.md))
 - [x] **On PyPI:** [`pip install patchsight`](https://pypi.org/project/patchsight/), published from CI with Trusted Publishing and a required approval
 - [x] **SARIF output and a GitHub Action, with a pull-request comment** (`professor3333/PatchSight@v0.8.0`), with a [smoke test](.github/workflows/action-smoke.yml) on every change
-- [ ] OpenVEX output and a pull-request comment
+- [ ] OpenVEX output, written only for alerts a person has reviewed and approved
 
 > [!WARNING]
 > **The confidence rule doesn't meet its safety target.** In its one declared evaluation on the held-out test split, high-confidence records missed the vulnerable symbol in 8 of 115 reports: 7.0% (95% interval 3.6% to 13.1%), against a target of 2% or less ([report](docs/reports/confidence-dunlap-test-extract-v1-qwen3.8-27b-q4km-vs-extract-v1-gpt-oss-120b.md)). In six of the eight, the fix never touched the labelled symbol, which no agreement between models can detect. So high-confidence records are **withheld from releases** until a rule meets the target on data it wasn't chosen on ([ADR 0008](docs/adr/0008-withhold-high-confidence.md)). Until then the scanner never says **imported, not called**.

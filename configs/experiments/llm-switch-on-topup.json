@@ -1,0 +1,6638 @@
+{
+ "role": "kaggle_extractor",
+ "prompt_version": "extract-v1",
+ "before": "configs/llm.toml",
+ "before_sha256": "725ede20f94c1c4cbc7ef9ad6205fbf40ce0ab713b091899d799c6e8960feb74",
+ "after": "configs/experiments/llm-switch-on.toml",
+ "after_sha256": "812bd519523b33ccfc023df1dd30a536cc0d910cd9b81eb773ad97d53b470210",
+ "parts": [
+  {
+   "benchmark": "pypi",
+   "considered": 3505,
+   "skipped": {
+    "error": 11,
+    "module_level_only": 121,
+    "no_python_fix": 1083,
+    "no_resolvable_commit": 64,
+    "too_broad": 15
+   },
+   "changed": [
+    {
+     "id": "GHSA-22c2-9gwg-mj59",
+     "candidates": 17,
+     "kept_before": 8,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-22fp-mf44-f2mq",
+     "candidates": 16,
+     "kept_before": 7,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-22hg-r758-rrw9",
+     "candidates": 3,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-22m3-c7vp-49fj",
+     "candidates": 12,
+     "kept_before": 10,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-22p9-r2f5-22mf",
+     "candidates": 9,
+     "kept_before": 3,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-239g-whfq-7xj9",
+     "candidates": 12,
+     "kept_before": 4,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-23x9-8hxr-978c",
+     "candidates": 19,
+     "kept_before": 6,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-24cc-9352-h2pg",
+     "candidates": 9,
+     "kept_before": 4,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-24p2-j2jr-386w",
+     "candidates": 5,
+     "kept_before": 3,
+     "kept_after": 4,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-24qx-w28j-9m6p",
+     "candidates": 20,
+     "kept_before": 20,
+     "kept_after": 14,
+     "truncated_before": false,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-258h-f687-4226",
+     "candidates": 36,
+     "kept_before": 8,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-2658-85cv-9wwq",
+     "candidates": 19,
+     "kept_before": 4,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-26c4-7vv6-867j",
+     "candidates": 41,
+     "kept_before": 7,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-26g9-27vm-x3q8",
+     "candidates": 31,
+     "kept_before": 5,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-27q4-38qf-m25h",
+     "candidates": 13,
+     "kept_before": 8,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-27vj-qcqg-25rc",
+     "candidates": 11,
+     "kept_before": 7,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-2823-qmq8-rwvj",
+     "candidates": 11,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-2956-977x-2w3r",
+     "candidates": 27,
+     "kept_before": 5,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-2cm6-r77w-6g96",
+     "candidates": 14,
+     "kept_before": 5,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-2g87-pp6c-29x5",
+     "candidates": 94,
+     "kept_before": 9,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-2g95-wg33-c5x2",
+     "candidates": 40,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-2gpf-2492-q9jh",
+     "candidates": 33,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-2gwj-7jmv-h26r",
+     "candidates": 16,
+     "kept_before": 16,
+     "kept_after": 14,
+     "truncated_before": false,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-2h4w-29cv-2cmv",
+     "candidates": 13,
+     "kept_before": 5,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-2hrw-hx67-34x6",
+     "candidates": 18,
+     "kept_before": 6,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-2jgc-f764-c5r2",
+     "candidates": 27,
+     "kept_before": 5,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-2jhm-w3mp-jcwr",
+     "candidates": 14,
+     "kept_before": 6,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-2jq4-q6vv-4cp3",
+     "candidates": 250,
+     "kept_before": 7,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-2jrp-274c-jhv3",
+     "candidates": 17,
+     "kept_before": 4,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-2mvc-557g-5638",
+     "candidates": 228,
+     "kept_before": 26,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-2q2q-jr9g-v9rf",
+     "candidates": 15,
+     "kept_before": 15,
+     "kept_after": 14,
+     "truncated_before": false,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-2q4h-27m7-rj67",
+     "candidates": 15,
+     "kept_before": 9,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-2q59-h24c-w6fg",
+     "candidates": 28,
+     "kept_before": 8,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-2qfp-q593-8484",
+     "candidates": 10,
+     "kept_before": 7,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-2qmj-7962-cjq8",
+     "candidates": 217,
+     "kept_before": 5,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-2r5m-76wx-56gx",
+     "candidates": 47,
+     "kept_before": 9,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-2vjq-hg5w-5gm7",
+     "candidates": 20,
+     "kept_before": 14,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-2w87-5qcj-j6gx",
+     "candidates": 26,
+     "kept_before": 9,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-2wqp-q3c6-ccj5",
+     "candidates": 7,
+     "kept_before": 4,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-2xj6-xx86-cwwc",
+     "candidates": 39,
+     "kept_before": 7,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-2xpw-w6gg-jr37",
+     "candidates": 49,
+     "kept_before": 7,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-2xwp-m7mq-7q3r",
+     "candidates": 10,
+     "kept_before": 3,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-32g6-mg92-ghm2",
+     "candidates": 6,
+     "kept_before": 4,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-32gv-6cf3-wcmq",
+     "candidates": 14,
+     "kept_before": 9,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-3325-v43h-43rv",
+     "candidates": 24,
+     "kept_before": 14,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-3382-gw9x-477v",
+     "candidates": 16,
+     "kept_before": 16,
+     "kept_after": 14,
+     "truncated_before": false,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-33qv-c5qm-799v",
+     "candidates": 11,
+     "kept_before": 3,
+     "kept_after": 4,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-33wh-fxxf-88vv",
+     "candidates": 12,
+     "kept_before": 4,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-3476-c5c2-fr73",
+     "candidates": 20,
+     "kept_before": 19,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-34r3-9m95-vq73",
+     "candidates": 20,
+     "kept_before": 6,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-3547-9m27-7rxg",
+     "candidates": 4,
+     "kept_before": 2,
+     "kept_after": 3,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-354v-3q48-cv69",
+     "candidates": 14,
+     "kept_before": 7,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-376m-3rm2-9jm6",
+     "candidates": 36,
+     "kept_before": 15,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-37hp-765x-j95x",
+     "candidates": 9,
+     "kept_before": 4,
+     "kept_after": 4,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-3c5x-4hvx-qrrr",
+     "candidates": 15,
+     "kept_before": 15,
+     "kept_after": 14,
+     "truncated_before": false,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-3cv6-jpf6-8222",
+     "candidates": 61,
+     "kept_before": 7,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-3f7w-8rr8-f37f",
+     "candidates": 9,
+     "kept_before": 8,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-3fcr-jvgp-7f58",
+     "candidates": 5,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-3gqm-fcw5-w839",
+     "candidates": 14,
+     "kept_before": 5,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-3hfw-x7gx-437c",
+     "candidates": 36,
+     "kept_before": 6,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-3hj6-r5c9-q8f3",
+     "candidates": 39,
+     "kept_before": 13,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-3hj7-6vmj-h8v4",
+     "candidates": 20,
+     "kept_before": 4,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-3hv7-mjh2-fv65",
+     "candidates": 22,
+     "kept_before": 5,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-3jp2-3mrg-2vxc",
+     "candidates": 22,
+     "kept_before": 4,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-3m4q-jmj6-r34q",
+     "candidates": 15,
+     "kept_before": 4,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-3p54-567p-2wpr",
+     "candidates": 19,
+     "kept_before": 10,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-3qwc-47jf-5rf7",
+     "candidates": 24,
+     "kept_before": 10,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-3r68-hf9h-887v",
+     "candidates": 39,
+     "kept_before": 4,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-3vx7-xff6-h2vx",
+     "candidates": 21,
+     "kept_before": 6,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-3w55-933p-8pv5",
+     "candidates": 8,
+     "kept_before": 5,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-3wxw-xv34-2frg",
+     "candidates": 18,
+     "kept_before": 12,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-42cr-w2gr-m54q",
+     "candidates": 14,
+     "kept_before": 11,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-4427-7f3w-mqv6",
+     "candidates": 30,
+     "kept_before": 11,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-4558-3h8r-v8xp",
+     "candidates": 2,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-4596-2p6p-28cv",
+     "candidates": 39,
+     "kept_before": 4,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-45gq-q4xh-cp53",
+     "candidates": 7,
+     "kept_before": 5,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-47pj-3jcm-6whg",
+     "candidates": 15,
+     "kept_before": 4,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-4894-xqv6-vrfq",
+     "candidates": 13,
+     "kept_before": 3,
+     "kept_after": 4,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-494p-63j8-28p3",
+     "candidates": 4,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-49mj-x8jp-qvfc",
+     "candidates": 23,
+     "kept_before": 5,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-49xv-9743-pw8w",
+     "candidates": 39,
+     "kept_before": 6,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-4c3j-3h7v-22q9",
+     "candidates": 12,
+     "kept_before": 10,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-4c42-4rxm-x6qf",
+     "candidates": 40,
+     "kept_before": 21,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-4cfr-gjfx-fj3x",
+     "candidates": 19,
+     "kept_before": 5,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-4f6c-2vvp-gw82",
+     "candidates": 177,
+     "kept_before": 5,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-4f6g-68pf-7vhv",
+     "candidates": 7,
+     "kept_before": 6,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-4fvr-rgm6-gqmc",
+     "candidates": 15,
+     "kept_before": 13,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-4g37-7p2c-38r9",
+     "candidates": 3,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-4ghv-53cq-7wp3",
+     "candidates": 12,
+     "kept_before": 3,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-4gmw-gg2m-w46p",
+     "candidates": 16,
+     "kept_before": 8,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-4hmc-cfm3-w43c",
+     "candidates": 34,
+     "kept_before": 2,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-4j32-57v6-6g45",
+     "candidates": 104,
+     "kept_before": 4,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-4j59-vv55-q6h3",
+     "candidates": 46,
+     "kept_before": 8,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-4jcv-vp96-94xr",
+     "candidates": 48,
+     "kept_before": 5,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-4pcg-253r-rf9w",
+     "candidates": 18,
+     "kept_before": 4,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-4ph2-8337-hm62",
+     "candidates": 13,
+     "kept_before": 5,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-4q3w-jgfx-4792",
+     "candidates": 17,
+     "kept_before": 17,
+     "kept_after": 14,
+     "truncated_before": false,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-4q5v-7g7x-j79w",
+     "candidates": 10,
+     "kept_before": 7,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-4qjh-9fv9-r85r",
+     "candidates": 23,
+     "kept_before": 15,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-4qvv-g3vr-m348",
+     "candidates": 31,
+     "kept_before": 17,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-4r2x-xpjr-7cvv",
+     "candidates": 20,
+     "kept_before": 10,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-4rcq-jv2f-898j",
+     "candidates": 54,
+     "kept_before": 17,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-4v28-j6q3-5m4r",
+     "candidates": 12,
+     "kept_before": 4,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-4v6f-7vjh-6x4m",
+     "candidates": 22,
+     "kept_before": 4,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-4v6w-xpmh-gfgp",
+     "candidates": 8,
+     "kept_before": 7,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-4vqc-wpwg-vh7j",
+     "candidates": 12,
+     "kept_before": 8,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-4vqv-7265-gm2w",
+     "candidates": 36,
+     "kept_before": 25,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-4vvm-4w3v-6mr8",
+     "candidates": 30,
+     "kept_before": 5,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-4w59-c3gc-rrhp",
+     "candidates": 14,
+     "kept_before": 11,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-4x9p-g9wm-8q7f",
+     "candidates": 38,
+     "kept_before": 4,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-4xc4-762w-m6cg",
+     "candidates": 7,
+     "kept_before": 6,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-4xhp-xg4w-8ppm",
+     "candidates": 13,
+     "kept_before": 8,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-5293-mq8x-g3xj",
+     "candidates": 350,
+     "kept_before": 5,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-535g-62r7-cx6v",
+     "candidates": 62,
+     "kept_before": 8,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-538v-3wq9-4h3r",
+     "candidates": 81,
+     "kept_before": 6,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-542m-9234-8gvf",
+     "candidates": 11,
+     "kept_before": 9,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-556j-vv39-8rqv",
+     "candidates": 9,
+     "kept_before": 8,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-558c-9hv2-4prj",
+     "candidates": 9,
+     "kept_before": 6,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-5626-pw9c-hmjr",
+     "candidates": 40,
+     "kept_before": 14,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-5644-2v3h-5w4x",
+     "candidates": 18,
+     "kept_before": 11,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-567q-5qvw-pf92",
+     "candidates": 9,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-57fc-8q82-gfp3",
+     "candidates": 217,
+     "kept_before": 5,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-57qv-h9m7-jxfg",
+     "candidates": 71,
+     "kept_before": 7,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-58hv-7753-xmfq",
+     "candidates": 38,
+     "kept_before": 8,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-5chr-fjjv-38qv",
+     "candidates": 15,
+     "kept_before": 10,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-5cvg-9pp5-mxcj",
+     "candidates": 15,
+     "kept_before": 15,
+     "kept_after": 14,
+     "truncated_before": false,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-5gh2-94qg-qppq",
+     "candidates": 6,
+     "kept_before": 4,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-5gwj-m78q-7pq3",
+     "candidates": 39,
+     "kept_before": 10,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-5h93-6whr-6q8j",
+     "candidates": 60,
+     "kept_before": 5,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-5hr4-253g-cpx2",
+     "candidates": 13,
+     "kept_before": 2,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-5jjj-9xc3-rm56",
+     "candidates": 113,
+     "kept_before": 10,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-5jrj-52x8-m64h",
+     "candidates": 24,
+     "kept_before": 2,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-5m22-cfq9-86x6",
+     "candidates": 30,
+     "kept_before": 10,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-5m98-qgg9-wh84",
+     "candidates": 15,
+     "kept_before": 14,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-5p3m-vhh6-9236",
+     "candidates": 15,
+     "kept_before": 3,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-5p9j-w2wx-qx4c",
+     "candidates": 30,
+     "kept_before": 24,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-5qpg-rh4j-qp35",
+     "candidates": 22,
+     "kept_before": 6,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-5qwj-342r-h886",
+     "candidates": 14,
+     "kept_before": 4,
+     "kept_after": 4,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-5r34-2g38-6569",
+     "candidates": 27,
+     "kept_before": 7,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-5rmq-chc7-m22f",
+     "candidates": 68,
+     "kept_before": 2,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-5v9m-57mq-qc75",
+     "candidates": 13,
+     "kept_before": 8,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-5wf4-jqxh-8gm3",
+     "candidates": 39,
+     "kept_before": 4,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-5x6q-ffwj-8vcf",
+     "candidates": 17,
+     "kept_before": 10,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-5x7x-4c3c-qf5w",
+     "candidates": 20,
+     "kept_before": 5,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-5xm2-6676-qcp9",
+     "candidates": 3,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-5xvc-vgmp-jgc3",
+     "candidates": 10,
+     "kept_before": 6,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-62m9-f875-rqw6",
+     "candidates": 14,
+     "kept_before": 4,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-63fq-8fp9-vhwq",
+     "candidates": 19,
+     "kept_before": 9,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-64cw-m57j-65xj",
+     "candidates": 14,
+     "kept_before": 9,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-6529-c226-h328",
+     "candidates": 39,
+     "kept_before": 5,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-65v8-q222-64xx",
+     "candidates": 19,
+     "kept_before": 5,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-6627-m3xw-93mp",
+     "candidates": 75,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-6643-h7h5-x9wh",
+     "candidates": 194,
+     "kept_before": 5,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-66gw-5xpf-gfp5",
+     "candidates": 29,
+     "kept_before": 21,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-66h8-3g48-6hx8",
+     "candidates": 26,
+     "kept_before": 6,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-6753-gr46-6wpr",
+     "candidates": 15,
+     "kept_before": 7,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-6757-hggm-hp2w",
+     "candidates": 27,
+     "kept_before": 4,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-6757-jp84-gxfx",
+     "candidates": 45,
+     "kept_before": 9,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-69hj-f68j-2879",
+     "candidates": 9,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-6c4r-fmh3-7rh8",
+     "candidates": 21,
+     "kept_before": 5,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-6cp7-3m3c-5x5c",
+     "candidates": 32,
+     "kept_before": 7,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-6cr4-ccf3-x7h4",
+     "candidates": 39,
+     "kept_before": 10,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-6fqq-452j-qhrp",
+     "candidates": 16,
+     "kept_before": 13,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-6g6r-q6gw-w8fg",
+     "candidates": 27,
+     "kept_before": 6,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-6g88-vr3v-76mf",
+     "candidates": 23,
+     "kept_before": 6,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-6gmf-2369-c76c",
+     "candidates": 7,
+     "kept_before": 6,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-6gqw-jqv7-v88m",
+     "candidates": 56,
+     "kept_before": 8,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-6h3f-43vq-53hj",
+     "candidates": 33,
+     "kept_before": 8,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-6hjj-gq77-j4qw",
+     "candidates": 4,
+     "kept_before": 1,
+     "kept_after": 2,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-6hmw-9432-67qq",
+     "candidates": 19,
+     "kept_before": 15,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-6hx8-3wjj-gr8g",
+     "candidates": 7,
+     "kept_before": 4,
+     "kept_after": 4,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-6jp4-8v48-cc5v",
+     "candidates": 19,
+     "kept_before": 9,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-6mq8-rvhq-8wgg",
+     "candidates": 31,
+     "kept_before": 11,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-6pc9-xqrg-wfqw",
+     "candidates": 29,
+     "kept_before": 7,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-6px8-mr29-cj4r",
+     "candidates": 42,
+     "kept_before": 8,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-6qv6-q77g-7qm6",
+     "candidates": 135,
+     "kept_before": 8,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-6qv9-48xg-fc7f",
+     "candidates": 8,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-6r62-w2q3-48hf",
+     "candidates": 16,
+     "kept_before": 8,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-6v6w-h8m6-7mv2",
+     "candidates": 15,
+     "kept_before": 9,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-6vm5-6jv9-rjpj",
+     "candidates": 24,
+     "kept_before": 10,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-6vmq-24h2-pj7j",
+     "candidates": 39,
+     "kept_before": 3,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-6xmv-cjr5-w3q8",
+     "candidates": 34,
+     "kept_before": 10,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-72m8-9m7m-h278",
+     "candidates": 21,
+     "kept_before": 8,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-72r2-7mfr-5xr9",
+     "candidates": 37,
+     "kept_before": 8,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-73cv-556c-w3g6",
+     "candidates": 14,
+     "kept_before": 6,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-7432-952r-cw78",
+     "candidates": 6,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-7488-6r32-c95q",
+     "candidates": 8,
+     "kept_before": 4,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-7498-c9fm-g64p",
+     "candidates": 30,
+     "kept_before": 12,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-74m5-2c7w-9w3x",
+     "candidates": 14,
+     "kept_before": 5,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-74r2-7ff9-mjj2",
+     "candidates": 2,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-75mg-c62r-v95g",
+     "candidates": 18,
+     "kept_before": 5,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-763v-5pjm-fx36",
+     "candidates": 8,
+     "kept_before": 7,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-76hw-p97h-883f",
+     "candidates": 9,
+     "kept_before": 8,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-76rv-2r9v-c5m6",
+     "candidates": 23,
+     "kept_before": 6,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-772j-xvf9-qpf5",
+     "candidates": 24,
+     "kept_before": 7,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-785h-76cm-cpmf",
+     "candidates": 13,
+     "kept_before": 8,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-7984-qgvg-3j9c",
+     "candidates": 26,
+     "kept_before": 4,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-79j6-g2m3-jgfw",
+     "candidates": 8,
+     "kept_before": 4,
+     "kept_after": 4,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-79w7-vh3h-8g4j",
+     "candidates": 12,
+     "kept_before": 9,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-7c78-rm87-5673",
+     "candidates": 18,
+     "kept_before": 6,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-7c92-x8vg-4258",
+     "candidates": 33,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-7f5h-v6xp-fcq8",
+     "candidates": 16,
+     "kept_before": 3,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-7g3p-92qq-8wvh",
+     "candidates": 27,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-7g44-g9rc-x53w",
+     "candidates": 64,
+     "kept_before": 3,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-7g47-xxff-9p85",
+     "candidates": 45,
+     "kept_before": 6,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-7gwp-5pfp-969j",
+     "candidates": 16,
+     "kept_before": 2,
+     "kept_after": 2,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-7hp6-4w63-5g45",
+     "candidates": 45,
+     "kept_before": 15,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-7j69-qfc3-2fq9",
+     "candidates": 291,
+     "kept_before": 10,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-7j7m-v7m3-jqm7",
+     "candidates": 35,
+     "kept_before": 9,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-7p48-42j8-8846",
+     "candidates": 15,
+     "kept_before": 5,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-7prp-2623-8g45",
+     "candidates": 6,
+     "kept_before": 4,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-7q62-r88r-j5gw",
+     "candidates": 17,
+     "kept_before": 7,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-7q94-qpjr-xpgm",
+     "candidates": 194,
+     "kept_before": 6,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-7r34-79r5-rcc9",
+     "candidates": 9,
+     "kept_before": 6,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-7r3h-4ph8-w38g",
+     "candidates": 57,
+     "kept_before": 8,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-7vr2-2fgp-9w7p",
+     "candidates": 22,
+     "kept_before": 5,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-7ww9-85pg-cv4x",
+     "candidates": 27,
+     "kept_before": 8,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-7wx4-6vff-v64p",
+     "candidates": 12,
+     "kept_before": 5,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-7wxf-r2qv-9xwr",
+     "candidates": 42,
+     "kept_before": 1,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-7x94-6g2m-3hp2",
+     "candidates": 73,
+     "kept_before": 8,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-7xgj-8392-5q4r",
+     "candidates": 32,
+     "kept_before": 6,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-7xw9-549r-8jrc",
+     "candidates": 19,
+     "kept_before": 9,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-7xxv-wpxj-mx5v",
+     "candidates": 11,
+     "kept_before": 9,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-823f-cwm9-4g74",
+     "candidates": 8,
+     "kept_before": 7,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-82fw-ch24-j34w",
+     "candidates": 12,
+     "kept_before": 6,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-83g7-8fch-p37m",
+     "candidates": 24,
+     "kept_before": 17,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-83jg-m2pm-4jxj",
+     "candidates": 17,
+     "kept_before": 6,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-83vg-56qc-22m7",
+     "candidates": 22,
+     "kept_before": 6,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-84cw-mxhv-qvv4",
+     "candidates": 22,
+     "kept_before": 6,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-84m7-p3x7-pcfv",
+     "candidates": 38,
+     "kept_before": 4,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-856c-92hv-3vxx",
+     "candidates": 145,
+     "kept_before": 13,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-85xf-c7hm-whqw",
+     "candidates": 4,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-8737-qx52-hjff",
+     "candidates": 5,
+     "kept_before": 2,
+     "kept_after": 3,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-887w-45rq-vxgf",
+     "candidates": 33,
+     "kept_before": 8,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-889w-m37p-88m5",
+     "candidates": 13,
+     "kept_before": 1,
+     "kept_after": 2,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-88f4-frh5-gmcr",
+     "candidates": 15,
+     "kept_before": 7,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-8988-9cw3-xx77",
+     "candidates": 5,
+     "kept_before": 4,
+     "kept_after": 4,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-89gg-p5r5-q6r4",
+     "candidates": 31,
+     "kept_before": 4,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-89p3-fcch-88ph",
+     "candidates": 34,
+     "kept_before": 4,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-89v8-rhwq-hf77",
+     "candidates": 12,
+     "kept_before": 9,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-89vp-jrxv-24w8",
+     "candidates": 27,
+     "kept_before": 23,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-8c95-hpq2-w46f",
+     "candidates": 12,
+     "kept_before": 8,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-8cp3-qxj6-px34",
+     "candidates": 31,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-8fjr-hghr-4m99",
+     "candidates": 35,
+     "kept_before": 7,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-8fvv-fgr5-f8ch",
+     "candidates": 42,
+     "kept_before": 21,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-8fx7-8jr8-84rv",
+     "candidates": 37,
+     "kept_before": 2,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-8g6f-qw9x-4q6q",
+     "candidates": 46,
+     "kept_before": 5,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-8h22-6qwx-q4w9",
+     "candidates": 60,
+     "kept_before": 7,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-8h93-28hg-fj84",
+     "candidates": 15,
+     "kept_before": 15,
+     "kept_after": 14,
+     "truncated_before": false,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-8h9c-r582-mggc",
+     "candidates": 20,
+     "kept_before": 11,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-8hjw-25cg-g52h",
+     "candidates": 27,
+     "kept_before": 3,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-8j49-mmcx-4mp5",
+     "candidates": 19,
+     "kept_before": 9,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-8jf4-fcjr-68c2",
+     "candidates": 498,
+     "kept_before": 6,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-8m3f-g62j-3vx8",
+     "candidates": 9,
+     "kept_before": 4,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-8m8r-38jm-f355",
+     "candidates": 12,
+     "kept_before": 7,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-8mgp-746c-j5xp",
+     "candidates": 75,
+     "kept_before": 6,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-8mx5-7m5m-r77g",
+     "candidates": 9,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-8prr-286p-4w7j",
+     "candidates": 37,
+     "kept_before": 12,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-8prr-f582-jqq3",
+     "candidates": 72,
+     "kept_before": 4,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-8pw2-6jv3-mj5j",
+     "candidates": 9,
+     "kept_before": 2,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-8q38-w56m-qq2c",
+     "candidates": 10,
+     "kept_before": 5,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-8qxj-f9rh-9fg2",
+     "candidates": 15,
+     "kept_before": 11,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-8v59-qmwv-4p6q",
+     "candidates": 32,
+     "kept_before": 5,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-8vh3-g2qg-2h2c",
+     "candidates": 10,
+     "kept_before": 7,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-8vwv-2v7v-jmgr",
+     "candidates": 16,
+     "kept_before": 16,
+     "kept_after": 14,
+     "truncated_before": false,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-8xx6-hgc6-gc2m",
+     "candidates": 34,
+     "kept_before": 9,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-926x-3r5x-gfhw",
+     "candidates": 17,
+     "kept_before": 8,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-92gf-p376-6r9r",
+     "candidates": 15,
+     "kept_before": 14,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-92j5-3459-qgp4",
+     "candidates": 23,
+     "kept_before": 5,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-935w-9g4m-p28p",
+     "candidates": 29,
+     "kept_before": 3,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-937f-qh3w-6g87",
+     "candidates": 25,
+     "kept_before": 14,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-93xj-8mrv-444m",
+     "candidates": 101,
+     "kept_before": 4,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-93xw-j965-9mx3",
+     "candidates": 39,
+     "kept_before": 9,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-94qm-99qc-qwqj",
+     "candidates": 50,
+     "kept_before": 15,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-954p-556p-r752",
+     "candidates": 17,
+     "kept_before": 4,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-956x-8gvw-wg5v",
+     "candidates": 30,
+     "kept_before": 8,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-95pq-hr8p-f5g7",
+     "candidates": 24,
+     "kept_before": 7,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-95px-34x5-p37h",
+     "candidates": 19,
+     "kept_before": 7,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-969w-gqqr-g6j3",
+     "candidates": 19,
+     "kept_before": 14,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-96p9-rh4f-92cf",
+     "candidates": 25,
+     "kept_before": 6,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-97qj-x29f-37w7",
+     "candidates": 9,
+     "kept_before": 7,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-98h9-4798-4q5v",
+     "candidates": 12,
+     "kept_before": 8,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-99w6-3xph-cx78",
+     "candidates": 48,
+     "kept_before": 11,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-9c4x-gm8v-wgc4",
+     "candidates": 75,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-9c54-gxh7-ppjc",
+     "candidates": 32,
+     "kept_before": 4,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-9f8f-2vmf-885j",
+     "candidates": 26,
+     "kept_before": 6,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-9fpm-3445-2vx4",
+     "candidates": 337,
+     "kept_before": 6,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-9fqr-pqc9-f7pj",
+     "candidates": 35,
+     "kept_before": 32,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-9gh8-9r95-3fc3",
+     "candidates": 15,
+     "kept_before": 14,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-9hcr-9hcv-x6pv",
+     "candidates": 29,
+     "kept_before": 15,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-9hx2-hgq2-2g4f",
+     "candidates": 55,
+     "kept_before": 4,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-9hxf-ppjv-w6rq",
+     "candidates": 7,
+     "kept_before": 4,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-9j2c-x8qm-qmjq",
+     "candidates": 23,
+     "kept_before": 5,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-9j59-75qj-795w",
+     "candidates": 21,
+     "kept_before": 15,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-9j6q-wvj5-jgjg",
+     "candidates": 9,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-9jhm-8m8c-c3f4",
+     "candidates": 26,
+     "kept_before": 6,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-9jpj-cph8-w449",
+     "candidates": 344,
+     "kept_before": 5,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-9jpv-c7p4-997x",
+     "candidates": 21,
+     "kept_before": 10,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-9jvx-p6mq-fw4v",
+     "candidates": 15,
+     "kept_before": 15,
+     "kept_after": 14,
+     "truncated_before": false,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-9p8r-4xp4-gw5w",
+     "candidates": 36,
+     "kept_before": 8,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-9pp3-cvmq-9p22",
+     "candidates": 10,
+     "kept_before": 7,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-9q47-3cm2-2rp8",
+     "candidates": 9,
+     "kept_before": 7,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-9qhg-99ww-9mqc",
+     "candidates": 31,
+     "kept_before": 3,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-9r6g-266r-89x4",
+     "candidates": 10,
+     "kept_before": 7,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-9rj7-rf2p-w77r",
+     "candidates": 14,
+     "kept_before": 10,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-9rw2-jf8x-cgwm",
+     "candidates": 8,
+     "kept_before": 5,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-9rwj-6rc7-p77c",
+     "candidates": 9,
+     "kept_before": 8,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-9v8h-57gv-qch6",
+     "candidates": 9,
+     "kept_before": 7,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-9vf8-xgwm-97r8",
+     "candidates": 13,
+     "kept_before": 7,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-9vg3-cf92-h2h7",
+     "candidates": 19,
+     "kept_before": 5,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-9vhv-g5hf-m7m7",
+     "candidates": 289,
+     "kept_before": 4,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-9vhv-jxww-xfm5",
+     "candidates": 23,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-9w2p-rh8c-v9g5",
+     "candidates": 9,
+     "kept_before": 7,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-9w4w-cpc8-h2fq",
+     "candidates": 29,
+     "kept_before": 5,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-9wgg-m99q-hhfc",
+     "candidates": 13,
+     "kept_before": 5,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-9x4c-63pf-525f",
+     "candidates": 98,
+     "kept_before": 16,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-9x88-4jg8-4vf7",
+     "candidates": 27,
+     "kept_before": 7,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-9xq3-3fqg-4vg7",
+     "candidates": 7,
+     "kept_before": 3,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-9xq9-36w5-q796",
+     "candidates": 144,
+     "kept_before": 3,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-c2m8-h5v5-343r",
+     "candidates": 30,
+     "kept_before": 4,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-c35q-ffpf-5qpm",
+     "candidates": 11,
+     "kept_before": 7,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-c35q-vxrp-ph26",
+     "candidates": 38,
+     "kept_before": 3,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-c3qv-mf8h-434r",
+     "candidates": 16,
+     "kept_before": 16,
+     "kept_after": 14,
+     "truncated_before": false,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-c3wx-c55w-pxjq",
+     "candidates": 149,
+     "kept_before": 7,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-c3xq-cj8f-7829",
+     "candidates": 19,
+     "kept_before": 5,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-c4p9-87h3-7vr4",
+     "candidates": 15,
+     "kept_before": 8,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-c56v-8w4g-3mfm",
+     "candidates": 22,
+     "kept_before": 5,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-c5cp-vx83-jhqx",
+     "candidates": 23,
+     "kept_before": 9,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-c5mf-xmp2-59rc",
+     "candidates": 23,
+     "kept_before": 4,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-c647-pxm2-c52w",
+     "candidates": 9,
+     "kept_before": 7,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-c67j-w6g6-q2cm",
+     "candidates": 50,
+     "kept_before": 3,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-c6xv-rcvw-v685",
+     "candidates": 6,
+     "kept_before": 5,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-c72h-82w6-rqfp",
+     "candidates": 18,
+     "kept_before": 17,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-c78w-2q4r-68r7",
+     "candidates": 5,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-c7pr-343r-5c46",
+     "candidates": 212,
+     "kept_before": 5,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-c84h-w6cr-5v8q",
+     "candidates": 10,
+     "kept_before": 9,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-c87c-78rc-vmv2",
+     "candidates": 12,
+     "kept_before": 7,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-c8j7-8cv4-2xmq",
+     "candidates": 6,
+     "kept_before": 5,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-c92r-g8j5-vhcx",
+     "candidates": 24,
+     "kept_before": 6,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-c978-59m8-c77v",
+     "candidates": 7,
+     "kept_before": 3,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-c9hr-64h3-gxpc",
+     "candidates": 16,
+     "kept_before": 5,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-cc5h-2pwp-pvcc",
+     "candidates": 39,
+     "kept_before": 4,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-ccc3-fvfx-mw3v",
+     "candidates": 15,
+     "kept_before": 15,
+     "kept_after": 14,
+     "truncated_before": false,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-cf7p-gm2m-833m",
+     "candidates": 21,
+     "kept_before": 6,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-cf9f-wmhp-v4pr",
+     "candidates": 81,
+     "kept_before": 7,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-cfc2-wr2v-gxm5",
+     "candidates": 11,
+     "kept_before": 8,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-cfgp-2977-2fmm",
+     "candidates": 7,
+     "kept_before": 4,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-cfqr-cjx5-5jcm",
+     "candidates": 4,
+     "kept_before": 3,
+     "kept_after": 3,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-cfxv-8fw8-rwpv",
+     "candidates": 27,
+     "kept_before": 6,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-cg7w-rg45-pc59",
+     "candidates": 4,
+     "kept_before": 2,
+     "kept_after": 2,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-cgc7-9qp3-86m3",
+     "candidates": 12,
+     "kept_before": 9,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-cgf9-327m-v77c",
+     "candidates": 13,
+     "kept_before": 9,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-ch3g-4xvr-674q",
+     "candidates": 21,
+     "kept_before": 7,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-ch89-h4r2-c8f8",
+     "candidates": 27,
+     "kept_before": 7,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-chgw-36xv-47cw",
+     "candidates": 10,
+     "kept_before": 6,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-chx6-46f5-w4vp",
+     "candidates": 47,
+     "kept_before": 1,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-cjv4-7hp2-2x9h",
+     "candidates": 10,
+     "kept_before": 5,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-cm54-3vvf-f5p8",
+     "candidates": 12,
+     "kept_before": 7,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-cpqf-3c3r-c9g2",
+     "candidates": 19,
+     "kept_before": 8,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-cpv4-ggrr-7j9v",
+     "candidates": 87,
+     "kept_before": 6,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-cq46-m9x9-j8w2",
+     "candidates": 6,
+     "kept_before": 5,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-cr3f-r24j-3chw",
+     "candidates": 19,
+     "kept_before": 6,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-cr45-98w9-gwqx",
+     "candidates": 43,
+     "kept_before": 5,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-crv4-6mhj-j5jh",
+     "candidates": 40,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-cv22-g7mw-8v73",
+     "candidates": 24,
+     "kept_before": 5,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-cv84-9p8j-fj68",
+     "candidates": 11,
+     "kept_before": 6,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-cw6x-m8jw-qmrh",
+     "candidates": 9,
+     "kept_before": 6,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-cw73-5f7h-m4gv",
+     "candidates": 103,
+     "kept_before": 8,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-cwcx-382v-8m9g",
+     "candidates": 84,
+     "kept_before": 11,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-cwh5-3cw7-4286",
+     "candidates": 10,
+     "kept_before": 6,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-cwm5-jh59-mwxr",
+     "candidates": 10,
+     "kept_before": 7,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-cwqr-hh33-gh44",
+     "candidates": 23,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-cwxj-rr6w-m6w7",
+     "candidates": 6,
+     "kept_before": 4,
+     "kept_after": 4,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-cx28-75q4-x26q",
+     "candidates": 4,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-cx63-2mw6-8hw5",
+     "candidates": 10,
+     "kept_before": 4,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-cxgv-hp74-jj7r",
+     "candidates": 13,
+     "kept_before": 5,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-f26r-j276-ggg4",
+     "candidates": 39,
+     "kept_before": 6,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-f2fp-rgf2-35cp",
+     "candidates": 23,
+     "kept_before": 9,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-f3f8-vx3w-hp5q",
+     "candidates": 15,
+     "kept_before": 15,
+     "kept_after": 14,
+     "truncated_before": false,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-f3h9-8phc-6gvh",
+     "candidates": 44,
+     "kept_before": 10,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-f42p-vc8p-7x54",
+     "candidates": 20,
+     "kept_before": 20,
+     "kept_after": 14,
+     "truncated_before": false,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-f4p7-qx46-wc5j",
+     "candidates": 39,
+     "kept_before": 8,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-f4rq-2259-hv29",
+     "candidates": 6,
+     "kept_before": 4,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-f54x-cmq8-qg57",
+     "candidates": 13,
+     "kept_before": 8,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-f6pj-qv47-g96w",
+     "candidates": 39,
+     "kept_before": 4,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-f794-5jv7-7672",
+     "candidates": 42,
+     "kept_before": 5,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-f964-whrq-44h8",
+     "candidates": 11,
+     "kept_before": 2,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-fch4-3c6x-j4gc",
+     "candidates": 22,
+     "kept_before": 14,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-fff8-4w9p-7v76",
+     "candidates": 96,
+     "kept_before": 6,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-ffj4-jq7m-9g6v",
+     "candidates": 5,
+     "kept_before": 3,
+     "kept_after": 4,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-ffmh-r67w-m88f",
+     "candidates": 35,
+     "kept_before": 11,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-ffr9-mgrr-wcvr",
+     "candidates": 37,
+     "kept_before": 2,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-fg6f-75jq-6523",
+     "candidates": 12,
+     "kept_before": 8,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-fgcw-684q-jj6r",
+     "candidates": 11,
+     "kept_before": 7,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-fh66-fcv5-jjfr",
+     "candidates": 24,
+     "kept_before": 3,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-fj32-q626-pjjc",
+     "candidates": 223,
+     "kept_before": 7,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-fj35-m94r-9h4c",
+     "candidates": 15,
+     "kept_before": 7,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-fj95-fr6c-h845",
+     "candidates": 104,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-fp6p-5xvw-m74f",
+     "candidates": 33,
+     "kept_before": 18,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-fpf4-vwcp-v4hp",
+     "candidates": 26,
+     "kept_before": 7,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-fq34-xw6c-fphf",
+     "candidates": 17,
+     "kept_before": 6,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-fq56-3cx3-fjxp",
+     "candidates": 40,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-fqpv-mq26-pr4j",
+     "candidates": 146,
+     "kept_before": 5,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-frch-4w6v-q5xx",
+     "candidates": 26,
+     "kept_before": 4,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-frfh-8v73-gjg4",
+     "candidates": 16,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-frvg-qw88-hww9",
+     "candidates": 15,
+     "kept_before": 4,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-fvgf-6h6h-3322",
+     "candidates": 16,
+     "kept_before": 16,
+     "kept_after": 14,
+     "truncated_before": false,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-g23j-2vwm-5c25",
+     "candidates": 17,
+     "kept_before": 4,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-g2r2-3j32-j27x",
+     "candidates": 39,
+     "kept_before": 4,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-g2xc-35jw-c63p",
+     "candidates": 12,
+     "kept_before": 5,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-g3cc-pvjj-9xq9",
+     "candidates": 24,
+     "kept_before": 5,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-g3p5-fjj9-h8gj",
+     "candidates": 21,
+     "kept_before": 10,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-g3vg-vx23-3858",
+     "candidates": 39,
+     "kept_before": 4,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-g4mx-q9vg-27p4",
+     "candidates": 19,
+     "kept_before": 18,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-g5f9-3xfg-p9mf",
+     "candidates": 4,
+     "kept_before": 2,
+     "kept_after": 2,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-g5ff-637f-6q2m",
+     "candidates": 15,
+     "kept_before": 8,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-g5r6-gv6m-f5jv",
+     "candidates": 39,
+     "kept_before": 9,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-g5vv-9gxw-82hx",
+     "candidates": 7,
+     "kept_before": 3,
+     "kept_after": 4,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-g5xv-mhgm-v5f6",
+     "candidates": 39,
+     "kept_before": 6,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-g6x3-55qv-x6p2",
+     "candidates": 49,
+     "kept_before": 10,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-g8q7-xv52-hf9f",
+     "candidates": 15,
+     "kept_before": 8,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-g925-f788-4jh7",
+     "candidates": 22,
+     "kept_before": 18,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-gc24-px2r-5qmf",
+     "candidates": 288,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-gc57-xhh5-m94r",
+     "candidates": 72,
+     "kept_before": 5,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-gcjf-29m9-888q",
+     "candidates": 24,
+     "kept_before": 17,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-gfm2-xm6c-37qc",
+     "candidates": 9,
+     "kept_before": 5,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-gfp8-w835-v44j",
+     "candidates": 40,
+     "kept_before": 7,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-gfq8-hmph-9gjv",
+     "candidates": 27,
+     "kept_before": 9,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-gg2g-p7xc-qqmm",
+     "candidates": 10,
+     "kept_before": 6,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-gg5m-55jj-8m5g",
+     "candidates": 16,
+     "kept_before": 16,
+     "kept_after": 14,
+     "truncated_before": false,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-ggwr-4vr8-g7wv",
+     "candidates": 22,
+     "kept_before": 13,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-gh7c-cg3x-pmcr",
+     "candidates": 162,
+     "kept_before": 4,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-gh98-4phw-6fmw",
+     "candidates": 214,
+     "kept_before": 4,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-ghq9-vc6f-8qjf",
+     "candidates": 21,
+     "kept_before": 8,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-gjcc-jvgw-wvwj",
+     "candidates": 18,
+     "kept_before": 11,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-gmpq-xrxj-xh8m",
+     "candidates": 3,
+     "kept_before": 2,
+     "kept_after": 2,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-gpwc-27cw-rh9r",
+     "candidates": 38,
+     "kept_before": 2,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-gq48-pqfc-9p58",
+     "candidates": 17,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-gwqq-6vq7-5j86",
+     "candidates": 23,
+     "kept_before": 5,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-gx64-gj6p-pc4c",
+     "candidates": 27,
+     "kept_before": 25,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-gxmw-5f7x-6g22",
+     "candidates": 27,
+     "kept_before": 5,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-h26w-r4m5-8rrf",
+     "candidates": 2,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-h2r5-x5m7-3935",
+     "candidates": 6,
+     "kept_before": 3,
+     "kept_after": 4,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-h2x2-q2mc-24gw",
+     "candidates": 105,
+     "kept_before": 6,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-h336-2wxm-pr6q",
+     "candidates": 16,
+     "kept_before": 10,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-h45m-mgcp-q388",
+     "candidates": 30,
+     "kept_before": 6,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-h46j-26q3-rggf",
+     "candidates": 6,
+     "kept_before": 2,
+     "kept_after": 2,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-h47f-gmjp-m7rr",
+     "candidates": 7,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-h582-2pch-3xv3",
+     "candidates": 33,
+     "kept_before": 29,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-h5gc-rm8j-5gpr",
+     "candidates": 14,
+     "kept_before": 8,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-h5v5-8746-g7mm",
+     "candidates": 27,
+     "kept_before": 25,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-h667-4jj2-cgv4",
+     "candidates": 34,
+     "kept_before": 9,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-h7pc-vwp9-298g",
+     "candidates": 15,
+     "kept_before": 14,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-h7wj-5v37-59r2",
+     "candidates": 39,
+     "kept_before": 8,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-h7x2-h6g9-p789",
+     "candidates": 20,
+     "kept_before": 8,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-h8m9-jgf8-vwvp",
+     "candidates": 4,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-h9f9-h6gm-wc85",
+     "candidates": 6,
+     "kept_before": 2,
+     "kept_after": 3,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-hc5x-x2vx-497g",
+     "candidates": 27,
+     "kept_before": 6,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-hg4c-rgvm-964g",
+     "candidates": 20,
+     "kept_before": 6,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-hgcf-4mq8-5266",
+     "candidates": 39,
+     "kept_before": 3,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-hh9p-6wh2-4mfc",
+     "candidates": 16,
+     "kept_before": 7,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-hhrp-gw25-jr43",
+     "candidates": 12,
+     "kept_before": 7,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-hj66-6f7g-4r5v",
+     "candidates": 8,
+     "kept_before": 3,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-hjfx-8p6c-g7gx",
+     "candidates": 19,
+     "kept_before": 11,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-hjqc-jx6g-rwp9",
+     "candidates": 6,
+     "kept_before": 1,
+     "kept_after": 2,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-hm9r-7f84-25c9",
+     "candidates": 12,
+     "kept_before": 4,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-hmfx-4v44-9qw9",
+     "candidates": 27,
+     "kept_before": 11,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-hmj8-5xmh-5573",
+     "candidates": 4,
+     "kept_before": 3,
+     "kept_after": 3,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-hmq2-7hp6-7crh",
+     "candidates": 28,
+     "kept_before": 10,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-hmq2-w58f-27jc",
+     "candidates": 19,
+     "kept_before": 11,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-hpr6-f4vq-mxch",
+     "candidates": 23,
+     "kept_before": 7,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-hq3f-9gf7-73r8",
+     "candidates": 35,
+     "kept_before": 17,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-hr3m-4qwq-3mgc",
+     "candidates": 17,
+     "kept_before": 7,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-hr4h-4c45-v4q4",
+     "candidates": 32,
+     "kept_before": 6,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-hr7p-wg7r-hg9m",
+     "candidates": 27,
+     "kept_before": 7,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-hrfv-mqp8-q5rw",
+     "candidates": 31,
+     "kept_before": 7,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-hrmj-7rvj-4hg8",
+     "candidates": 13,
+     "kept_before": 5,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-hvfh-5mj3-5f3j",
+     "candidates": 36,
+     "kept_before": 1,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-hvj5-mvw9-93j3",
+     "candidates": 12,
+     "kept_before": 11,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-hvm4-mc7m-22w4",
+     "candidates": 12,
+     "kept_before": 10,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-hvrp-rf83-w775",
+     "candidates": 15,
+     "kept_before": 5,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-hx8v-g79f-8w5f",
+     "candidates": 26,
+     "kept_before": 12,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-hxmp-pqch-c8mm",
+     "candidates": 54,
+     "kept_before": 10,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-hxmv-c4g6-5fqc",
+     "candidates": 27,
+     "kept_before": 3,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-hxpf-9xvq-wph8",
+     "candidates": 5,
+     "kept_before": 1,
+     "kept_after": 2,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-j456-xh4h-cpf2",
+     "candidates": 15,
+     "kept_before": 7,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-j4g3-3q8x-jxqp",
+     "candidates": 28,
+     "kept_before": 19,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-j4mh-9wq6-8rg6",
+     "candidates": 33,
+     "kept_before": 17,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-j527-v579-m98h",
+     "candidates": 12,
+     "kept_before": 5,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-j57p-g33w-95c5",
+     "candidates": 24,
+     "kept_before": 24,
+     "kept_after": 14,
+     "truncated_before": false,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-j5g9-f88f-gfj3",
+     "candidates": 25,
+     "kept_before": 6,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-j7qq-vr8c-xvw3",
+     "candidates": 12,
+     "kept_before": 4,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-j8cv-x86q-rj85",
+     "candidates": 9,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-j8f7-x8jm-wmm4",
+     "candidates": 240,
+     "kept_before": 4,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-jf3h-8jvx-vcrg",
+     "candidates": 18,
+     "kept_before": 4,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-jf99-2rj4-jxrm",
+     "candidates": 224,
+     "kept_before": 7,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-jfxj-xf67-x723",
+     "candidates": 15,
+     "kept_before": 9,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-jg86-v3jv-hrpm",
+     "candidates": 3,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-jgw4-cr84-mqxg",
+     "candidates": 13,
+     "kept_before": 12,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-jh3w-4vvf-mjgr",
+     "candidates": 16,
+     "kept_before": 16,
+     "kept_after": 14,
+     "truncated_before": false,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-jhpr-j7cq-3jp3",
+     "candidates": 19,
+     "kept_before": 19,
+     "kept_after": 14,
+     "truncated_before": false,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-jhr6-gm9c-rqjv",
+     "candidates": 8,
+     "kept_before": 7,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-jj36-9pvh-vj5r",
+     "candidates": 34,
+     "kept_before": 3,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-jj6c-8h6c-hppx",
+     "candidates": 5,
+     "kept_before": 4,
+     "kept_after": 4,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-jj7c-jrv4-c65x",
+     "candidates": 20,
+     "kept_before": 8,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-jm78-9fvv-mhgr",
+     "candidates": 13,
+     "kept_before": 10,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-jp4c-xjxw-mgf9",
+     "candidates": 19,
+     "kept_before": 11,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-jpw9-pfvf-9f58",
+     "candidates": 14,
+     "kept_before": 10,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-jpxq-7h8p-2q76",
+     "candidates": 5,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-jq7h-wrvp-3rgx",
+     "candidates": 13,
+     "kept_before": 11,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-jqc4-5cvw-7w85",
+     "candidates": 23,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-jqmf-mx4f-hfr6",
+     "candidates": 68,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-jqq5-wc57-f8hj",
+     "candidates": 17,
+     "kept_before": 8,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-jrcv-3c5h-rh3q",
+     "candidates": 24,
+     "kept_before": 13,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-jrw6-7x4q-w25j",
+     "candidates": 12,
+     "kept_before": 3,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-jv34-xvjq-ppch",
+     "candidates": 8,
+     "kept_before": 6,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-jv85-mqxj-3f9j",
+     "candidates": 20,
+     "kept_before": 10,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-jw36-mrvg-j5fx",
+     "candidates": 12,
+     "kept_before": 9,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-jw39-3688-r4rx",
+     "candidates": 38,
+     "kept_before": 2,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-jx74-cqjv-2c67",
+     "candidates": 16,
+     "kept_before": 6,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-m2v9-w374-5hj9",
+     "candidates": 212,
+     "kept_before": 7,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-m3jw-62m7-jjcm",
+     "candidates": 11,
+     "kept_before": 9,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-m3px-q5gj-j9x7",
+     "candidates": 24,
+     "kept_before": 15,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-m3rf-7m4w-r66q",
+     "candidates": 18,
+     "kept_before": 9,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-m42h-3232-vpv3",
+     "candidates": 34,
+     "kept_before": 5,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-m454-cm7h-rqhh",
+     "candidates": 12,
+     "kept_before": 7,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-m462-7rxw-wvpg",
+     "candidates": 75,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-m4f6-vcj4-w5mx",
+     "candidates": 20,
+     "kept_before": 5,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-m4m7-4cw8-62j6",
+     "candidates": 57,
+     "kept_before": 14,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-m549-qq94-fvhg",
+     "candidates": 144,
+     "kept_before": 6,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-m6h2-jx9v-58w6",
+     "candidates": 8,
+     "kept_before": 7,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-m6hv-x64c-27mm",
+     "candidates": 21,
+     "kept_before": 17,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-m732-wvh2-7cq4",
+     "candidates": 123,
+     "kept_before": 5,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-m748-hjqg-rpp8",
+     "candidates": 6,
+     "kept_before": 5,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-m7f4-hrc6-fwg3",
+     "candidates": 8,
+     "kept_before": 6,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-m7m4-4vm8-55wg",
+     "candidates": 15,
+     "kept_before": 15,
+     "kept_after": 14,
+     "truncated_before": false,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-m8wh-29wm-52mv",
+     "candidates": 38,
+     "kept_before": 8,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-m8xw-9x5x-6vh3",
+     "candidates": 16,
+     "kept_before": 6,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-m973-4vpc-x43c",
+     "candidates": 15,
+     "kept_before": 15,
+     "kept_after": 14,
+     "truncated_before": false,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-mf5v-w3w3-f6cg",
+     "candidates": 31,
+     "kept_before": 13,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-mf98-r2gf-2x3w",
+     "candidates": 12,
+     "kept_before": 11,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-mfpj-3qhm-976m",
+     "candidates": 19,
+     "kept_before": 11,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-mfv2-4wvm-9pgp",
+     "candidates": 39,
+     "kept_before": 7,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-mg2x-mggj-6955",
+     "candidates": 15,
+     "kept_before": 15,
+     "kept_after": 14,
+     "truncated_before": false,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-mgx6-5cf9-rr43",
+     "candidates": 18,
+     "kept_before": 6,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-mj4x-vf5c-5xg8",
+     "candidates": 32,
+     "kept_before": 3,
+     "kept_after": 4,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-mj63-64x7-57xf",
+     "candidates": 216,
+     "kept_before": 7,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-mp55-g7pj-rvm2",
+     "candidates": 6,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-mq73-g4qr-fgcq",
+     "candidates": 8,
+     "kept_before": 6,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-mr4r-hcgx-8p4h",
+     "candidates": 11,
+     "kept_before": 10,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-mr95-65j8-9mxp",
+     "candidates": 124,
+     "kept_before": 6,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-mrj3-f2h4-7w45",
+     "candidates": 46,
+     "kept_before": 13,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-mrq8-fv7v-hhjg",
+     "candidates": 39,
+     "kept_before": 4,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-mvq4-39wx-6h5g",
+     "candidates": 9,
+     "kept_before": 4,
+     "kept_after": 4,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-mw8m-398g-h89w",
+     "candidates": 16,
+     "kept_before": 9,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-mwj6-rfh8-7qf4",
+     "candidates": 113,
+     "kept_before": 4,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-p23g-mvhj-jh3j",
+     "candidates": 22,
+     "kept_before": 6,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-p24m-863f-fm6q",
+     "candidates": 10,
+     "kept_before": 9,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-p2mm-64f6-gmpp",
+     "candidates": 34,
+     "kept_before": 10,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-p2xp-xx3r-mffc",
+     "candidates": 23,
+     "kept_before": 9,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-p3f3-5ccg-83xq",
+     "candidates": 84,
+     "kept_before": 10,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-p3fw-7699-7926",
+     "candidates": 25,
+     "kept_before": 7,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-p3h7-3c45-qj4v",
+     "candidates": 29,
+     "kept_before": 12,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-p3hx-pwf3-j8wr",
+     "candidates": 16,
+     "kept_before": 7,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-p3pq-hxmr-vqqr",
+     "candidates": 22,
+     "kept_before": 6,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-p3pr-8f3m-4qp8",
+     "candidates": 7,
+     "kept_before": 3,
+     "kept_after": 3,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-p3xv-97g8-4wmj",
+     "candidates": 19,
+     "kept_before": 5,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-p4rw-rvv2-7xwr",
+     "candidates": 24,
+     "kept_before": 3,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-p58c-q354-6c4f",
+     "candidates": 26,
+     "kept_before": 6,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-p5wr-vp8g-q5p4",
+     "candidates": 26,
+     "kept_before": 9,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-p64x-8rxx-wf6q",
+     "candidates": 72,
+     "kept_before": 8,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-p6hp-93wp-fh6p",
+     "candidates": 39,
+     "kept_before": 6,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-p6p2-qq95-vq5h",
+     "candidates": 9,
+     "kept_before": 7,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-p77j-g7h5-r2vw",
+     "candidates": 25,
+     "kept_before": 9,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-p8cm-mm2v-gwjm",
+     "candidates": 24,
+     "kept_before": 14,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-p944-4xh2-x776",
+     "candidates": 8,
+     "kept_before": 7,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-pc36-qwjq-x68c",
+     "candidates": 25,
+     "kept_before": 5,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-pc6w-59fv-rh23",
+     "candidates": 8,
+     "kept_before": 5,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-pcfx-g2j2-f6f6",
+     "candidates": 42,
+     "kept_before": 1,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-pchr-8j38-3x4p",
+     "candidates": 2,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-pcvc-8vrv-8q6w",
+     "candidates": 27,
+     "kept_before": 11,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-pgp4-xr4j-h5cg",
+     "candidates": 11,
+     "kept_before": 3,
+     "kept_after": 4,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-pgqp-8h46-6x4j",
+     "candidates": 27,
+     "kept_before": 5,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-pgwh-4jj4-qm8v",
+     "candidates": 16,
+     "kept_before": 4,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-ph3r-5jfg-f84f",
+     "candidates": 12,
+     "kept_before": 4,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-ph72-cqr5-qpp7",
+     "candidates": 4,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-phhr-52qp-3mj4",
+     "candidates": 48,
+     "kept_before": 7,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-phvx-9mgw-67r5",
+     "candidates": 8,
+     "kept_before": 4,
+     "kept_after": 4,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-pjh6-c8mg-3x7m",
+     "candidates": 31,
+     "kept_before": 7,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-pmqf-x6x8-p7qw",
+     "candidates": 53,
+     "kept_before": 13,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-pppj-hq3g-57pj",
+     "candidates": 27,
+     "kept_before": 24,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-ppx3-28rw-8fpf",
+     "candidates": 31,
+     "kept_before": 3,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-ppx5-q359-pvwj",
+     "candidates": 12,
+     "kept_before": 10,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-pqrj-4gwg-h5f7",
+     "candidates": 103,
+     "kept_before": 6,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-pr7f-p5mw-fc87",
+     "candidates": 6,
+     "kept_before": 5,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-prg7-hcfm-mfcr",
+     "candidates": 3,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-prgp-w7vf-ch62",
+     "candidates": 36,
+     "kept_before": 6,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-pvph-5j39-v8qc",
+     "candidates": 27,
+     "kept_before": 6,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-pvxx-r596-f5qj",
+     "candidates": 27,
+     "kept_before": 6,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-pw9p-v7r6-gx4p",
+     "candidates": 15,
+     "kept_before": 9,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-pwx5-xg7g-wpc5",
+     "candidates": 109,
+     "kept_before": 5,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-q238-5cxm-5c9h",
+     "candidates": 148,
+     "kept_before": 7,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-q27q-98j4-9pfv",
+     "candidates": 28,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-q2q7-5pp4-w6pg",
+     "candidates": 135,
+     "kept_before": 3,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-q2xc-rrxj-58x9",
+     "candidates": 26,
+     "kept_before": 4,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-q326-jhw3-699g",
+     "candidates": 29,
+     "kept_before": 21,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-q34m-jh98-gwm2",
+     "candidates": 45,
+     "kept_before": 7,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-q4c3-7575-55j2",
+     "candidates": 11,
+     "kept_before": 5,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-q5hq-fp76-qmrc",
+     "candidates": 13,
+     "kept_before": 10,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-q5vh-6whw-x745",
+     "candidates": 16,
+     "kept_before": 15,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-q686-2qmg-hqc7",
+     "candidates": 22,
+     "kept_before": 2,
+     "kept_after": 4,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-q84m-rmw3-4382",
+     "candidates": 11,
+     "kept_before": 5,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-q874-g24w-4q9g",
+     "candidates": 22,
+     "kept_before": 18,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-q8h9-pqcx-59hw",
+     "candidates": 18,
+     "kept_before": 18,
+     "kept_after": 14,
+     "truncated_before": false,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-q986-4x7x-gx39",
+     "candidates": 25,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-q99p-78hp-xg5c",
+     "candidates": 15,
+     "kept_before": 15,
+     "kept_after": 14,
+     "truncated_before": false,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-qccg-9m4q-xfm6",
+     "candidates": 5,
+     "kept_before": 4,
+     "kept_after": 4,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-qcgg-j2x8-h9g8",
+     "candidates": 28,
+     "kept_before": 17,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-qfp8-hfqx-c79c",
+     "candidates": 76,
+     "kept_before": 12,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-qg2p-9jwr-mmqf",
+     "candidates": 16,
+     "kept_before": 8,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-qg35-44qx-7vrr",
+     "candidates": 27,
+     "kept_before": 3,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-qgvw-qc2q-gv5q",
+     "candidates": 18,
+     "kept_before": 7,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-qh2x-hpf9-cf2g",
+     "candidates": 27,
+     "kept_before": 6,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-qh4c-xf7m-gxfc",
+     "candidates": 16,
+     "kept_before": 16,
+     "kept_after": 14,
+     "truncated_before": false,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-qh6h-p6c9-ff54",
+     "candidates": 13,
+     "kept_before": 7,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-qjxf-f2mg-c6mc",
+     "candidates": 6,
+     "kept_before": 5,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-qpxx-2cwh-r5vh",
+     "candidates": 14,
+     "kept_before": 4,
+     "kept_after": 4,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-qq9q-xgm3-xv9g",
+     "candidates": 27,
+     "kept_before": 6,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-qqcv-vg9f-5rr3",
+     "candidates": 18,
+     "kept_before": 6,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-qrc4-49gv-mv9m",
+     "candidates": 21,
+     "kept_before": 15,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-qrh7-x6fp-c2mp",
+     "candidates": 42,
+     "kept_before": 9,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-qrpw-gjvh-x5gm",
+     "candidates": 30,
+     "kept_before": 4,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-qv6c-367r-3w6q",
+     "candidates": 14,
+     "kept_before": 11,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-qxm5-vx5j-pp6w",
+     "candidates": 14,
+     "kept_before": 13,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-r253-r9jw-qg44",
+     "candidates": 250,
+     "kept_before": 4,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-r2x6-cjg7-8r43",
+     "candidates": 20,
+     "kept_before": 5,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-r38r-qp28-2m63",
+     "candidates": 13,
+     "kept_before": 6,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-r4hm-p9f9-fj9v",
+     "candidates": 21,
+     "kept_before": 5,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-r4j5-9xpp-3985",
+     "candidates": 68,
+     "kept_before": 7,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-r4v4-w9pv-6fph",
+     "candidates": 182,
+     "kept_before": 8,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-r4vp-3vw6-r2x5",
+     "candidates": 121,
+     "kept_before": 1,
+     "kept_after": 2,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-r54c-2xmf-2cf3",
+     "candidates": 64,
+     "kept_before": 5,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-r56x-j438-vw5m",
+     "candidates": 24,
+     "kept_before": 3,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-r57g-mc79-8hj2",
+     "candidates": 13,
+     "kept_before": 1,
+     "kept_after": 3,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-r5cj-wv24-92p5",
+     "candidates": 12,
+     "kept_before": 7,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-r5m4-5vww-w9f5",
+     "candidates": 8,
+     "kept_before": 7,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-r6gq-whwq-mvg9",
+     "candidates": 47,
+     "kept_before": 6,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-r6jx-9g48-2r5r",
+     "candidates": 15,
+     "kept_before": 10,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-r6v9-p59m-gj2p",
+     "candidates": 9,
+     "kept_before": 7,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-r7j4-crjv-h467",
+     "candidates": 32,
+     "kept_before": 4,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-r7v3-x45f-g7hp",
+     "candidates": 27,
+     "kept_before": 7,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-r7v4-jwx9-wx43",
+     "candidates": 7,
+     "kept_before": 4,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-r82h-mqw3-fc56",
+     "candidates": 18,
+     "kept_before": 6,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-rfhw-fm4m-52j6",
+     "candidates": 44,
+     "kept_before": 14,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-rfpc-qcw5-3pc4",
+     "candidates": 4,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-rfr2-mq9m-x2qx",
+     "candidates": 17,
+     "kept_before": 5,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-rg5q-pp8p-f7jm",
+     "candidates": 27,
+     "kept_before": 5,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-rgrf-6mf5-m882",
+     "candidates": 27,
+     "kept_before": 4,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-rhp5-r9x4-f5g2",
+     "candidates": 7,
+     "kept_before": 4,
+     "kept_after": 4,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-rjrp-m2jw-pv9c",
+     "candidates": 55,
+     "kept_before": 10,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-rm43-82j9-r4mj",
+     "candidates": 5,
+     "kept_before": 4,
+     "kept_after": 4,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-rpfv-46xj-5984",
+     "candidates": 498,
+     "kept_before": 5,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-rprw-h62v-c2w7",
+     "candidates": 46,
+     "kept_before": 9,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-rqx7-p7vv-w7hr",
+     "candidates": 36,
+     "kept_before": 5,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-rrf6-pxg8-684g",
+     "candidates": 7,
+     "kept_before": 5,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-rv4m-xm3f-3ccq",
+     "candidates": 57,
+     "kept_before": 5,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-rw75-m7gp-92m3",
+     "candidates": 17,
+     "kept_before": 17,
+     "kept_after": 14,
+     "truncated_before": false,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-rw7v-4hrq-x6r9",
+     "candidates": 40,
+     "kept_before": 9,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-rwj8-pgh3-r573",
+     "candidates": 8,
+     "kept_before": 3,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-rxjp-mfm9-w4wr",
+     "candidates": 21,
+     "kept_before": 20,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-v247-6f48-mgcj",
+     "candidates": 11,
+     "kept_before": 8,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-v2f8-6655-7grj",
+     "candidates": 68,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-v2w2-w228-c444",
+     "candidates": 39,
+     "kept_before": 11,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-v2xh-2vp8-57h8",
+     "candidates": 18,
+     "kept_before": 8,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-v2xr-wvrv-p969",
+     "candidates": 52,
+     "kept_before": 5,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-v345-w9f2-mpm5",
+     "candidates": 8,
+     "kept_before": 5,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-v36g-jcw9-x7cw",
+     "candidates": 12,
+     "kept_before": 6,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-v492-6xx2-p57g",
+     "candidates": 18,
+     "kept_before": 5,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-v4x8-3wr5-3wq8",
+     "candidates": 23,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-v4xv-795h-rv4h",
+     "candidates": 18,
+     "kept_before": 16,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-v5mq-3xhg-98m9",
+     "candidates": 23,
+     "kept_before": 4,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-v82v-c5x8-w282",
+     "candidates": 11,
+     "kept_before": 6,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-v856-2rf8-9f28",
+     "candidates": 14,
+     "kept_before": 7,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-v8f3-6phw-6mh9",
+     "candidates": 11,
+     "kept_before": 5,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-v8mc-9377-rwjj",
+     "candidates": 20,
+     "kept_before": 5,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-v936-j8gp-9q3p",
+     "candidates": 25,
+     "kept_before": 11,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-v9m3-wfh8-5646",
+     "candidates": 39,
+     "kept_before": 5,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-vc25-24vv-fxxm",
+     "candidates": 39,
+     "kept_before": 5,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-vf5m-xrhm-v999",
+     "candidates": 12,
+     "kept_before": 4,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-vfgx-5q85-58q3",
+     "candidates": 17,
+     "kept_before": 6,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-vg46-2rrj-3647",
+     "candidates": 33,
+     "kept_before": 6,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-vg6p-v9vm-6fgj",
+     "candidates": 27,
+     "kept_before": 9,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-vhr6-pvjm-9qwf",
+     "candidates": 15,
+     "kept_before": 7,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-vj45-x3pj-f4w4",
+     "candidates": 17,
+     "kept_before": 13,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-vj8h-fx38-h3vc",
+     "candidates": 14,
+     "kept_before": 8,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-vm8q-m57g-pff3",
+     "candidates": 18,
+     "kept_before": 5,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-vp22-38m5-r39r",
+     "candidates": 3,
+     "kept_before": 2,
+     "kept_after": 2,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-vp2x-qp44-57v7",
+     "candidates": 7,
+     "kept_before": 6,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-vp47-9734-prjw",
+     "candidates": 7,
+     "kept_before": 6,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-vpp8-g58w-m8mp",
+     "candidates": 10,
+     "kept_before": 9,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-vq76-5ghr-9p4v",
+     "candidates": 15,
+     "kept_before": 15,
+     "kept_after": 14,
+     "truncated_before": false,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-vqg6-3fw6-j9jg",
+     "candidates": 18,
+     "kept_before": 8,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-vqqp-x5qm-5qp4",
+     "candidates": 19,
+     "kept_before": 9,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-vqrg-773h-4wxc",
+     "candidates": 72,
+     "kept_before": 5,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-vrcr-9hj9-jcg6",
+     "candidates": 16,
+     "kept_before": 15,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-vv3m-f8x4-7377",
+     "candidates": 10,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-vwf3-4xxj-qg6h",
+     "candidates": 35,
+     "kept_before": 3,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-vx4q-3cr2-7cg2",
+     "candidates": 6,
+     "kept_before": 2,
+     "kept_after": 4,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-vx5f-957p-qpvm",
+     "candidates": 5,
+     "kept_before": 2,
+     "kept_after": 2,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-vx7x-vcc2-c44g",
+     "candidates": 43,
+     "kept_before": 5,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-vxcv-4xvf-pc22",
+     "candidates": 11,
+     "kept_before": 8,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-w24h-v9qh-8gxj",
+     "candidates": 16,
+     "kept_before": 16,
+     "kept_after": 14,
+     "truncated_before": false,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-w2v8-php4-p8hc",
+     "candidates": 20,
+     "kept_before": 16,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-w3fx-mc44-mf6j",
+     "candidates": 36,
+     "kept_before": 3,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-w3h3-4rj7-4ph4",
+     "candidates": 36,
+     "kept_before": 5,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-w3v8-gmh9-3wv7",
+     "candidates": 24,
+     "kept_before": 5,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-w3vc-fx9p-wp4v",
+     "candidates": 9,
+     "kept_before": 2,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-w429-xc55-hc48",
+     "candidates": 26,
+     "kept_before": 7,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-w4fh-qvv9-3v23",
+     "candidates": 20,
+     "kept_before": 12,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-w5f2-9q9c-ff4h",
+     "candidates": 47,
+     "kept_before": 3,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-w66g-j6c4-hcfc",
+     "candidates": 39,
+     "kept_before": 4,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-w6q2-48ch-fj26",
+     "candidates": 33,
+     "kept_before": 16,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-w76h-q7c6-jpjp",
+     "candidates": 45,
+     "kept_before": 5,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-w794-rj3p-xv45",
+     "candidates": 44,
+     "kept_before": 4,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-w7qv-268h-9h3f",
+     "candidates": 20,
+     "kept_before": 6,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-w8jc-g24h-crhw",
+     "candidates": 8,
+     "kept_before": 7,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-w9cp-3x79-2p8p",
+     "candidates": 16,
+     "kept_before": 16,
+     "kept_after": 14,
+     "truncated_before": false,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-w9h2-px87-74vx",
+     "candidates": 17,
+     "kept_before": 8,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-wcj4-jw5j-44wh",
+     "candidates": 15,
+     "kept_before": 9,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-wfhq-q4j2-c37m",
+     "candidates": 104,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-wfp6-f47h-hxc3",
+     "candidates": 14,
+     "kept_before": 8,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-wg33-5h85-7q5p",
+     "candidates": 11,
+     "kept_before": 10,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-whvh-wf3x-g77j",
+     "candidates": 27,
+     "kept_before": 23,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-wj6g-v78p-6fx3",
+     "candidates": 27,
+     "kept_before": 5,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-wjmf-p669-5m5p",
+     "candidates": 6,
+     "kept_before": 5,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-wjw6-2cqr-j4qr",
+     "candidates": 11,
+     "kept_before": 6,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-wjw6-95h5-4jpx",
+     "candidates": 50,
+     "kept_before": 15,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-wm69-2pc3-rmmf",
+     "candidates": 250,
+     "kept_before": 5,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-wm96-9gfh-vvgq",
+     "candidates": 7,
+     "kept_before": 5,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-wmg4-8cp2-hpg9",
+     "candidates": 21,
+     "kept_before": 11,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-wmj6-g64g-j7q5",
+     "candidates": 24,
+     "kept_before": 5,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-wpfp-gwwc-vwq6",
+     "candidates": 16,
+     "kept_before": 16,
+     "kept_after": 14,
+     "truncated_before": false,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-wpg8-mf6h-gm92",
+     "candidates": 12,
+     "kept_before": 5,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-wpjr-j57x-wxfw",
+     "candidates": 24,
+     "kept_before": 15,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-wpxj-44w3-2j6x",
+     "candidates": 16,
+     "kept_before": 12,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-wqgw-9xfh-qf2g",
+     "candidates": 5,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-wqjj-hx84-v449",
+     "candidates": 15,
+     "kept_before": 15,
+     "kept_after": 14,
+     "truncated_before": false,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-wqq5-c89p-3wc3",
+     "candidates": 14,
+     "kept_before": 9,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-wqw6-wpr3-45rh",
+     "candidates": 25,
+     "kept_before": 6,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-wrhw-j3f9-8vc6",
+     "candidates": 39,
+     "kept_before": 4,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-wv8v-v4c5-v75j",
+     "candidates": 39,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-wv94-5qcp-6m36",
+     "candidates": 27,
+     "kept_before": 10,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-wvcv-832q-fjg7",
+     "candidates": 42,
+     "kept_before": 4,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-wvpp-8hx9-p66j",
+     "candidates": 13,
+     "kept_before": 10,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-wvqv-fj8w-qmhm",
+     "candidates": 28,
+     "kept_before": 11,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-wwqv-p2pp-99h5",
+     "candidates": 26,
+     "kept_before": 7,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-wwv5-g3v4-889x",
+     "candidates": 18,
+     "kept_before": 15,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-wwv8-cqpr-vx3m",
+     "candidates": 18,
+     "kept_before": 13,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-wwwh-47wp-m522",
+     "candidates": 23,
+     "kept_before": 6,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-x26h-xmv8-gxf7",
+     "candidates": 56,
+     "kept_before": 6,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-x3q2-h9hx-4r4j",
+     "candidates": 7,
+     "kept_before": 6,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-x44h-65qv-cw74",
+     "candidates": 27,
+     "kept_before": 4,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-x48g-hm9c-ww42",
+     "candidates": 173,
+     "kept_before": 5,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-x4rv-c3wx-4cr8",
+     "candidates": 31,
+     "kept_before": 4,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-x567-49g5-p4cf",
+     "candidates": 11,
+     "kept_before": 8,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-x5g3-w747-2h8q",
+     "candidates": 21,
+     "kept_before": 6,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-x64m-686f-fmm3",
+     "candidates": 42,
+     "kept_before": 9,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-x6mc-67gf-chw4",
+     "candidates": 4,
+     "kept_before": 3,
+     "kept_after": 3,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-x75h-m6jj-6cj2",
+     "candidates": 80,
+     "kept_before": 6,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-x768-8642-mmq9",
+     "candidates": 19,
+     "kept_before": 10,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-x7m3-jprg-wc5g",
+     "candidates": 10,
+     "kept_before": 6,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-x88j-93vc-wpmp",
+     "candidates": 16,
+     "kept_before": 16,
+     "kept_after": 14,
+     "truncated_before": false,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-x8x2-wc2h-wc48",
+     "candidates": 15,
+     "kept_before": 14,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-x99w-6fgc-pmfw",
+     "candidates": 6,
+     "kept_before": 3,
+     "kept_after": 4,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-x9vc-9ffq-p3gj",
+     "candidates": 13,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-xcw4-53cc-hv32",
+     "candidates": 8,
+     "kept_before": 5,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-xgh8-jp6q-p5x8",
+     "candidates": 2,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-xhv3-q4xx-349r",
+     "candidates": 56,
+     "kept_before": 7,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-xjv7-6w92-42r7",
+     "candidates": 15,
+     "kept_before": 6,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-xm98-3vcf-fph7",
+     "candidates": 8,
+     "kept_before": 6,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-xp76-357g-9wqq",
+     "candidates": 13,
+     "kept_before": 5,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-xp97-6w7r-4cjc",
+     "candidates": 22,
+     "kept_before": 18,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-xpf3-p7gm-7756",
+     "candidates": 14,
+     "kept_before": 6,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-xpmj-wjcp-6pww",
+     "candidates": 9,
+     "kept_before": 8,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-xqxw-r767-67m7",
+     "candidates": 16,
+     "kept_before": 6,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-xrwr-fcw6-fmq8",
+     "candidates": 61,
+     "kept_before": 5,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-xv6x-43gq-4hfj",
+     "candidates": 30,
+     "kept_before": 5,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-xv8x-pr4h-73jv",
+     "candidates": 212,
+     "kept_before": 5,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-xw6w-gcfp-cf8m",
+     "candidates": 6,
+     "kept_before": 4,
+     "kept_after": 4,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GHSA-xxgv-vgvj-qvxh",
+     "candidates": 5,
+     "kept_before": 1,
+     "kept_after": 1,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "PYSEC-2026-135",
+     "candidates": 42,
+     "kept_before": 15,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "PYSEC-2026-2157",
+     "candidates": 8,
+     "kept_before": 7,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "PYSEC-2026-3713",
+     "candidates": 14,
+     "kept_before": 10,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "PYSEC-2026-4003",
+     "candidates": 11,
+     "kept_before": 5,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    }
+   ]
+  },
+  {
+   "benchmark": "dunlap-v1",
+   "considered": 280,
+   "skipped": {},
+   "changed": [
+    {
+     "id": "GO-2020-0027",
+     "candidates": 9,
+     "kept_before": 5,
+     "kept_after": 6,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GO-2021-0052",
+     "candidates": 13,
+     "kept_before": 7,
+     "kept_after": 10,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GO-2021-0053",
+     "candidates": 28,
+     "kept_before": 24,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GO-2021-0085",
+     "candidates": 16,
+     "kept_before": 16,
+     "kept_after": 14,
+     "truncated_before": false,
+     "truncated_after": true
+    },
+    {
+     "id": "GO-2021-0095",
+     "candidates": 30,
+     "kept_before": 2,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GO-2021-0100",
+     "candidates": 353,
+     "kept_before": 7,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GO-2021-0105",
+     "candidates": 66,
+     "kept_before": 5,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GO-2021-0110",
+     "candidates": 316,
+     "kept_before": 7,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GO-2021-0356",
+     "candidates": 30,
+     "kept_before": 6,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GO-2022-0189",
+     "candidates": 6,
+     "kept_before": 5,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GO-2022-0190",
+     "candidates": 6,
+     "kept_before": 5,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GO-2022-0391",
+     "candidates": 45,
+     "kept_before": 6,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GO-2022-0444",
+     "candidates": 14,
+     "kept_before": 6,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GO-2022-0586",
+     "candidates": 81,
+     "kept_before": 3,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GO-2022-0629",
+     "candidates": 10,
+     "kept_before": 8,
+     "kept_after": 9,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GO-2022-0646",
+     "candidates": 168,
+     "kept_before": 6,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GO-2022-0755",
+     "candidates": 9,
+     "kept_before": 7,
+     "kept_after": 7,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GO-2022-0945",
+     "candidates": 14,
+     "kept_before": 9,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GO-2022-0978",
+     "candidates": 18,
+     "kept_before": 13,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GO-2022-1040",
+     "candidates": 19,
+     "kept_before": 13,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GO-2022-1052",
+     "candidates": 16,
+     "kept_before": 7,
+     "kept_after": 13,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GO-2022-1117",
+     "candidates": 302,
+     "kept_before": 5,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GO-2022-1129",
+     "candidates": 24,
+     "kept_before": 4,
+     "kept_after": 5,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GO-2022-1148",
+     "candidates": 44,
+     "kept_before": 3,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GO-2023-1578",
+     "candidates": 16,
+     "kept_before": 11,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GO-2023-1859",
+     "candidates": 11,
+     "kept_before": 6,
+     "kept_after": 8,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GO-2023-1872",
+     "candidates": 13,
+     "kept_before": 9,
+     "kept_after": 11,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GO-2023-2098",
+     "candidates": 13,
+     "kept_before": 10,
+     "kept_after": 12,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GO-2023-2101",
+     "candidates": 28,
+     "kept_before": 18,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GO-2023-2115",
+     "candidates": 33,
+     "kept_before": 5,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GO-2023-2116",
+     "candidates": 33,
+     "kept_before": 5,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    },
+    {
+     "id": "GO-2023-2137",
+     "candidates": 36,
+     "kept_before": 11,
+     "kept_after": 14,
+     "truncated_before": true,
+     "truncated_after": true
+    }
+   ]
+  }
+ ]
+}

@@ -20,13 +20,13 @@ Given a public PyPI advisory and its fix commit, name the vulnerable functions, 
 | Role | Model | Serving | Licence |
 |---|---|---|---|
 | Extractor (backfill and benchmark) | Qwen3.8-27B, `ggml-org/Qwen3.8-27B-GGUF@c1869413`, Q4_K_M (SHA-256 `d15d4b6d…`) | llama.cpp `b12024` (official CUDA 12.8 build), two T4 GPUs on Kaggle | Apache 2.0 |
-| Extractor (dev parity check) | `qwen/qwen3.8-27b` | Groq, `reasoning_effort: none` | Apache 2.0 |
+| Extractor (nightly, and the dev parity check) | `qwen/qwen3.8-27b` | Groq, `reasoning_effort: none` | Apache 2.0 |
 | Second opinion | `openai/gpt-oss-120b` | Groq, `reasoning_effort: low` (it can't be switched off) | Apache 2.0 |
 | Proposed second opinion ([ADR 0007](adr/0007-self-hosted-second-opinion.md), not adopted) | `ggml-org/gpt-oss-20b-GGUF@41e8a94d`, MXFP4 | llama.cpp on Kaggle | Apache 2.0 |
 
 Licences as listed on each model's Hugging Face page, checked 2026-11-18. Exact model IDs, revisions and quantisation are in [`configs/llm.toml`](../configs/llm.toml) and in every report.
 
-**Decoding:** temperature 0, seed `20261114`, at most 1,500 output tokens, no chain-of-thought. Output is held to a JSON schema: Groq's strict schema mode, and grammar-constrained decoding on llama.cpp.
+**Decoding:** temperature 0, seed `20261114`, at most 1,500 output tokens (1,000, and at most 9 candidates a prompt, for the nightly's Groq extractor, under Groq's output limit), no chain-of-thought. Output is held to a JSON schema: Groq's strict schema mode, and grammar-constrained decoding on llama.cpp.
 
 **Prompt:** [`prompts/extract_v1.md`](../prompts/extract_v1.md), version `extract-v1`. The advisory text and the numbered candidates (`F1`…), each with its hunks (`H1`…), sit inside labelled delimiters as untrusted data. At most 4,600 prompt tokens, counted with the model's own tokenizer; beyond that, candidates are ranked with BM25 against the advisory text and the prompt is marked truncated.
 
@@ -70,8 +70,19 @@ High confidence needs both families valid, an untruncated prompt, `subset` agree
 |---|---|---|---|
 | dev | 27 of 60 (45%) | 3.7% (1 of 27; Wilson 95% 0.7% to 18.3%) | 2% or less |
 | test | 115 of 220 (52%) | **7.0%** (8 of 115; Wilson 95% 3.6% to 13.1%) | 2% or less |
+| Go holdout (unseen) | 36 of 83 (43%) | 0.0% (0 of 36; Wilson 95% 0.0% to 9.6%) | 2% or less |
 
-**The target is not met.** Six of the eight test misses are fixes that never touched the labelled symbol. Releases therefore withhold the high tier until a rule meets the target on unseen data ([ADR 0008](adr/0008-withhold-high-confidence.md)). Reports: [dev](reports/confidence-dunlap-dev-extract-v1-qwen3.8-27b-q4km-vs-extract-v1-gpt-oss-120b.md), [test](reports/confidence-dunlap-test-extract-v1-qwen3.8-27b-q4km-vs-extract-v1-gpt-oss-120b.md).
+**The target is not met on test.** Six of the eight test misses are fixes that never touched the labelled symbol. Releases therefore withhold the high tier until a rule meets the target on unseen data ([ADR 0008](adr/0008-withhold-high-confidence.md)).
+
+**On the Go temporal holdout,** evaluated once as declared ([ADR 0010](adr/0010-go-temporal-holdout.md#result-2026-11-22)), the same rule had no high-confidence miss. But only 10 of its 36 high-confidence records cover every exported function the advisory lists. A published high tier would let the scanner say "imported, not called" for code that calls one of the others. So the tier stays withheld. With dotted entry points ([E6](experiments.md#e6-entry-points-resolved-on-a-dotted-boundary)) the result is the same: 0 misses in 38, 10 of 38 covered.
+
+Reports: [dev](reports/confidence-dunlap-dev-extract-v1-qwen3.8-27b-q4km-vs-extract-v1-gpt-oss-120b.md), [test](reports/confidence-dunlap-test-extract-v1-qwen3.8-27b-q4km-vs-extract-v1-gpt-oss-120b.md), [holdout](reports/holdout-go-holdout-v1-extract-v1-qwen3.8-27b-q4km-vs-extract-v1-gpt-oss-120b.md).
+
+**A smaller second opinion was tried and not adopted** ([E11](experiments.md#e11-a-self-hosted-second-opinion), [ADR 0007](adr/0007-self-hosted-second-opinion.md)). Self-hosted gpt-oss-20b answered all 59 dev reports and had no more high-confidence misses than gpt-oss-120b, but missed one more report overall (10.0% against 8.3%), which its declared criteria did not allow.
+
+### Retrieval at the prompt budget
+
+When a fix's candidates do not fit the 4,600-token budget, the prompt is cut, and a true vulnerable function that is cut cannot be picked. On the 32 cut Dunlap prompts, BM25 against the advisory kept 0.421 of the true functions, and no ranking at all kept 0.693 ([E9](experiments.md#e9-ordering-candidates-to-fit-the-prompt-budget)). Keeping the smallest candidates first was then chosen on dev and beat BM25 on the Go holdout by +0.094 (95% CI +0.042 to +0.328) ([E10](experiments.md#e10-a-replacement-for-bm25-at-the-prompt-budget-declared-before-measuring)). It is switched on with the next prompt change, through shadow-then-promote.
 
 ### Cost
 
@@ -88,11 +99,12 @@ On the 55 dev reports both hosts answered, the 4-bit Kaggle model scored F1 0.70
 Measured in the [failure-cause breakdown](reports/failures-dunlap-all-extract-v1-qwen3.8-27b-q4km.md) and the confidence analysis:
 
 - **Patch ceiling.** The labelled function is unchanged and only its callee or caller changed, so it is not a candidate. This is the main cause of high-confidence misses.
-- **Truncation.** The budget drops the vulnerable function before the model sees it.
+- **Truncation.** The budget drops the vulnerable function before the model sees it. BM25 made this worse than no ranking ([E9](experiments.md#e9-ordering-candidates-to-fit-the-prompt-budget)).
+- **Exported callers left out.** A high-confidence record holds the agreed vulnerable functions and entry points, and on the Go holdout most such records left out an exported function the advisory lists (26 of 36). This is why the high tier stays withheld.
 - **Model error.** A refactored or helper function is picked instead, and the two families can agree on the same wrong answer: agreement is not correctness.
 - **Internal symbol found, public entry point missed** (or the reverse). Entry points must match a definition name exactly, so `SetValue` is dropped when the definition is `Paved.SetValue` ([#53](https://github.com/professor3333/PatchSight/issues/53)).
-- **Output limit.** Very large candidate sets can exhaust the 1,500 output tokens. A cap of 14 candidates per prompt is measured ([E4](experiments.md#e4-output-capacity-cap)) and waits to be switched on ([#52](https://github.com/professor3333/PatchSight/issues/52)).
-- **Not yet measured:** prompt injection through advisory text, commit messages or code comments, and robustness to huge, squashed, renamed or non-English fixes ([#55](https://github.com/professor3333/PatchSight/issues/55)). Their defences are in place (delimited untrusted text, ID-only answers, validation, fallback), but the suites are not built.
+- **Output limit.** Very large candidate sets can exhaust the 1,500 output tokens. A cap of 14 candidates per prompt is measured ([E4](experiments.md#e4-output-capacity-cap)) and waits to be switched on for the Kaggle roles ([#52](https://github.com/professor3333/PatchSight/issues/52)). The nightly's Groq extractor, limited by Groq to 1,000 output tokens a minute since 2026-11-21, already holds at most 9 candidates a prompt ([ADR 0013](adr/0013-llm-extraction-in-the-nightly.md#amendment-2026-11-21-groqs-output-limit)).
+- **Prompt injection.** An advisory that names a decoy function makes both model families agree on it in 8 of 15 attackable dev reports, which would give wrong high-confidence records; telling the models nothing is vulnerable empties their answers, which the fallback makes safe, and comments planted in code moved neither much ([E8](experiments.md#e8-prompt-injection)). The deterministic robustness suite (huge, squashed, add-only and renamed fixes) runs in CI; the models' answers on those inputs are not measured yet ([#55](https://github.com/professor3333/PatchSight/issues/55)).
 - **Argument-dependent vulnerabilities** such as `yaml.load` with an unsafe `Loader` are matched on the bare name, which errs towards CALLED.
 
 ## Release process

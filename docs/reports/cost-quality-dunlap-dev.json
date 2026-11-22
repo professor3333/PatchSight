@@ -1,0 +1,65 @@
+{
+  "reports": 60,
+  "points": [
+    {
+      "label": "Qwen3.8-27B 4-bit, Kaggle",
+      "tag": "extract-v1-qwen3.8-27b-q4km",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "f1": 0.6755555555555555,
+      "precision": 0.7102803738317757,
+      "recall": 0.6440677966101694,
+      "prompt_tokens": 1627.3,
+      "completion_tokens": 313.1166666666667,
+      "usd_per_1000": 2.5543
+    },
+    {
+      "label": "Qwen3.8-27B, Groq",
+      "tag": "extract-v1-qwen3.8-27b",
+      "model": "qwen/qwen3.8-27b",
+      "f1": 0.6302521008403361,
+      "precision": 0.625,
+      "recall": 0.635593220338983,
+      "prompt_tokens": 1691.5666666666666,
+      "completion_tokens": 236.06666666666666,
+      "usd_per_1000": 2.2975
+    },
+    {
+      "label": "Qwen3.8-27B, Groq, 14-candidate cap",
+      "tag": "extract-v1-qwen3.8-27b-cap105",
+      "model": "qwen/qwen3.8-27b",
+      "f1": 0.6302521008403361,
+      "precision": 0.625,
+      "recall": 0.635593220338983,
+      "prompt_tokens": 1671.1333333333334,
+      "completion_tokens": 231.66666666666666,
+      "usd_per_1000": 2.2636
+    },
+    {
+      "label": "gpt-oss-120b, Groq",
+      "tag": "extract-v1-gpt-oss-120b",
+      "model": "openai/gpt-oss-120b",
+      "f1": 0.6255924170616113,
+      "precision": 0.7096774193548387,
+      "recall": 0.559322033898305,
+      "prompt_tokens": 1696.1166666666666,
+      "completion_tokens": 368.3333333333333,
+      "usd_per_1000": 0.4754
+    },
+    {
+      "label": "gpt-oss-20b, Kaggle",
+      "tag": "extract-v1-gpt-oss-20b-mxfp4",
+      "model": "ggml-org/gpt-oss-20b-GGUF@41e8a94d:MXFP4",
+      "f1": 0.6018518518518517,
+      "precision": 0.6632653061224489,
+      "recall": 0.5508474576271186,
+      "prompt_tokens": 1558.45,
+      "completion_tokens": 336.06666666666666,
+      "usd_per_1000": 0.2177
+    }
+  ],
+  "changedfuncs_f1": 0.38095238095238093,
+  "best": "Qwen3.8-27B 4-bit, Kaggle",
+  "chosen": "Qwen3.8-27B 4-bit, Kaggle",
+  "pricing_source": "https://console.groq.com/docs/models",
+  "pricing_retrieved": "2026-11-22"
+}

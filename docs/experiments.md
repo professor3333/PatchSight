@@ -10,7 +10,9 @@ Every controlled experiment on the extraction system, including the ones that lo
 - **Every number links to a generated report** in `docs/reports/`. Reports are regenerated from
   cached answers, so re-running an experiment costs no model calls.
 - **Selection rule:** among configurations within 2 F1 points of the best, choose the cheapest
-  (tokens and seconds per report).
+  (tokens and seconds per report). Applied to every configuration measured on dev in the
+  [cost-against-quality report](reports/cost-quality-dunlap-dev.md): the 4-bit Qwen on Kaggle
+  is the best, and nothing else is within 2 points.
 
 | # | Factor | Variants | Outcome | Status |
 |---|---|---|---|---|

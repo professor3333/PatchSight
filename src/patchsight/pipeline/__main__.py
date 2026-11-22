@@ -443,11 +443,24 @@ def dunlap_extract_command(
     benchmark: Annotated[
         str, typer.Option(help="dunlap-v1, or go-holdout-v1 (the temporal holdout, all reports).")
     ] = "dunlap-v1",
+    topup: Annotated[
+        Path | None,
+        typer.Option(help="A topup-plan file: extract only the Dunlap prompts it lists."),
+    ] = None,
 ) -> None:
     """Run LLM extraction on the Dunlap benchmark or the Go temporal holdout (needs
     GITHUB_TOKEN and the model's key)."""
     token = _github_token()
     chosen = _load_benchmark(root, benchmark, split)
+    if topup is not None:
+        from patchsight.pipeline import topup as topups
+
+        if benchmark != "dunlap-v1":
+            raise typer.BadParameter("--topup lists Dunlap prompts; use it with dunlap-v1")
+        listed = topups.Plan.model_validate_json((root / topup).read_text("utf-8"))
+        wanted = frozenset(listed.part("dunlap-v1").ids())
+        chosen = chosen._replace(ids=wanted if chosen.ids is None else chosen.ids & wanted)
+        typer.echo(f"top-up: {len(chosen.ids or ())} of the plan's {len(wanted)} prompts")
     llm_config = load_config(root / config)
     template = load_template(root / prompt)
     counter = HfTokenizer(llm_config.tokenizer, root / cache / "tokenizer")
@@ -2523,6 +2536,10 @@ def pypi_extract_command(
             "--cache-only", help="Answer only from the response cache; never call a model."
         ),
     ] = False,
+    topup: Annotated[
+        Path | None,
+        typer.Option(help="A topup-plan file: extract only the PyPI prompts it lists."),
+    ] = None,
 ) -> None:
     """Run LLM extraction on PyPI vulnerabilities (needs the model's key, and GITHUB_TOKEN
     unless --offline)."""
@@ -2540,6 +2557,13 @@ def pypi_extract_command(
         eligible = {k for k, e in primaries.items() if llm_records.needs_second_opinion(e)}
         groups = [g for g in groups if g.key in eligible]
         typer.echo(f"{len(groups)} of {len(primaries)} extractions can use a second opinion")
+    if topup is not None:
+        from patchsight.pipeline import topup as topups
+
+        wanted = set(topups.Plan.model_validate_json((root / topup).read_text("utf-8"))
+                     .part("pypi").ids())  # fmt: skip
+        groups = [g for g in groups if g.key in wanted]
+        typer.echo(f"top-up: {len(groups)} of the plan's {len(wanted)} prompts")
     if priority:
         top = snapshot.verify(snapshot.load_manifest(root / MANIFEST).file(TOP_PACKAGES), root)
         groups = pypi_extract.by_priority(groups, by_id, pypi_extract.download_rank(top))

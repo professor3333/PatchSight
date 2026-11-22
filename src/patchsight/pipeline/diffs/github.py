@@ -15,9 +15,31 @@ import httpx
 from pydantic import BaseModel, ConfigDict
 from tenacity.wait import wait_base
 
-from patchsight.pipeline.http import CachedJsonClient, NotFoundError
+from patchsight.pipeline.http import AuthError, CachedJsonClient, HttpError, NotFoundError
 
 GITHUB_API = "https://api.github.com"
+
+
+def check_token(token: str | None, client: httpx.Client | None = None) -> int:
+    """GitHub's own answer to the token, never from the cache: the core requests it has left
+    this hour. Raises AuthError when GitHub refuses it, so a long run can stop at once
+    instead of reading nothing for hours. ``/rate_limit`` does not count against the limit."""
+    http = client or httpx.Client(timeout=httpx.Timeout(30.0, connect=10.0))
+    headers = {"Accept": "application/vnd.github+json"}
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    try:
+        response = http.get(f"{GITHUB_API}/rate_limit", headers=headers)
+    finally:
+        if client is None:
+            http.close()
+    if response.status_code == 401:
+        raise AuthError("GitHub refused the token (HTTP 401)")
+    if response.status_code != 200:
+        raise HttpError(f"GitHub's rate-limit check answered HTTP {response.status_code}")
+    return int(response.json()["resources"]["core"]["remaining"])
+
+
 COMMIT_FILES_PER_PAGE = 300  # fixed by the API for single-commit responses
 MAX_COMMIT_PAGES = 10  # the API stops listing files at 3,000
 PULL_FILES_PER_PAGE = 100

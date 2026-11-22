@@ -28,7 +28,7 @@ from patchsight.pipeline.diffs.github import GitHubClient
 from patchsight.pipeline.diffs.paths import classify_path
 from patchsight.pipeline.extract.prompt import PromptTemplate, neutralise
 from patchsight.pipeline.extract.schema import _inline
-from patchsight.pipeline.http import HttpError, NotFoundError
+from patchsight.pipeline.http import AuthError, HttpError, NotFoundError
 from patchsight.pipeline.llm.client import LLMClient, LLMRequest, ProviderRejectedError
 from patchsight.pipeline.llm.config import ModelConfig
 from patchsight.pipeline.llm.tokens import MESSAGE_OVERHEAD
@@ -111,6 +111,8 @@ def build_task(
             for name in tags(github, repo):
                 if (version := tag_version(name, package)) is not None:
                     by_version.setdefault(version, name)
+        except AuthError:
+            raise  # a refused token is no answer about this repository
         except (NotFoundError, HttpError):
             continue
         for version in fixed:
@@ -166,6 +168,8 @@ class Tools:
             return f"error: {refused}"
         except NotFoundError:
             return "error: not found"
+        except AuthError:
+            raise  # the model must never read a refused token as an answer
         except HttpError as error:
             return f"error: {error}"[:300]
         return f"error: {step.action} is not a tool"
@@ -217,6 +221,8 @@ class Tools:
             return None, "discarded: not a commit SHA"
         try:
             change = self.github.commit(name, sha.lower())
+        except AuthError:
+            raise
         except (NotFoundError, HttpError):
             return None, "discarded: the commit does not exist"
         full = change.commits[0]

@@ -1926,9 +1926,22 @@ def locator_agent_eval_command(
         if cache_only
         else client_for(llm_config, role, root / cache / "llm", counter)
     )
+    from patchsight.pipeline.http import AuthError
+
+    token = os.environ.get("GITHUB_TOKEN")
+    if not cache_only:
+        from patchsight.pipeline.diffs.github import check_token
+
+        try:
+            left = check_token(token)
+        except AuthError:
+            raise typer.BadParameter(
+                "GitHub refuses GITHUB_TOKEN (HTTP 401): every tool call would fail. Set a "
+                "valid token (no scopes are needed: it only reads public repositories)."
+            ) from None
+        typer.echo(f"GitHub token accepted: {left:,} core requests left this hour")
     github = GitHubClient(
-        root / cache / "http" / "github", token=os.environ.get("GITHUB_TOKEN"),
-        wait_for_rate_limit=3900,
+        root / cache / "http" / "github", token=token, wait_for_rate_limit=3900,
     )  # fmt: skip
     pypi = PyPIClient(root / cache / "http" / "pypi")
     try:
@@ -1940,6 +1953,11 @@ def locator_agent_eval_command(
         )  # fmt: skip
     except (QuotaExhaustedError, RateLimitedError) as stopped:
         typer.echo(f"stopped: {stopped}; every answer so far is cached, re-run to resume", err=True)
+        raise typer.Exit(code=2) from None
+    except AuthError as refused:
+        # The agent's tools turn every other HTTP error into an observation the model reads;
+        # a token refused in the middle of a run stops it.
+        typer.echo(f"stopped: {refused}; no report written", err=True)
         raise typer.Exit(code=2) from None
     finally:
         github.close()

@@ -34,6 +34,11 @@ class NotFoundError(HttpError):
     """The resource does not exist, or never will for this request."""
 
 
+class AuthError(HttpError):
+    """The server refused the credentials (HTTP 401). Every later request would fail the
+    same way, so callers that turn errors into data must let this one through."""
+
+
 class CacheMissError(HttpError):
     """Offline mode: the response is not in the cache, and the network may not be used."""
 
@@ -147,6 +152,8 @@ class CachedJsonClient:
         status = response.status_code
         if status == 200:
             return {"status": 200, "body": response.json()}
+        if status == 401:
+            raise AuthError(f"{path}: HTTP 401: the token was refused")
         if status in NOT_FOUND_STATUSES:
             return {"status": status, "body": None}
         if status in (403, 429) and response.headers.get("x-ratelimit-remaining") == "0":

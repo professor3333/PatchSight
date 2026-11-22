@@ -335,3 +335,21 @@ def test_the_evaluation_starts_no_case_after_its_deadline(monkeypatch: pytest.Mo
     assert len(runs) == 2
     every, _ = masked.run_agent(sample, {}, None, None, None, None, None)  # type: ignore[arg-type]
     assert len(every) == 3  # without a deadline, all of them
+
+
+def test_a_refused_token_stops_the_run_instead_of_becoming_an_observation() -> None:
+    from types import SimpleNamespace
+
+    from patchsight.pipeline.http import AuthError
+
+    def refuse(*args: object, **kwargs: object) -> object:
+        raise AuthError("/repos/o/p/compare/a...b: HTTP 401: the token was refused")
+
+    github = SimpleNamespace(http=SimpleNamespace(get_json=refuse))
+    task = agent.Task(vulnerability="GHSA-x", package="p", summary="s", details="d",
+                      references=(), fixed=("1.1",), repos=("o/p",), comparisons=())  # fmt: skip
+    tools = agent.Tools(task, github)  # type: ignore[arg-type]
+    step = agent.Step(action="compare_tags", repo="o/p", base="v1.0", head="v1.1", query=None,
+                      sha=None, reason="look")  # fmt: skip
+    with pytest.raises(AuthError):
+        tools.run(step)

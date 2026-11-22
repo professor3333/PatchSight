@@ -144,3 +144,40 @@ def test_offline_mode_serves_the_cache_and_never_uses_the_network(tmp_path: Path
         next((tmp_path / "cache").rglob("*.json")).name
     ]
     assert issubclass(CacheMissError, HttpError)
+
+
+def test_a_refused_token_raises_at_once_and_is_never_cached(tmp_path: Path) -> None:
+    from patchsight.pipeline.http import AuthError
+
+    calls = 0
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        nonlocal calls
+        calls += 1
+        return httpx.Response(401, json={"message": "Bad credentials"})
+
+    client = _client(tmp_path, httpx.MockTransport(handler))
+    for _ in range(2):
+        with pytest.raises(AuthError, match="HTTP 401"):
+            client.get_json("/repos/o/r/tags")
+    assert calls == 2  # not retried, and not cached: a valid token later gets the real answer
+    assert not list((tmp_path / "cache").rglob("*.json"))
+
+
+def test_the_token_check_asks_github_itself() -> None:
+    from patchsight.pipeline.diffs.github import check_token
+    from patchsight.pipeline.http import AuthError
+
+    seen: list[str | None] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen.append(request.headers.get("Authorization"))
+        if request.headers.get("Authorization") == "Bearer good":
+            return httpx.Response(200, json={"resources": {"core": {"remaining": 4321}}})
+        return httpx.Response(401, json={"message": "Bad credentials"})
+
+    client = httpx.Client(transport=httpx.MockTransport(handler))
+    assert check_token("good", client) == 4321
+    with pytest.raises(AuthError):
+        check_token("expired", client)
+    assert seen == ["Bearer good", "Bearer expired"]

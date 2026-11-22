@@ -27,7 +27,7 @@ from patchsight.pipeline.benchmarks.extraction import candidate_inputs
 from patchsight.pipeline.diffs.commits import CommitMapping
 from patchsight.pipeline.diffs.github import GitHubClient
 from patchsight.pipeline.extract.extractor import ExtractionOutcome, extract
-from patchsight.pipeline.extract.prompt import AdvisoryText, PromptTemplate, render
+from patchsight.pipeline.extract.prompt import AdvisoryText, PromptTemplate, RenderedPrompt, render
 from patchsight.pipeline.http import CacheMissError
 from patchsight.pipeline.ingest.aliases import AliasGroup
 from patchsight.pipeline.ingest.osv import Advisory
@@ -121,6 +121,38 @@ def plan_vulnerability(
         kept=len(sent.candidates),
         truncated=sent.truncated,
     )
+
+
+def rendered_prompts(
+    group: AliasGroup,
+    by_id: dict[str, Advisory],
+    github: GitHubClient,
+    pypi: PyPIClient,
+    configs: Sequence[LLMConfig],
+    role: str,
+    template: PromptTemplate,
+    counter: TokenCounter,
+) -> list[RenderedPrompt] | str:
+    """The prompt as each config would send it, from one fetch of the fix; no model call.
+    Or why there is none (a build status)."""
+    try:
+        fixes = build_db.fix_mappings(group, by_id, github, pypi)
+    except CacheMissError:
+        return "cache_miss"
+    if fixes.status != "mapped":
+        return fixes.status
+    if len(build_db.changed_symbols(fixes.mappings)) > build_db.MAX_SYMBOLS:
+        return "too_broad"
+    inputs, _ = candidate_inputs(fixes.mappings, PYTHON_KINDS)
+    advisory = advisory_text(group, by_id)
+
+    def sent(c: LLMConfig) -> RenderedPrompt:
+        return render(
+            template, advisory, inputs, c.prompt_budget(role), counter, c.budget.max_hunk_lines,
+            c.candidate_limit(role), c.budget.candidate_order,
+        )  # fmt: skip
+
+    return [sent(c) for c in configs]
 
 
 def symbol_evidence(

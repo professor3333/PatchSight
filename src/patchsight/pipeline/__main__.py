@@ -544,6 +544,93 @@ def _retrieval_paths(benchmark: str) -> tuple[Path, Path, Path]:
     return RETRIEVAL[benchmark]
 
 
+@app.command("topup-plan")
+def topup_plan_command(
+    after: Annotated[Path, typer.Option(help="The configuration being switched on.")],
+    before: Annotated[Path, typer.Option(help="The configuration in use.")] = Path(
+        "configs/llm.toml"
+    ),
+    role: Annotated[str, typer.Option(help="Model role the top-up run uses.")] = (
+        "kaggle_extractor"
+    ),
+    prompt: Annotated[Path, typer.Option(help="Prompt template.")] = Path("prompts/extract_v1.md"),
+    cache: Annotated[Path, typer.Option(help="Cache root (HTTP and tokenizer).")] = Path(".cache"),
+    out: Annotated[Path, typer.Option(help="Plan to write.")] = Path(
+        "configs/experiments/llm-switch-on-topup.json"
+    ),
+    root: Root = Path(),
+) -> None:
+    """List the prompts a configuration change alters, on the PyPI backfill and the Dunlap
+    benchmark, offline from the HTTP cache: a top-up run re-extracts only these, and every
+    other prompt replays from the cache. IDs and counts only, no prompt text."""
+    import hashlib
+
+    from patchsight.pipeline import pypi_extract, topup
+    from patchsight.pipeline.diffs.commits import map_commit
+    from patchsight.pipeline.extract.prompt import render
+
+    configs = [load_config(root / before), load_config(root / after)]
+    template = load_template(root / prompt)
+    counter = HfTokenizer(configs[0].tokenizer, root / cache / "tokenizer")
+    github = GitHubClient(root / cache / "http" / "github", offline=True)
+    pypi = PyPIClient(root / cache / "http" / "pypi", offline=True)
+    parts = []
+    try:
+        _, dump = _load_verified(root)
+        by_id, groups = _github_fix_groups(dump, None, None, 0)
+        skipped, changes, considered = [], [], 0
+        for group in sorted(groups, key=lambda g: g.key):
+            prompts = pypi_extract.rendered_prompts(
+                group, by_id, github, pypi, configs, role, template, counter
+            )
+            if isinstance(prompts, str):
+                skipped.append(prompts)
+                continue
+            considered += 1
+            changes.append(topup.compare(group.key, *prompts))
+        parts.append(topup.part("pypi", considered, skipped, changes))
+        chosen = _load_benchmark(root, "dunlap-v1", "all")
+        dunlap_changes = []
+        for report in sorted(chosen.reports, key=lambda r: r.id):
+            mappings = [
+                map_commit(github, c.github_repo, c.sha, include=dunlap.paper_path_filter)
+                for c in report.commits
+            ]
+            inputs, _ = extraction.candidate_inputs(mappings)
+            rendered = [
+                render(
+                    template,
+                    chosen.advisories[report.id],
+                    inputs,
+                    c.prompt_budget(role),
+                    counter,
+                    c.budget.max_hunk_lines,
+                    c.candidate_limit(role),
+                    c.budget.candidate_order,
+                )
+                for c in configs
+            ]
+            dunlap_changes.append(topup.compare(report.id, *rendered))
+        parts.append(topup.part("dunlap-v1", len(chosen.reports), (), dunlap_changes))
+    finally:
+        github.close()
+        pypi.close()
+
+    def digest(path: Path) -> str:
+        return hashlib.sha256((root / path).read_bytes()).hexdigest()
+
+    plan = topup.Plan(
+        role=role, prompt_version=template.version, before=before.as_posix(),
+        before_sha256=digest(before), after=after.as_posix(), after_sha256=digest(after),
+        parts=tuple(parts),
+    )  # fmt: skip
+    (root / out).write_text(plan.model_dump_json(indent=1) + "\n", "utf-8")
+    for p in plan.parts:
+        typer.echo(
+            f"{p.benchmark}: {len(p.changed)} of {p.considered} prompts change; {p.reasons()}"
+        )
+
+
 @app.command("retrieval-freeze")
 def retrieval_freeze_command(
     root: Root = Path(),

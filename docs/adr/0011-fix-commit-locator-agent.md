@@ -50,3 +50,9 @@ It builds no records until it meets both targets. A wrong commit becomes a recor
 - **Commit search has its own rate limit** on GitHub (30 requests a minute). The client waits it out.
 - **The Kaggle evaluation fits a session or resumes.** The notebook gives `locator-agent-eval` the session's remaining time (`--max-minutes`); no case starts after it, the results are always packaged, and a run that did not finish writes no report. Adding its zip as input to a second session replays the finished cases from the cache and continues.
 - **The prompt is versioned and cached like the extractor's.** Changing it, or the tools' output format, misses the cache and is a new evaluated run.
+
+## The first Kaggle run, 2026-11-22: not a result
+
+The first evaluation on Kaggle (PatchSight `ccbf47a`) ran all 200 vulnerabilities, but GitHub refused the notebook's token: every tool call, and every tag listing behind the release comparisons, answered HTTP 401. The agent saw no repository and abstained on all 200. The run measures nothing about the agent, so it is not reported as a result; the evaluation is run again with a valid token.
+
+The pipeline let it run for hours because a 401 was handled like any other HTTP error: the tools turned it into an observation for the model. Now a refused token is an error of its own (`AuthError`) that the tools let through, `locator-agent-eval` asks GitHub whether it accepts the token before the first case, and the notebook does the same at setup for every mode that reads GitHub.

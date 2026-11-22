@@ -558,6 +558,45 @@ def _retrieval_paths(benchmark: str) -> tuple[Path, Path, Path]:
     return RETRIEVAL[benchmark]
 
 
+@app.command("cost-quality")
+def cost_quality_command(
+    root: Root = Path(),
+    pricing: Annotated[Path, typer.Option(help="Published prices.")] = Path("configs/pricing.toml"),
+    out: Annotated[Path, typer.Option(help="Report path, without extension.")] = Path(
+        "docs/reports/cost-quality-dunlap-dev"
+    ),
+) -> None:
+    """F1 against tokens per report for every configuration measured on the Dunlap dev split,
+    with the proposal's selection rule applied, from the committed extraction reports."""
+    from patchsight.pipeline import operations
+    from patchsight.pipeline.benchmarks import cost_quality
+
+    prices: dict[str, tuple[float, float]] = {}
+    source = retrieved = None
+    if (root / pricing).exists():
+        table = operations.Pricing.model_validate(
+            tomllib.loads((root / pricing).read_text("utf-8"))
+        )
+        source, retrieved = table.source, table.retrieved.isoformat()
+        for _, tag in cost_quality.CONFIGURATIONS:
+            run = extraction.ExtractionRun.model_validate_json(
+                (root / "docs" / "reports" / f"extraction-dunlap-dev-{tag}.json").read_text("utf-8")
+            )
+            name = table.priced_as(run.model)
+            if name is not None:
+                prices[run.model] = (table.models[name].input, table.models[name].output)
+    result = cost_quality.measure(root / "docs" / "reports", prices, source, retrieved)
+    target = root / out
+    target.with_name(target.name + ".json").write_text(
+        result.model_dump_json(indent=2) + "\n", "utf-8"
+    )
+    target.with_name(target.name + ".svg").write_text(cost_quality.render_svg(result), "utf-8")
+    target.with_name(target.name + ".md").write_text(
+        cost_quality.render_markdown(result, f"{target.name}.svg"), "utf-8"
+    )
+    typer.echo(f"chosen: {result.chosen} (best F1: {result.best}) -> {out}.md")
+
+
 @app.command("topup-plan")
 def topup_plan_command(
     after: Annotated[Path, typer.Option(help="The configuration being switched on.")],

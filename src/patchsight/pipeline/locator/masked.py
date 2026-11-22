@@ -320,14 +320,23 @@ def run_agent(
     transcripts: Any = None,
     limit: int | None = None,
     budget: int | None = None,
+    deadline: float | None = None,
+    clock: Any = None,
 ) -> tuple[list[CaseResult], list[Any]]:
     """The agent on the masked sample: scored results, and each run's summary. With
-    ``transcripts`` (a directory), each case's message list is saved there."""
+    ``transcripts`` (a directory), each case's message list is saved there. With a
+    ``deadline`` (a ``clock`` value, ``time.monotonic`` by default), no new case starts after
+    it, so a run in a time-limited session can stop and resume from the cache."""
+    import time
+
+    now = clock or time.monotonic
     from patchsight.pipeline.locator import agent
 
     results: list[CaseResult] = []
     runs: list[agent.AgentRun] = []
     for case in sample.cases[:limit]:
+        if deadline is not None and now() >= deadline:
+            break
         advisories = [by_id[i] for i in case.advisory_ids if i in by_id]
         task = agent.build_task(case.vulnerability, advisories, case.package, github, pypi)
         run, messages = agent.locate(task, llm, model, template, github, budget=budget)

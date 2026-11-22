@@ -305,3 +305,33 @@ def test_a_provider_rejection_costs_a_step_and_is_asked_again(
     )  # fmt: skip
     twice, _ = agent.locate(task, always, MODEL, TEMPLATE, github)
     assert (twice.outcome, twice.actions) == ("error", ("rejected",))
+
+
+def test_the_evaluation_starts_no_case_after_its_deadline(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A time-limited session stops between cases and resumes later from the cache."""
+    from types import SimpleNamespace
+
+    from patchsight.pipeline.locator import masked
+
+    cases = tuple(
+        masked.MaskedCase(vulnerability=f"GHSA-{n}", advisory_ids=(f"GHSA-{n}",), package="p",
+                          repo="o/p", fixed=("1.1",), truth=("a" * 40,))
+        for n in range(3)
+    )  # fmt: skip
+    sample = masked.MaskedSample(name="t", seed=1, snapshot_sha256="0" * 64, eligible=3,
+                                 cases=cases)  # fmt: skip
+    clock = SimpleNamespace(now=0.0)
+
+    def locate(*args: object, **kwargs: object) -> tuple[object, list[object]]:
+        clock.now += 50.0  # each case takes 50 seconds
+        run = SimpleNamespace(commit="a" * 40, reason="found", tool_calls=1, outcome="found")
+        return run, []
+
+    monkeypatch.setattr(agent, "build_task", lambda *args, **kwargs: None)
+    monkeypatch.setattr(agent, "locate", locate)
+    results, runs = masked.run_agent(sample, {}, None, None, None, None, None,  # type: ignore[arg-type]
+                                     deadline=60.0, clock=lambda: clock.now)  # fmt: skip
+    assert [r.vulnerability for r in results] == ["GHSA-0", "GHSA-1"]  # the third starts after 60 s
+    assert len(runs) == 2
+    every, _ = masked.run_agent(sample, {}, None, None, None, None, None)  # type: ignore[arg-type]
+    assert len(every) == 3  # without a deadline, all of them

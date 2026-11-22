@@ -1750,9 +1750,15 @@ def locator_agent_eval_command(
     config: Annotated[Path, typer.Option(help="LLM config.")] = Path("configs/llm.toml"),
     prompt: Annotated[Path, typer.Option(help="Prompt template.")] = Path("prompts/locate_v1.md"),
     cache: Annotated[Path, typer.Option(help="Cache root.")] = Path(".cache"),
+    max_minutes: Annotated[
+        float | None,
+        typer.Option(help="Start no new case after this many minutes; resume by running again."),
+    ] = None,
 ) -> None:
     """Score the fix-commit locator agent on the frozen masked sample (needs GITHUB_TOKEN unless
-    every GitHub response is cached, and the model's key unless --cache-only)."""
+    every GitHub response is cached, and the model's key unless --cache-only). A run stopped by
+    --max-minutes writes no report: every answer is cached, and the same command resumes."""
+    started = time.monotonic()
     from patchsight.pipeline.llm.client import cache_only_client
     from patchsight.pipeline.locator import masked
 
@@ -1779,6 +1785,7 @@ def locator_agent_eval_command(
             sample, by_id, github, pypi, llm, llm_config.models[role], template,
             transcripts=root / "data" / "interim" / "locator" / tag, limit=limit,
             budget=llm_config.prompt_budget(role),
+            deadline=None if max_minutes is None else started + max_minutes * 60,
         )  # fmt: skip
     except (QuotaExhaustedError, RateLimitedError) as stopped:
         typer.echo(f"stopped: {stopped}; every answer so far is cached, re-run to resume", err=True)
@@ -1786,6 +1793,13 @@ def locator_agent_eval_command(
     finally:
         github.close()
         pypi.close()
+    wanted = len(sample.cases[:limit])
+    if len(results) < wanted:
+        typer.echo(
+            f"incomplete: {len(results)} of {wanted} cases within {max_minutes} minutes; no report "
+            "written. Every answer is cached: run the same command again to resume."
+        )
+        return
     scores = masked.summarise("agent", results)
     report = masked.LocatorReport(
         sample=sample.name, seed=sample.seed, snapshot_sha256=sample.snapshot_sha256,

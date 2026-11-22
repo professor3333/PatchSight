@@ -1,0 +1,371 @@
+{
+  "holdout": "go-holdout-v1",
+  "holdout_sha256": "7de5b019b6559c6f38846d9b09f56df577fc0ae0ca86ef814df094253e4507ac",
+  "primary": "extract-v1-qwen3.8-27b-q4km",
+  "primary_model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+  "secondary": "extract-v1-gpt-oss-120b",
+  "secondary_model": "openai/gpt-oss-120b",
+  "changedfuncs": {
+    "reports": 83,
+    "true_positives": 1068,
+    "false_positives": 1705,
+    "false_negatives": 1964,
+    "precision": 0.3851424450054093,
+    "recall": 0.35224274406332456,
+    "f1": 0.36795865633074937,
+    "miss_rate": 0.012048192771084338,
+    "exact_match": 0.060240963855421686,
+    "precision_ci95": null,
+    "recall_ci95": null,
+    "f1_ci95": null
+  },
+  "changedfuncs_safety": {
+    "reports": 83,
+    "truth_symbols": 3032,
+    "truth_found": 1069,
+    "recall": 0.35257255936675463,
+    "miss_rate": 0.012048192771084338
+  },
+  "results": [
+    {
+      "variant": "exact",
+      "reports": 83,
+      "high_reports": 36,
+      "high_misses": 0,
+      "high_miss_rate": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.09641862996887933,
+      "passes": true,
+      "covered_reports": 10,
+      "uncovered": [
+        {
+          "report": "GO-2026-4950",
+          "labelled": 7,
+          "missing": 5
+        },
+        {
+          "report": "GO-2026-6139",
+          "labelled": 6,
+          "missing": 5
+        },
+        {
+          "report": "GO-2026-6163",
+          "labelled": 2,
+          "missing": 1
+        },
+        {
+          "report": "GO-2026-6165",
+          "labelled": 2,
+          "missing": 1
+        },
+        {
+          "report": "GO-2026-6184",
+          "labelled": 3,
+          "missing": 2
+        },
+        {
+          "report": "GO-2026-6186",
+          "labelled": 16,
+          "missing": 14
+        },
+        {
+          "report": "GO-2026-6195",
+          "labelled": 3,
+          "missing": 2
+        },
+        {
+          "report": "GO-2026-6197",
+          "labelled": 23,
+          "missing": 21
+        },
+        {
+          "report": "GO-2026-6234",
+          "labelled": 3,
+          "missing": 2
+        },
+        {
+          "report": "GO-2026-6366",
+          "labelled": 4,
+          "missing": 2
+        },
+        {
+          "report": "GO-2026-6443",
+          "labelled": 3,
+          "missing": 1
+        },
+        {
+          "report": "GO-2026-6453",
+          "labelled": 3,
+          "missing": 2
+        },
+        {
+          "report": "GO-2026-6512",
+          "labelled": 4,
+          "missing": 3
+        },
+        {
+          "report": "GO-2026-6651",
+          "labelled": 35,
+          "missing": 32
+        },
+        {
+          "report": "GO-2026-6677",
+          "labelled": 148,
+          "missing": 147
+        },
+        {
+          "report": "GO-2026-6679",
+          "labelled": 4,
+          "missing": 2
+        },
+        {
+          "report": "GO-2026-6685",
+          "labelled": 4,
+          "missing": 3
+        },
+        {
+          "report": "GO-2026-6686",
+          "labelled": 11,
+          "missing": 8
+        },
+        {
+          "report": "GO-2026-6687",
+          "labelled": 2,
+          "missing": 1
+        },
+        {
+          "report": "GO-2026-6689",
+          "labelled": 4,
+          "missing": 2
+        },
+        {
+          "report": "GO-2026-6700",
+          "labelled": 5,
+          "missing": 4
+        },
+        {
+          "report": "GO-2026-6841",
+          "labelled": 77,
+          "missing": 76
+        },
+        {
+          "report": "GO-2026-6844",
+          "labelled": 77,
+          "missing": 76
+        },
+        {
+          "report": "GO-2026-6865",
+          "labelled": 9,
+          "missing": 6
+        },
+        {
+          "report": "GO-2026-6880",
+          "labelled": 3,
+          "missing": 2
+        },
+        {
+          "report": "GO-2026-6885",
+          "labelled": 54,
+          "missing": 51
+        }
+      ],
+      "misses": [],
+      "overall": {
+        "reports": 83,
+        "true_positives": 1042,
+        "false_positives": 1682,
+        "false_negatives": 1990,
+        "precision": 0.38252569750367105,
+        "recall": 0.34366754617414247,
+        "f1": 0.3620569840166782,
+        "miss_rate": 0.012048192771084338,
+        "exact_match": 0.0963855421686747,
+        "precision_ci95": null,
+        "recall_ci95": null,
+        "f1_ci95": null
+      },
+      "safety_overall": {
+        "reports": 83,
+        "truth_symbols": 3032,
+        "truth_found": 1045,
+        "recall": 0.34465699208443273,
+        "miss_rate": 0.012048192771084338
+      }
+    },
+    {
+      "variant": "dotted",
+      "reports": 83,
+      "high_reports": 38,
+      "high_misses": 0,
+      "high_miss_rate": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.09180986954097846,
+      "passes": true,
+      "covered_reports": 10,
+      "uncovered": [
+        {
+          "report": "GO-2026-4950",
+          "labelled": 7,
+          "missing": 5
+        },
+        {
+          "report": "GO-2026-6139",
+          "labelled": 6,
+          "missing": 5
+        },
+        {
+          "report": "GO-2026-6163",
+          "labelled": 2,
+          "missing": 1
+        },
+        {
+          "report": "GO-2026-6165",
+          "labelled": 2,
+          "missing": 1
+        },
+        {
+          "report": "GO-2026-6184",
+          "labelled": 3,
+          "missing": 2
+        },
+        {
+          "report": "GO-2026-6186",
+          "labelled": 16,
+          "missing": 14
+        },
+        {
+          "report": "GO-2026-6195",
+          "labelled": 3,
+          "missing": 2
+        },
+        {
+          "report": "GO-2026-6197",
+          "labelled": 23,
+          "missing": 21
+        },
+        {
+          "report": "GO-2026-6234",
+          "labelled": 3,
+          "missing": 2
+        },
+        {
+          "report": "GO-2026-6366",
+          "labelled": 4,
+          "missing": 2
+        },
+        {
+          "report": "GO-2026-6443",
+          "labelled": 3,
+          "missing": 1
+        },
+        {
+          "report": "GO-2026-6452",
+          "labelled": 29,
+          "missing": 26
+        },
+        {
+          "report": "GO-2026-6453",
+          "labelled": 3,
+          "missing": 1
+        },
+        {
+          "report": "GO-2026-6512",
+          "labelled": 4,
+          "missing": 3
+        },
+        {
+          "report": "GO-2026-6651",
+          "labelled": 35,
+          "missing": 32
+        },
+        {
+          "report": "GO-2026-6675",
+          "labelled": 5,
+          "missing": 3
+        },
+        {
+          "report": "GO-2026-6677",
+          "labelled": 148,
+          "missing": 147
+        },
+        {
+          "report": "GO-2026-6679",
+          "labelled": 4,
+          "missing": 2
+        },
+        {
+          "report": "GO-2026-6685",
+          "labelled": 4,
+          "missing": 3
+        },
+        {
+          "report": "GO-2026-6686",
+          "labelled": 11,
+          "missing": 8
+        },
+        {
+          "report": "GO-2026-6687",
+          "labelled": 2,
+          "missing": 1
+        },
+        {
+          "report": "GO-2026-6689",
+          "labelled": 4,
+          "missing": 2
+        },
+        {
+          "report": "GO-2026-6700",
+          "labelled": 5,
+          "missing": 4
+        },
+        {
+          "report": "GO-2026-6841",
+          "labelled": 77,
+          "missing": 76
+        },
+        {
+          "report": "GO-2026-6844",
+          "labelled": 77,
+          "missing": 76
+        },
+        {
+          "report": "GO-2026-6865",
+          "labelled": 9,
+          "missing": 6
+        },
+        {
+          "report": "GO-2026-6880",
+          "labelled": 3,
+          "missing": 2
+        },
+        {
+          "report": "GO-2026-6885",
+          "labelled": 54,
+          "missing": 51
+        }
+      ],
+      "misses": [],
+      "overall": {
+        "reports": 83,
+        "true_positives": 1042,
+        "false_positives": 1679,
+        "false_negatives": 1990,
+        "precision": 0.38294744579198825,
+        "recall": 0.34366754617414247,
+        "f1": 0.36224578480792635,
+        "miss_rate": 0.012048192771084338,
+        "exact_match": 0.0963855421686747,
+        "precision_ci95": null,
+        "recall_ci95": null,
+        "f1_ci95": null
+      },
+      "safety_overall": {
+        "reports": 83,
+        "truth_symbols": 3032,
+        "truth_found": 1049,
+        "recall": 0.345976253298153,
+        "miss_rate": 0.012048192771084338
+      }
+    }
+  ]
+}

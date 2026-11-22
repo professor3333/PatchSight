@@ -117,6 +117,9 @@ class NightlyRun(BaseModel):
     gate_passed: bool | None = None
     published: bool = False
     extraction: dict[str, int] = {}  # outcome statuses, when the night extracted
+    extraction_model: str | None = None
+    prompt_tokens: int | None = None
+    completion_tokens: int | None = None
     runs: tuple[TracedRun, ...] = ()
 
     @property
@@ -146,6 +149,9 @@ def load_run(folder: Path) -> NightlyRun:
         gate_passed=None if gate is None else bool(gate.get("passed")),
         published=(folder / "release-notes.md").exists(),
         extraction=dict(summary.get("status") or {}),
+        extraction_model=summary.get("model"),
+        prompt_tokens=summary.get("prompt_tokens"),
+        completion_tokens=summary.get("completion_tokens"),
         runs=tuple(load_traces(folder / "traces")),
     )  # fmt: skip
 

@@ -113,3 +113,45 @@ def test_traced_runs_are_listed_with_where_they_ran(tmp_path: Path) -> None:
     empty = operations.OperationsReport(generated_at=NOW, sessions=(), weeks=(), hosted=(),
                                         database=None)  # fmt: skip
     assert "No traced run yet." in operations.render_markdown(empty)
+
+
+def test_work_is_priced_as_its_hosted_model_at_published_rates() -> None:
+    from datetime import date
+
+    from patchsight.pipeline.nightly_runs import NightlyRun
+    from patchsight.pipeline.sessions import Session
+
+    pricing = operations.Pricing(
+        source="https://example.org/prices", retrieved=date(2026, 11, 22),
+        models={"qwen/q": operations.Price(input=0.80, output=4.00)},
+        hosted_equivalent={"repo:q.gguf": "qwen/q"},
+    )  # fmt: skip
+    when = datetime(2026, 11, 21, tzinfo=UTC)
+
+    def session(mode: str, prompt: int | None, completion: int | None) -> Session:
+        return Session(name="s", mode=mode, part="1/4", model="repo:q.gguf", code_commit="c",
+                       gpus=(), first_answer=when, last_answer=when, hours=1.0, calls=10,
+                       tokens=0, seconds_per_call_p50=1.0, seconds_per_call_p90=1.0,
+                       status={"ok": 9, "dead_letter": 1}, prompt_tokens=prompt,
+                       completion_tokens=completion)  # fmt: skip
+
+    night = NightlyRun(run_id=1, event="schedule", conclusion="success", started=when,
+                       extraction={"ok": 2}, extraction_model="qwen/q",
+                       prompt_tokens=500_000, completion_tokens=50_000)  # fmt: skip
+    found = operations.costs(
+        [session("pypi", 1_000_000, 100_000), session("pypi", 1_000_000, 100_000),
+         session("dunlap", None, None)],  # no split of its tokens: not priced
+        [night, night.model_copy(update={"extraction_model": "unpriced/model"})],
+        pricing,
+    )  # fmt: skip
+    assert [(c.what, c.priced_as, c.usd, c.units, c.unit) for c in found] == [
+        ("PyPI backfill (2 Kaggle sessions)", "qwen/q", 2.40, 20, "vulnerability"),
+        ("Nightly extraction (1 nights)", "qwen/q", 0.60, 1, "night"),
+    ]  # 2M input at $0.80 and 0.2M output at $4.00; 0.5M and 0.05M
+    report = operations.OperationsReport(
+        generated_at=when, sessions=(), weeks=(), hosted=(), database=None,
+        pricing_source=pricing.source, pricing_retrieved=pricing.retrieved, costs=tuple(found),
+    )  # fmt: skip
+    text = operations.render_markdown(report)
+    assert "| PyPI backfill (2 Kaggle sessions) | `qwen/q` | 2,000,000 | 200,000 | $2.40 |" in text
+    assert "$0.1200 a vulnerability" in text

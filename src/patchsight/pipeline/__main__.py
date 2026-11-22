@@ -6,6 +6,7 @@ import os
 import subprocess
 import tarfile
 import time
+import tomllib
 import zipfile
 from collections import Counter
 from collections.abc import Iterator
@@ -1685,6 +1686,9 @@ def operations_report_command(
     ),
     config: Annotated[Path, typer.Option(help="LLM config.")] = Path("configs/llm.toml"),
     cache: Annotated[Path, typer.Option(help="Cache root.")] = Path(".cache"),
+    pricing: Annotated[Path, typer.Option(help="Published prices, for the cost at paid rates.")] = (
+        Path("configs/pricing.toml")
+    ),
 ) -> None:
     """The operations dashboard (#60): Kaggle sessions, quota use and the database, offline."""
     from patchsight.pipeline import nightly_runs, operations, sessions
@@ -1702,12 +1706,20 @@ def operations_report_command(
         hosted.append(
             operations.HostedModel(model=model.model, tokens_per_day=cap, days=tuple(days))
         )
+    prices = (
+        operations.Pricing.model_validate(tomllib.loads((root / pricing).read_text("utf-8")))
+        if (root / pricing).exists()
+        else None
+    )
+    nights = tuple(nightly_runs.load_runs(root))
     report = operations.OperationsReport(
         generated_at=datetime.now(UTC).replace(microsecond=0),
         sessions=tuple(found), weeks=tuple(sessions.gpu_weeks(found)), hosted=tuple(hosted),
         database=None if database is None else operations.database_view(database),
         local_runs=tuple(sessions.load_traces(root / TRACE_DIR)),
-        nightly=tuple(nightly_runs.load_runs(root)),
+        nightly=nights, pricing_source=prices.source if prices else None,
+        pricing_retrieved=prices.retrieved if prices else None,
+        costs=tuple(operations.costs(found, nights, prices)) if prices else (),
     )  # fmt: skip
     target = root / "docs" / "reports" / "operations"
     target.with_name("operations.md").write_text(operations.render_markdown(report), "utf-8")

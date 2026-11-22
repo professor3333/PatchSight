@@ -6,7 +6,7 @@ ledgers, and a published database. Nothing here calls a model or the network.
 
 import sqlite3
 from collections.abc import Sequence
-from datetime import datetime
+from datetime import date, datetime
 from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict
@@ -62,6 +62,84 @@ def database_view(path: Path) -> DatabaseView:
     )  # fmt: skip
 
 
+class Price(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
+    input: float  # US dollars per million tokens
+    output: float
+
+
+class Pricing(BaseModel):
+    """A provider's published prices (``configs/pricing.toml``), with where and when they were
+    read, and the hosted model each self-hosted one is priced as."""
+
+    model_config = ConfigDict(frozen=True)
+
+    source: str
+    retrieved: date
+    models: dict[str, Price]
+    hosted_equivalent: dict[str, str] = {}
+
+    def priced_as(self, model: str) -> str | None:
+        name = self.hosted_equivalent.get(model, model)
+        return name if name in self.models else None
+
+
+class Cost(BaseModel):
+    """What one body of model work would cost at the paid rates."""
+
+    model_config = ConfigDict(frozen=True)
+
+    what: str
+    priced_as: str
+    prompt_tokens: int
+    completion_tokens: int
+    usd: float
+    units: int  # vulnerabilities reached, or nights
+    unit: str
+
+
+def costs(
+    sessions: Sequence[Session], nightly: Sequence[NightlyRun], pricing: Pricing
+) -> list[Cost]:
+    """The PyPI backfill (the Kaggle sessions in pypi mode) and the nightly extractions, each
+    priced as its hosted model. Only work whose input and output tokens are both known."""
+
+    def cost(what: str, model: str, prompt: int, completion: int, units: int, unit: str) -> Cost:
+        name = pricing.priced_as(model) or model  # callers keep only priced models
+        price = pricing.models[name]
+        usd = (prompt * price.input + completion * price.output) / 1_000_000
+        return Cost(what=what, priced_as=name, prompt_tokens=prompt, completion_tokens=completion,
+                    usd=round(usd, 2), units=units, unit=unit)  # fmt: skip
+
+    found = []
+    backfill = [
+        s for s in sessions
+        if s.mode == "pypi" and s.prompt_tokens is not None and s.completion_tokens is not None
+        and pricing.priced_as(s.model)
+    ]  # fmt: skip
+    for model in sorted({s.model for s in backfill}):
+        mine = [s for s in backfill if s.model == model]
+        found.append(cost(
+            f"PyPI backfill ({len(mine)} Kaggle sessions)", model,
+            sum(s.prompt_tokens or 0 for s in mine), sum(s.completion_tokens or 0 for s in mine),
+            sum(s.answered for s in mine), "vulnerability",
+        ))  # fmt: skip
+    nights = [
+        n for n in nightly
+        if n.extraction_model and n.prompt_tokens is not None and n.completion_tokens is not None
+        and pricing.priced_as(n.extraction_model)
+    ]  # fmt: skip
+    for model in sorted({n.extraction_model or "" for n in nights}):
+        ran = [n for n in nights if n.extraction_model == model]
+        found.append(cost(
+            f"Nightly extraction ({len(ran)} nights)", model,
+            sum(n.prompt_tokens or 0 for n in ran), sum(n.completion_tokens or 0 for n in ran),
+            len(ran), "night",
+        ))  # fmt: skip
+    return found
+
+
 class OperationsReport(BaseModel):
     model_config = ConfigDict(frozen=True)
 
@@ -72,6 +150,9 @@ class OperationsReport(BaseModel):
     database: DatabaseView | None
     local_runs: tuple[TracedRun, ...] = ()  # traces of runs on the machine that wrote this
     nightly: tuple[NightlyRun, ...] = ()
+    pricing_source: str | None = None
+    pricing_retrieved: date | None = None
+    costs: tuple[Cost, ...] = ()
 
 
 def _n(value: int | None) -> str:
@@ -230,6 +311,25 @@ def render_markdown(report: OperationsReport) -> str:
                 f"| {d.day} | {d.calls:,} | {d.tokens:,} | "
                 f"{'—' if d.share_of_cap is None else f'{d.share_of_cap:.0%}'} |"
                 for d in hosted.days
+            ),
+            "",
+        ]
+    if r.costs:
+        lines += [
+            "## Cost at paid rates",
+            "",
+            "What the model work would cost at the provider's published on-demand prices "
+            f"([{r.pricing_source}]({r.pricing_source}), read {r.pricing_retrieved}). PatchSight "
+            "runs it on Kaggle's free GPUs and Groq's free tier; the Kaggle runs are priced as "
+            "the hosted model they stand for. A scan calls no model, so it costs nothing.",
+            "",
+            "| Work | Priced as | Input tokens | Output tokens | Cost | Per unit |",
+            "|---|---|---:|---:|---:|---:|",
+            *(
+                f"| {c.what} | `{c.priced_as}` | {c.prompt_tokens:,} | {c.completion_tokens:,} | "
+                f"${c.usd:,.2f} | ${c.usd / c.units:,.4f} a {c.unit} |"
+                for c in r.costs
+                if c.units
             ),
             "",
         ]

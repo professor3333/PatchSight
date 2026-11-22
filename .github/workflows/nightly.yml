@@ -63,7 +63,6 @@ jobs:
       - name: Check that tonight's release is new
         # A second run on the same UTC date publishes nothing, so it spends no model quota.
         id: release
-        if: steps.changes.outputs.changed == 'true'
         run: |
           version=$(uv run python -c "import sqlite3; print(dict(sqlite3.connect('data/build/nightly.sqlite').execute('SELECT key, value FROM meta'))['db_version'])")
           if gh release view "db-$version" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
@@ -75,11 +74,10 @@ jobs:
 
       - name: Extract the night's changes and the backlog
         # ADR 0013: at most 25 a night, the night's changes first, then vulnerabilities still
-        # waiting for model picks; skipped without the GROQ_API_KEY secret.
+        # waiting for model picks, also on a night with no change in OSV; skipped without the
+        # GROQ_API_KEY secret.
         id: extract
-        if: >
-          steps.changes.outputs.changed == 'true' && steps.release.outputs.new == 'true'
-          && env.HAS_GROQ == 'true'
+        if: steps.release.outputs.new == 'true' && env.HAS_GROQ == 'true'
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         run: |
@@ -98,6 +96,7 @@ jobs:
           echo "extracted=true" >> "$GITHUB_OUTPUT"
 
       - name: Merge the picks into the release
+        id: merge
         if: steps.extract.outputs.extracted == 'true'
         run: |
           version=$(uv run python -c "import sqlite3; print(dict(sqlite3.connect('data/build/nightly.sqlite').execute('SELECT key, value FROM meta'))['db_version'])")
@@ -105,22 +104,26 @@ jobs:
             --version "$version" --llm data/build/nightly-extract-extractor.jsonl \
             --out data/build/nightly-merged
           mv data/build/nightly-merged.sqlite data/build/nightly.sqlite
+          # New picks are a change worth publishing, even on a night with none in OSV.
+          picks=$(uv run python -c "import json; r = json.load(open('data/build/nightly-merged-merge.json')); print(str(r['after']['records'] > r['before']['records']).lower())")
+          echo "picks=$picks" >> "$GITHUB_OUTPUT"
+          echo "new picks merged: $picks"
 
       - name: Read import names from wheels
-        if: steps.changes.outputs.changed == 'true'
+        if: steps.changes.outputs.changed == 'true' || steps.merge.outputs.picks == 'true'
         run: >
           uv run python -m patchsight.pipeline import-names data/build/nightly.sqlite
           --previous "$RUNNER_TEMP/previous/patchsight.sqlite"
 
       - name: Release gate
-        if: steps.changes.outputs.changed == 'true'
+        if: steps.changes.outputs.changed == 'true' || steps.merge.outputs.picks == 'true'
         run: >
           uv run python -m patchsight.pipeline gate-db data/build/nightly.sqlite
           --previous "$RUNNER_TEMP/previous/patchsight.sqlite" --out data/build/gate
 
       - name: Package and publish the release
         id: publish
-        if: steps.changes.outputs.changed == 'true'
+        if: steps.changes.outputs.changed == 'true' || steps.merge.outputs.picks == 'true'
         run: |
           uv run python -m patchsight.pipeline package-db data/build/nightly.sqlite
           version=$(uv run python -c "import json; print(json.load(open('releases/latest.json'))['db_version'])")

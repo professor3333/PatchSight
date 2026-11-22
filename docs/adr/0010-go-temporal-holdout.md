@@ -1,6 +1,6 @@
 # ADR 0010: The Go temporal holdout, and its declared evaluation
 
-- **Status:** accepted, before any model has seen the holdout
+- **Status:** accepted, before any model had seen the holdout; evaluated once on 2026-11-22 (result below)
 - **Date:** 2026-11-19
 
 ## Context
@@ -63,3 +63,20 @@ The holdout is small. If about half the reports are high confidence, about 40 ca
   3. `holdout-report --primary <Qwen tag> --secondary <gpt-oss tag>` writes `docs/reports/holdout-go-holdout-v1-<primary>-vs-<secondary>.md`: the criterion with its interval, every miss by cause (patch ceiling or model), coverage, and ChangedFuncs alongside.
 - **The holdout is never used to choose anything.** Later rules need a later holdout: `go-holdout-v2`, published after this one was frozen.
 - **The cutoff is a release date, not a measured knowledge cutoff.** If either model's provider publishes an earlier knowledge cutoff, this holdout stays valid; a later one would not exist, because weights cannot know data published after their release.
+
+## Result, 2026-11-22
+
+Run once, as declared: Kaggle Qwen (PatchSight `f9e4615`, 81 of 83 answered, 2 dead letters) with gpt-oss-120b on Groq as the second opinion ([report](../reports/holdout-go-holdout-v1-extract-v1-qwen3.8-27b-q4km-vs-extract-v1-gpt-oss-120b.md)).
+
+| Entry points | High-confidence reports | Misses | Miss rate (Wilson 95%) | Covered | Not covered |
+|---|---:|---:|---|---:|---:|
+| exact (rule 1) | 36 of 83 | 0 | 0.0% (0.0% to 9.6%) | 10 | 26 |
+| dotted (rule 2) | 38 of 83 | 0 | 0.0% (0.0% to 9.2%) | 10 | 28 |
+
+- **Both rules pass the ADR 0008 criterion,** with no miss to analyse. The interval is wide, as expected: zero misses in 36 bound the rate below 9.6%, not below 2%.
+- **Coverage is poor.** In 26 of the 36 high-confidence reports, the record leaves out at least one labelled exported function. A high-confidence record would let the scanner say "imported, not called" for code that calls only such a function. That would be a wrong "not called", the error this project exists to avoid.
+- **Next to ChangedFuncs,** on the same reports: P 0.385, R 0.352 for ChangedFuncs; P 0.383, R 0.344 for the tiers. The tiers lose recall because high-confidence records keep only the agreed symbols.
+
+**What it decides.** As declared, a pass is necessary but not enough. Together with the coverage result and the injection suite (8 of 15 wrong high-confidence records when the advisory names a decoy), it does not support lifting [ADR 0008](0008-withhold-high-confidence.md), which stands. A rule that lifted it would have to cover the exported callers too, and that needs a later holdout (`go-holdout-v2`) to evaluate.
+
+**A scoring fix before this was written.** The first output of `holdout-report` took ChangedFuncs and the low-confidence fallback from the candidates each prompt kept, not from every changed function, so on the 25 cut prompts it under-counted both. It now takes every changed function from the retrieval bundle and checks them against the committed ChangedFuncs baseline before scoring. The criterion and coverage were the same in both outputs: a cut prompt is never high confidence, so every high-confidence record already had all its candidates.

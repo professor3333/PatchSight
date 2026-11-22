@@ -32,6 +32,10 @@ Candidates:
 - adding the unchanged callers and callees of changed definitions, aimed at the patch ceiling.
 - deciding "not called" against every changed definition, not only the agreed ones, so a decoy the models agree on cannot remove the real symbol from the check.
 
+## Evaluated on the Go holdout, 2026-11-22
+
+The frozen rule, and the same with dotted entry points, passed the criterion above on the Go temporal holdout with no high-confidence miss (0 of 36 and 0 of 38). But only 10 of the 36 high-confidence records cover every labelled exported function ([ADR 0010](0010-go-temporal-holdout.md#result-2026-11-22)), and the rule still fails the injection suite. **The tier stays withheld.** A lifting rule must also cover the exported callers, measured as ADR 0010 measures coverage, on a holdout it was not chosen on.
+
 ## Consequences
 
 - **The scanner gives CALLED, NOT IMPORTED or UNKNOWN** until this is lifted, never IMPORTED, NOT CALLED. Fewer alerts can be deprioritised, but none is wrongly lowered.

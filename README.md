@@ -80,6 +80,8 @@ On the Go benchmark of [Dunlap et al. (DIMVA 2024)](https://www.enck.org/pubs/du
 
 <sub>Scan time includes the OSV query, on an 8-core arm64 Mac with the database already downloaded. Since every record is low confidence for now, most alerts are UNKNOWN: the report breaks down why.</sub>
 
+**What the model work would cost** at Groq's published on-demand prices (read 2026-11-22): the whole PyPI backfill, 8.6 million input and 1.3 million output tokens, **$12.16**, or $0.0035 a vulnerability. It ran on Kaggle's free GPUs, and a scan calls no model at all ([operations report](docs/reports/operations.md#cost-at-paid-rates)).
+
 ## Quick start
 
 ```bash

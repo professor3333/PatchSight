@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-22T02:36:17Z",
+  "generated_at": "2026-11-22T03:17:45Z",
   "sessions": [
     {
       "name": "patchsight-kaggle-run",
@@ -664,6 +664,26 @@
       "latency_p50": null,
       "latency_p90": null,
       "completion_tokens_per_second": null
+    },
+    {
+      "trace": "dunlap-extract-dunlap-v1-all-kaggle_extractor-20261122T030341Z.jsonl",
+      "command": "dunlap-extract",
+      "role": "kaggle_extractor",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "started": "2026-11-22T03:03:41.054000Z",
+      "outcome": "complete",
+      "seconds": 6.7,
+      "calls": 33,
+      "network_calls": 0,
+      "cache_hits": 33,
+      "rejections": 0,
+      "extractions": {
+        "dead_letter": 1,
+        "ok": 31
+      },
+      "latency_p50": null,
+      "latency_p90": null,
+      "completion_tokens_per_second": null
     }
   ],
   "nightly": [
@@ -683,6 +703,9 @@
       "gate_passed": null,
       "published": false,
       "extraction": {},
+      "extraction_model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
       "runs": []
     },
     {
@@ -701,6 +724,9 @@
       "gate_passed": true,
       "published": true,
       "extraction": {},
+      "extraction_model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
       "runs": []
     },
     {
@@ -719,6 +745,9 @@
       "gate_passed": null,
       "published": false,
       "extraction": {},
+      "extraction_model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
       "runs": []
     },
     {
@@ -737,6 +766,9 @@
       "gate_passed": true,
       "published": false,
       "extraction": {},
+      "extraction_model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
       "runs": []
     },
     {
@@ -755,6 +787,9 @@
       "gate_passed": true,
       "published": true,
       "extraction": {},
+      "extraction_model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
       "runs": []
     },
     {
@@ -773,6 +808,9 @@
       "gate_passed": true,
       "published": true,
       "extraction": {},
+      "extraction_model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
       "runs": []
     },
     {
@@ -791,6 +829,9 @@
       "gate_passed": true,
       "published": true,
       "extraction": {},
+      "extraction_model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
       "runs": []
     },
     {
@@ -809,7 +850,23 @@
       "gate_passed": null,
       "published": false,
       "extraction": {},
+      "extraction_model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
       "runs": []
+    }
+  ],
+  "pricing_source": "https://console.groq.com/docs/models",
+  "pricing_retrieved": "2026-11-22",
+  "costs": [
+    {
+      "what": "PyPI backfill (4 Kaggle sessions)",
+      "priced_as": "qwen/qwen3.8-27b",
+      "prompt_tokens": 8617325,
+      "completion_tokens": 1315924,
+      "usd": 12.16,
+      "units": 3505,
+      "unit": "vulnerability"
     }
   ]
 }

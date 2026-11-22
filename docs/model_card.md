@@ -88,6 +88,7 @@ When a fix's candidates do not fit the 4,600-token budget, the prompt is cut, an
 
 - **Benchmark:** about 31 seconds per report on two T4 GPUs.
 - **PyPI backfill:** four Kaggle sessions, one shard each: 3,531 calls in 38.25 hours of answering (9.06 to 9.76 hours a session), a median of 30 seconds a call, with prompts averaging about 2,400 input and 370 output tokens. 3,505 vulnerabilities reached the model: 3,480 got a valid answer and 25 were dead letters (0.7%), with 8 provider rejections in all. Kaggle's quota of 30 GPU hours a week ran out after shards 1 to 3 and was full again for shard 4 three days later ([operations report](reports/operations.md)).
+- **At paid rates:** the backfill's 8.6 million input and 1.3 million output tokens would cost $12.16 at Groq's published prices for the same model, read 2026-11-22 (`configs/pricing.toml`), or $0.0035 a vulnerability.
 - **Scan time:** 0 LLM tokens.
 
 ### Quantisation

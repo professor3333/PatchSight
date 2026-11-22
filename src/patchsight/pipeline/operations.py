@@ -133,7 +133,7 @@ def costs(
     for model in sorted({n.extraction_model or "" for n in nights}):
         ran = [n for n in nights if n.extraction_model == model]
         found.append(cost(
-            f"Nightly extraction ({len(ran)} nights)", model,
+            f"Nightly extraction ({len(ran)} night{'' if len(ran) == 1 else 's'})", model,
             sum(n.prompt_tokens or 0 for n in ran), sum(n.completion_tokens or 0 for n in ran),
             len(ran), "night",
         ))  # fmt: skip

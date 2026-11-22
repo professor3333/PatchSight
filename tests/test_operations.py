@@ -146,7 +146,7 @@ def test_work_is_priced_as_its_hosted_model_at_published_rates() -> None:
     )  # fmt: skip
     assert [(c.what, c.priced_as, c.usd, c.units, c.unit) for c in found] == [
         ("PyPI backfill (2 Kaggle sessions)", "qwen/q", 2.40, 20, "vulnerability"),
-        ("Nightly extraction (1 nights)", "qwen/q", 0.60, 1, "night"),
+        ("Nightly extraction (1 night)", "qwen/q", 0.60, 1, "night"),
     ]  # 2M input at $0.80 and 0.2M output at $4.00; 0.5M and 0.05M
     report = operations.OperationsReport(
         generated_at=when, sessions=(), weeks=(), hosted=(), database=None,

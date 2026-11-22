@@ -48,4 +48,5 @@ It builds no records until it meets both targets. A wrong commit becomes a recor
 
 - **The proposal's "native tool calling" is not used.** The loop is still our own code with four tools and a step cap.
 - **Commit search has its own rate limit** on GitHub (30 requests a minute). The client waits it out.
+- **The Kaggle evaluation fits a session or resumes.** The notebook gives `locator-agent-eval` the session's remaining time (`--max-minutes`); no case starts after it, the results are always packaged, and a run that did not finish writes no report. Adding its zip as input to a second session replays the finished cases from the cache and continues.
 - **The prompt is versioned and cached like the extractor's.** Changing it, or the tools' output format, misses the cache and is a new evaluated run.

@@ -928,9 +928,24 @@ def holdout_report_command(
     for tag in (primary, secondary):
         run = replay.load(root / go_holdout.FROZEN.parent / f"extraction-{tag}.json")
         runs[tag] = (run.model, run)
-    changed = {
-        r.id: {c.name for c in r.candidates} for r in runs[primary][1].reports if r.id in labels
-    }
+    # Every function each fix changed, as holdout-baseline maps it: from the retrieval bundle,
+    # not the replay bundle, whose candidates are only those a cut prompt kept. Checked
+    # against the committed ChangedFuncs baseline before anything is scored.
+    from patchsight.pipeline.benchmarks import retrieval
+
+    mapped = retrieval.Bundle.model_validate_json(
+        (root / RETRIEVAL[go_holdout.NAME][0]).read_text("utf-8")
+    )
+    changed = {c.report: {i.name for i in c.items} for c in mapped.cases if c.report in labels}
+    baseline = score(changed, {r: labels[r] for r in changed})
+    committed = SetScores.model_validate_json(
+        (reports_dir / "changedfuncs-go-holdout-v1.json").read_text("utf-8")
+    )
+    counts = ("true_positives", "false_positives", "false_negatives", "reports")
+    if any(getattr(baseline, c) != getattr(committed, c) for c in counts):
+        raise typer.BadParameter(
+            "the changed functions do not reproduce docs/reports/changedfuncs-go-holdout-v1.json"
+        )
     results = []
     for variant, suffix in (("exact", ""), ("dotted", "-dotted")):
         names = {t: f"extraction-{go_holdout.NAME}-{t}{suffix}" for t in (primary, secondary)}
@@ -964,7 +979,7 @@ def holdout_report_command(
         holdout=go_holdout.NAME, holdout_sha256=digest,
         primary=primary, primary_model=runs[primary][0],
         secondary=secondary, secondary_model=runs[secondary][0],
-        changedfuncs=score(changed, {r: labels[r] for r in changed}),
+        changedfuncs=baseline,
         changedfuncs_safety=safety(changed, {r: labels[r] for r in changed}),
         results=tuple(results),
     )  # fmt: skip

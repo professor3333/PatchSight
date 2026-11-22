@@ -119,11 +119,62 @@ def test_the_command_scores_both_runs_from_their_committed_files(tmp_path: Path)
         )
         outcomes = {"outcomes": [{"advisory_id": "GO-2026-0001", "entry_points": []}]}
         (reports / f"extraction-go-holdout-v1-{tag}.json").write_text(json.dumps(outcomes))
-    result = CliRunner().invoke(
-        app, ["holdout-report", "--primary", "one", "--secondary", "two", "--root", str(tmp_path)]
+    # Every changed function, as holdout-baseline maps it, comes from the retrieval bundle:
+    # "dropped" is one a cut prompt would not have shown, and ChangedFuncs still counts it.
+    from patchsight.pipeline.benchmarks import retrieval
+
+    def item(name: str, vulnerable: bool = False) -> retrieval.Item:
+        return retrieval.Item(name=name, path="p.go", tokens=10, vulnerable=vulnerable,
+                              bm25_score=0.0, named=False)  # fmt: skip
+
+    mapped = retrieval.Bundle(
+        benchmark=go_holdout.NAME, split_sha256="", prompt_version="extract-v1", tokenizer="t",
+        budget_tokens=4600, max_candidates=None,
+        cases=(retrieval.Case(report="GO-2026-0001", split="holdout", base_tokens=1,
+                              items=(item("Parse", True), item("helper"), item("dropped")),
+                              bm25=(0, 1, 2)),),
+    )  # fmt: skip
+    (tmp_path / "benchmarks" / "go-holdout-v1" / "retrieval.json").write_text(
+        mapped.model_dump_json()
     )
+    baseline = reports / "changedfuncs-go-holdout-v1.json"
+    baseline.write_text(score({"GO-2026-0001": {"helper"}}, {"GO-2026-0001": {"Parse"}})
+                        .model_dump_json())  # fmt: skip
+    command = ["holdout-report", "--primary", "one", "--secondary", "two", "--root", str(tmp_path)]
+    refused = CliRunner().invoke(app, command)
+    assert refused.exit_code == 2  # the baseline on file does not match the mapped functions
+    assert "do not reproduce" in refused.output
+    every = {"Parse", "helper", "dropped"}
+    baseline.write_text(score({"GO-2026-0001": every}, {"GO-2026-0001": {"Parse"}})
+                        .model_dump_json())  # fmt: skip
+    result = CliRunner().invoke(app, command)
     assert result.exit_code == 0, result.output
     assert "exact: 1 of 1 high, 0 misses (0.0%), passes; covered 1 of 1" in result.output
     assert "dotted variant not computed" in result.output
     text = (reports / "holdout-go-holdout-v1-one-vs-two.md").read_text()
     assert "| exact | 1 of 1 | 0 | 0.0% (" in text
+    assert "| ChangedFuncs | 0.333 | 1.000 |" in text  # all three changed functions
+
+
+def test_the_committed_holdout_report_regenerates_exactly(tmp_path: Path) -> None:
+    """CI recomputes the declared evaluation from the committed bundles and reports alone."""
+    from typer.testing import CliRunner
+
+    from patchsight.pipeline.__main__ import app
+
+    repo = Path(__file__).resolve().parents[1]
+    name = "holdout-go-holdout-v1-extract-v1-qwen3.8-27b-q4km-vs-extract-v1-gpt-oss-120b"
+    (tmp_path / "benchmarks").symlink_to(repo / "benchmarks")
+    reports = tmp_path / "docs" / "reports"
+    reports.mkdir(parents=True)
+    for source in (repo / "docs" / "reports").glob("*go-holdout-v1*.json"):
+        if not source.name.startswith("holdout-"):
+            (reports / source.name).symlink_to(source)
+    result = CliRunner().invoke(app, [
+        "holdout-report", "--primary", "extract-v1-qwen3.8-27b-q4km",
+        "--secondary", "extract-v1-gpt-oss-120b", "--root", str(tmp_path),
+    ])  # fmt: skip
+    assert result.exit_code == 0, result.output
+    for suffix in (".md", ".json"):
+        produced = (reports / f"{name}{suffix}").read_text()
+        assert produced == (repo / "docs" / "reports" / f"{name}{suffix}").read_text()

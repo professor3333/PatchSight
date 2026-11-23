@@ -379,7 +379,7 @@ The Dunlap test and all splits are reported for each order, for completeness onl
 
 - The cap answers 23 of the 25 backfill prompts that failed: their answers had overrun the output limit. No record loses its picks, and the 25 picked by the nightly Groq extractor are kept as they were.
 - **This corrects the Dunlap section's first reading.** Symbols do not move (every record is low confidence and keeps every changed definition), but entry points do, and the scanner matches them. Measured with the scanner's own matching, 6 records lose a name nothing else in them matches, so a reference spelled that way would go from CALLED to UNKNOWN. In 24 records, 29 names are newly matched.
-- The gains show up in scans. In the fixtures, `keras-load-model` goes from UNKNOWN to CALLED (new entry point `keras.src.saving.saving_lib.load_model`). On the panel, 7 alerts in 7 projects become CALLED and none go the other way. In the three checked (saleor, ctfd, mealie) it is one Pillow advisory, GHSA-phj9-mv4w-65pm, newly naming `PIL.Image.open`. Coverage (2,679 of 3,545 alerts with data) and scan times do not change.
+- In the fixtures, `keras-load-model` goes from UNKNOWN to CALLED (new entry point `keras.src.saving.saving_lib.load_model`), as its label expects. On the panel, 7 alerts in 7 projects become CALLED and none go the other way, but none of the 7 is a real gain. **Corrected 2026-11-23:** this entry first said the batch newly names `PIL.Image.open`. All 7 are one Pillow advisory, GHSA-phj9-mv4w-65pm, whose record gains the entry point `PIL.GdImageFile.open`. The projects call `PIL.Image.open`, and the scanner's re-export rule (same first and last name parts) matches the one to the other. Pillow does not register its GD reader with `PIL.Image.open`, so those calls never reach the vulnerable `GdImageFile._open`: the 7 are false matches. They err towards noise, as rule 3 allows, but they are no evidence for the change. Coverage (2,679 of 3,545 alerts with data) and scan times do not change.
 
 **Review.** The owner marked the 20 sampled records against their advisories and fix commits ([verdicts](reports/shadow-switch-on.md#review-sample-20-of-683-seed-20261121)): 9 better, 9 worse, 2 same. By the part of the batch that changed each record:
 
@@ -394,6 +394,21 @@ The Dunlap test and all splits are reported for each order, for completeness onl
 - The output cap and dotted entry points without the order change 82 PyPI and 3 Dunlap prompts (`topup-plan`); everything else would replay from the cache.
 
 **Decision, 2026-11-23 (owner).** Smallest-first ordering is not promoted. The rest of the batch, the output cap and dotted entry points with BM25 order kept (`configs/experiments/llm-cap-dotted.toml`), goes back through shadow-then-promote on its own: a top-up of the 82 PyPI and 3 Dunlap prompts it changes, a new shadow and a new review.
+
+### Dotted entry points alone
+
+The Kaggle GPU quota ran out before the cap's top-up could run. Dotted entry points change validation and no prompt (`topup-plan`: 0 of 3,505 PyPI and 0 of 280 Dunlap prompts), so they go through shadow-then-promote first, on their own (`configs/experiments/llm-dotted.toml`), with no model call. The shadow is built on `db-2026.11.23` ([diff](reports/shadow-dotted.md)).
+
+| | Production `db-2026.11.23` | Shadow |
+|---|---|---|
+| Records changed | | 32, entry points only; picks identical |
+| Names a scan matches: lost / gained | | 0 / 22 in 20 records |
+| Fixtures: false suppressions; as expected | 0; 22 of 58 ([report](reports/reachability-fixtures-db-2026.11.23.md)) | 0; 23 of 58 ([report](reports/reachability-fixtures-db-2026.11.23-shadow-dotted.md)) |
+| Panel, 3,545 alerts: CALLED | 186 ([report](reports/panel-db-2026.11.23.md)) | 193 ([report](reports/panel-db-2026.11.23-shadow-dotted.md)) |
+
+- The full batch's scan changes came from this part alone: the `keras-load-model` fixture, and the 7 panel alerts, all of them the false Pillow match described above.
+- One prompt, GHSA-4v28-j6q3-5m4r, has never been answered under any configuration (shard 1 ran before BM25 ties were made deterministic); its production record stays as it is.
+- The 50 records the nightly Groq extractor wrote are carried over unchanged. The nightly keeps no model answers, so they cannot be re-validated without calling Groq again; they take dotted names when next extracted.
 
 ## Failure analysis
 

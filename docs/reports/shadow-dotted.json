@@ -1,0 +1,800 @@
+{
+  "production": "2026.11.23",
+  "shadow": "2026.11.23-shadow-dotted",
+  "records_before": 3809,
+  "records_after": 3809,
+  "unchanged": 3777,
+  "kinds": {
+    "changed": 32
+  },
+  "fields": {
+    "entry_points": 32
+  },
+  "changes": [
+    {
+      "vulnerability": "GHSA-26c4-7vv6-867j",
+      "package": "keras",
+      "kind": "changed",
+      "fields": [
+        "entry_points"
+      ],
+      "before": {},
+      "after": {},
+      "added": {
+        "entry_points": [
+          "keras.src.saving.saving_lib.load_model"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [
+        "keras.src.saving.saving_lib.load_model"
+      ],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-26c4-7vv6-867j",
+        "https://github.com/keras-team/keras/commit/8f987f11bf7512f0df4774a8f1557bba07dc2b49",
+        "https://github.com/keras-team/keras/commit/d5a88bdb137c0d3039b8f4bbbe8c7099925cc10c"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-2cp2-2r3c-7p7r",
+      "package": "hydra-core",
+      "kind": "changed",
+      "fields": [
+        "entry_points"
+      ],
+      "before": {},
+      "after": {},
+      "added": {
+        "entry_points": [
+          "hydra._internal.instantiate._instantiate2.instantiate"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [
+        "hydra._internal.instantiate._instantiate2.instantiate"
+      ],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-2cp2-2r3c-7p7r",
+        "https://github.com/hydra-ecosystem/hydra/commit/7faad0dcedfb4c0a364aa1067c0080fd6fdf8dca"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-375g-39jq-vq7m",
+      "package": "cbor2",
+      "kind": "changed",
+      "fields": [
+        "entry_points"
+      ],
+      "before": {},
+      "after": {},
+      "added": {
+        "entry_points": [
+          "cbor2._decoder.loads"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [
+        "cbor2._decoder.loads"
+      ],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-375g-39jq-vq7m",
+        "https://github.com/agronholm/cbor2/commit/387755eacf0be35591a478d3c67fe10618a6d542"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-4cfr-gjfx-fj3x",
+      "package": "cobbler",
+      "kind": "changed",
+      "fields": [
+        "entry_points"
+      ],
+      "before": {},
+      "after": {},
+      "added": {
+        "entry_points": [
+          "cobbler.remote.CobblerXMLRPCInterface.upload_log_data"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-4cfr-gjfx-fj3x",
+        "https://github.com/cobbler/cobbler/commit/d8f60bbf14a838c8c8a1dba98086b223e35fe70a"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-57qw-cc2g-pv5p",
+      "package": "lxml",
+      "kind": "changed",
+      "fields": [
+        "entry_points"
+      ],
+      "before": {},
+      "after": {},
+      "added": {
+        "entry_points": [
+          "lxml.html.clean.Cleaner.clean_html"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [
+        "lxml.html.clean.Cleaner.clean_html"
+      ],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-57qw-cc2g-pv5p",
+        "https://github.com/lxml/lxml/commit/3f3082e0a67851cde26a48da3d1f4b75d8aa07ec",
+        "https://github.com/lxml/lxml/commit/e86b294f1f81b899a59925123560ff924a72f1cc"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-5pwr-322w-8jr4",
+      "package": "pyopenssl",
+      "kind": "changed",
+      "fields": [
+        "entry_points"
+      ],
+      "before": {},
+      "after": {},
+      "added": {
+        "entry_points": [
+          "OpenSSL.SSL.Context.set_cookie_generate_callback"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [
+        "OpenSSL.SSL.Context.set_cookie_generate_callback"
+      ],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-5pwr-322w-8jr4",
+        "https://github.com/pyca/pyopenssl/commit/57f09bb4bb051d3bc2a1abd36e9525313d5cd408"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-6hwm-xvph-95vm",
+      "package": "nltk",
+      "kind": "changed",
+      "fields": [
+        "entry_points"
+      ],
+      "before": {},
+      "after": {},
+      "added": {
+        "entry_points": [
+          "nltk.parse.dependencygraph.dot2img",
+          "nltk.translate.api.AlignedSent._repr_svg_"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-6hwm-xvph-95vm",
+        "https://github.com/nltk/nltk/commit/1a3cd1764ab3deb084fb66d0ffb4873717659538"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-6hx8-3wjj-gr8g",
+      "package": "webob",
+      "kind": "changed",
+      "fields": [
+        "entry_points"
+      ],
+      "before": {},
+      "after": {},
+      "added": {
+        "entry_points": [
+          "webob.exc._HTTPMove"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-6hx8-3wjj-gr8g",
+        "https://github.com/pylons/webob/commit/ff89560643fb252751b4db8806a283b5377f1f07"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-74m6-m3xx-3vmj",
+      "package": "keras",
+      "kind": "changed",
+      "fields": [
+        "entry_points"
+      ],
+      "before": {},
+      "after": {},
+      "added": {
+        "entry_points": [
+          "keras.src.saving.saving_lib.load_model"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [
+        "keras.src.saving.saving_lib.load_model"
+      ],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-74m6-m3xx-3vmj",
+        "https://github.com/keras-team/keras/commit/4933ea4a5b3fcc24ceacdc276f5bb5dfbd06756c"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-95c6-p277-p87g",
+      "package": "fastapi-api-key",
+      "kind": "changed",
+      "fields": [
+        "entry_points"
+      ],
+      "before": {},
+      "after": {},
+      "added": {
+        "entry_points": [
+          "fastapi_api_key.services.base.AbstractApiKeyService.verify_key"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-95c6-p277-p87g",
+        "https://github.com/athroniaeth/keyshield/commit/310b2c5c77305f38c63c0b917539a0344071dfd8"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-cwpm-f78v-7m5c",
+      "package": "tensorflow",
+      "kind": "changed",
+      "fields": [
+        "entry_points"
+      ],
+      "before": {},
+      "after": {},
+      "added": {
+        "entry_points": [
+          "tensorflow.python.ops.ragged.ragged_factory_ops.constant"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [
+        "tensorflow.python.ops.ragged.ragged_factory_ops.constant"
+      ],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-cwpm-f78v-7m5c",
+        "https://github.com/tensorflow/tensorflow/commit/bd4d5583ff9c8df26d47a23e508208844297310e"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-cwpm-f78v-7m5c",
+      "package": "tensorflow-cpu",
+      "kind": "changed",
+      "fields": [
+        "entry_points"
+      ],
+      "before": {},
+      "after": {},
+      "added": {
+        "entry_points": [
+          "tensorflow.python.ops.ragged.ragged_factory_ops.constant"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [
+        "tensorflow.python.ops.ragged.ragged_factory_ops.constant"
+      ],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-cwpm-f78v-7m5c",
+        "https://github.com/tensorflow/tensorflow/commit/bd4d5583ff9c8df26d47a23e508208844297310e"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-cwpm-f78v-7m5c",
+      "package": "tensorflow-gpu",
+      "kind": "changed",
+      "fields": [
+        "entry_points"
+      ],
+      "before": {},
+      "after": {},
+      "added": {
+        "entry_points": [
+          "tensorflow.python.ops.ragged.ragged_factory_ops.constant"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [
+        "tensorflow.python.ops.ragged.ragged_factory_ops.constant"
+      ],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-cwpm-f78v-7m5c",
+        "https://github.com/tensorflow/tensorflow/commit/bd4d5583ff9c8df26d47a23e508208844297310e"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-f8m6-h2c7-8h9x",
+      "package": "nltk",
+      "kind": "changed",
+      "fields": [
+        "entry_points"
+      ],
+      "before": {},
+      "after": {},
+      "added": {
+        "entry_points": [
+          "nltk.tokenize.punkt.PunktLanguageVars.word_tokenize"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-f8m6-h2c7-8h9x",
+        "https://github.com/nltk/nltk/commit/1405aad979c6b8080dbbc8e0858f89b2e3690341"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-fcf9-3qw3-gxmj",
+      "package": "cryptography",
+      "kind": "changed",
+      "fields": [
+        "entry_points"
+      ],
+      "before": {},
+      "after": {},
+      "added": {
+        "entry_points": [
+          "cryptography.hazmat.backends.openssl.ciphers._CipherContext.finalize_with_tag"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-fcf9-3qw3-gxmj",
+        "https://github.com/pyca/cryptography/commit/d4378e42937b56f473ddade2667f919ce32208cb",
+        "https://github.com/pyca/cryptography/commit/688e0f673bfbf43fa898994326c6877f00ab19ef"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-fch4-3c6x-j4gc",
+      "package": "authlib",
+      "kind": "changed",
+      "fields": [
+        "entry_points"
+      ],
+      "before": {},
+      "after": {},
+      "added": {
+        "entry_points": [
+          "authlib.oauth2.rfc7523.jwt_bearer.JWTBearerGrant"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-fch4-3c6x-j4gc",
+        "https://github.com/authlib/authlib/commit/787f3b42c9f27ceac960d6b003edb10f74c60a25",
+        "https://github.com/authlib/authlib/commit/e3bd41cb29dcfee434453b135ffb487884baeedf"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-gqvg-gmmx-x4hm",
+      "package": "mlflow",
+      "kind": "changed",
+      "fields": [
+        "entry_points"
+      ],
+      "before": {},
+      "after": {},
+      "added": {
+        "entry_points": [
+          "mlflow.statsmodels.load_model"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [
+        "mlflow.statsmodels.load_model"
+      ],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-gqvg-gmmx-x4hm",
+        "https://github.com/mlflow/mlflow/commit/38615289094a4b700a20b5d1dbfbe57bdfb0411f"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-hfg2-wf6j-x53p",
+      "package": "sqlalchemy",
+      "kind": "changed",
+      "fields": [
+        "entry_points"
+      ],
+      "before": {},
+      "after": {},
+      "added": {
+        "entry_points": [
+          "sqlalchemy.sql.expression._SelectBase.limit",
+          "sqlalchemy.sql.expression._SelectBase.offset"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-hfg2-wf6j-x53p",
+        "https://github.com/sqlalchemy/sqlalchemy/commit/51fea2e159ca93daa0bc8066a5c35d8436d99418"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-jfhm-5ghh-2f97",
+      "package": "cryptography",
+      "kind": "changed",
+      "fields": [
+        "entry_points"
+      ],
+      "before": {},
+      "after": {},
+      "added": {
+        "entry_points": [
+          "cryptography.hazmat.backends.openssl.backend.Backend.load_der_pkcs7_certificates",
+          "cryptography.hazmat.backends.openssl.backend.Backend.load_pem_pkcs7_certificates"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [
+        "cryptography.hazmat.backends.openssl.backend.Backend.load_der_pkcs7_certificates",
+        "cryptography.hazmat.backends.openssl.backend.Backend.load_pem_pkcs7_certificates"
+      ],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-jfhm-5ghh-2f97",
+        "https://github.com/pyca/cryptography/commit/1e7b4d074e14c4e694d3ce69ad6754a6039fd6ff",
+        "https://github.com/pyca/cryptography/commit/f09c261ca10a31fe41b1262306db7f8f1da0e48a"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-jfmj-5v4g-7637",
+      "package": "zipp",
+      "kind": "changed",
+      "fields": [
+        "entry_points"
+      ],
+      "before": {},
+      "after": {},
+      "added": {
+        "entry_points": [
+          "zipp.Path.iterdir",
+          "zipp.Path.joinpath"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [
+        "zipp.Path.iterdir",
+        "zipp.Path.joinpath"
+      ],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-jfmj-5v4g-7637",
+        "https://github.com/jaraco/zipp/commit/fd604bd34f0343472521a36da1fbd22e793e14fd"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-m8wh-29wm-52mv",
+      "package": "keras",
+      "kind": "changed",
+      "fields": [
+        "entry_points"
+      ],
+      "before": {},
+      "after": {},
+      "added": {
+        "entry_points": [
+          "keras.src.saving.saving_api.load_weights"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-m8wh-29wm-52mv",
+        "https://github.com/keras-team/keras/commit/23370f16b0ab9a200f7550a34e54a3ceab74ba0e",
+        "https://github.com/keras-team/keras/commit/d338a45204bdc787c8b3c4a9b82c1911cd52dedf"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-p4gq-832x-fm9v",
+      "package": "nltk",
+      "kind": "changed",
+      "fields": [
+        "entry_points"
+      ],
+      "before": {},
+      "after": {},
+      "added": {
+        "entry_points": [
+          "nltk.data.load"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [
+        "nltk.data.load"
+      ],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-p4gq-832x-fm9v",
+        "https://github.com/nltk/nltk/commit/7df10e6efa0417145e370aa42d8342faa6d244b8"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-phj9-mv4w-65pm",
+      "package": "pillow",
+      "kind": "changed",
+      "fields": [
+        "entry_points"
+      ],
+      "before": {},
+      "after": {},
+      "added": {
+        "entry_points": [
+          "PIL.GdImageFile.open"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [
+        "PIL.GdImageFile.open"
+      ],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-phj9-mv4w-65pm",
+        "https://github.com/python-pillow/pillow/commit/f39b0ae6624eb2d7c5c5d651d9bb5fdbd96a8675"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-pwh4-6r3m-j2rf",
+      "package": "pyload-ng",
+      "kind": "changed",
+      "fields": [
+        "entry_points"
+      ],
+      "before": {},
+      "after": {},
+      "added": {
+        "entry_points": [
+          "pyload.core.database.file_database.FileDatabaseMethods.add_package"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [
+        "pyload.core.database.file_database.FileDatabaseMethods.add_package"
+      ],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-pwh4-6r3m-j2rf",
+        "https://github.com/pyload/pyload/commit/134edcdf6e2a10c393743c254da3d9d90b74258f"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-q69g-f4f5-v8m7",
+      "package": "onnx",
+      "kind": "changed",
+      "fields": [
+        "entry_points"
+      ],
+      "before": {},
+      "after": {},
+      "added": {
+        "entry_points": [
+          "onnx.numpy_helper.to_array"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [
+        "onnx.numpy_helper.to_array"
+      ],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-q69g-f4f5-v8m7",
+        "https://github.com/onnx/onnx/commit/dce5876d6cc6cc30157af7d26a752ef44976da8e",
+        "https://github.com/onnx/onnx/commit/8de2cf6aa47928e6515ac6d9e1a8b4758886a7df"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-qhmc-3mvr-f2j4",
+      "package": "django-allauth",
+      "kind": "changed",
+      "fields": [
+        "entry_points"
+      ],
+      "before": {},
+      "after": {},
+      "added": {
+        "entry_points": [
+          "allauth.idp.oidc.internal.oauthlib.request_validator.OAuthLibRequestValidator.validate_bearer_token",
+          "allauth.idp.oidc.internal.oauthlib.request_validator.OAuthLibRequestValidator.validate_refresh_token"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-qhmc-3mvr-f2j4",
+        "https://github.com/pennersr/django-allauth/commit/39f4a4ce9c891795b00914ca5ec32de72d5369c0",
+        "https://github.com/pennersr/django-allauth/commit/c54edf947c5a1c8c4ff3cddb75c86000ecb2507d"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-r397-ff8c-wv2g",
+      "package": "aiomysql",
+      "kind": "changed",
+      "fields": [
+        "entry_points"
+      ],
+      "before": {},
+      "after": {},
+      "added": {
+        "entry_points": [
+          "aiomysql.connection.connect"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [
+        "aiomysql.connection.connect"
+      ],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-r397-ff8c-wv2g",
+        "https://github.com/aio-libs/aiomysql/commit/32c4520dae3711367ded74a4726dcb8bb8919538"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-r53h-rw34-8h97",
+      "package": "nltk",
+      "kind": "changed",
+      "fields": [
+        "entry_points"
+      ],
+      "before": {},
+      "after": {},
+      "added": {
+        "entry_points": [
+          "nltk.tree.transforms.chomsky_normal_form"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-r53h-rw34-8h97",
+        "https://github.com/nltk/nltk/commit/2f53e20cea36ddaea8246c72a65268c3ae12fba8",
+        "https://github.com/nltk/nltk/commit/457ebe349f8dd8080224f76a64aff806dd437057",
+        "https://github.com/nltk/nltk/commit/677857dcafd84e4591865d976b562a27dfde566e"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-vv2x-vrpj-qqpq",
+      "package": "bleach",
+      "kind": "changed",
+      "fields": [
+        "entry_points"
+      ],
+      "before": {},
+      "after": {},
+      "added": {
+        "entry_points": [
+          "bleach.clean"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [
+        "bleach.clean"
+      ],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-vv2x-vrpj-qqpq",
+        "https://github.com/mozilla/bleach/commit/79b7a3c5e56a09d1d323a5006afa59b56162eb13"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-wjw6-2cqr-j4qr",
+      "package": "tuf",
+      "kind": "changed",
+      "fields": [
+        "entry_points"
+      ],
+      "before": {},
+      "after": {},
+      "added": {
+        "entry_points": [
+          "tuf.client.updater.Updater.get_one_valid_targetinfo",
+          "tuf.ngclient.updater.Updater.get_one_valid_targetinfo"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [
+        "tuf.ngclient.updater.Updater.get_one_valid_targetinfo"
+      ],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-wjw6-2cqr-j4qr",
+        "https://github.com/theupdateframework/python-tuf/commit/4ad7ae48fda594b640139c3b7eae21ed5155a102"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-xjgw-4wvw-rgm4",
+      "package": "mcp-atlassian",
+      "kind": "changed",
+      "fields": [
+        "entry_points"
+      ],
+      "before": {},
+      "after": {},
+      "added": {
+        "entry_points": [
+          "mcp_atlassian.confluence.attachments.AttachmentsMixin.download_content_attachments"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-xjgw-4wvw-rgm4",
+        "https://github.com/sooperset/mcp-atlassian/commit/52b9b0997681e87244b20d58034deae89c91631e"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-xvp8-3mhv-424c",
+      "package": "lxml-html-clean",
+      "kind": "changed",
+      "fields": [
+        "entry_points"
+      ],
+      "before": {},
+      "after": {},
+      "added": {
+        "entry_points": [
+          "lxml_html_clean.clean.Cleaner.clean_html"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [
+        "lxml_html_clean.clean.Cleaner.clean_html"
+      ],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-xvp8-3mhv-424c",
+        "https://github.com/fedora-python/lxml_html_clean/commit/9c5612ca33b941eec4178abf8a5294b103403f34"
+      ]
+    }
+  ],
+  "review": [
+    "GHSA-26c4-7vv6-867j/keras",
+    "GHSA-375g-39jq-vq7m/cbor2",
+    "GHSA-5pwr-322w-8jr4/pyopenssl",
+    "GHSA-74m6-m3xx-3vmj/keras",
+    "GHSA-95c6-p277-p87g/fastapi-api-key",
+    "GHSA-cwpm-f78v-7m5c/tensorflow",
+    "GHSA-cwpm-f78v-7m5c/tensorflow-cpu",
+    "GHSA-cwpm-f78v-7m5c/tensorflow-gpu",
+    "GHSA-fcf9-3qw3-gxmj/cryptography",
+    "GHSA-hfg2-wf6j-x53p/sqlalchemy",
+    "GHSA-jfhm-5ghh-2f97/cryptography",
+    "GHSA-jfmj-5v4g-7637/zipp",
+    "GHSA-m8wh-29wm-52mv/keras",
+    "GHSA-p4gq-832x-fm9v/nltk",
+    "GHSA-phj9-mv4w-65pm/pillow",
+    "GHSA-qhmc-3mvr-f2j4/django-allauth",
+    "GHSA-r397-ff8c-wv2g/aiomysql",
+    "GHSA-r53h-rw34-8h97/nltk",
+    "GHSA-wjw6-2cqr-j4qr/tuf",
+    "GHSA-xvp8-3mhv-424c/lxml-html-clean"
+  ],
+  "seed": 20261121
+}

@@ -1,0 +1,28 @@
+{
+ "role": "kaggle_extractor",
+ "prompt_version": "extract-v1",
+ "before": "configs/llm.toml",
+ "before_sha256": "725ede20f94c1c4cbc7ef9ad6205fbf40ce0ab713b091899d799c6e8960feb74",
+ "after": "configs/experiments/llm-dotted.toml",
+ "after_sha256": "e09be616fdeadc82ad28c2c983d46ff2c0d1119d598c8a7d37d247f2c5c200c1",
+ "parts": [
+  {
+   "benchmark": "pypi",
+   "considered": 3505,
+   "skipped": {
+    "error": 11,
+    "module_level_only": 121,
+    "no_python_fix": 1083,
+    "no_resolvable_commit": 64,
+    "too_broad": 15
+   },
+   "changed": []
+  },
+  {
+   "benchmark": "dunlap-v1",
+   "considered": 280,
+   "skipped": {},
+   "changed": []
+  }
+ ]
+}

@@ -325,7 +325,7 @@ The Dunlap test and all splits are reported for each order, for completeness onl
 
 **Verdict: pass.** The interval is above zero, and smallest first leaves no more cut reports with nothing true kept than BM25 (0 and 0). Absolute recalls are low because the holdout's GoVulnDB labels are broad: even the oracle keeps only 0.287 of the true functions within the budget. Every other order also beat BM25 here; they were not chosen and decide nothing.
 
-**Not yet measured: the effect on extraction.** Keeping more true candidates should raise recall on large fixes, but the model's answers on the changed prompts have not been collected. A Groq run on dev was not possible on 2026-11-21: Groq began refusing the 1,500-token output allowance those runs used, and a different allowance changes every prompt's cache key. The before and after are measured with the Kaggle run that switches the order on.
+**On extraction, measured later in [E12](#e12-the-switch-on-batch-before-and-after): not promoted.** Keeping more true candidates did not give better picks. On the Dunlap prompts it changed, the model found 4 more true functions and 36 more false ones; on PyPI, the owner's review of the shadow database found its changes 7 better, 2 same and 9 worse, often because the large function that carries the bug was no longer shown. `budget.candidate_order` stays `bm25`.
 
 ## E11: A self-hosted second opinion
 
@@ -393,7 +393,7 @@ The Dunlap test and all splits are reported for each order, for completeness onl
 - Picks matter more than today's scan shows. ADR 0008 withholds high confidence for now, but a high record's symbols are its agreed picks, so a worse pick set would become a worse scan once the tier is lifted.
 - The output cap and dotted entry points without the order change 82 PyPI and 3 Dunlap prompts (`topup-plan`); everything else would replay from the cache.
 
-**Next.** Whether to promote the batch as it stands, or without smallest-first ordering, is the owner's decision; it is recorded here when made.
+**Decision, 2026-11-23 (owner).** Smallest-first ordering is not promoted. The rest of the batch, the output cap and dotted entry points with BM25 order kept (`configs/experiments/llm-cap-dotted.toml`), goes back through shadow-then-promote on its own: a top-up of the 82 PyPI and 3 Dunlap prompts it changes, a new shadow and a new review.
 
 ## Failure analysis
 

@@ -82,7 +82,7 @@ Reports: [dev](reports/confidence-dunlap-dev-extract-v1-qwen3.8-27b-q4km-vs-extr
 
 ### Retrieval at the prompt budget
 
-When a fix's candidates do not fit the 4,600-token budget, the prompt is cut, and a true vulnerable function that is cut cannot be picked. On the 32 cut Dunlap prompts, BM25 against the advisory kept 0.421 of the true functions, and no ranking at all kept 0.693 ([E9](experiments.md#e9-ordering-candidates-to-fit-the-prompt-budget)). Keeping the smallest candidates first was then chosen on dev and beat BM25 on the Go holdout by +0.094 (95% CI +0.042 to +0.328) ([E10](experiments.md#e10-a-replacement-for-bm25-at-the-prompt-budget-declared-before-measuring)). It is switched on with the next prompt change, through shadow-then-promote.
+When a fix's candidates do not fit the 4,600-token budget, the prompt is cut, and a true vulnerable function that is cut cannot be picked. On the 32 cut Dunlap prompts, BM25 against the advisory kept 0.421 of the true functions, and no ranking at all kept 0.693 ([E9](experiments.md#e9-ordering-candidates-to-fit-the-prompt-budget)). Keeping the smallest candidates first was then chosen on dev and beat BM25 on the Go holdout by +0.094 (95% CI +0.042 to +0.328) ([E10](experiments.md#e10-a-replacement-for-bm25-at-the-prompt-budget-declared-before-measuring)). Through shadow-then-promote, though, the model's picks with it were no better, and it is not used ([E12](experiments.md#e12-the-switch-on-batch-before-and-after)).
 
 ### Cost
 

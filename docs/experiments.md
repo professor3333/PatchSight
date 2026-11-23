@@ -27,6 +27,7 @@ Every controlled experiment on the extraction system, including the ones that lo
 | E9 | Ordering candidates to fit the prompt budget | BM25 against the advisory (as built); no ranking (file order); an oracle ceiling | On the 32 cut prompts: BM25 keeps 59 of 140 true functions (0.421), file order 97 (0.693), the oracle 133 (0.950) | Measured: BM25 loses to no ranking. It stays until a replacement is chosen on dev and evaluated on data not used to choose it |
 | E10 | A replacement for BM25 at the prompt budget | file order; smallest first; candidates the advisory names first; BM25 score per token | Chosen on dev: smallest first. Holdout, declared beforehand: +0.094 recall over BM25 (95% CI +0.042 to +0.328) | Passed. An option, off by default (`budget.candidate_order`); switched on with #52 and #53 |
 | E11 | Self-hosted second opinion | gpt-oss-120b on Groq; gpt-oss-20b (MXFP4) on Kaggle | Safety view, frozen rule, dev: overall miss 8.3% and 10.0%; high-confidence misses 1 of 27 and 1 of 25 | Lost: fails ADR 0007's declared miss-rate criterion by one report; the Groq second opinion stays |
+| E12 | The switch-on batch, before and after | as shipped; with the output cap, smallest-first ordering and dotted entry points | Dev F1 0.676 to 0.688 at the same recall; all 280: 0.680 to 0.662 (precision 0.751 to 0.702, recall 0.621 to 0.628); miss rate unchanged; dead letters 1 to 0 | Measured; the PyPI shadow and its review decide the promotion |
 
 ## E1: 4-bit self-hosted against hosted serving
 
@@ -340,6 +341,27 @@ The Dunlap test and all splits are reported for each order, for completeness onl
 **Finding.** As reliable, and as safe on high-confidence records, but one more report missed overall: GO-2022-0289, where only the larger model named the unchanged public wrapper `ForkExec` as an entry point. The declared criterion allows no rise, so it fails.
 
 **Decision.** Not adopted; the Groq second opinion stays. The test split was run by a notebook mistake; its accuracy is not scored and decides nothing.
+
+## E12: The switch-on batch, before and after
+
+**What changed.** The output-capacity cap ([E4](#e4-output-capacity-cap)), smallest-first ordering at the budget ([E10](#e10-a-replacement-for-bm25-at-the-prompt-budget-declared-before-measuring)) and dotted entry points ([E6](#e6-entry-points-resolved-on-a-dotted-boundary)), together (`configs/experiments/llm-switch-on.toml`). Each was chosen on dev, and E6 and E10 were also evaluated on the Go holdout. This measures what they do to extraction together.
+
+**Method.** `topup-plan` listed the 32 Dunlap prompts the batch changes. Kaggle Qwen answered them (PatchSight `a408937`), and every report was replayed under the batch config with 0 model calls: the other 248 send the same prompts and keep their cached answers ([all](reports/extraction-dunlap-all-extract-v1-qwen3.8-27b-q4km-switch-on.md), [dev](reports/extraction-dunlap-dev-extract-v1-qwen3.8-27b-q4km-switch-on.md), [test](reports/extraction-dunlap-test-extract-v1-qwen3.8-27b-q4km-switch-on.md); replay bundle checked by `make reproduce`).
+
+| Split | Before: P / R / F1 | After: P / R / F1 | Miss rate |
+|---|---|---|---|
+| all | 0.751 / 0.621 / 0.680 | 0.702 / 0.628 / 0.662 | 17.1%, unchanged |
+| dev | 0.710 / 0.644 / 0.676 | 0.738 / 0.644 / 0.688 | unchanged |
+| test | 0.763 / 0.615 / 0.681 | 0.693 / 0.623 / 0.656 | unchanged |
+
+**Findings.**
+
+- Only the 32 changed reports differ. On them, the batch finds 4 more true functions (33 to 37) and flags 36 more false ones (38 to 74). By report it finds more true functions in 10, fewer in 12 and as many in 10; 12 of the 32 are missed before and after.
+- E10's gain is real at retrieval, since more true candidates reach the model, but the model also flags many of the extra small candidates it now sees.
+- The one dead letter (GO-2021-0053, whose answers overran the output limit) is gone: the cap keeps its prompt within what an answer can hold.
+- The test split is reported as it stands. It decides nothing: dev chose the batch, and dev improves.
+
+**What it changes, and what decides.** No published record: every record is low confidence and matches on every changed definition, so only the picks `explain` shows move. Whether those picks get better or worse on real PyPI fixes is the shadow database's question: the batch's PyPI top-up, merged into a shadow of the current release, its `db-diff`, and a review of 20 changed records, before promotion.
 
 ## Failure analysis
 

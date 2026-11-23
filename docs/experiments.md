@@ -408,7 +408,16 @@ The Kaggle GPU quota ran out before the cap's top-up could run. Dotted entry poi
 
 - The full batch's scan changes came from this part alone: the `keras-load-model` fixture, and the 7 panel alerts, all of them the false Pillow match described above.
 - One prompt, GHSA-4v28-j6q3-5m4r, has never been answered under any configuration (shard 1 ran before BM25 ties were made deterministic); its production record stays as it is.
-- The 50 records the nightly Groq extractor wrote are carried over unchanged. The nightly keeps no model answers, so they cannot be re-validated without calling Groq again; they take dotted names when next extracted.
+- The 50 records the nightly Groq extractor wrote are carried over unchanged. The nightly kept no model answers until 2026-11-23 (ADR 0013 amendment), so they cannot be re-validated without calling Groq again; they take dotted names when next extracted.
+
+**Review.** The owner marked the 20 sampled records against their advisories and fix commits ([verdicts](reports/shadow-dotted.md#review-sample-20-of-32-seed-20261121)): 9 better, 6 same, 5 worse.
+
+- **Better (9):** the new entry point is a public path to the patched code that no name in the record matched before, such as the Keras model loaders, `nltk.data.load`, zipp's `Path.iterdir` and `joinpath`, and aiomysql's `connect`.
+- **Same (6):** the entry point was already a picked symbol, so the scan matches what it matched before.
+- **Worse, from the scanner's matching (4):** the entry point is accurate, but the scanner's re-export rule (same first and last name parts) matches it to an unrelated call. TensorFlow's `tensorflow.python.ops.ragged.ragged_factory_ops.constant` matches the ordinary `tf.constant` in all three TensorFlow records, and Pillow's `PIL.GdImageFile.open` matches `PIL.Image.open`.
+- **Worse, from the entry point (1):** cbor2's resolves to `cbor2._decoder.loads`, the pure-Python fallback, while the fix is in the C extension, which has no Python definition to resolve to.
+
+The worse verdicts err towards noise (an alert marked CALLED that should not be), never towards silence.
 
 ## Failure analysis
 

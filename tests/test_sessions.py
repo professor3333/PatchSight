@@ -54,6 +54,10 @@ def test_early_runs_without_a_mode_or_a_ledger(tmp_path: Path) -> None:
     assert (session.mode, session.part, session.status, session.dead_letter_rate) == (
         "dunlap", "all", {}, None,
     )  # fmt: skip
+    topup = INFO | {"mode": "topup", "shard": None, "topup": "cap-dotted"}
+    session = sessions.load_session(_run(tmp_path, "patchsight-kaggle-run-topup", topup, [20]))
+    assert session is not None
+    assert (session.mode, session.part) == ("topup", "cap-dotted")
     empty = tmp_path / "empty"
     empty.mkdir()
     (empty / "run-info.json").write_text(json.dumps(INFO))

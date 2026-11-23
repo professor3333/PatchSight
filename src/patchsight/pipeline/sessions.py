@@ -162,7 +162,7 @@ def load_session(run: Path) -> Session | None:
         return None
     gaps = [b.t - a.t for a, b in itertools.pairwise(entries)]
     mode = str(info.get("mode") or "dunlap")  # the first runs predate the field
-    part = info.get("shard") or info.get("split")
+    part = info.get("shard") or info.get("split") or info.get("topup")
     summary = _Summary()
     for path in sorted((run / "pypi-run").glob("*-summary.json")):
         summary = _Summary.model_validate_json(path.read_text("utf-8"))

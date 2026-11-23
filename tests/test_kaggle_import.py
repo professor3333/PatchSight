@@ -89,3 +89,27 @@ def test_the_notebook_compiles_and_zips_the_trace() -> None:
         "".join(c["source"]) for c in cells if "zipfile.ZipFile(archive" in "".join(c["source"])
     )
     assert 'glob.glob(f"{REPO}/data/interim/traces/*.jsonl")' in zipping
+
+
+def test_every_topup_the_notebook_offers_names_a_config_and_plan_that_exist() -> None:
+    import ast
+    import json
+
+    repo = Path(__file__).resolve().parents[1]
+    cells = json.loads((repo / "notebooks" / "kaggle_full_run.ipynb").read_text())["cells"]
+    source = next("".join(c["source"]) for c in cells if "TOPUPS = {" in "".join(c["source"]))
+    tree = ast.parse(source)
+    topups = next(
+        ast.literal_eval(node.value)
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Assign) and getattr(node.targets[0], "id", "") == "TOPUPS"
+    )
+    chosen = next(
+        ast.literal_eval(node.value)
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Assign) and getattr(node.targets[0], "id", "") == "TOPUP"
+    )
+    assert chosen in topups
+    for config, plan in topups.values():
+        assert (repo / config).is_file(), config
+        assert json.loads((repo / plan).read_text())["after"] == config, plan

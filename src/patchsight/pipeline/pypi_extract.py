@@ -73,6 +73,9 @@ class PyPIExtractionRun(BaseModel):
     calls: int
     cached_calls: int
     provider_rejections: int
+    # The vulnerabilities a cache-only replay had no answer for, so a caller can tell a
+    # prompt a change altered from one that was never answered under any configuration.
+    not_cached: tuple[str, ...] = ()
 
 
 class PromptPlan(BaseModel):
@@ -319,6 +322,7 @@ def run(
     summary then says the run is incomplete."""
     results: list[PyPIExtraction] = []
     skipped: Counter[str] = Counter()
+    not_cached: list[str] = []
     ordered = list(groups) if keep_order else sorted(groups, key=lambda g: g.key)
     processed = 0
     for number, group in enumerate(ordered, 1):
@@ -330,6 +334,8 @@ def run(
         )
         if isinstance(result, str):
             skipped[result] += 1
+            if result == "not_cached":
+                not_cached.append(group.key)
         else:
             results.append(result)
         if progress is not None and (number % 25 == 0 or number == len(ordered)):
@@ -350,4 +356,5 @@ def run(
         calls=sum(o.calls for o in outcomes),
         cached_calls=sum(o.cached_calls for o in outcomes),
         provider_rejections=sum(o.provider_rejections for o in outcomes),
+        not_cached=tuple(sorted(not_cached)),
     )

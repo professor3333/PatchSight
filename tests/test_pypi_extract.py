@@ -303,3 +303,4 @@ def test_cache_only_replay_reports_misses_and_never_calls_a_model(
     other = cache_only_client(CONFIG, "m", tmp_path / "empty", CharEstimate(3.0))[0]
     missing, summary = _run(make_advisory, other)
     assert (missing, summary.skipped) == ([], {"not_cached": 1})
+    assert summary.not_cached == (alias_groups([make_advisory()])[0].key,)  # named, not counted

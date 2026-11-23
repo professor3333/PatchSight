@@ -2501,7 +2501,8 @@ def release_notes_command(
             "records) now carry model picks with a rationale and cited hunks, up from "
             f"{merged.before.vulnerabilities:,} ({merged.before.records:,} records).",
             "- No record is high confidence yet, so matching still uses every changed "
-            "definition. `patchsight explain <id>` shows the picks."
+            "definition, plus the model's entry points. `patchsight explain <id>` shows the "
+            "picks."
             if not merged.tiers.get("high")
             else f"- {merged.tiers['high']:,} "
             + ("record is" if merged.tiers["high"] == 1 else "records are")

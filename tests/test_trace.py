@@ -84,6 +84,22 @@ def test_every_model_call_is_traced_and_no_prompt_or_answer_is(tmp_path: Path) -
         assert private not in text
 
 
+def test_a_cache_only_miss_is_traced_as_not_cached(tmp_path: Path) -> None:
+    from patchsight.pipeline.llm.client import ResponseNotCachedError
+
+    def refuse(request: LLMRequest) -> tuple[str, int, int]:
+        raise ResponseNotCachedError("no cached response")
+
+    tracer = Tracer(tmp_path / "t.jsonl")
+    client = LLMClient(refuse, RateLimiter(100_000, 100), tmp_path / "cache", tracer=tracer)
+    with pytest.raises(ResponseNotCachedError):
+        client.complete(_request())
+    assert [(c["cached"], c["outcome"]) for c in _events(tmp_path / "t.jsonl")] == [
+        (False, "not_cached")
+    ]
+    assert client.network_calls == 0
+
+
 def test_each_run_gets_its_own_file(tmp_path: Path) -> None:
     from datetime import UTC, datetime
 

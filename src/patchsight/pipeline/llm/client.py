@@ -295,6 +295,10 @@ class LLMClient:
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(json.dumps({"rejected": message}), encoding="utf-8")
             raise ProviderRejectedError(message) from rejected
+        except ResponseNotCachedError:
+            # A cache-only replay with no answer: nothing was sent anywhere.
+            self._trace(request, key, False, NOT_CACHED, 0.0)
+            raise
         except Exception as error:
             self._trace(request, key, False, type(error).__name__, time.monotonic() - started)
             raise
@@ -311,6 +315,9 @@ class LLMClient:
         path.write_text(json.dumps(record, ensure_ascii=False), encoding="utf-8")
         self._trace(request, key, False, "ok", seconds, prompt_tokens, completion_tokens)
         return LLMResponse(**record, cached=False, seconds=seconds)
+
+
+NOT_CACHED = "not_cached"  # the traced outcome of a cache-only miss
 
 
 class ResponseNotCachedError(RuntimeError):

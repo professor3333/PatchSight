@@ -381,7 +381,19 @@ The Dunlap test and all splits are reported for each order, for completeness onl
 - **This corrects the Dunlap section's first reading.** Symbols do not move (every record is low confidence and keeps every changed definition), but entry points do, and the scanner matches them. Measured with the scanner's own matching, 6 records lose a name nothing else in them matches, so a reference spelled that way would go from CALLED to UNKNOWN. In 24 records, 29 names are newly matched.
 - The gains show up in scans. In the fixtures, `keras-load-model` goes from UNKNOWN to CALLED (new entry point `keras.src.saving.saving_lib.load_model`). On the panel, 7 alerts in 7 projects become CALLED and none go the other way. In the three checked (saleor, ctfd, mealie) it is one Pillow advisory, GHSA-phj9-mv4w-65pm, newly naming `PIL.Image.open`. Coverage (2,679 of 3,545 alerts with data) and scan times do not change.
 
-**What decides.** The owner's review of the 20 sampled records in the diff, each marked better, same or worse against its advisory and fix commit. If the review holds, the shadow is rebuilt on the then-current release no earlier than 2026-11-30, and the batch is promoted into `configs/llm.toml` with the regression set re-pinned.
+**Review.** The owner marked the 20 sampled records against their advisories and fix commits ([verdicts](reports/shadow-switch-on.md#review-sample-20-of-683-seed-20261121)): 9 better, 9 worse, 2 same. By the part of the batch that changed each record:
+
+| Changed by | Records | Better | Same | Worse | Scan names lost / gained |
+|---|---:|---:|---:|---:|---|
+| Dotted entry points only (prompt unchanged) | 2 | 2 | 0 | 0 | 0 / 2 |
+| The candidate order (prompt cut differently; also capped where more than 14 were kept) | 18 | 7 | 2 | 9 | 0 / 0 |
+
+- Every "worse" verdict is a change of picks only, in a record whose prompt smallest-first ordering cut differently; no scan result moves. The reasons share a cause: keeping the smallest candidates drops large functions that carry the bug (tinytag's atom traversal, qutebrowser's load-finish status logic, diffusers' download path, open-webui's `chat_completion`, fastmcp's `_restore_token_expiry`, mcp-atlassian's `search_issues`).
+- This agrees with the Dunlap result above: the order keeps more true candidates ([E10](#e10-a-replacement-for-bm25-at-the-prompt-budget-declared-before-measuring)), but the model's picks do not improve (4 more true, 36 more false on the changed reports).
+- Picks matter more than today's scan shows. ADR 0008 withholds high confidence for now, but a high record's symbols are its agreed picks, so a worse pick set would become a worse scan once the tier is lifted.
+- The output cap and dotted entry points without the order change 82 PyPI and 3 Dunlap prompts (`topup-plan`); everything else would replay from the cache.
+
+**Next.** Whether to promote the batch as it stands, or without smallest-first ordering, is the owner's decision; it is recorded here when made.
 
 ## Failure analysis
 

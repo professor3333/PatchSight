@@ -12,6 +12,7 @@ else in it is refused.
 
 import io
 import json
+import re
 import zipfile
 from collections.abc import Mapping
 from datetime import datetime
@@ -47,26 +48,71 @@ def report_path(name: str) -> str | None:
     return None
 
 
-def unpack(archive: bytes, target: Path) -> list[str]:
-    """The known report files of one artifact, written into ``target``."""
+_ANSWER = re.compile(r"[0-9a-f]{64}\.json")
+
+
+def answer_path(name: str) -> str | None:
+    """Where a model answer from the night's response cache (``.cache/llm/<ab>/<key>.json``)
+    goes in the local one, or None to refuse it. The usage ledger is never taken."""
+    path = PurePosixPath(name)
+    if path.is_absolute() or ".." in path.parts or len(path.parts) < 3:
+        return None
+    folder, file = path.parts[-2], path.name
+    if path.parts[-3] == "llm" and _ANSWER.fullmatch(file) and folder == file[:2]:
+        return f"{folder}/{file}"
+    return None
+
+
+def _is_answer(data: bytes) -> bool:
+    """A cached answer ({content, prompt_tokens, completion_tokens}) or rejection."""
+    try:
+        record = json.loads(data)
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return False
+    if not isinstance(record, dict):
+        return False
+    if set(record) == {"rejected"}:
+        return isinstance(record["rejected"], str)
+    return (
+        set(record) == {"content", "prompt_tokens", "completion_tokens"}
+        and isinstance(record["content"], str)
+        and all(isinstance(record[k], int) for k in ("prompt_tokens", "completion_tokens"))
+    )
+
+
+def unpack(archive: bytes, target: Path, answers: Path | None = None) -> list[str]:
+    """The known report files of one artifact, written into ``target``; with ``answers``, the
+    night's model answers too, added to that response cache (an answer already there is
+    kept). Returns the reports and answers written, answers as ``llm/<ab>/<key>.json``."""
     written = []
     with zipfile.ZipFile(io.BytesIO(archive)) as bundle:
         for member in bundle.infolist():
             if member.is_dir():
                 continue
             place = report_path(member.filename)
-            if place is None:
+            if place is not None:
+                destination = target / place
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                destination.write_bytes(bundle.read(member))
+                written.append(place)
                 continue
-            destination = target / place
-            destination.parent.mkdir(parents=True, exist_ok=True)
-            destination.write_bytes(bundle.read(member))
-            written.append(place)
+            answer = answer_path(member.filename) if answers is not None else None
+            if answer is None or answers is None or (answers / answer).exists():
+                continue
+            data = bundle.read(member)
+            if not _is_answer(data):
+                continue
+            (answers / answer).parent.mkdir(parents=True, exist_ok=True)
+            (answers / answer).write_bytes(data)
+            written.append(f"llm/{answer}")
     return sorted(written)
 
 
 def fetch(token: str, repo: str, root: Path, limit: int = 30,
           client: httpx.Client | None = None) -> list[Path]:  # fmt: skip
-    """Download the reports of the latest ``limit`` nightly runs not yet fetched."""
+    """Download the reports of the latest ``limit`` nightly runs not yet fetched, and add
+    their model answers to the local response cache (``<root>/.cache/llm``), so a replay
+    under another configuration sees what the nightly extractor answered."""
     http = client or httpx.Client(timeout=httpx.Timeout(60.0, connect=10.0),
                                   follow_redirects=True)  # fmt: skip
     headers = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json"}
@@ -89,7 +135,7 @@ def fetch(token: str, repo: str, root: Path, limit: int = 30,
                 if artifact["name"] == ARTIFACT and not artifact.get("expired"):
                     archive = http.get(artifact["archive_download_url"], headers=headers)
                     archive.raise_for_status()
-                    unpack(archive.content, folder)
+                    unpack(archive.content, folder, root / ".cache" / "llm")
             meta = {k: run.get(k) for k in ("id", "event", "conclusion", "created_at")}
             (folder / "run.json").write_text(json.dumps(meta, indent=2) + "\n", "utf-8")
             fetched.append(folder)

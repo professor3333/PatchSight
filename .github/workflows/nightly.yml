@@ -183,6 +183,9 @@ jobs:
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: nightly-reports
+          # The night's model answers (.cache/llm/<ab>/<key>.json; never the usage ledger) are
+          # kept too, so a shadow database can replay them. .cache is a hidden folder.
+          include-hidden-files: true
           path: |
             data/build/nightly-update.json
             data/build/nightly-import-names.json
@@ -193,6 +196,7 @@ jobs:
             data/build/nightly-extract-extractor-summary.json
             data/build/nightly-merged-merge.json
             data/interim/traces/*.jsonl
+            .cache/llm/*/*.json
           if-no-files-found: ignore
 
       - name: Open an issue

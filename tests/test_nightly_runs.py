@@ -37,6 +37,40 @@ def test_only_known_reports_are_taken_from_an_artifact(name: str, place: str | N
     assert nightly_runs.report_path(name) == place
 
 
+KEY = "ab" + "c" * 62
+
+
+@pytest.mark.parametrize(
+    ("name", "place"),
+    [(f".cache/llm/ab/{KEY}.json", f"ab/{KEY}.json"), (f"llm/ab/{KEY}.json", f"ab/{KEY}.json"),
+     (f".cache/llm/cd/{KEY}.json", None),  # not in its own folder
+     (".cache/llm/usage/model.jsonl", None), (f".cache/llm/ab/{KEY}.txt", None),
+     (f"../llm/ab/{KEY}.json", None), (f"/llm/ab/{KEY}.json", None),
+     (f"build/ab/{KEY}.json", None)],
+)  # fmt: skip
+def test_only_model_answers_are_taken_into_the_response_cache(name: str, place: str | None) -> None:
+    assert nightly_runs.answer_path(name) == place
+
+
+def test_the_nights_answers_join_the_cache_without_overwriting(tmp_path: Path) -> None:
+    answer = json.dumps({"content": "{}", "prompt_tokens": 5, "completion_tokens": 2})
+    other = "de" + "f" * 62
+    cache = tmp_path / "cache"
+    (cache / "de").mkdir(parents=True)
+    (cache / "de" / f"{other}.json").write_text("kept")
+    archive = _zip({f".cache/llm/ab/{KEY}.json": answer,
+                    f".cache/llm/de/{other}.json": answer,
+                    f".cache/llm/12/12{'0' * 62}.json": '{"prompt": "not an answer"}',
+                    ".cache/llm/usage/m.jsonl": "{}",
+                    "build/gate.json": "{}"})  # fmt: skip
+    written = nightly_runs.unpack(archive, tmp_path / "run", cache)
+    assert written == ["gate.json", f"llm/ab/{KEY}.json"]
+    assert (cache / "ab" / f"{KEY}.json").read_text() == answer
+    assert (cache / "de" / f"{other}.json").read_text() == "kept"
+    assert not (cache / "usage").exists()
+    assert nightly_runs.unpack(archive, tmp_path / "run2") == ["gate.json"]  # reports only
+
+
 def _folder(tmp_path: Path, files: dict[str, str]) -> Path:
     folder = tmp_path / nightly_runs.DIRECTORY / "123"
     nightly_runs.unpack(_zip(files), folder)

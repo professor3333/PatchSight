@@ -361,7 +361,27 @@ The Dunlap test and all splits are reported for each order, for completeness onl
 - The one dead letter (GO-2021-0053, whose answers overran the output limit) is gone: the cap keeps its prompt within what an answer can hold.
 - The test split is reported as it stands. It decides nothing: dev chose the batch, and dev improves.
 
-**What it changes, and what decides.** No published record: every record is low confidence and matches on every changed definition, so only the picks `explain` shows move. Whether those picks get better or worse on real PyPI fixes is the shadow database's question: the batch's PyPI top-up, merged into a shadow of the current release, its `db-diff`, and a review of 20 changed records, before promotion.
+### On PyPI: the shadow database
+
+**Method.** Kaggle Qwen answered the 794 PyPI prompts the batch changes, in two sessions (PatchSight `a408937`, then `b024f9d` resuming from the first's answers): 793 ok, 1 repaired, none failed. `scripts/prepare-shadow.sh` replayed every PyPI prompt under the batch config with 0 model calls, merged the outcomes into a shadow of the current release, `db-2026.11.22`, with import names and the release gate (7 of 7 pass), and compared the two ([diff](reports/shadow-switch-on.md)). The fixtures and the panel were scanned with both databases on the same day.
+
+| | Production `db-2026.11.22` | Shadow |
+|---|---|---|
+| Failed backfill extractions | 25 | 2 |
+| Records with model picks | 3,630 | 3,654 |
+| Of them truncated | 825 | 881 |
+| Records changed | | 683: picks 612, entry points 370 |
+| Names a scan matches: lost / gained | | 6 in 6 records / 29 in 24 records |
+| Fixtures: false suppressions; as expected | 0; 22 of 58 ([report](reports/reachability-fixtures-db-2026.11.22.md)) | 0; 23 of 58 ([report](reports/reachability-fixtures-db-2026.11.23-shadow-switch-on.md)) |
+| Panel, 3,545 alerts: CALLED | 186 ([report](reports/panel-db-2026.11.22.md)) | 193 ([report](reports/panel-db-2026.11.23-shadow-switch-on.md)) |
+
+**Findings.**
+
+- The cap answers 23 of the 25 backfill prompts that failed: their answers had overrun the output limit. No record loses its picks, and the 25 picked by the nightly Groq extractor are kept as they were.
+- **This corrects the Dunlap section's first reading.** Symbols do not move (every record is low confidence and keeps every changed definition), but entry points do, and the scanner matches them. Measured with the scanner's own matching, 6 records lose a name nothing else in them matches, so a reference spelled that way would go from CALLED to UNKNOWN. In 24 records, 29 names are newly matched.
+- The gains show up in scans. In the fixtures, `keras-load-model` goes from UNKNOWN to CALLED (new entry point `keras.src.saving.saving_lib.load_model`). On the panel, 7 alerts in 7 projects become CALLED and none go the other way. In the three checked (saleor, ctfd, mealie) it is one Pillow advisory, GHSA-phj9-mv4w-65pm, newly naming `PIL.Image.open`. Coverage (2,679 of 3,545 alerts with data) and scan times do not change.
+
+**What decides.** The owner's review of the 20 sampled records in the diff, each marked better, same or worse against its advisory and fix commit. If the review holds, the shadow is rebuilt on the then-current release no earlier than 2026-11-30, and the batch is promoted into `configs/llm.toml` with the regression set re-pinned.
 
 ## Failure analysis
 

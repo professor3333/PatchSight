@@ -10,6 +10,11 @@ source, tier reason, models, prompt version, truncation, the inputs' hash, impor
 symbols, entry points and the model's **picks** (the symbols with a rationale). In a
 low-confidence record the symbols are every changed definition, so a prompt change usually
 moves the picks, not the symbols.
+
+What a scan would see is measured separately, with the scanner's own matching: a name the
+record matched before that nothing in the shadow record matches (*lost*: a reference spelled
+that way stops being CALLED), and the reverse (*gained*). Entry points are where a prompt
+change reaches the scan, since they are matched even in low-confidence records.
 """
 
 import random
@@ -20,6 +25,7 @@ from pathlib import Path
 from pydantic import BaseModel, ConfigDict
 
 from patchsight.db import Record, SymbolDatabase
+from patchsight.scan.verdicts import hit, targets
 
 SEED = 20261121
 REVIEW = 20  # records a reviewer reads before a promotion
@@ -50,6 +56,20 @@ class RecordChange(BaseModel):
     after: dict[str, str] = {}
     added: dict[str, tuple[str, ...]] = {}  # per set field
     removed: dict[str, tuple[str, ...]] = {}
+    lost: tuple[str, ...] = ()  # names a scan matched before and matches no longer
+    gained: tuple[str, ...] = ()
+    links: tuple[str, ...] = ()  # the advisory, then the fix commits, for the reviewer
+
+
+def _links(record: Record) -> tuple[str, ...]:
+    commits = (f"https://github.com/{c.repo}/commit/{c.sha}" for c in record.fix_commits)
+    return (f"https://osv.dev/vulnerability/{record.vulnerability}", *commits)
+
+
+def _unmatched(names: list[str], record: Record) -> tuple[str, ...]:
+    """The names a reference spelled exactly that way would no longer match in ``record``."""
+    qualified, bare = targets(record)
+    return tuple(sorted({n for n in names if not hit(n, qualified, bare)}))
 
 
 def compare(before: Record | None, after: Record | None) -> RecordChange | None:
@@ -61,7 +81,7 @@ def compare(before: Record | None, after: Record | None) -> RecordChange | None:
             return None
         return RecordChange(
             vulnerability=record.vulnerability, package=record.package,
-            kind="added" if before is None else "removed", fields=(),
+            kind="added" if before is None else "removed", fields=(), links=_links(record),
         )  # fmt: skip
     fields: list[str] = []
     old: dict[str, str] = {}
@@ -87,6 +107,8 @@ def compare(before: Record | None, after: Record | None) -> RecordChange | None:
     return RecordChange(
         vulnerability=before.vulnerability, package=before.package, kind="changed",
         fields=tuple(fields), before=old, after=new, added=added, removed=removed,
+        lost=_unmatched(targets(before)[0], after), gained=_unmatched(targets(after)[0], before),
+        links=_links(after),
     )  # fmt: skip
 
 
@@ -150,6 +172,40 @@ def _describe(change: RecordChange) -> str:
     return "; ".join(parts)
 
 
+def _link_cell(change: RecordChange) -> str:
+    if not change.links:
+        return ""
+    advisory, *commits = change.links
+    cells = [f"[advisory]({advisory})"]
+    cells += [f"[{url.rsplit('/', 1)[-1][:7]}]({url})" for url in commits[:3]]
+    return " ".join(cells) + (f" +{len(commits) - 3}" if len(commits) > 3 else "")
+
+
+def _scan_section(changes: Sequence[RecordChange]) -> list[str]:
+    lost = [c for c in changes if c.lost]
+    gained = [c for c in changes if c.gained]
+    lines = [
+        "## What a scan would see",
+        "",
+        "Measured with the scanner's matching: a name a record matched before that nothing in "
+        "the shadow record matches is **lost** (a reference spelled that way is no longer "
+        "CALLED; with low-confidence data it becomes UNKNOWN), and the reverse is **gained**.",
+        "",
+        f"- Lost: {sum(len(c.lost) for c in lost):,} names in {len(lost):,} records",
+        f"- Gained: {sum(len(c.gained) for c in gained):,} names in {len(gained):,} records",
+    ]
+    if lost:
+        lines += [
+            "",
+            "Every lost name, since these are the changes that can lower an alert:",
+            "",
+            "| Record | Lost |",
+            "|---|---|",
+            *(f"| {c.vulnerability}/{c.package} | {_names(c.lost)} |" for c in lost),
+        ]
+    return [*lines, ""]
+
+
 def render_markdown(result: DatabaseDiff, purpose: str) -> str:
     r = result
     by_key = {f"{c.vulnerability}/{c.package}": c for c in r.changes}
@@ -171,14 +227,18 @@ def render_markdown(result: DatabaseDiff, purpose: str) -> str:
         "|---|---:|",
         *(f"| {k} | {v:,} |" for k, v in r.fields.items()),
         "",
+        *_scan_section(r.changes),
         f"## Review sample ({len(r.review)} of {len(r.changes)}, seed {r.seed})",
         "",
-        "Read each record with `patchsight explain <id> --db <shadow>` and the fix commit, then "
-        "mark it: **better**, **same** or **worse**, with a reason.",
+        "Read each record with `patchsight explain <id> --db <shadow>`, the advisory and the fix "
+        "commit, then mark it: **better**, **same** or **worse**, with a reason.",
         "",
-        "| Record | Change | Verdict | Reason |",
-        "|---|---|---|---|",
-        *(f"| {key} | {_describe(by_key[key])} | | |" for key in r.review),
+        "| Record | Sources | Change | Verdict | Reason |",
+        "|---|---|---|---|---|",
+        *(
+            f"| {key} | {_link_cell(by_key[key])} | {_describe(by_key[key])} | | |"
+            for key in r.review
+        ),
         "",
     ]
     return "\n".join(lines)

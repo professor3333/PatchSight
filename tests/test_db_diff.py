@@ -59,8 +59,26 @@ def test_the_diff_counts_every_change_and_draws_a_seeded_review_sample(tmp_path:
     assert result.review == db_diff.diff(old, new, review=5).review  # reproducible
     text = db_diff.render_markdown(result, "cap the candidates by output capacity (#52)")
     assert "- **The change:** cap the candidates by output capacity (#52)" in text
-    assert "| Record | Change | Verdict | Reason |" in text
+    assert "| Record | Sources | Change | Verdict | Reason |" in text
     assert text.count("| | |") == 5  # each sampled record awaits a verdict
+    assert "[advisory](https://osv.dev/vulnerability/GHSA-" in text
+    assert f"[aaaaaaa](https://github.com/o/pkg/commit/{'a' * 40})" in text
+    assert "- Lost: 0 names in 0 records" in text  # picks moved; the scan matches the same
+
+
+def test_an_entry_point_change_is_measured_as_the_scan_would_see_it() -> None:
+    before = _record("A", entry_points=("pkg.api.open", "pkg.api.Reader.read", "pkg.load"))
+    after = _record("A", entry_points=("pkg.api.close",))
+    change = db_diff.compare(before, after)
+    assert change is not None
+    # pkg.load is still a symbol, so a reference to it still matches; the other two do not.
+    assert change.lost == ("pkg.api.Reader.read", "pkg.api.open")
+    assert change.gained == ("pkg.api.close",)
+    assert change.links == ("https://osv.dev/vulnerability/A",
+                            f"https://github.com/o/pkg/commit/{'a' * 40}")  # fmt: skip
+    text = "\n".join(db_diff._scan_section([change]))
+    assert "- Lost: 2 names in 1 records" in text
+    assert "| A/pkg | `pkg.api.Reader.read`, `pkg.api.open` |" in text
 
 
 def test_identical_databases_have_nothing_to_review(tmp_path: Path) -> None:

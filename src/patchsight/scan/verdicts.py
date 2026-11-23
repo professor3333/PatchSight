@@ -90,6 +90,18 @@ def matches(reference: str, symbol: str) -> bool:
     return len(r) >= 2 and r[0] == s[0] and r[-1] == s[-1]  # re-exported name
 
 
+def targets(record: Record) -> tuple[list[str], list[str]]:
+    """The names a reference is matched against: qualified symbols and entry points, and the
+    bare names of symbols whose module is unknown (matched on their last part)."""
+    qualified = [s.qualified_name for s in record.symbols if s.module] + list(record.entry_points)
+    bare = [s.name.split(".")[-1] for s in record.symbols if not s.module]
+    return qualified, bare
+
+
+def hit(reference: str, qualified: Sequence[str], bare: Sequence[str]) -> bool:
+    return any(matches(reference, t) for t in qualified) or reference.split(".")[-1] in bare
+
+
 def _mentions(sources: dict[str, str], roots: set[str]) -> list[str]:
     return sorted(
         path
@@ -113,16 +125,11 @@ def decide(
 
     names = import_names(package, record.import_roots)
     roots = {n.split(".")[0] for n in names}
-    targets = [s.qualified_name for s in record.symbols if s.module] + list(record.entry_points)
-    bare = [s.name.split(".")[-1] for s in record.symbols if not s.module]
-    context = {"confidence": record.confidence, "vulnerable": tuple(sorted(set(targets + bare)))}
+    qualified, bare = targets(record)
+    context = {"confidence": record.confidence, "vulnerable": tuple(sorted(set(qualified + bare)))}
 
     into_package = usage.references_into(roots)
-    hits = [
-        r
-        for r in into_package
-        if any(matches(r.name, t) for t in targets) or r.name.split(".")[-1] in bare
-    ]
+    hits = [r for r in into_package if hit(r.name, qualified, bare)]
     if hits:
         return Alert(
             **base,
@@ -211,7 +218,7 @@ def decide(
             evidence=tuple(imported),
             referenced=referenced,
         )
-    if not targets and not bare:
+    if not qualified and not bare:
         return Alert(
             **base,
             **context,
@@ -230,7 +237,7 @@ def decide(
             evidence=tuple(imported),
             referenced=referenced,
         )
-    leaves = sorted({t.split(".")[-1] for t in targets} | set(bare))
+    leaves = sorted({t.split(".")[-1] for t in qualified} | set(bare))
     leaves = [n for n in leaves if not (n.startswith("__") and n.endswith("__"))]
     untyped = [n for n in leaves if n in usage.attributes]
     if untyped:

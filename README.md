@@ -147,7 +147,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: professor3333/PatchSight@v0.8.0
+      - uses: professor3333/PatchSight@v0.9.0
         with:
           fail-on: called   # fail the job if any alert is CALLED
           comment: "true"   # keep one pull-request comment up to date
@@ -185,7 +185,7 @@ Outputs: `sarif-file`, `report-file` (the markdown report), `alerts`, `called` a
 >
 > PatchSight supports triage. It doesn't judge whether your deployment is vulnerable.
 
-**Tested on 58 [reachability fixtures](tests/fixtures/reachability/):** small programs for 16 advisories, 36 of which use the vulnerable code, through aliases, re-exports, subclasses, templates and dynamic imports. **No program that uses the vulnerable code is labelled "not called" or "not imported"**, either with correct high-confidence records ([report](docs/reports/reachability-fixtures-labelled.md)) or with the published database ([report](docs/reports/reachability-fixtures-db-2026.11.18.1.md)). The fixtures found the cases that needed fixing: the 0.4.0 scanner gives 7 such false suppressions with correct high-confidence records, and 1 with the published database. 0.5.0 gives none.
+**Tested on 58 [reachability fixtures](tests/fixtures/reachability/):** small programs for 16 advisories, 36 of which use the vulnerable code, through aliases, re-exports, subclasses, templates and dynamic imports. **No program that uses the vulnerable code is labelled "not called" or "not imported"**, either with correct high-confidence records ([report](docs/reports/reachability-fixtures-labelled.md)) or with the published database ([report](docs/reports/reachability-fixtures-db-2026.11.23.md)). The fixtures found the cases that needed fixing: the 0.4.0 scanner gives 7 such false suppressions with correct high-confidence records, and 1 with the published database. 0.5.0 gives none.
 
 ## How it works
 
@@ -261,7 +261,7 @@ The offline pipeline is `python -m patchsight.pipeline <command>`.
 - [x] Regression suite: 50 PyPI vulnerabilities whose recorded answers are replayed through the live code in CI, with the output pinned ([set](benchmarks/pypi-regression-v1/README.md))
 - [x] Tracing of every model run, and an operations dashboard: Kaggle sessions, quota against each daily cap, and what the database holds ([report](docs/reports/operations.md))
 - [x] **On PyPI:** [`pip install patchsight`](https://pypi.org/project/patchsight/), published from CI with Trusted Publishing and a required approval
-- [x] **SARIF output and a GitHub Action, with a pull-request comment** (`professor3333/PatchSight@v0.8.0`), with a [smoke test](.github/workflows/action-smoke.yml) on every change
+- [x] **SARIF output and a GitHub Action, with a pull-request comment** (`professor3333/PatchSight@v0.9.0`), with a [smoke test](.github/workflows/action-smoke.yml) on every change
 - [ ] OpenVEX output, written only for alerts a person has reviewed and approved
 
 > [!WARNING]

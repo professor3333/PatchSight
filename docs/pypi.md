@@ -35,7 +35,7 @@ patchsight scan .         # scan the lockfile and the code under .
 In GitHub Actions, the [PatchSight action](https://github.com/professor3333/PatchSight#in-ci-the-github-action) scans, uploads the SARIF report to code scanning, writes the full report to the job summary and, with `comment: "true"` (and `pull-requests: write`), keeps one pull-request comment up to date:
 
 ```yaml
-- uses: professor3333/PatchSight@v0.8.0
+- uses: professor3333/PatchSight@v0.9.0
   with:
     fail-on: called
     comment: "true"

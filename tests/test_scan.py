@@ -76,6 +76,26 @@ def test_requirements_pins_and_reasons(tmp_path: Path) -> None:
     )
 
 
+def test_requirements_read_tabs_and_attached_options_as_pip_does(tmp_path: Path) -> None:
+    """Each line here was once misread, which left a pinned package unchecked and its alerts
+    missing: a tab before a comment or a --hash, and -r or -e without a space."""
+    _write(tmp_path, {
+        "requirements.txt": (
+            "PyYAML==5.3.1\t# pinned for the loader\nurllib3==1.26.0 \\\n\t--hash=sha256:abc\n"
+            "-r\tmore.txt\n-cpins.txt\n-e./local\ngit+https://github.com/o/r.git#egg=r\n"
+        ),
+        "more.txt": "Jinja2==3.1.2\n",
+        "pins.txt": "idna==2.8  # constraints are checked too\n",
+    })  # fmt: skip
+    found = {d.name: d for d in requirements.parse(tmp_path / "requirements.txt")}
+    assert {n: d.version for n, d in found.items() if d.version} == {
+        "pyyaml": "5.3.1", "urllib3": "1.26.0", "jinja2": "3.1.2", "idna": "2.8",
+    }  # fmt: skip
+    assert found["-e./local"].unpinned_reason == "URL, path or editable install"
+    url = "git+https://github.com/o/r.git#egg=r"  # the fragment is not a comment
+    assert found[url].unpinned_reason == "URL, path or editable install"
+
+
 # --- AST scanner -----------------------------------------------------------------------
 
 

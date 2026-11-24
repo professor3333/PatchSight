@@ -6,6 +6,7 @@ followed relative to the including file; options, hashes and comments are ignore
 Environment markers are not evaluated, so a pin behind a marker is still checked.
 """
 
+import re
 from pathlib import Path
 
 from packaging.requirements import InvalidRequirement, Requirement
@@ -15,13 +16,21 @@ from patchsight.scan.lockfiles import Dependency
 
 __all__ = ["Dependency", "parse"]
 
+# As pip reads them: a comment starts at "#" at the start of a line or after whitespace
+# (so a URL's "#egg=" fragment is kept); -r, -c and -e take their argument after any
+# whitespace, "=" for the long forms, or attached (-rmore.txt).
+_COMMENT = re.compile(r"(^|\s)#.*$")
+_INCLUDE = re.compile(r"(?:-[rc]\s*|--(?:requirement|constraint)(?:\s*=\s*|\s+))(\S.*)")
+_EDITABLE = re.compile(r"(?:-e\s*|--editable(?:\s*=\s*|\s+))\S")
+_OPTION = re.compile(r"\s--")  # where per-requirement options such as --hash start
+
 
 def _logical_lines(text: str) -> list[tuple[int, str]]:
     """Join backslash continuations and strip comments, keeping the first line number."""
     lines: list[tuple[int, str]] = []
     buffer, start = "", 0
     for number, raw in enumerate(text.splitlines(), 1):
-        stripped = raw.split(" #", 1)[0].rstrip() if not raw.lstrip().startswith("#") else ""
+        stripped = _COMMENT.sub("", raw).rstrip()
         if not buffer:
             start = number
         if stripped.endswith("\\"):
@@ -57,13 +66,12 @@ def parse(path: Path, _seen: frozenset[Path] = frozenset()) -> list[Dependency]:
     source = path.as_posix()
     found: list[Dependency] = []
     for number, line in _logical_lines(path.read_text(encoding="utf-8")):
-        if line.startswith(("-r ", "-c ", "--requirement", "--constraint")):
-            target = line.split(maxsplit=1)[1] if " " in line else line.split("=", 1)[1]
-            include = path.parent / target.strip()
+        if include_match := _INCLUDE.fullmatch(line):
+            include = path.parent / include_match[1].strip()
             if include.exists():
                 found.extend(parse(include, seen))
             continue
-        editable = line.startswith(("-e ", "--editable"))
+        editable = _EDITABLE.match(line) is not None
         if line.startswith("-") and not editable:
             continue  # --index-url, --hash continuation, --trusted-host and other options
         if editable or "://" in line.split(";")[0] or line.startswith(("git+", ".", "/")):
@@ -78,7 +86,7 @@ def parse(path: Path, _seen: frozenset[Path] = frozenset()) -> list[Dependency]:
                 )
             )
             continue
-        text = line.split(" --hash", 1)[0].strip()
+        text = _OPTION.split(line, maxsplit=1)[0].strip()
         try:
             requirement = Requirement(text)
         except InvalidRequirement:

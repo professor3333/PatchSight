@@ -99,6 +99,26 @@ def test_requirements_read_tabs_and_attached_options_as_pip_does(tmp_path: Path)
 # --- AST scanner -----------------------------------------------------------------------
 
 
+def test_code_nested_past_the_recursion_limit_is_scanned_not_crashed_on(tmp_path: Path) -> None:
+    """Generated code can nest deeper than Python's recursion limit: a 500-branch elif chain
+    once crashed the whole scan. Nesting too deep for the parser itself is unparsable."""
+    branches = "".join(f"    elif v == {i}:\n        return {i}\n" for i in range(1, 500))
+    _write(tmp_path, {
+        "app/dispatch.py": "import yaml\ndef f(v):\n    if v == 0:\n        return yaml.full_load\n"
+                           + branches,
+        "app/sums.py": "import yaml\nx = " + " + ".join(["yaml.full_load"] * 3000) + "\n",
+        "app/deep.py": "import yaml\nx = " + "-" * 100_000 + "1\n",  # "parser stack overflowed"
+    })  # fmt: skip
+    usage = ast_scanner.scan(tmp_path)
+    found = [r for r in usage.references if r.name == "yaml.full_load"]
+    assert {r.location for r in found if r.location.path == "app/dispatch.py"} == {
+        ast_scanner.Location(path="app/dispatch.py", line=4)
+    }
+    assert sum(r.location.path == "app/sums.py" for r in found) == 3000
+    assert list(usage.unparsable) == ["app/deep.py"]
+    assert decide("GHSA-1", "pyyaml", "5.3.1", _record(), usage).verdict == "CALLED"
+
+
 def test_scanner_resolves_aliases_and_chains(tmp_path: Path) -> None:
     usage = ast_scanner.scan(_write(tmp_path, {"m.py": (
         "import yaml as y\nfrom yaml import safe_load as sl\nimport yaml.constructor\n\n"

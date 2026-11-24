@@ -290,16 +290,29 @@ def _statements(tree: ast.AST) -> Iterator[ast.AST]:
                 stack.extend(reversed(children))
 
 
-class _References(ast.NodeVisitor):
+class _References:
+    """The references pass. Each ``visit_*`` handles one node and says whether to go on
+    into its children; ``run`` walks the tree in ``ast.NodeVisitor``'s order (parent
+    first, children in field order) with a stack of its own, because generated code can
+    nest deeper than Python's recursion limit: a 500-branch ``elif`` chain does."""
+
     def __init__(self, state: _File) -> None:
         self.state = state
         self.covered: set[int] = set()  # nodes already part of a recorded chain
 
-    def visit_Import(self, node: ast.Import) -> None:
-        return
+    def run(self, tree: ast.AST) -> None:
+        stack = [tree]
+        while stack:
+            node = stack.pop()
+            visit = getattr(self, f"visit_{type(node).__name__}", None)
+            if visit is None or visit(node):
+                stack.extend(reversed(list(ast.iter_child_nodes(node))))
 
-    def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
-        return
+    def visit_Import(self, node: ast.Import) -> bool:
+        return False
+
+    def visit_ImportFrom(self, node: ast.ImportFrom) -> bool:
+        return False
 
     @staticmethod
     def _chain(node: ast.expr) -> tuple[list[str], list[ast.expr]] | None:
@@ -318,7 +331,7 @@ class _References(ast.NodeVisitor):
         target = self.state.aliases.get(parts[0])
         return ".".join([target, *parts[1:]]) if target else None
 
-    def visit_Attribute(self, node: ast.Attribute) -> None:
+    def visit_Attribute(self, node: ast.Attribute) -> bool:
         resolved = id(node) in self.covered
         if not resolved and (found := self._chain(node)) is not None:
             parts, inner = found
@@ -329,20 +342,21 @@ class _References(ast.NodeVisitor):
         if not resolved:
             # The receiver is not an import: a local, ``self``, a call result, ...
             self.state.attributes.setdefault(node.attr, self.state.loc(node))
-        self.generic_visit(node)
+        return True
 
-    def visit_Constant(self, node: ast.Constant) -> None:
+    def visit_Constant(self, node: ast.Constant) -> bool:
         if isinstance(node.value, str) and ("{{" in node.value or "{%" in node.value):
             for word, _ in template_words(node.value):
                 self.state.template_names.setdefault(word, self.state.loc(node))
+        return False
 
-    def visit_Name(self, node: ast.Name) -> None:
+    def visit_Name(self, node: ast.Name) -> bool:
         self.state.used.add(node.id)
         if id(node) in self.covered or not isinstance(node.ctx, ast.Load):
-            return
+            return False
         target = self.state.aliases.get(node.id)
         if target is None:
-            return
+            return False
         if node.id in self.state.module_aliases:
             self.state.dynamic.append(
                 DynamicUse(
@@ -353,8 +367,9 @@ class _References(ast.NodeVisitor):
             )
         else:
             self.state.references.append(Reference(name=target, location=self.state.loc(node)))
+        return False
 
-    def visit_Call(self, node: ast.Call) -> None:
+    def visit_Call(self, node: ast.Call) -> bool:
         function = node.func
         found = self._chain(function) if isinstance(function, ast.Attribute | ast.Name) else None
         called = self._resolve(found[0]) if found else None
@@ -396,7 +411,7 @@ class _References(ast.NodeVisitor):
                             location=self.state.loc(node),
                         )
                     )
-        self.generic_visit(node)
+        return True
 
 
 def scan(root: Path) -> Usage:
@@ -422,12 +437,13 @@ def scan(root: Path) -> Usage:
                 # Invalid escapes in the user's strings are their business, not the scan's.
                 warnings.simplefilter("ignore", SyntaxWarning)
                 tree = ast.parse(source, filename=display)
-        except (SyntaxError, ValueError):
+        except (SyntaxError, ValueError, RecursionError, MemoryError):
+            # RecursionError and MemoryError: nesting too deep for the parser itself.
             unparsable[display] = source[:200_000]
             continue
         state = _File(display)
         state.collect_imports(tree)
-        _References(state).visit(tree)
+        _References(state).run(tree)
         state.add_reexports()
         for module, locations in state.imports.items():
             imports.setdefault(module, []).extend(locations)

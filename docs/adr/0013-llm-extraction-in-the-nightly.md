@@ -56,3 +56,9 @@ The nightly kept its reports and trace but not its model answers, so a record it
 - **The night's response files go into its artifact** (`.cache/llm/<ab>/<key>.json`; never the usage ledger). They hold the model's answers, which the database already publishes as picks and rationales, and no prompt or third-party code.
 - **`fetch-nightly` adds them to the local response cache**, taking only files whose name is their own cache key and whose content is an answer or a rejection, and never overwriting one already there.
 - Artifacts expire after 90 days, so answers needed for longer are kept by fetching them in time.
+
+**Checked on the first night with it, 2026-11-24** ([run](https://github.com/professor3333/PatchSight/actions/runs/45405184914)).
+
+- **The answers are kept and imported.** The artifact holds the night's 29 answers: 25 vulnerabilities, 4 of them repaired. `fetch-nightly` added all 29 to the local cache.
+- **They replay exactly, where the prompt matches.** Of the 25 vulnerabilities, 12 rendered the same prompt locally and replayed with no model call, all 12 with the night's own outcome.
+- **The other 13 cannot replay against the pinned snapshot.** Their advisory text is new or has changed since the local OSV snapshot (2026-11-14), and the advisory text is part of the prompt, so the cache key differs. A shadow database therefore re-validates a nightly record only when its advisory reads the same in the shadow's snapshot as on its night; any other record keeps production's state, as before.

@@ -70,12 +70,12 @@ On the Go benchmark of [Dunlap et al. (DIMVA 2024)](https://www.enck.org/pubs/du
 
 **Precision is three times the naive baseline's.** Recall is lower, so the model alone sometimes misses the vulnerable function. That is why PatchSight never trusts it alone to say "not called" (see [the safety rule](#reading-the-verdicts)).
 
-**On 20 real projects**, each pinned to its lockfile from May 2024 ([panel](benchmarks/panel-v1.toml), [report](docs/reports/panel-db-2026.11.20.md)):
+**On 20 real projects**, each pinned to its lockfile from May 2024 ([panel](benchmarks/panel-v1.toml), [report](docs/reports/panel-db-2026.11.24.md)):
 
 | Metric | Measured | Target |
 |:---|:---:|:---:|
-| Alerts with symbol data | **75.6%** of 3,544 | 50% or more |
-| Scan time, projects with 200+ dependencies (p50 / p95) | **2.23 s / 5.29 s** | under 5 s / under 15 s |
+| Alerts with symbol data | **75.6%** of 3,545 | 50% or more |
+| Scan time, projects with 200+ dependencies (p50 / p95) | **1.96 s / 6.71 s** | under 5 s / under 15 s |
 | LLM tokens per scan | **0** | 0 |
 
 <sub>Scan time includes the OSV query, on an 8-core arm64 Mac with the database already downloaded. Since every record is low confidence for now, most alerts are UNKNOWN: the report breaks down why.</sub>
@@ -256,7 +256,7 @@ The offline pipeline is `python -m patchsight.pipeline <command>`.
 - [x] Held-out test evaluation of the confidence rule, declared in advance and run once: the safety target is **not met** ([ADR 0004](docs/adr/0004-fall-back-to-the-baseline.md#test-result-2026-11-18))
 - [x] Reachability fixtures: 58 programs, 0 false suppressions ([report](docs/reports/reachability-fixtures-labelled.md))
 - [x] Prompt-injection suite on cached answers ([report](docs/reports/injection-dunlap-dev-extract-v1-qwen3.8-27b-vs-extract-v1-gpt-oss-120b.md)): an advisory that names a decoy makes both model families agree on it, 8 of 15 times. One more reason high confidence stays withheld
-- [x] A panel of 20 real projects: 75.6% of alerts with symbol data, and scan time within target ([report](docs/reports/panel-db-2026.11.20.md))
+- [x] A panel of 20 real projects: 75.6% of alerts with symbol data, and scan time within target ([report](docs/reports/panel-db-2026.11.24.md))
 - [x] Retrieval at the prompt budget: on the 32 benchmark prompts cut to fit, BM25 keeps 42% of the true functions and no ranking keeps 69% ([E9](docs/experiments.md#e9-ordering-candidates-to-fit-the-prompt-budget)). A replacement, keeping the smallest candidates first, was chosen on dev and passed a declared evaluation on the Go holdout ([E10](docs/experiments.md#e10-a-replacement-for-bm25-at-the-prompt-budget-declared-before-measuring)); switched on in a shadow database, its picks were no better, so it is not used ([E12](docs/experiments.md#e12-the-switch-on-batch-before-and-after))
 - [x] Regression suite: 50 PyPI vulnerabilities whose recorded answers are replayed through the live code in CI, with the output pinned ([set](benchmarks/pypi-regression-v1/README.md))
 - [x] Tracing of every model run, and an operations dashboard: Kaggle sessions, quota against each daily cap, and what the database holds ([report](docs/reports/operations.md))

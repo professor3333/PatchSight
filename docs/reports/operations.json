@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-23T13:08:19Z",
+  "generated_at": "2026-11-24T15:50:53Z",
   "sessions": [
     {
       "name": "patchsight-kaggle-run",
@@ -547,21 +547,21 @@
     }
   ],
   "database": {
-    "db_version": "2026.11.23",
+    "db_version": "2026.11.24",
     "records": {
-      "llm, low": 3655,
-      "fallback, low": 154
+      "llm, low": 3680,
+      "fallback, low": 132
     },
     "tier_reasons": {
-      "no valid second opinion": 3655,
+      "no valid second opinion": 3680,
       "fallback: extraction by ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M (prompt extract-v1) failed: no valid answer after one repair": 25,
       "fallback: extraction by qwen/qwen3.8-27b (prompt extract-v1) failed: no valid answer after one repair": 1
     },
     "second_opinions": 0,
     "builds": {
-      "built": 3578,
+      "built": 3579,
       "no_github_fix": 2306,
-      "no_python_fix": 1084,
+      "no_python_fix": 1083,
       "module_level_references": 71,
       "no_resolvable_commit": 64,
       "module_level_only": 50,
@@ -1051,6 +1051,107 @@
       "latency_p50": null,
       "latency_p90": null,
       "completion_tokens_per_second": null
+    },
+    {
+      "trace": "pypi-extract-kaggle_extractor-shard1of4-20261123T131004Z.jsonl",
+      "command": "pypi-extract",
+      "role": "kaggle_extractor",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "started": "2026-11-23T13:10:04.889000Z",
+      "outcome": "complete",
+      "seconds": 55.4,
+      "calls": 912,
+      "network_calls": 0,
+      "cache_hits": 912,
+      "rejections": 4,
+      "extractions": {
+        "dead_letter": 7,
+        "ok": 896,
+        "repaired": 1
+      },
+      "latency_p50": null,
+      "latency_p90": null,
+      "completion_tokens_per_second": null
+    },
+    {
+      "trace": "pypi-extract-kaggle_extractor-shard2of4-20261123T131103Z.jsonl",
+      "command": "pypi-extract",
+      "role": "kaggle_extractor",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "started": "2026-11-23T13:11:03.540000Z",
+      "outcome": "complete",
+      "seconds": 53.9,
+      "calls": 893,
+      "network_calls": 0,
+      "cache_hits": 893,
+      "rejections": 0,
+      "extractions": {
+        "dead_letter": 8,
+        "ok": 877
+      },
+      "latency_p50": null,
+      "latency_p90": null,
+      "completion_tokens_per_second": null
+    },
+    {
+      "trace": "pypi-extract-kaggle_extractor-shard3of4-20261123T131200Z.jsonl",
+      "command": "pypi-extract",
+      "role": "kaggle_extractor",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "started": "2026-11-23T13:12:00.807000Z",
+      "outcome": "complete",
+      "seconds": 62.5,
+      "calls": 846,
+      "network_calls": 0,
+      "cache_hits": 846,
+      "rejections": 4,
+      "extractions": {
+        "dead_letter": 5,
+        "ok": 836
+      },
+      "latency_p50": null,
+      "latency_p90": null,
+      "completion_tokens_per_second": null
+    },
+    {
+      "trace": "pypi-extract-kaggle_extractor-shard4of4-20261123T131307Z.jsonl",
+      "command": "pypi-extract",
+      "role": "kaggle_extractor",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "started": "2026-11-23T13:13:07.903000Z",
+      "outcome": "complete",
+      "seconds": 74.1,
+      "calls": 879,
+      "network_calls": 0,
+      "cache_hits": 879,
+      "rejections": 0,
+      "extractions": {
+        "dead_letter": 5,
+        "ok": 869
+      },
+      "latency_p50": null,
+      "latency_p90": null,
+      "completion_tokens_per_second": null
+    },
+    {
+      "trace": "pypi-extract-extractor-20261124T154933Z.jsonl",
+      "command": "pypi-extract",
+      "role": "extractor",
+      "model": "qwen/qwen3.8-27b",
+      "started": "2026-11-24T15:49:33.685000Z",
+      "outcome": "complete",
+      "seconds": 1.0,
+      "calls": 14,
+      "network_calls": 0,
+      "cache_hits": 14,
+      "rejections": 0,
+      "extractions": {
+        "ok": 10,
+        "repaired": 2
+      },
+      "latency_p50": null,
+      "latency_p90": null,
+      "completion_tokens_per_second": null
     }
   ],
   "nightly": [
@@ -1375,6 +1476,71 @@
           "completion_tokens_per_second": null
         }
       ]
+    },
+    {
+      "run_id": 45405184914,
+      "event": "schedule",
+      "conclusion": "success",
+      "started": "2026-11-24T13:36:30Z",
+      "db_version": "2026.11.24",
+      "previous_version": "2026.11.23",
+      "carried": 4869,
+      "rebuilt": 7,
+      "new": 0,
+      "removed": 0,
+      "to_extract": 7,
+      "backlog": 77,
+      "gate_passed": true,
+      "published": true,
+      "extraction": {
+        "ok": 21,
+        "repaired": 4
+      },
+      "extraction_model": "qwen/qwen3.8-27b",
+      "prompt_tokens": 106934,
+      "completion_tokens": 7360,
+      "runs": [
+        {
+          "trace": "pypi-extract-extractor-20261124T133717Z.jsonl",
+          "command": "pypi-extract",
+          "role": "extractor",
+          "model": "qwen/qwen3.8-27b",
+          "started": "2026-11-24T13:37:17.981000Z",
+          "outcome": "complete",
+          "seconds": 1682.6,
+          "calls": 29,
+          "network_calls": 29,
+          "cache_hits": 0,
+          "rejections": 0,
+          "extractions": {
+            "ok": 21,
+            "repaired": 4
+          },
+          "latency_p50": 1.4,
+          "latency_p90": 3.4,
+          "completion_tokens_per_second": 139.6
+        },
+        {
+          "trace": "pypi-extract-extractor-20261124T140526Z.jsonl",
+          "command": "pypi-extract",
+          "role": "extractor",
+          "model": "qwen/qwen3.8-27b",
+          "started": "2026-11-24T14:05:26.232000Z",
+          "outcome": "complete",
+          "seconds": 4.7,
+          "calls": 29,
+          "network_calls": 0,
+          "cache_hits": 29,
+          "rejections": 0,
+          "extractions": {
+            "ok": 21,
+            "repaired": 4
+          },
+          "latency_p50": null,
+          "latency_p90": null,
+          "completion_tokens_per_second": null
+        }
+      ]
     }
   ],
   "pricing_source": "https://console.groq.com/docs/models",
@@ -1390,12 +1556,12 @@
       "unit": "vulnerability"
     },
     {
-      "what": "Nightly extraction (2 nights)",
+      "what": "Nightly extraction (3 nights)",
       "priced_as": "qwen/qwen3.8-27b",
-      "prompt_tokens": 228462,
-      "completion_tokens": 15146,
-      "usd": 0.24,
-      "units": 2,
+      "prompt_tokens": 335396,
+      "completion_tokens": 22506,
+      "usd": 0.36,
+      "units": 3,
       "unit": "night"
     }
   ]

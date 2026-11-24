@@ -23,8 +23,9 @@ Rules, in order:
 A reference matches a symbol when it is the same name; when it names the class or module
 that directly contains the symbol; when it reaches into the symbol (``yaml.Loader.x`` for
 ``yaml.Loader``); or when it has the same top-level package and the same final name, which
-catches re-exports such as ``pkg.load`` for ``pkg.loader.load``. False matches only raise
-priority.
+catches re-exports such as ``pkg.load`` for ``pkg.loader.load``. When that final name is a
+dunder such as ``__init__``, the class before it must agree too, since every class has one
+(ADR 0015). False matches only raise priority.
 """
 
 import re
@@ -87,7 +88,15 @@ def matches(reference: str, symbol: str) -> bool:
         return True  # the containing class or module of a vulnerable member
     if len(r) > len(s) and r[: len(s)] == s:
         return True  # reaching into a vulnerable class
-    return len(r) >= 2 and r[0] == s[0] and r[-1] == s[-1]  # re-exported name
+    if len(r) < 2 or r[0] != s[0] or r[-1] != s[-1]:
+        return False
+    # A re-exported name. A dunder alone says nothing about which code is reached:
+    # django.test.TestCase.__init__ is not HttpResponseRedirectBase.__init__ (ADR 0015).
+    return not _is_dunder(r[-1]) or (len(r) >= 3 and len(s) >= 3 and r[-2] == s[-2])
+
+
+def _is_dunder(name: str) -> bool:
+    return len(name) > 4 and name.startswith("__") and name.endswith("__")
 
 
 def targets(record: Record) -> tuple[list[str], list[str]]:

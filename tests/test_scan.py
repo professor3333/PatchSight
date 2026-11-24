@@ -261,6 +261,22 @@ def test_matching_rules() -> None:
     assert not matches("yaml.safe_load", "yaml.full_load")
 
 
+def test_a_dunder_name_alone_is_not_a_re_export() -> None:
+    """Every class has an __init__: sharing one says nothing about the code reached. On the
+    repository panel, 23 CALLED alerts rested on such a match alone, all false (ADR 0015)."""
+    vulnerable = "django.http.response.HttpResponseRedirectBase.__init__"
+    assert not matches("django.test.TestCase.__init__", vulnerable)
+    assert not matches("django.forms.ModelForm.changed_data.__get__",
+                       "django.contrib.gis.db.models.proxy.SpatialProxy.__get__")  # fmt: skip
+    assert not matches("django.__init__", vulnerable)
+    # The same class re-exported still matches, as do the other rules.
+    assert matches("git.Repo.__init__", "git.repo.base.Repo.__init__")
+    assert matches("django.http.response.HttpResponseRedirectBase.__init__", vulnerable)
+    assert matches("django.http.response.HttpResponseRedirectBase", vulnerable)
+    assert matches("git.Repo.clone_from", "git.repo.base.Repo.clone_from")
+    assert matches("git.Repo", "git.repo.base.Repo")
+
+
 def test_parser_warnings_in_scanned_code_are_not_printed(
     tmp_path: Path, recwarn: pytest.WarningsRecorder
 ) -> None:

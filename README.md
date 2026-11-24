@@ -82,6 +82,8 @@ On the Go benchmark of [Dunlap et al. (DIMVA 2024)](https://www.enck.org/pubs/du
 
 **What the model work would cost** at Groq's published on-demand prices (read 2026-11-22): the whole PyPI backfill, 8.6 million input and 1.3 million output tokens, **$12.16**, or $0.0035 a vulnerability. It ran on Kaggle's free GPUs, and a scan calls no model at all ([operations report](docs/reports/operations.md#cost-at-paid-rates)). Among the configurations measured on dev, the 4-bit Qwen has the best F1 and none comes within 2 points of it ([cost against quality](docs/reports/cost-quality-dunlap-dev.md)).
 
+The [evaluation page](docs/evaluation.md) sets every success target from the proposal against what was measured, with the source of each number, and explains every target that is missed.
+
 ## Quick start
 
 ```bash

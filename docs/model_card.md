@@ -42,6 +42,8 @@ Licences as listed on each model's Hugging Face page, checked 2026-11-18. Exact 
 
 ## Metrics
 
+Every success target against what was measured, with each miss explained, is on the [evaluation page](evaluation.md).
+
 ### Extraction (Dunlap Go benchmark, function level)
 
 | System | Split | Precision | Recall | F1 (95% CI) | Miss rate |

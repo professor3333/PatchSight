@@ -1769,6 +1769,23 @@ def operations_report_command(
     )
 
 
+@app.command("scorecard")
+def scorecard_command(
+    root: Root = Path(),
+    config: Annotated[Path, typer.Option(help="LLM config.")] = Path("configs/llm.toml"),
+) -> None:
+    """Write the proposal's success targets, each against what was measured, into
+    docs/evaluation.md, from the committed reports only."""
+    from patchsight.eval import scorecard
+
+    dotted = load_config(root / config).validation.dotted_entry_points
+    card = scorecard.build(root, dotted=dotted)
+    page = root / scorecard.PAGE
+    page.write_text(scorecard.fill(page.read_text("utf-8"), scorecard.render(card)), "utf-8")
+    counts = Counter(r.status for r in card.targets)
+    typer.echo(", ".join(f"{n} {s}" for s, n in sorted(counts.items())) + f" -> {scorecard.PAGE}")
+
+
 @app.command("panel-report")
 def panel_report_command(
     database: Annotated[Path, typer.Option("--db", help="The symbol database to scan with.")],

@@ -141,6 +141,10 @@ def test_scanner_resolves_aliases_and_chains(tmp_path: Path) -> None:
     [
         ("import yaml\nhandler(yaml)\n", "module yaml used as a value"),
         ("import yaml\ngetattr(yaml, name)\n", "getattr(yaml, <computed>)"),
+        (
+            "import yaml.constructor\ngetattr(yaml.constructor, name)\n",
+            "getattr(yaml.constructor, <computed>)",
+        ),
         ("import importlib\nimportlib.import_module('yaml')\n", "importlib.import_module('yaml')"),
         ("m = __import__(name)\n", "__import__('?')"),
         ("from yaml import *\n", "from yaml import *"),
@@ -172,6 +176,7 @@ def test_scanner_skips_virtualenvs_and_records_unparsable_files(tmp_path: Path) 
         "from yaml import full_load\nfull_load(s)\n",
         "from yaml import full_load as fl\nfl(s)\n",
         "import yaml\ngetattr(yaml, 'full_load')(s)\n",
+        "import yaml.constructor\ngetattr(yaml.constructor, 'FullConstructor')()\n",
         "from yaml.constructor import FullConstructor\nFullConstructor()\n",
         "import yaml.constructor\nyaml.constructor.FullConstructor.construct_object(x)\n",
         "import yaml\nyaml.construct_object(x)\n",  # re-export of the vulnerable leaf name
@@ -194,7 +199,14 @@ def test_low_confidence_never_lowers_an_alert(tmp_path: Path) -> None:
 
 @pytest.mark.parametrize(
     "code",
-    ["import yaml\nhandler(yaml)\n", "import yaml\ngetattr(yaml, name)\n", "from yaml import *\n"],
+    [
+        "import yaml\nhandler(yaml)\n",
+        "import yaml\ngetattr(yaml, name)\n",
+        "from yaml import *\n",
+        # A dotted subject once went unrecorded: with high-confidence data, a wrong
+        # "imported, not called" (found by tests/test_scan_properties.py).
+        "import yaml.constructor\ngetattr(yaml.constructor, name)\n",
+    ],
 )
 def test_dynamic_use_is_unknown(tmp_path: Path, code: str) -> None:
     assert _verdict(tmp_path, code) == "UNKNOWN"

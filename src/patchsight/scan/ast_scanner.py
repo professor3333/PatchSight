@@ -11,7 +11,8 @@ Two passes per file:
 
 Uses the scanner cannot resolve are recorded as *dynamic* and make a verdict UNKNOWN:
 
-* ``getattr(module, <computed name>)`` (a string constant is resolved normally);
+* ``getattr(module, <computed name>)``, the module named or dotted (a string constant
+  is resolved normally);
 * ``importlib.import_module(...)`` and ``__import__(...)``;
 * a module object used as a plain value (passed, stored or returned);
 * ``from package import *``.
@@ -394,10 +395,16 @@ class _References:
             )
             if target != "?":
                 self.state.imports.setdefault(target, []).append(self.state.loc(node))
-        elif called == "getattr" and len(node.args) >= 2 and isinstance(node.args[0], ast.Name):
-            base = self.state.aliases.get(node.args[0].id)
-            if base is not None:
-                self.covered.add(id(node.args[0]))
+        elif called == "getattr" and len(node.args) >= 2:
+            # getattr(yaml, ...) or getattr(yaml.constructor, ...): the subject resolves
+            # like any other chain. A plain name is not "used as a value" here; a dotted
+            # subject keeps its own reference too, so this only ever adds evidence.
+            subject = node.args[0]
+            chain = self._chain(subject) if isinstance(subject, ast.Attribute | ast.Name) else None
+            base = self._resolve(chain[0]) if chain else None
+            if chain is not None and base is not None:
+                if isinstance(subject, ast.Name):
+                    self.covered.add(id(subject))
                 attribute = node.args[1]
                 if isinstance(attribute, ast.Constant) and isinstance(attribute.value, str):
                     self.state.references.append(
@@ -407,7 +414,7 @@ class _References:
                     self.state.dynamic.append(
                         DynamicUse(
                             root=base.split(".")[0],
-                            reason=f"getattr({node.args[0].id}, <computed>)",
+                            reason=f"getattr({'.'.join(chain[0])}, <computed>)",
                             location=self.state.loc(node),
                         )
                     )

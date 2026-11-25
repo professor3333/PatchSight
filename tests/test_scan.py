@@ -424,6 +424,13 @@ def test_comments_and_other_cases_do_not_name_a_package(tmp_path: Path) -> None:
     )
 
 
+def test_a_launch_file_line_is_counted_as_an_editor_counts_it() -> None:
+    """A form feed is not a line break for an editor; str.splitlines() made it one, so the
+    evidence pointed a line too far."""
+    found = list(ast_scanner.launch_words("FROM python\n# \x0c page\nCMD exec gunicorn app\n"))
+    assert ("word", "gunicorn", 3) in found
+
+
 def test_a_distribution_name_in_a_launch_file_counts(tmp_path: Path) -> None:
     dockerfile = "RUN pip install python_dotenv\n"
     root = _write(tmp_path, {"app.py": "import os\n", "Dockerfile": dockerfile})

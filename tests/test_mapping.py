@@ -190,7 +190,8 @@ class Guard:
 
 def test_module_level_changes_reference_the_definitions_they_name() -> None:
     fixed = REGISTRATION.replace(b"construct_safe)", b"construct_object)  # 'Constructor.x'")
-    mapping = map_hunks("lib/c.py", "python", REGISTRATION, fixed, diff_hunks(REGISTRATION, fixed))
+    hunks = diff_hunks(REGISTRATION.decode(), fixed.decode())
+    mapping = map_hunks("lib/c.py", "python", REGISTRATION, fixed, hunks)
     assert mapping.changed == ()  # the paper's "vulnerable function unchanged" case
     assert mapping.module_level_hunks
     assert [d.name for d in mapping.referenced] == [
@@ -198,19 +199,33 @@ def test_module_level_changes_reference_the_definitions_they_name() -> None:
     ]  # fmt: skip
 
 
+def test_a_form_feed_does_not_move_the_lines_after_it() -> None:
+    """str.splitlines() breaks at a form feed; a diff and tree-sitter do not. A page break at
+    the top of a file once moved every computed change one line down, into the next method."""
+    old = (b"\x0c\nclass A:\n    def f(self):\n        return 1\n"
+           b"    def g(self):\n        return 2\n")  # fmt: skip
+    new = old.replace(b"return 1", b"return 9")
+    mapping = map_hunks("pkg/a.py", "python", old, new, diff_hunks(old.decode(), new.decode()))
+    assert [c.name for c in mapping.changed] == ["A.f"]
+
+
 def test_a_changed_constant_references_the_definitions_that_use_it() -> None:
     fixed = PATTERNS.replace(b'r"a+"', b'r"a{1,10}"').replace(b'"1.0"', b'"1.1"')
-    mapping = map_hunks("pkg/guard.py", "python", PATTERNS, fixed, diff_hunks(PATTERNS, fixed))
+    hunks = diff_hunks(PATTERNS.decode(), fixed.decode())
+    mapping = map_hunks("pkg/guard.py", "python", PATTERNS, fixed, hunks)
     assert mapping.changed == ()
     assert sorted(d.name for d in mapping.referenced) == ["Guard.scan", "check"]
     assert {d.kind for d in mapping.referenced} == {"function", "method"}
     bump = PATTERNS.replace(b'"1.0"', b'"1.1"')  # __version__ names nothing
     assert (
-        map_hunks("pkg/guard.py", "python", PATTERNS, bump, diff_hunks(PATTERNS, bump)).referenced
+        map_hunks(
+            "pkg/guard.py", "python", PATTERNS, bump, diff_hunks(PATTERNS.decode(), bump.decode())
+        ).referenced
         == ()
     )
 
 
 def test_go_module_level_changes_reference_nothing() -> None:
     fixed = GO.replace(b"r io.Reader", b"r io.ReadCloser")
-    assert map_hunks("p.go", "go", GO, fixed, diff_hunks(GO, fixed)).referenced == ()
+    hunks = diff_hunks(GO.decode(), fixed.decode())
+    assert map_hunks("p.go", "go", GO, fixed, hunks).referenced == ()

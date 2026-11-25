@@ -34,10 +34,22 @@ class PatchParseError(ValueError):
     """The patch text is not a sequence of well-formed unified-diff hunks."""
 
 
+def text_lines(text: str) -> list[str]:
+    """The lines of ``text`` as a unified diff and tree-sitter count them: each ends at "\\n"
+    and nowhere else, and a "\\r" before it belongs to the line ending (CRLF files).
+    ``str.splitlines`` also breaks at form feeds, vertical tabs, "\\x1c" to "\\x1e", "\\x85",
+    "\\u2028" and "\\u2029". Real source has form feeds, and each one would move every later
+    line number by one."""
+    lines = [line.removesuffix("\r") for line in text.split("\n")]
+    if lines[-1] == "":
+        lines.pop()
+    return lines
+
+
 def parse_patch(patch: str) -> list[Hunk]:
     """Parse GitHub's per-file ``patch`` text into hunks."""
     hunks: list[Hunk] = []
-    lines = patch.splitlines()
+    lines = text_lines(patch)
     i = 0
     while i < len(lines):
         match = _HEADER.match(lines[i])
@@ -97,8 +109,8 @@ def parse_patch(patch: str) -> list[Hunk]:
 
 def diff_hunks(old_text: str | None, new_text: str | None) -> list[Hunk]:
     """Compute hunks from two full file versions. ``None`` means the file does not exist."""
-    old_lines = (old_text or "").splitlines()
-    new_lines = (new_text or "").splitlines()
+    old_lines = text_lines(old_text or "")
+    new_lines = text_lines(new_text or "")
     matcher = difflib.SequenceMatcher(a=old_lines, b=new_lines, autojunk=False)
     hunks: list[Hunk] = []
     for tag, a0, a1, b0, b1 in matcher.get_opcodes():

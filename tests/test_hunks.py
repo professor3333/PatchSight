@@ -42,7 +42,12 @@ def test_diff_hunks_for_added_and_removed_files() -> None:
     assert diff_hunks("same\n", "same\n") == []
 
 
-_lines = st.lists(st.sampled_from(["a", "b", "c", "d", ""]), max_size=25)
+# Real source holds characters str.splitlines() treats as line breaks but a diff does not:
+# form feeds (page breaks in older Python), vertical tabs, "\x1c", "\x85", "\u2028". Each
+# once moved every later line number by one. A "\r" inside a line is kept; CRLF endings are
+# tested on their own.
+_ODD = ["\x0c", "e\x0bf", "g\x1c", "h\x85", "\u2028i", "j\rk"]
+_lines = st.lists(st.sampled_from(["a", "b", "c", "d", "", *_ODD]), max_size=25)
 
 
 @given(old=_lines, new=_lines, context=st.integers(0, 3))
@@ -60,3 +65,34 @@ def test_parsed_unified_diff_matches_computed_hunks(
     for hunk in parsed:
         assert all(1 <= line <= len(old) for line in hunk.removed)
         assert all(1 <= line <= len(new) for line in hunk.added)
+
+
+def test_crlf_endings_read_as_plain_line_endings() -> None:
+    """A CRLF file's patch reads as before: "\\r\\n" ends a line, and the "\\r" is not text."""
+    (hunk,) = parse_patch("@@ -1,2 +1,2 @@\r\n a\r\n-b\r\n+B\r\n")
+    assert (hunk.removed, hunk.added, hunk.lines) == ((2,), (2,), (" a", "-b", "+B"))
+    (computed,) = diff_hunks("a\r\nb\r\n", "a\r\nB\r\n")
+    assert (computed.removed, computed.lines) == ((2,), ("-b", "+B"))
+
+
+@given(old=_lines, new=_lines, context=st.integers(0, 3))
+def test_applying_the_parsed_hunks_rebuilds_the_new_file(
+    old: list[str], new: list[str], context: int
+) -> None:
+    """Each hunk's lines, replayed over the old file, give the new file exactly: the parser
+    keeps every line, in order, with the right counts."""
+    text = list(difflib.unified_diff(old, new, lineterm="", n=context))
+    patch = "\n".join(line for line in text if not line.startswith(("---", "+++")))
+    rebuilt: list[str] = []
+    position = 0  # lines of the old file consumed so far
+    for hunk in parse_patch(patch):
+        start = hunk.old_start - 1 if hunk.old_count else hunk.old_start
+        rebuilt += old[position:start]
+        position = start
+        for line in hunk.lines:
+            if line.startswith(("-", " ")):
+                assert old[position] == line[1:]
+                position += 1
+            if line.startswith(("+", " ")):
+                rebuilt.append(line[1:])
+    assert rebuilt + old[position:] == new

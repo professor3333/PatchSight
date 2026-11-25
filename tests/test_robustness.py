@@ -130,7 +130,8 @@ def render(x):
 
 def test_a_fix_squashed_with_a_refactor_keeps_every_changed_definition() -> None:
     before, after = SQUASHED_BEFORE.encode(), SQUASHED_AFTER.encode()
-    mapping = map_hunks("pkg/web.py", "python", before, after, diff_hunks(before, after))
+    hunks = diff_hunks(before.decode(), after.decode())
+    mapping = map_hunks("pkg/web.py", "python", before, after, hunks)
     names = {c.name for c in mapping.changed}
     assert {"safe_join", "render"} <= names  # the fix and the refactor's call site
     assert {"old_helper", "new_helper"} & names  # the rename shows as a changed definition
@@ -170,7 +171,8 @@ def load(path):
 
 def test_a_fix_that_adds_a_helper_also_changes_its_caller() -> None:
     before, after = ADD_BEFORE.encode(), ADD_AFTER.encode()
-    mapping = map_hunks("pkg/io.py", "python", before, after, diff_hunks(before, after))
+    hunks = diff_hunks(before.decode(), after.decode())
+    mapping = map_hunks("pkg/io.py", "python", before, after, hunks)
     by_name = {c.name: c.sides for c in mapping.changed}
     assert by_name["_check"] == ("post",)  # new: not in the vulnerable release
     assert "post" in by_name["load"]  # the vulnerable caller, changed to call it

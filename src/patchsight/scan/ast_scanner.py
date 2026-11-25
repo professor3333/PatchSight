@@ -202,7 +202,8 @@ def launch_words(text: str) -> Iterator[tuple[str, str, int]]:
     """``("word" | "module", name, line)`` for each non-comment line. A dotted name also
     yields its first part, so ``gunicorn.conf.py`` names gunicorn and ``-m celery.bin``
     runs celery."""
-    for number, line in enumerate(text.splitlines(), 1):
+    # Lines end at "\n" only, as an editor numbers them; splitlines() also breaks at form feeds.
+    for number, line in enumerate(text.split("\n"), 1):
         if line.lstrip().startswith("#"):
             continue
         for kind, pattern in (("word", _TOKEN), ("module", _RUN_MODULE)):

@@ -31,7 +31,7 @@ import tree_sitter_python
 from pydantic import BaseModel, ConfigDict
 from tree_sitter import Language, Node, Parser
 
-from patchsight.pipeline.diffs.hunks import Hunk
+from patchsight.pipeline.diffs.hunks import Hunk, text_lines
 
 SourceLanguage = Literal["python", "go"]
 DefinitionKind = Literal["function", "method", "class"]
@@ -242,8 +242,8 @@ def map_hunks(
     changed: dict[str, tuple[DefinitionKind, set[Side], set[int]]] = {}
     module_level: set[int] = set()
     referenced: dict[str, tuple[DefinitionKind, set[Side], set[int]]] = {}
-    old_lines = old_source.decode("utf-8", "replace").splitlines() if old_source else []
-    new_lines = new_source.decode("utf-8", "replace").splitlines() if new_source else []
+    old_lines = text_lines(old_source.decode("utf-8", "replace")) if old_source else []
+    new_lines = text_lines(new_source.decode("utf-8", "replace")) if new_source else []
 
     module_lines: dict[Side, list[tuple[int, int]]] = {"pre": [], "post": []}
 

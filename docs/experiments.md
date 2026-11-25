@@ -28,6 +28,7 @@ Every controlled experiment on the extraction system, including the ones that lo
 | E10 | A replacement for BM25 at the prompt budget | file order; smallest first; candidates the advisory names first; BM25 score per token | Chosen on dev: smallest first. Holdout, declared beforehand: +0.094 recall over BM25 (95% CI +0.042 to +0.328) | Passed. An option, off by default (`budget.candidate_order`); switched on with #52 and #53 |
 | E11 | Self-hosted second opinion | gpt-oss-120b on Groq; gpt-oss-20b (MXFP4) on Kaggle | Safety view, frozen rule, dev: overall miss 8.3% and 10.0%; high-confidence misses 1 of 27 and 1 of 25 | Lost: fails ADR 0007's declared miss-rate criterion by one report; the Groq second opinion stays |
 | E12 | The switch-on batch, before and after | as shipped; with the output cap, smallest-first ordering and dotted entry points | Dev F1 0.676 to 0.688 at the same recall; all 280: 0.680 to 0.662 (precision 0.751 to 0.702, recall 0.621 to 0.628); miss rate unchanged; dead letters 1 to 0 | Measured; the PyPI shadow and its review decide the promotion |
+| E13 | Run-to-run determinism (hosted) | last night's Groq answers; the same prompts asked again the next morning | 5 of 7 answers byte-identical; every pick, entry point and cited hunk identical; 2 rationales reworded | Measured: Groq is reproducible in what it decides, not in its wording |
 
 ## E1: 4-bit self-hosted against hosted serving
 
@@ -167,7 +168,7 @@ Provenance: [first run](reports/kaggle-run-extract-v1-qwen3.8-27b-q4km.json),
 [second run](reports/kaggle-rerun-extract-v1-qwen3.8-27b-q4km.json).
 
 **Decision.** None needed: self-hosted extraction is reproducible, so cached answers and
-re-runs agree. Hosted serving (Groq) was not tested for this.
+re-runs agree. Hosted serving (Groq) is measured in [E13](#e13-run-to-run-determinism-of-hosted-extraction).
 
 ## E6: Entry points resolved on a dotted boundary
 
@@ -435,3 +436,21 @@ from the dev breakdown.
 - One call per advisory against one per function.
 - A larger prompt budget on self-hosted serving (truncation causes 8 of 42 dev misses).
 - gpt-oss-20b, self-hosted, as a faster second opinion for the PyPI backfill.
+
+## E13: Run-to-run determinism of hosted extraction
+
+**Question.** Does Groq give the same answer when the nightly's prompt is asked again? A check of live models against cached answers, for drift (proposal §10), only works if it does. E5 showed self-hosted extraction is reproducible byte for byte. Groq serves the same model at temperature 0 with a fixed seed, but a hosted service promises neither.
+
+**Factor.** Only time. Five of the vulnerabilities the 2026-11-24 nightly extracted on Groq (`qwen/qwen3.8-27b`, prompt `extract-v1`) were asked again on 2026-11-25, about 16 hours later. The prompts were rebuilt by the same code from the same inputs, into an empty response cache. Three answered first time and two needed a repair, so 7 requests.
+
+**Result.**
+- **Every request rendered the same prompt.** All 7 had the night's cache key, so the two repair prompts, which quote the first answer, matched too.
+- **5 of the 7 answers are byte-identical.**
+- **The other 2 differ only in rationale wording.** In all five vulnerabilities, the vulnerable symbols, the entry points and the cited hunks are identical to the night's.
+
+The sample is small: five vulnerabilities on one pair of days ([recorded report](reports/determinism-groq-2026-11-25.md)).
+
+**Decision.** None yet. It says how to compare:
+- **A drift check against live models must compare decisions, not text.** That means the vulnerable set, the entry points and the citations. Byte comparison would raise false alarms on reworded rationales.
+- **A record's own text is reproducible only from its cached answer.** So the nightly keeps its answers ([ADR 0013](adr/0013-llm-extraction-in-the-nightly.md)).
+

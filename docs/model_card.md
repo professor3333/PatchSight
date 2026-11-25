@@ -62,7 +62,7 @@ Intervals are bootstrapped over reports. The miss rate is the share of reports w
 - **Invented candidate IDs before validation:** 0. **Entry points:** 242 of the 251 named resolved to a definition (96.4%); the other 9 were dropped.
 - **Citations after validation:** every cited hunk exists and lies inside its symbol, enforced by the validator.
 - **Provider rejections:** 0 on llama.cpp. On Groq, the same model's dev run had 10 rejected generations and 4 dead letters out of 60 reports ([E1](experiments.md#e1-4-bit-self-hosted-against-hosted-serving)).
-- **Determinism:** a second Kaggle run gave byte-identical answers for 277 of 277 calls ([E5](experiments.md#e5-run-to-run-determinism-of-self-hosted-extraction)).
+- **Determinism:** a second Kaggle run gave byte-identical answers for 277 of 277 calls ([E5](experiments.md#e5-run-to-run-determinism-of-self-hosted-extraction)). On Groq, the same prompts asked again a day later gave the same picks, entry points and citations in 5 of 5 vulnerabilities, but reworded 2 of 7 rationales ([E13](experiments.md#e13-run-to-run-determinism-of-hosted-extraction)).
 
 ### Confidence tiers (safety view)
 

@@ -103,7 +103,7 @@ The scan makes two kinds of network call: the OSV query, and the database downlo
 
 | Workflow | Trigger | What it does |
 |---|---|---|
-| [`ci.yml`](../.github/workflows/ci.yml) | every push and pull request | ruff, mypy, offline pytest, `reproduce` of the benchmark table, and `regression-check` of the PyPI regression set. No secrets |
+| [`ci.yml`](../.github/workflows/ci.yml) | every push and pull request | ruff, mypy, offline pytest, `reproduce` of the benchmark table, `regression-check` of the PyPI regression set, `eval-sets` against their pins, and a build of the pipeline image ([`Dockerfile`](../Dockerfile)) with `reproduce` run inside it. No secrets |
 | [`nightly.yml`](../.github/workflows/nightly.yml) | 03:17 UTC daily, or by hand | snapshot, `update-db`, extraction of the night's changed vulnerabilities when the Groq secret is set ([ADR 0013](adr/0013-llm-extraction-in-the-nightly.md)), release gate, dated release, pointer move by `github-actions[bot]`, the same version on Hugging Face when its secret is set; an issue on failure |
 | [`hf-publish.yml`](../.github/workflows/hf-publish.yml) | by hand, with a release tag | one existing release to the Hugging Face dataset; the nightly does the same for each release it publishes |
 | [`release.yml`](../.github/workflows/release.yml) | a `v*` tag | full tests, `reproduce`, build, clean-install smoke test, then PyPI through Trusted Publishing after the owner approves, and the GitHub Release |

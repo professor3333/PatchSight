@@ -285,6 +285,15 @@ make reproduce          # rebuild the benchmark tables from committed files
 
 Tests never call a model or a live API. Design decisions are recorded in [`docs/adr/`](docs/adr/), and the full design is in [`docs/proposal.md`](docs/proposal.md).
 
+The pipeline also comes as a container image, built from the [`Dockerfile`](Dockerfile) with base images pinned by digest and dependencies from `uv.lock`. It holds no data, so mount a working copy:
+
+```bash
+docker build -t patchsight-pipeline .
+docker run --rm -v "$PWD":/work:ro patchsight-pipeline reproduce --root /work
+```
+
+CI builds the image and reproduces the benchmark tables inside it on every push. The nightly workflow runs the same lockfile directly on the runner.
+
 <details>
 <summary><b>Project layout</b></summary>
 

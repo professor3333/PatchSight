@@ -1,0 +1,9 @@
+# The image copies only pyproject.toml, uv.lock, LICENSE, docs/pypi.md and src/. Everything
+# else stays out of the build context, so large local data never reaches the daemon.
+*
+!pyproject.toml
+!uv.lock
+!LICENSE
+!docs/pypi.md
+!src/
+**/__pycache__

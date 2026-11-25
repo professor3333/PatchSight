@@ -47,3 +47,10 @@ jobs:
 
       - name: Check the frozen evaluation sets
         run: uv run python -m patchsight.pipeline eval-sets
+
+      - name: Build the pipeline image and reproduce inside it
+        # The Dockerfile pins its base images by digest and installs from uv.lock. The
+        # checkout is mounted read-only: the image holds no data of its own.
+        run: |
+          docker build --quiet --tag patchsight-pipeline .
+          docker run --rm --volume "$PWD":/work:ro patchsight-pipeline reproduce --root /work

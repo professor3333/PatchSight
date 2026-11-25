@@ -109,6 +109,16 @@ def test_poetry_lock_keeps_alternative_indexes_and_explains_git(tmp_path: Path) 
     assert "idna" not in found  # a dependency table, not a locked package
 
 
+def test_each_package_points_at_its_header_however_written(tmp_path: Path) -> None:
+    """A comment after the header, or spaces inside its brackets, once gave line 0 and moved
+    every later package's evidence line (found by tests/test_scan_properties.py)."""
+    text = ('version = 1\n\n[[package]]  # pinned for a reason\nname = "a"\nversion = "1.0"\n'
+            '\n[[ package ]]\nname = "b"\nversion = "2.0"\n')  # fmt: skip
+    parsed = lockfiles.parse(_write(tmp_path / "uv.lock", text))
+    found = [(d.name, d.version, d.line) for d in parsed]
+    assert found == [("a", "1.0", 3), ("b", "2.0", 7)]
+
+
 def test_invalid_toml_is_a_clear_error(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="not valid TOML"):
         lockfiles.parse(_write(tmp_path / "uv.lock", "[[package]\nname = "))

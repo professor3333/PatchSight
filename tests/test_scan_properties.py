@@ -13,7 +13,7 @@ from hypothesis import strategies as st
 
 from patchsight import db
 from patchsight.names import canonical_package_name
-from patchsight.scan import ast_scanner
+from patchsight.scan import ast_scanner, lockfiles
 from patchsight.scan.ast_scanner import DynamicUse, Location, Reference, Usage
 from patchsight.scan.lockfiles import requirements
 from patchsight.scan.verdicts import decide, matches
@@ -99,6 +99,63 @@ def test_every_exact_pin_is_read_whatever_its_decoration(
         path.write_text("\n".join(lines) + "\n", encoding="utf-8")
         found = {d.name: d.version for d in requirements.parse(path)}
     assert found == {name: version for name, version, _ in pins}
+
+
+# --- uv.lock and poetry.lock -----------------------------------------------------------
+
+WORKSPACE = "the project itself or a workspace member"
+UV_SOURCES = {"registry": ('{ registry = "https://pypi.org/simple" }', None),
+              "git": ('{ git = "https://github.com/o/r?rev=1#1" }', "git source"),
+              "url": ('{ url = "https://example.org/x.tar.gz" }', "URL source"),
+              "path": ('{ path = "../x" }', "local path source"),
+              "directory": ('{ directory = "../x" }', "local path source"),
+              "editable": ('{ editable = "." }', WORKSPACE),
+              "virtual": ('{ virtual = "." }', WORKSPACE)}  # fmt: skip
+POETRY_SOURCES = {"pypi": (None, None), "legacy": ("legacy", None), "git": ("git", "git source"),
+                  "url": ("url", "URL source"), "file": ("file", "local file source"),
+                  "directory": ("directory", "local path source")}  # fmt: skip
+HEADERS = st.sampled_from(["[[package]]", "[[package]]  # pinned", "[[ package ]]", "[[package]] "])
+
+
+@st.composite
+def _locked(draw: st.DrawFn) -> tuple[str, str, list[tuple[str, str | None, str | None, int]]]:
+    """A uv.lock or poetry.lock, and per package: name, version if pinned, reason, line."""
+    kind = draw(st.sampled_from(["uv.lock", "poetry.lock"]))
+    names = draw(st.lists(NAMES, min_size=1, max_size=6, unique_by=canonical_package_name))
+    lines = ["version = 1"] if kind == "uv.lock" else ["# This file is generated."]
+    expected = []
+    for name in names:
+        version = draw(VERSIONS)
+        lines.append("")
+        expected_line = len(lines) + 1
+        lines += [draw(HEADERS), f'name = "{name}"', f'version = "{version}"']
+        if kind == "uv.lock":
+            source, reason = UV_SOURCES[draw(st.sampled_from(sorted(UV_SOURCES)))]
+            lines += [f"source = {source}", "[package.metadata]", "requires-dist = []"]
+        else:
+            kind_of_source, reason = POETRY_SOURCES[draw(st.sampled_from(sorted(POETRY_SOURCES)))]
+            lines += ['description = ""', "", "[package.dependencies]", 'idna = ">=2.5"']
+            if kind_of_source:
+                lines += ["", "[package.source]", f'type = "{kind_of_source}"',
+                          'url = "https://example.org"']  # fmt: skip
+        expected.append((canonical_package_name(name), None if reason else version, reason,
+                         expected_line))  # fmt: skip
+    return kind, "\n".join(lines) + "\n", expected
+
+
+@SETTINGS
+@given(_locked())
+def test_every_locked_package_is_read_with_its_version_and_line(
+    locked: tuple[str, str, list[tuple[str, str | None, str | None, int]]],
+) -> None:
+    """Registry packages keep their exact version; git, URL, path and workspace packages are
+    unpinned with the reason; each points at its own [[package]] header, however written."""
+    kind, text, expected = locked
+    with tempfile.TemporaryDirectory() as directory:
+        path = Path(directory) / kind
+        path.write_text(text, encoding="utf-8")
+        found = [(d.name, d.version, d.unpinned_reason, d.line) for d in lockfiles.parse(path)]
+    assert found == expected, text
 
 
 # --- the AST scanner -----------------------------------------------------------------

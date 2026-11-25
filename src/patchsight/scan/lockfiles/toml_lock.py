@@ -9,7 +9,8 @@ from typing import Any
 from patchsight.names import canonical_package_name
 from patchsight.scan.lockfiles import Dependency
 
-_HEADER = re.compile(r"^\[\[package\]\]\s*$")
+# A [[package]] header as TOML allows it: spaces inside the brackets, a quoted key, a comment.
+_HEADER = re.compile(r"""^\s*\[\[\s*(?:package|"package"|'package')\s*\]\]\s*(?:#.*)?$""")
 
 
 def parse(path: Path, unpinned_reason: Callable[[dict[str, Any]], str | None]) -> list[Dependency]:

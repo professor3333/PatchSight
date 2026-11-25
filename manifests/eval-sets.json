@@ -33,6 +33,14 @@
       "what": "Retrieval at the prompt budget: token costs, labels and BM25 order per candidate"
     },
     {
+      "name": "dunlap-v1-robustness",
+      "path": "benchmarks/dunlap-v1/robustness.json",
+      "kind": "file",
+      "sha256": "4e4aa0c68ae31e341cbb599c6b8cf3734afb06a64e54e3a7cc3d18c33cd1408f",
+      "frozen": "2026-11-25",
+      "what": "Robustness on real inputs: per Dunlap report, fix commits, files, candidates, renames, add-only fixes and new definitions"
+    },
+    {
       "name": "go-holdout-v1",
       "path": "benchmarks/go-holdout-v1/reports.json",
       "kind": "file",

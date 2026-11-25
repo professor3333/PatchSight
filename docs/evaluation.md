@@ -129,7 +129,7 @@ The declared 60 advisories were sampled and frozen before any labelling, and are
 | Reachability fixtures: 58 programs | Verdicts and false suppressions | [Labelled records](reports/reachability-fixtures-labelled.md) and one report per published database |
 | Repository panel: 20 projects pinned to May 2024 | Coverage, verdicts and scan time | One report per published database |
 | PyPI regression set: 50 vulnerabilities | Pinned output, checked in CI on every push | `regression-check` |
-| Injection suite (15 attackable dev reports) and robustness suite | Planted instructions; truncated, squashed, renamed and add-only fixes | [Injection](reports/injection-dunlap-dev-extract-v1-qwen3.8-27b-vs-extract-v1-gpt-oss-120b.md), [`tests/test_robustness.py`](../tests/test_robustness.py) |
+| Injection suite (15 attackable dev reports) and robustness suite | Planted instructions; truncated, squashed, renamed and add-only fixes | [Injection](reports/injection-dunlap-dev-extract-v1-qwen3.8-27b-vs-extract-v1-gpt-oss-120b.md), [`tests/test_robustness.py`](../tests/test_robustness.py), [the extractor on those inputs](reports/robustness-dunlap-v1-extract-v1-qwen3.8-27b-q4km.md) |
 
 The controlled experiments, including those that lost, are in [experiments.md](experiments.md).
 

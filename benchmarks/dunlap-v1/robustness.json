@@ -1,0 +1,2806 @@
+{
+ "benchmark": "dunlap-v1",
+ "split_sha256": "c1ec2476e0acf0660114389c7cba7a3435b48e90dfc63445f2582eea614867c0",
+ "cases": [
+  {
+   "report": "GO-2020-0001",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 0,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2020-0004",
+   "split": "dev",
+   "commits": 1,
+   "files": 1,
+   "candidates": 3,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2020-0005",
+   "split": "test",
+   "commits": 1,
+   "files": 4,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2020-0006",
+   "split": "test",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2020-0007",
+   "split": "test",
+   "commits": 1,
+   "files": 1,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2020-0008",
+   "split": "test",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2020-0009",
+   "split": "dev",
+   "commits": 1,
+   "files": 4,
+   "candidates": 7,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2020-0010",
+   "split": "dev",
+   "commits": 1,
+   "files": 5,
+   "candidates": 3,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2020-0012",
+   "split": "test",
+   "commits": 1,
+   "files": 1,
+   "candidates": 6,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2020-0013",
+   "split": "dev",
+   "commits": 1,
+   "files": 13,
+   "candidates": 5,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2020-0014",
+   "split": "dev",
+   "commits": 1,
+   "files": 3,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2020-0015",
+   "split": "test",
+   "commits": 1,
+   "files": 4,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2020-0016",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2020-0017",
+   "split": "test",
+   "commits": 1,
+   "files": 4,
+   "candidates": 3,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2020-0019",
+   "split": "test",
+   "commits": 1,
+   "files": 3,
+   "candidates": 4,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2020-0020",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2020-0021",
+   "split": "test",
+   "commits": 1,
+   "files": 6,
+   "candidates": 5,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2020-0022",
+   "split": "dev",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2020-0023",
+   "split": "dev",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2020-0025",
+   "split": "test",
+   "commits": 1,
+   "files": 3,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2020-0026",
+   "split": "dev",
+   "commits": 1,
+   "files": 2,
+   "candidates": 5,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2020-0027",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 9,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2020-0028",
+   "split": "dev",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2020-0032",
+   "split": "test",
+   "commits": 1,
+   "files": 1,
+   "candidates": 3,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2020-0033",
+   "split": "test",
+   "commits": 1,
+   "files": 5,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2020-0034",
+   "split": "dev",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2020-0035",
+   "split": "test",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2020-0036",
+   "split": "test",
+   "commits": 1,
+   "files": 3,
+   "candidates": 6,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2020-0037",
+   "split": "dev",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2020-0038",
+   "split": "test",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2020-0039",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2020-0041",
+   "split": "test",
+   "commits": 1,
+   "files": 5,
+   "candidates": 5,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2020-0042",
+   "split": "test",
+   "commits": 1,
+   "files": 4,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2020-0043",
+   "split": "test",
+   "commits": 1,
+   "files": 4,
+   "candidates": 3,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2020-0045",
+   "split": "test",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2020-0048",
+   "split": "test",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2020-0050",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2021-0051",
+   "split": "test",
+   "commits": 1,
+   "files": 3,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0052",
+   "split": "test",
+   "commits": 3,
+   "files": 11,
+   "candidates": 13,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2021-0053",
+   "split": "test",
+   "commits": 1,
+   "files": 74,
+   "candidates": 28,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0054",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0057",
+   "split": "dev",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0058",
+   "split": "test",
+   "commits": 1,
+   "files": 9,
+   "candidates": 7,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0059",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0060",
+   "split": "test",
+   "commits": 1,
+   "files": 5,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0061",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0063",
+   "split": "test",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0064",
+   "split": "test",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0065",
+   "split": "test",
+   "commits": 1,
+   "files": 3,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2021-0066",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 3,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0067",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0069",
+   "split": "test",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0070",
+   "split": "test",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0071",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 2,
+   "renamed": true,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2021-0072",
+   "split": "dev",
+   "commits": 1,
+   "files": 5,
+   "candidates": 9,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2021-0073",
+   "split": "test",
+   "commits": 1,
+   "files": 7,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0075",
+   "split": "test",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0076",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0077",
+   "split": "test",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0078",
+   "split": "dev",
+   "commits": 1,
+   "files": 2,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0079",
+   "split": "dev",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0081",
+   "split": "test",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0083",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0084",
+   "split": "test",
+   "commits": 1,
+   "files": 1,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0085",
+   "split": "dev",
+   "commits": 2,
+   "files": 7,
+   "candidates": 16,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2021-0086",
+   "split": "dev",
+   "commits": 1,
+   "files": 3,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0087",
+   "split": "test",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0088",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0089",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0090",
+   "split": "dev",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0094",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0095",
+   "split": "test",
+   "commits": 1,
+   "files": 8,
+   "candidates": 30,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2021-0097",
+   "split": "test",
+   "commits": 4,
+   "files": 4,
+   "candidates": 4,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0098",
+   "split": "test",
+   "commits": 1,
+   "files": 10,
+   "candidates": 5,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0099",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2021-0100",
+   "split": "test",
+   "commits": 1,
+   "files": 56,
+   "candidates": 353,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2021-0101",
+   "split": "test",
+   "commits": 1,
+   "files": 3,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0102",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0103",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0104",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0105",
+   "split": "test",
+   "commits": 1,
+   "files": 42,
+   "candidates": 66,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2021-0106",
+   "split": "test",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0107",
+   "split": "dev",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0108",
+   "split": "test",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0109",
+   "split": "test",
+   "commits": 1,
+   "files": 12,
+   "candidates": 8,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2021-0110",
+   "split": "test",
+   "commits": 1,
+   "files": 34,
+   "candidates": 316,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2021-0112",
+   "split": "test",
+   "commits": 1,
+   "files": 4,
+   "candidates": 6,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2021-0113",
+   "split": "test",
+   "commits": 1,
+   "files": 3,
+   "candidates": 9,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0142",
+   "split": "dev",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0154",
+   "split": "dev",
+   "commits": 1,
+   "files": 5,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0159",
+   "split": "test",
+   "commits": 4,
+   "files": 9,
+   "candidates": 9,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2021-0160",
+   "split": "test",
+   "commits": 2,
+   "files": 4,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0163",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0172",
+   "split": "test",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0178",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2021-0223",
+   "split": "test",
+   "commits": 1,
+   "files": 3,
+   "candidates": 3,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2021-0224",
+   "split": "test",
+   "commits": 1,
+   "files": 1,
+   "candidates": 5,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2021-0226",
+   "split": "test",
+   "commits": 1,
+   "files": 5,
+   "candidates": 7,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2021-0227",
+   "split": "test",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0228",
+   "split": "test",
+   "commits": 1,
+   "files": 5,
+   "candidates": 5,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2021-0234",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0235",
+   "split": "dev",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0237",
+   "split": "test",
+   "commits": 1,
+   "files": 5,
+   "candidates": 4,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2021-0238",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2021-0239",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 5,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0240",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0241",
+   "split": "dev",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0242",
+   "split": "dev",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0243",
+   "split": "dev",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0245",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0263",
+   "split": "test",
+   "commits": 1,
+   "files": 3,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0264",
+   "split": "dev",
+   "commits": 1,
+   "files": 2,
+   "candidates": 3,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0265",
+   "split": "test",
+   "commits": 1,
+   "files": 4,
+   "candidates": 3,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2021-0317",
+   "split": "dev",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0319",
+   "split": "test",
+   "commits": 1,
+   "files": 5,
+   "candidates": 4,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2021-0347",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 8,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2021-0356",
+   "split": "dev",
+   "commits": 1,
+   "files": 12,
+   "candidates": 30,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2021-0412",
+   "split": "test",
+   "commits": 1,
+   "files": 1,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-0166",
+   "split": "test",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0171",
+   "split": "test",
+   "commits": 1,
+   "files": 3,
+   "candidates": 4,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-0187",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 0,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0189",
+   "split": "dev",
+   "commits": 1,
+   "files": 4,
+   "candidates": 6,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-0190",
+   "split": "dev",
+   "commits": 1,
+   "files": 4,
+   "candidates": 6,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-0191",
+   "split": "test",
+   "commits": 1,
+   "files": 3,
+   "candidates": 4,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-0192",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0193",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0197",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0209",
+   "split": "test",
+   "commits": 1,
+   "files": 5,
+   "candidates": 3,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-0211",
+   "split": "test",
+   "commits": 1,
+   "files": 4,
+   "candidates": 7,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-0212",
+   "split": "test",
+   "commits": 1,
+   "files": 4,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0213",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0217",
+   "split": "test",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0220",
+   "split": "test",
+   "commits": 1,
+   "files": 5,
+   "candidates": 8,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-0236",
+   "split": "test",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0244",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 3,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0246",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0247",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0248",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 3,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0251",
+   "split": "dev",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0252",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 4,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0253",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0272",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0273",
+   "split": "dev",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0274",
+   "split": "dev",
+   "commits": 2,
+   "files": 4,
+   "candidates": 4,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0289",
+   "split": "dev",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0294",
+   "split": "test",
+   "commits": 1,
+   "files": 14,
+   "candidates": 0,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0300",
+   "split": "test",
+   "commits": 1,
+   "files": 3,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0316",
+   "split": "test",
+   "commits": 2,
+   "files": 4,
+   "candidates": 3,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0318",
+   "split": "test",
+   "commits": 1,
+   "files": 3,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0345",
+   "split": "dev",
+   "commits": 1,
+   "files": 4,
+   "candidates": 5,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0346",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-0355",
+   "split": "dev",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0370",
+   "split": "dev",
+   "commits": 1,
+   "files": 2,
+   "candidates": 4,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0379",
+   "split": "dev",
+   "commits": 1,
+   "files": 4,
+   "candidates": 4,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-0380",
+   "split": "test",
+   "commits": 1,
+   "files": 3,
+   "candidates": 5,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-0384",
+   "split": "test",
+   "commits": 1,
+   "files": 15,
+   "candidates": 13,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-0391",
+   "split": "test",
+   "commits": 1,
+   "files": 28,
+   "candidates": 45,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-0400",
+   "split": "test",
+   "commits": 1,
+   "files": 1,
+   "candidates": 4,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-0411",
+   "split": "test",
+   "commits": 1,
+   "files": 4,
+   "candidates": 3,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0417",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 3,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0422",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0434",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0435",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0438",
+   "split": "test",
+   "commits": 1,
+   "files": 3,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0444",
+   "split": "test",
+   "commits": 1,
+   "files": 8,
+   "candidates": 14,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0460",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0461",
+   "split": "test",
+   "commits": 1,
+   "files": 3,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-0462",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0463",
+   "split": "dev",
+   "commits": 1,
+   "files": 3,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0475",
+   "split": "test",
+   "commits": 1,
+   "files": 3,
+   "candidates": 3,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-0477",
+   "split": "test",
+   "commits": 1,
+   "files": 4,
+   "candidates": 4,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-0515",
+   "split": "test",
+   "commits": 1,
+   "files": 4,
+   "candidates": 12,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-0519",
+   "split": "test",
+   "commits": 1,
+   "files": 3,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0520",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0521",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0523",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 3,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0524",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0525",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0526",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 3,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0527",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-0528",
+   "split": "test",
+   "commits": 1,
+   "files": 5,
+   "candidates": 4,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0531",
+   "split": "test",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0532",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0533",
+   "split": "test",
+   "commits": 1,
+   "files": 3,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0534",
+   "split": "test",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0535",
+   "split": "test",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0536",
+   "split": "dev",
+   "commits": 1,
+   "files": 12,
+   "candidates": 7,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-0537",
+   "split": "test",
+   "commits": 1,
+   "files": 4,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0572",
+   "split": "test",
+   "commits": 1,
+   "files": 3,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0574",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0586",
+   "split": "test",
+   "commits": 2,
+   "files": 37,
+   "candidates": 81,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-0587",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0588",
+   "split": "test",
+   "commits": 1,
+   "files": 6,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-0603",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0619",
+   "split": "test",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0621",
+   "split": "dev",
+   "commits": 1,
+   "files": 64,
+   "candidates": 0,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0629",
+   "split": "test",
+   "commits": 1,
+   "files": 13,
+   "candidates": 10,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-0643",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0646",
+   "split": "dev",
+   "commits": 1,
+   "files": 22,
+   "candidates": 168,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-0701",
+   "split": "test",
+   "commits": 1,
+   "files": 9,
+   "candidates": 9,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-0706",
+   "split": "test",
+   "commits": 1,
+   "files": 5,
+   "candidates": 4,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0755",
+   "split": "test",
+   "commits": 1,
+   "files": 4,
+   "candidates": 9,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-0761",
+   "split": "test",
+   "commits": 1,
+   "files": 4,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0762",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-0945",
+   "split": "dev",
+   "commits": 3,
+   "files": 14,
+   "candidates": 14,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-0952",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0956",
+   "split": "dev",
+   "commits": 1,
+   "files": 3,
+   "candidates": 4,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-0957",
+   "split": "test",
+   "commits": 2,
+   "files": 5,
+   "candidates": 3,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0962",
+   "split": "dev",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-0978",
+   "split": "test",
+   "commits": 2,
+   "files": 6,
+   "candidates": 18,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-0980",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-1002",
+   "split": "test",
+   "commits": 1,
+   "files": 6,
+   "candidates": 14,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-1008",
+   "split": "test",
+   "commits": 1,
+   "files": 4,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-1040",
+   "split": "test",
+   "commits": 1,
+   "files": 30,
+   "candidates": 19,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-1045",
+   "split": "test",
+   "commits": 1,
+   "files": 28,
+   "candidates": 6,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-1052",
+   "split": "dev",
+   "commits": 1,
+   "files": 7,
+   "candidates": 16,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-1114",
+   "split": "test",
+   "commits": 2,
+   "files": 2,
+   "candidates": 4,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-1117",
+   "split": "test",
+   "commits": 2,
+   "files": 25,
+   "candidates": 302,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-1118",
+   "split": "test",
+   "commits": 1,
+   "files": 4,
+   "candidates": 4,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-1129",
+   "split": "test",
+   "commits": 1,
+   "files": 4,
+   "candidates": 24,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-1130",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-1148",
+   "split": "test",
+   "commits": 1,
+   "files": 30,
+   "candidates": 44,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-1165",
+   "split": "test",
+   "commits": 1,
+   "files": 4,
+   "candidates": 3,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-1166",
+   "split": "test",
+   "commits": 1,
+   "files": 3,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-1167",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 3,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-1175",
+   "split": "test",
+   "commits": 1,
+   "files": 3,
+   "candidates": 3,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-1178",
+   "split": "dev",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-1184",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 3,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-1187",
+   "split": "test",
+   "commits": 1,
+   "files": 5,
+   "candidates": 4,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2022-1188",
+   "split": "test",
+   "commits": 1,
+   "files": 5,
+   "candidates": 5,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-1201",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2022-1213",
+   "split": "test",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2023-1494",
+   "split": "dev",
+   "commits": 1,
+   "files": 1,
+   "candidates": 4,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2023-1497",
+   "split": "test",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2023-1515",
+   "split": "test",
+   "commits": 1,
+   "files": 1,
+   "candidates": 5,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2023-1526",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2023-1534",
+   "split": "test",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2023-1535",
+   "split": "test",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2023-1547",
+   "split": "test",
+   "commits": 1,
+   "files": 7,
+   "candidates": 7,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2023-1549",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2023-1557",
+   "split": "test",
+   "commits": 1,
+   "files": 5,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2023-1558",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2023-1559",
+   "split": "test",
+   "commits": 1,
+   "files": 7,
+   "candidates": 4,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2023-1566",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2023-1567",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2023-1573",
+   "split": "dev",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2023-1574",
+   "split": "dev",
+   "commits": 1,
+   "files": 5,
+   "candidates": 8,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2023-1578",
+   "split": "test",
+   "commits": 2,
+   "files": 18,
+   "candidates": 16,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2023-1595",
+   "split": "dev",
+   "commits": 1,
+   "files": 3,
+   "candidates": 4,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2023-1597",
+   "split": "test",
+   "commits": 1,
+   "files": 3,
+   "candidates": 4,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2023-1600",
+   "split": "dev",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2023-1602",
+   "split": "test",
+   "commits": 1,
+   "files": 5,
+   "candidates": 8,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2023-1611",
+   "split": "test",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2023-1623",
+   "split": "dev",
+   "commits": 1,
+   "files": 2,
+   "candidates": 5,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2023-1640",
+   "split": "dev",
+   "commits": 1,
+   "files": 4,
+   "candidates": 8,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2023-1664",
+   "split": "test",
+   "commits": 1,
+   "files": 4,
+   "candidates": 5,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2023-1681",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 4,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2023-1713",
+   "split": "dev",
+   "commits": 1,
+   "files": 6,
+   "candidates": 3,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2023-1717",
+   "split": "test",
+   "commits": 1,
+   "files": 4,
+   "candidates": 4,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2023-1765",
+   "split": "dev",
+   "commits": 1,
+   "files": 11,
+   "candidates": 11,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2023-1772",
+   "split": "test",
+   "commits": 1,
+   "files": 6,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2023-1832",
+   "split": "test",
+   "commits": 2,
+   "files": 5,
+   "candidates": 3,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2023-1859",
+   "split": "test",
+   "commits": 2,
+   "files": 34,
+   "candidates": 11,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2023-1872",
+   "split": "test",
+   "commits": 1,
+   "files": 12,
+   "candidates": 13,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2023-1874",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2023-1923",
+   "split": "test",
+   "commits": 1,
+   "files": 3,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2023-1992",
+   "split": "dev",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2023-2000",
+   "split": "test",
+   "commits": 1,
+   "files": 3,
+   "candidates": 3,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2023-2024",
+   "split": "dev",
+   "commits": 1,
+   "files": 3,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2023-2048",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2023-2052",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2023-2074",
+   "split": "test",
+   "commits": 1,
+   "files": 2,
+   "candidates": 3,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2023-2077",
+   "split": "dev",
+   "commits": 1,
+   "files": 1,
+   "candidates": 1,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2023-2098",
+   "split": "test",
+   "commits": 1,
+   "files": 13,
+   "candidates": 13,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2023-2101",
+   "split": "dev",
+   "commits": 1,
+   "files": 60,
+   "candidates": 28,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2023-2115",
+   "split": "test",
+   "commits": 2,
+   "files": 14,
+   "candidates": 33,
+   "renamed": true,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2023-2116",
+   "split": "test",
+   "commits": 2,
+   "files": 14,
+   "candidates": 33,
+   "renamed": true,
+   "add_only": false,
+   "adds_definition": true
+  },
+  {
+   "report": "GO-2023-2119",
+   "split": "test",
+   "commits": 1,
+   "files": 19,
+   "candidates": 14,
+   "renamed": false,
+   "add_only": true,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2023-2133",
+   "split": "test",
+   "commits": 1,
+   "files": 5,
+   "candidates": 2,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": false
+  },
+  {
+   "report": "GO-2023-2137",
+   "split": "test",
+   "commits": 1,
+   "files": 15,
+   "candidates": 36,
+   "renamed": false,
+   "add_only": false,
+   "adds_definition": true
+  }
+ ]
+}

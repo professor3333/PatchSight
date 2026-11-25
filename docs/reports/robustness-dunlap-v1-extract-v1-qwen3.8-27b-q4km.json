@@ -1,0 +1,281 @@
+{
+  "bundle_sha256": "4e4aa0c68ae31e341cbb599c6b8cf3734afb06a64e54e3a7cc3d18c33cd1408f",
+  "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+  "prompt_version": "extract-v1",
+  "largest_fix_files": 74,
+  "slices": [
+    {
+      "name": "Every report",
+      "reports": 280,
+      "extractor": {
+        "reports": 280,
+        "true_positives": 365,
+        "false_positives": 121,
+        "false_negatives": 223,
+        "precision": 0.7510288065843621,
+        "recall": 0.6207482993197279,
+        "f1": 0.6797020484171322,
+        "miss_rate": 0.17142857142857143,
+        "exact_match": 0.5392857142857143,
+        "precision_ci95": null,
+        "recall_ci95": null,
+        "f1_ci95": null
+      },
+      "changedfuncs": {
+        "reports": 280,
+        "true_positives": 525,
+        "false_positives": 1805,
+        "false_negatives": 63,
+        "precision": 0.22532188841201717,
+        "recall": 0.8928571428571429,
+        "f1": 0.35983550376970524,
+        "miss_rate": 0.09642857142857143,
+        "exact_match": 0.45357142857142857,
+        "precision_ci95": null,
+        "recall_ci95": null,
+        "f1_ci95": null
+      },
+      "misses": {
+        "count": 48,
+        "total": 280,
+        "share": 0.17142857142857143,
+        "ci95_low": 0.13180580562845984,
+        "ci95_high": 0.21994498960350178
+      }
+    },
+    {
+      "name": "The fix spans several commits",
+      "reports": 18,
+      "extractor": {
+        "reports": 18,
+        "true_positives": 29,
+        "false_positives": 14,
+        "false_negatives": 55,
+        "precision": 0.6744186046511628,
+        "recall": 0.34523809523809523,
+        "f1": 0.45669291338582674,
+        "miss_rate": 0.16666666666666666,
+        "exact_match": 0.2222222222222222,
+        "precision_ci95": null,
+        "recall_ci95": null,
+        "f1_ci95": null
+      },
+      "changedfuncs": {
+        "reports": 18,
+        "true_positives": 80,
+        "false_positives": 427,
+        "false_negatives": 4,
+        "precision": 0.15779092702169625,
+        "recall": 0.9523809523809523,
+        "f1": 0.2707275803722504,
+        "miss_rate": 0.05555555555555555,
+        "exact_match": 0.16666666666666666,
+        "precision_ci95": null,
+        "recall_ci95": null,
+        "f1_ci95": null
+      },
+      "misses": {
+        "count": 3,
+        "total": 18,
+        "share": 0.16666666666666666,
+        "ci95_low": 0.05836576760185505,
+        "ci95_high": 0.39222038302033446
+      }
+    },
+    {
+      "name": "15 or more candidates",
+      "reports": 21,
+      "extractor": {
+        "reports": 21,
+        "true_positives": 21,
+        "false_positives": 22,
+        "false_negatives": 87,
+        "precision": 0.4883720930232558,
+        "recall": 0.19444444444444445,
+        "f1": 0.27814569536423844,
+        "miss_rate": 0.47619047619047616,
+        "exact_match": 0.047619047619047616,
+        "precision_ci95": null,
+        "recall_ci95": null,
+        "f1_ci95": null
+      },
+      "changedfuncs": {
+        "reports": 21,
+        "true_positives": 101,
+        "false_positives": 1501,
+        "false_negatives": 7,
+        "precision": 0.06304619225967541,
+        "recall": 0.9351851851851852,
+        "f1": 0.11812865497076024,
+        "miss_rate": 0.14285714285714285,
+        "exact_match": 0.047619047619047616,
+        "precision_ci95": null,
+        "recall_ci95": null,
+        "f1_ci95": null
+      },
+      "misses": {
+        "count": 10,
+        "total": 21,
+        "share": 0.47619047619047616,
+        "ci95_low": 0.28344005975415376,
+        "ci95_high": 0.6763046555309483
+      }
+    },
+    {
+      "name": "The prompt was cut to fit the budget",
+      "reports": 32,
+      "extractor": {
+        "reports": 32,
+        "true_positives": 31,
+        "false_positives": 37,
+        "false_negatives": 118,
+        "precision": 0.45588235294117646,
+        "recall": 0.2080536912751678,
+        "f1": 0.2857142857142857,
+        "miss_rate": 0.375,
+        "exact_match": 0.09375,
+        "precision_ci95": null,
+        "recall_ci95": null,
+        "f1_ci95": null
+      },
+      "changedfuncs": {
+        "reports": 32,
+        "true_positives": 140,
+        "false_positives": 1569,
+        "false_negatives": 9,
+        "precision": 0.08191925102399064,
+        "recall": 0.9395973154362416,
+        "f1": 0.15069967707212056,
+        "miss_rate": 0.09375,
+        "exact_match": 0.03125,
+        "precision_ci95": null,
+        "recall_ci95": null,
+        "f1_ci95": null
+      },
+      "misses": {
+        "count": 12,
+        "total": 32,
+        "share": 0.375,
+        "ci95_low": 0.22933887215513343,
+        "ci95_high": 0.5474559277860367
+      }
+    },
+    {
+      "name": "A file is renamed",
+      "reports": 3,
+      "extractor": {
+        "reports": 3,
+        "true_positives": 3,
+        "false_positives": 0,
+        "false_negatives": 18,
+        "precision": 1.0,
+        "recall": 0.14285714285714285,
+        "f1": 0.25,
+        "miss_rate": 0.0,
+        "exact_match": 0.3333333333333333,
+        "precision_ci95": null,
+        "recall_ci95": null,
+        "f1_ci95": null
+      },
+      "changedfuncs": {
+        "reports": 3,
+        "true_positives": 21,
+        "false_positives": 41,
+        "false_negatives": 0,
+        "precision": 0.3387096774193548,
+        "recall": 1.0,
+        "f1": 0.5060240963855421,
+        "miss_rate": 0.0,
+        "exact_match": 0.0,
+        "precision_ci95": null,
+        "recall_ci95": null,
+        "f1_ci95": null
+      },
+      "misses": {
+        "count": 0,
+        "total": 3,
+        "share": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.5614970356393196
+      }
+    },
+    {
+      "name": "The fix only adds code",
+      "reports": 54,
+      "extractor": {
+        "reports": 54,
+        "true_positives": 62,
+        "false_positives": 12,
+        "false_negatives": 12,
+        "precision": 0.8378378378378378,
+        "recall": 0.8378378378378378,
+        "f1": 0.8378378378378378,
+        "miss_rate": 0.12962962962962962,
+        "exact_match": 0.7407407407407407,
+        "precision_ci95": null,
+        "recall_ci95": null,
+        "f1_ci95": null
+      },
+      "changedfuncs": {
+        "reports": 54,
+        "true_positives": 68,
+        "false_positives": 198,
+        "false_negatives": 6,
+        "precision": 0.2556390977443609,
+        "recall": 0.918918918918919,
+        "f1": 0.39999999999999997,
+        "miss_rate": 0.07407407407407407,
+        "exact_match": 0.6481481481481481,
+        "precision_ci95": null,
+        "recall_ci95": null,
+        "f1_ci95": null
+      },
+      "misses": {
+        "count": 7,
+        "total": 54,
+        "share": 0.12962962962962962,
+        "ci95_low": 0.06423720712333773,
+        "ci95_high": 0.2442173032981712
+      }
+    },
+    {
+      "name": "The fix adds a new definition",
+      "reports": 92,
+      "extractor": {
+        "reports": 92,
+        "true_positives": 138,
+        "false_positives": 75,
+        "false_negatives": 141,
+        "precision": 0.647887323943662,
+        "recall": 0.4946236559139785,
+        "f1": 0.5609756097560975,
+        "miss_rate": 0.21739130434782608,
+        "exact_match": 0.32608695652173914,
+        "precision_ci95": null,
+        "recall_ci95": null,
+        "f1_ci95": null
+      },
+      "changedfuncs": {
+        "reports": 92,
+        "true_positives": 259,
+        "false_positives": 1691,
+        "false_negatives": 20,
+        "precision": 0.13282051282051283,
+        "recall": 0.9283154121863799,
+        "f1": 0.23239120681920142,
+        "miss_rate": 0.08695652173913043,
+        "exact_match": 0.010869565217391304,
+        "precision_ci95": null,
+        "recall_ci95": null,
+        "f1_ci95": null
+      },
+      "misses": {
+        "count": 20,
+        "total": 92,
+        "share": 0.21739130434782608,
+        "ci95_low": 0.1453672955485834,
+        "ci95_high": 0.3120700117820117
+      }
+    }
+  ]
+}

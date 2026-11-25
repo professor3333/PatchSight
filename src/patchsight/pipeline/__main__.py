@@ -803,6 +803,84 @@ def retrieval_report_command(
         typer.echo(f"{split.split}: {split.truncated}/{split.reports} cut; recall {recalls}")
 
 
+ROBUSTNESS = Path("benchmarks/dunlap-v1/robustness.json")
+
+
+@app.command("robustness-freeze")
+def robustness_freeze_command(
+    root: Root = Path(),
+    cache: Annotated[Path, typer.Option(help="Cache root.")] = Path(".cache"),
+) -> None:
+    """Record what makes each Dunlap fix hard (several commits, size, renamed files, code only
+    added, new definitions), offline from the HTTP cache. Counts and flags only."""
+    from patchsight.pipeline.benchmarks import robustness
+    from patchsight.pipeline.diffs.commits import CommitMapping, map_commit
+
+    chosen = _load_benchmark(root, "dunlap-v1", "all")
+    dev = splits.load_split(root / DUNLAP_SPLIT).split.ids("dev")
+    github = GitHubClient(root / cache / "http" / "github", offline=True)
+
+    def before(mapping: CommitMapping, path: str, previous: str | None) -> bytes | None:
+        return github.file_content(mapping.repo, previous or path, mapping.parent) if (
+            mapping.parent
+        ) else None  # fmt: skip
+
+    cases = []
+    try:
+        for report in sorted(chosen.reports, key=lambda r: r.id):
+            mappings = [
+                map_commit(github, c.github_repo, c.sha, include=dunlap.paper_path_filter)
+                for c in report.commits
+            ]
+            inputs, _ = extraction.candidate_inputs(mappings)
+            cases.append(robustness.describe(
+                report.id, "dev" if report.id in dev else "test", mappings,
+                [(i.path, i.name) for i in inputs], before,
+            ))  # fmt: skip
+    finally:
+        github.close()
+    bundle = robustness.Bundle(benchmark="dunlap-v1", split_sha256=chosen.split_sha256 or "",
+                               cases=tuple(cases))  # fmt: skip
+    (root / ROBUSTNESS).write_text(bundle.model_dump_json(indent=1) + "\n", "utf-8")
+    counts = {name: sum(member(c, False) for c in cases) for name, member in robustness.SLICES}
+    typer.echo(f"{ROBUSTNESS}: {len(cases)} reports; " + "; ".join(
+        f"{name.lower()} {n}" for name, n in counts.items() if "cut" not in name))  # fmt: skip
+
+
+@app.command("robustness-report")
+def robustness_report_command(
+    root: Root = Path(),
+    tag: Annotated[str, typer.Option(help="The committed answers to score.")] = (
+        "extract-v1-qwen3.8-27b-q4km"
+    ),
+) -> None:
+    """Score the committed answers on the hard-input slices of the Dunlap benchmark, next to
+    ChangedFuncs. Offline, no model call."""
+    import hashlib
+
+    from patchsight.pipeline.benchmarks import robustness
+
+    raw = (root / ROBUSTNESS).read_bytes()
+    answers_path = DUNLAP_BUNDLE.parent / f"extraction-{tag}.json"
+    data = bundle.load(root / DUNLAP_BUNDLE)
+    truth = {r.id: set(r.symbols) for r in data.reports}
+    changed = {r.id: {c.name for c in r.candidates} for r in data.reports}
+    report = robustness.evaluate(
+        robustness.Bundle.model_validate_json(raw), replay.load(root / answers_path), truth,
+        changed, hashlib.sha256(raw).hexdigest(),
+    )  # fmt: skip
+    target = root / "docs" / "reports" / f"robustness-dunlap-v1-{tag}"
+    target.with_name(target.name + ".json").write_text(
+        report.model_dump_json(indent=2) + "\n", "utf-8"
+    )
+    target.with_name(target.name + ".md").write_text(
+        robustness.render_markdown(report, ROBUSTNESS.as_posix(), answers_path.as_posix()), "utf-8"
+    )
+    for s in report.slices:
+        f1 = f"F1 {s.extractor.f1:.3f}" if s.extractor else "no report"
+        typer.echo(f"{s.name}: {s.reports} reports, {f1}, misses {s.misses.count}")
+
+
 @app.command("holdout-freeze")
 def holdout_freeze_command(
     root: Root = Path(),

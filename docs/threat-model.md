@@ -47,6 +47,19 @@ Anything short of condition 1 gives a low-confidence record. That holds every ch
 
 **Measured weakness, unrelated to attackers.** On the Go benchmark's test split, 7.0% of high-confidence reports missed the labelled symbol, mostly because the fix never touched it. Honest data already defeats the 2% target, so releases withhold high confidence ([ADR 0008](adr/0008-withhold-high-confidence.md)), enforced in the merge code and by the release gate's `high_withheld` check.
 
+**Hard but honest fixes, measured** ([report](reports/robustness-dunlap-v1-extract-v1-qwen3.8-27b-q4km.md)). On the Dunlap reports whose fixes have these properties, the extractor is weakest on large fixes:
+- With 15 or more candidates it misses 10 of 21 reports.
+- A prompt cut to fit the budget misses 12 of 32.
+- Fixes that add a new definition miss 20 of 92.
+- Fixes that only add code are easier than average.
+
+Every published record is low confidence and lists every changed definition, so none of this narrows what a scan matches. The deterministic side of the robustness suite runs in CI (`tests/test_robustness.py`):
+- **Very large diffs:** a commit beyond the API's file pages is marked truncated; a fix of more than 500 definitions gets no record; an over-budget prompt is cut by rank and marked truncated, so its record is low confidence at best.
+- **Squashed fixes:** a fix squashed with a refactor keeps every changed definition in the fallback.
+- **Add-only fixes:** a fix that adds a helper also changes its caller.
+- **Renamed files:** a renamed file's old side is read from its old path, and its old code keeps the old module.
+- **Commit messages:** no message, in any language, reaches a prompt or a record, and non-ASCII advisory text and code render as written.
+
 ## Release channel
 
 | Threat | Defence | Held by |
@@ -72,10 +85,4 @@ Anything short of condition 1 gives a low-confidence record. That holds every ch
 ## Not covered yet
 
 - **Injection through identifiers** ([#55](https://github.com/professor3333/PatchSight/issues/55)): the suite plants instructions in advisory text and code comments, not yet in function or variable names. Commit messages never reach a prompt.
-- **The robustness suite, model side** ([#55](https://github.com/professor3333/PatchSight/issues/55)): how the extractor answers on these inputs. The deterministic side runs in CI (`tests/test_robustness.py`):
-  - **Very large diffs:** a commit beyond the API's file pages is marked truncated; a fix of more than 500 definitions gets no record; an over-budget prompt is cut by rank and marked truncated, so its record is low confidence at best.
-  - **Squashed fixes:** a fix squashed with a refactor keeps every changed definition in the fallback.
-  - **Add-only fixes:** a fix that adds a helper also changes its caller.
-  - **Renamed files:** a renamed file's old side is read from its old path, and its old code keeps the old module.
-  - **Commit messages:** no message, in any language, reaches a prompt or a record, and non-ASCII advisory text and code render as written.
 - **The fix-commit agent's accuracy** ([#56](https://github.com/professor3333/PatchSight/issues/56)): the agent is built ([ADR 0011](adr/0011-fix-commit-locator-agent.md)) but not yet evaluated, and builds no records until it meets its targets. Its bounds are held by `tests/test_locator_agent.py`: four read-only tools, `api.github.com` and `pypi.org` only (no action takes a URL), the package's own repositories only, eight steps, a verifier that discards out-of-range or test-only commits, and observations that cannot close their tag.

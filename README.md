@@ -259,9 +259,14 @@ The offline pipeline is `python -m patchsight.pipeline <command>`.
 - [x] A panel of 20 real projects: 75.6% of alerts with symbol data, and scan time within target ([report](docs/reports/panel-db-2026.11.24.md))
 - [x] Retrieval at the prompt budget: on the 32 benchmark prompts cut to fit, BM25 keeps 42% of the true functions and no ranking keeps 69% ([E9](docs/experiments.md#e9-ordering-candidates-to-fit-the-prompt-budget)). A replacement, keeping the smallest candidates first, was chosen on dev and passed a declared evaluation on the Go holdout ([E10](docs/experiments.md#e10-a-replacement-for-bm25-at-the-prompt-budget-declared-before-measuring)); switched on in a shadow database, its picks were no better, so it is not used ([E12](docs/experiments.md#e12-the-switch-on-batch-before-and-after))
 - [x] Regression suite: 50 PyPI vulnerabilities whose recorded answers are replayed through the live code in CI, with the output pinned ([set](benchmarks/pypi-regression-v1/README.md))
+- [x] Robustness suite: CI checks how the pipeline handles huge, squashed, add-only and renamed fixes. The extractor is measured on real fixes of each kind, and is weakest on large ones: with 15 or more candidates it misses 10 of 21 reports ([report](docs/reports/robustness-dunlap-v1-extract-v1-qwen3.8-27b-q4km.md))
+- [x] Property-based tests for the diff parser, the AST scanner, the lockfile parsers and the verdict rules. Writing them found five bugs, each fixed with a regression test. One silently left a pinned package unchecked when its `requirements.txt` line used a tab; another crashed the scan on deeply nested code ([#143](https://github.com/professor3333/PatchSight/pull/143), [#151](https://github.com/professor3333/PatchSight/pull/151), [#152](https://github.com/professor3333/PatchSight/pull/152))
+- [x] Every success target from the proposal, set against what was measured, with each miss explained ([evaluation page](docs/evaluation.md))
 - [x] Tracing of every model run, and an operations dashboard: Kaggle sessions, quota against each daily cap, and what the database holds ([report](docs/reports/operations.md))
 - [x] **On PyPI:** [`pip install patchsight`](https://pypi.org/project/patchsight/), published from CI with Trusted Publishing and a required approval
 - [x] **SARIF output and a GitHub Action, with a pull-request comment** (`professor3333/PatchSight@v0.9.0`), with a [smoke test](.github/workflows/action-smoke.yml) on every change
+- [ ] Python gold set: 60 advisories, frozen and labelled once; it is scored after the second, blind round ([guideline](docs/labelling-guideline.md))
+- [ ] Fix-commit locator agent: built and bounded ([ADR 0011](docs/adr/0011-fix-commit-locator-agent.md)), not yet evaluated, so it builds no records
 - [ ] OpenVEX output, written only for alerts a person has reviewed and approved
 
 > [!WARNING]

@@ -286,6 +286,59 @@ def test_a_computed_name_is_never_silent(
         assert alert.verdict in ("CALLED", "UNKNOWN"), files
 
 
+# --- the OSV query --------------------------------------------------------------------
+
+
+PAIRS = st.tuples(NAMES.map(canonical_package_name), VERSIONS)
+IDS = st.sets(st.from_regex(r"GHSA-[a-z0-9]{4}", fullmatch=True), max_size=7)
+
+
+@SETTINGS
+@given(
+    known=st.dictionaries(PAIRS, IDS, min_size=1, max_size=12),
+    asked_twice=st.booleans(),
+    page=st.integers(1, 4),
+    batch=st.integers(1, 5),
+    hiccups=st.lists(st.sampled_from([503, 429]), max_size=2),
+)
+def test_every_page_of_every_batch_is_read(
+    known: dict[tuple[str, str], set[str]], asked_twice: bool, page: int, batch: int,
+    hiccups: list[int],
+) -> None:  # fmt: skip
+    """However OSV pages its answers and the client splits its batches, each pair gets every
+    ID OSV knows for it, and a transient refusal is retried. A dropped page would be an
+    alert that never appears."""
+    import json as json_module
+    from unittest import mock
+
+    import httpx
+
+    from patchsight.scan import osv_client
+
+    failures = list(hiccups)
+
+    def serve(request: httpx.Request) -> httpx.Response:
+        if failures:
+            return httpx.Response(failures.pop())
+        results = []
+        for q in json_module.loads(request.content)["queries"]:
+            ids = sorted(known.get((q["package"]["name"], q["version"]), set()))
+            start = int(q.get("page_token") or 0)
+            result: dict[str, object] = {"vulns": [{"id": i} for i in ids[start : start + page]]}
+            if start + page < len(ids):
+                result["next_page_token"] = str(start + page)
+            results.append(result)
+        return httpx.Response(200, json={"results": results})
+
+    pairs = list(known) * (2 if asked_twice else 1)
+    client = httpx.Client(transport=httpx.MockTransport(serve))
+    no_wait = osv_client._post.retry_with(wait=lambda _: 0)
+    with mock.patch.object(osv_client, "BATCH_SIZE", batch), \
+            mock.patch.object(osv_client, "_post", no_wait):  # fmt: skip
+        found = osv_client.query(pairs, client=client)
+    assert found == {pair: sorted(ids) for pair, ids in known.items()}
+
+
 # --- the verdict rules ---------------------------------------------------------------
 
 DOTTED = st.lists(st.sampled_from(["pa", "pb", "mc", "md", "xe"]), min_size=1, max_size=4).map(

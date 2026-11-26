@@ -146,10 +146,26 @@ def render_markdown(
     if warning := stale_warning(db_meta, now):
         head += ["", f"> [!WARNING]\n> {warning}"]
     tail = ["", f"*{FOOTNOTE}*", ""]
-    body: list[str] = []
-    # Room for the head, the tail and the closing notes; rows fill what is left.
-    used = sum(len(line) + 1 for line in head + tail) + 600
-    left_out = 0
+    closing: list[str] = []  # after the rows: the unpinned packages, then the left-out note
+    if unpinned:
+        names = ", ".join(_cell(d.raw_name) for d in unpinned[:30])
+        more = f" and {len(unpinned) - 30} more" if len(unpinned) > 30 else ""
+        closing += ["", f"Not checked, no exact pin: {names}{more}"]
+
+    def note(count: int) -> str:
+        return (
+            f"{count} alerts are counted above but not listed, to fit GitHub's comment "
+            "limit. Every alert is in the SARIF report and in `patchsight scan`."
+        )
+
+    def size(lines: Sequence[str]) -> int:
+        return sum(len(line) + 1 for line in lines)
+
+    # Every section's skeleton (heading, table header, its "N more" row, its closing tag) is
+    # counted before any row is placed, as are the lines after the rows. Rows fill what is
+    # left, most urgent first, so the report stays within ``limit`` whenever the skeleton
+    # alone fits; the skeleton is never cut, because it counts every alert.
+    skeletons = {}
     for verdict in DISPLAY_ORDER:
         group = groups[verdict]
         if not group:
@@ -159,7 +175,14 @@ def render_markdown(
         second = "Matched" if verdict == "CALLED" else "Why"
         section = ["", opening, "", f"| Advisory | Package | {second} | Your code |",
                    "|---|---|---|---|"]  # fmt: skip
-        used += sum(len(line) + 1 for line in section) + 20
+        skeletons[verdict] = (section, [] if verdict == "CALLED" else ["", "</details>"])
+    used = size(head + tail + closing) + size(["", note(len(alerts))])
+    used += sum(size(section + end) + size([f"| … | {len(groups[v])} more | | |"])
+                for v, (section, end) in skeletons.items())  # fmt: skip
+    body: list[str] = []
+    left_out = 0
+    for verdict, (section, end) in skeletons.items():
+        group = groups[verdict]
         rows = 0
         for alert in group:
             row = _row(alert)
@@ -171,17 +194,8 @@ def render_markdown(
         if rows < len(group):
             section.append(f"| … | {len(group) - rows} more | | |")
             left_out += len(group) - rows
-        if verdict != "CALLED":
-            section += ["", "</details>"]
-        body += section
-    if unpinned:
-        names = ", ".join(_cell(d.raw_name) for d in unpinned[:30])
-        more = f" and {len(unpinned) - 30} more" if len(unpinned) > 30 else ""
-        body += ["", f"Not checked, no exact pin: {names}{more}"]
+        body += section + end
+    body += closing
     if left_out:
-        note = (
-            f"{left_out} alerts are counted above but not listed, to fit GitHub's comment "
-            "limit. Every alert is in the SARIF report and in `patchsight scan`."
-        )
-        body += ["", note]
+        body += ["", note(left_out)]
     return "\n".join(head + body + tail)

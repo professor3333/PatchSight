@@ -2,8 +2,11 @@
 and the verdict rules. Each property is one a verdict's correctness rests on, so a
 counterexample is a wrong or missing alert."""
 
+import json
 import keyword
+import re
 import tempfile
+from collections import Counter
 from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
@@ -16,7 +19,10 @@ from patchsight.names import canonical_package_name
 from patchsight.scan import ast_scanner, lockfiles
 from patchsight.scan.ast_scanner import DynamicUse, Location, Reference, Usage
 from patchsight.scan.lockfiles import requirements
-from patchsight.scan.verdicts import decide, matches
+from patchsight.scan.report import _HEADINGS as HEADINGS
+from patchsight.scan.report import render_json, render_markdown, render_text
+from patchsight.scan.sarif import render_sarif
+from patchsight.scan.verdicts import Alert, decide, matches, order
 
 NOW = datetime(2026, 11, 24, tzinfo=UTC)
 SETTINGS = settings(max_examples=150, deadline=None)
@@ -401,3 +407,59 @@ def test_the_verdict_rules_fail_towards_noise(usage: Usage, member: str, confide
         assert not usage.imported(("pa",))
         assert not usage.unparsable
         assert not any(d.root == "?" for d in usage.dynamic)
+
+
+# --- every report shows every alert (design rule 4) -----------------------------------
+
+UNTIDY = st.text(alphabet=st.sampled_from([*"ab |<>\n`*_", "é"]), max_size=30)
+
+
+@st.composite
+def _alerts(draw: st.DrawFn) -> list[Alert]:
+    found = []
+    for n in range(draw(st.integers(0, 25))):
+        verdict = draw(st.sampled_from(["CALLED", "IMPORTED_NOT_CALLED", "NOT_IMPORTED",
+                                        "UNKNOWN"]))  # fmt: skip
+        found.append(Alert(
+            advisory=f"ADV-{n:03d}", package=draw(NAMES), version=draw(VERSIONS),
+            verdict=verdict, reason=draw(UNTIDY),
+            aliases=tuple(draw(st.lists(st.sampled_from(["CVE-1", "PYSEC-2"]), max_size=2))),
+            matched=tuple(draw(st.lists(UNTIDY, max_size=3))) if verdict == "CALLED" else (),
+            evidence=tuple(Location(path=draw(UNTIDY) or "a.py", line=draw(st.integers(1, 99)))
+                           for _ in range(draw(st.integers(0, 4)))),
+        ))  # fmt: skip
+    return found
+
+
+def _cells(row: str) -> list[str]:
+    """A markdown table row's cells, split at pipes that are not escaped."""
+    return re.split(r"(?<!\\)\|", row)[1:-1]
+
+
+@SETTINGS
+@given(alerts=_alerts(), limit=st.integers(2_000, 12_000))
+def test_every_report_accounts_for_every_alert(alerts: list[Alert], limit: int) -> None:
+    """Ordering is a permutation; JSON and SARIF hold one entry per alert; the text report
+    names each one; the markdown report lists or counts each one, keeps every row a
+    four-column table row whatever the text holds, and stays within its limit whenever its
+    skeleton (the counts and section headings, which are never cut) fits."""
+    meta = {"db_version": "2026.11.26", "builder": "llm-v1"}
+    assert Counter(a.advisory for a in order(alerts)) == Counter(a.advisory for a in alerts)
+    assert len(json.loads(render_json(alerts, [], "requirements.txt", meta))["alerts"]) == len(
+        alerts
+    )
+    sarif = json.loads(render_sarif(alerts, [], "requirements.txt", meta))
+    assert len(sarif["runs"][0]["results"]) == len(alerts)
+    text = render_text(alerts, [], "requirements.txt", meta)
+    assert all(f"  {a.advisory}" in text for a in alerts)
+
+    report = render_markdown(alerts, [], "requirements.txt", meta, limit=limit)
+    skeleton = render_markdown(alerts, [], "requirements.txt", meta, limit=0)  # no row fits
+    assert len(report) <= max(limit, len(skeleton))  # the skeleton counts every alert
+    rows = [line for line in report.splitlines() if line.startswith("| ADV-")]
+    more = sum(int(m) for m in re.findall(r"^\| … \| (\d+) more \|", report, re.MULTILINE))
+    assert len(rows) + more == len(alerts)
+    assert len({row.split(" | ")[0] for row in rows}) == len(rows)  # no alert listed twice
+    assert all(len(_cells(row)) == 4 for row in rows), rows
+    for verdict, heading in HEADINGS.items():  # the summary table counts every verdict
+        assert f"| {heading} | {sum(a.verdict == verdict for a in alerts)} |" in report

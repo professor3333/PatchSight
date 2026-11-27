@@ -103,6 +103,14 @@
       "sha256": "68d09d865bd19d933247bec1c15dc22f3904a709a85d71c0067728907c4f8015",
       "frozen": "2026-11-18",
       "what": "Repository panel: 20 projects pinned to their last commit before 2024-06-01"
+    },
+    {
+      "name": "drift-pypi-extractor-v1",
+      "path": "benchmarks/drift/pypi-extractor-v1.json",
+      "kind": "file",
+      "sha256": "7367ef6875414417b426d46d2f7a262b1759939925493d81bd903562bc04d34c",
+      "frozen": "2026-11-27",
+      "what": "Live drift check: 10 PyPI prompts the nightly model answered, with its decisions (ADR 0016)"
     }
   ]
 }

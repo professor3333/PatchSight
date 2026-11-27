@@ -109,6 +109,12 @@ def _request(
     )
 
 
+def first_request(model: ModelConfig, prompt: RenderedPrompt) -> LLMRequest:
+    """The request ``extract`` sends first for this prompt; its cache key names the prompt,
+    the model and the decoding parameters together (the drift check pins it)."""
+    return _request(model, prompt, prompt.messages)
+
+
 def extract(
     llm: LLMClient,
     model: ModelConfig,

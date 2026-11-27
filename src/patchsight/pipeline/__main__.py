@@ -20,7 +20,7 @@ import typer
 
 from patchsight import db
 from patchsight.eval.metrics import SetScores, score
-from patchsight.pipeline import build_db, fix_sample, week1
+from patchsight.pipeline import build_db, drift, fix_sample, week1
 from patchsight.pipeline.attribution import ATTRIBUTION
 from patchsight.pipeline.benchmarks import (
     bundle,
@@ -2902,6 +2902,184 @@ def pypi_extract_command(
         f"status {summary.status}; skipped {summary.skipped}; truncated {summary.truncated}; "
         f"{llm.network_calls} model calls"
     )
+
+
+@app.command("drift-freeze")
+def drift_freeze_command(
+    database: Annotated[
+        Path,
+        typer.Option("--db", help="A database: records with the role's model picks are the pool."),
+    ],
+    root: Root = Path(),
+    role: Annotated[str, typer.Option(help="Model role in the LLM config.")] = "extractor",
+    config: Annotated[Path, typer.Option(help="LLM config.")] = Path("configs/llm.toml"),
+    prompt: Annotated[Path, typer.Option(help="Prompt template.")] = Path("prompts/extract_v1.md"),
+    cache: Annotated[Path, typer.Option(help="Cache root (HTTP and LLM).")] = Path(".cache"),
+    size: Annotated[int, typer.Option(help="Prompts to pin.")] = drift.SIZE,
+    seed: Annotated[int, typer.Option(help="Draw seed.")] = drift.SEED,
+) -> None:
+    """Pin prompts the nightly model has answered, with its decisions, for the live drift
+    check (ADR 0016). Offline, from the pinned snapshot and the response caches; no model
+    call. Only answers whose prompt renders again to the same request key can be pinned."""
+    import hashlib
+    import sqlite3
+
+    from patchsight.pipeline import pypi_extract
+    from patchsight.pipeline.extract.extractor import first_request
+    from patchsight.pipeline.llm.client import ProviderRejectedError, ResponseNotCachedError
+
+    _, dump = _load_verified(root)
+    llm_config = load_config(root / config)
+    model = llm_config.models[role]
+    with contextlib.closing(sqlite3.connect(root / database)) as con:
+        picked = sorted(v for (v,) in con.execute(
+            "SELECT DISTINCT vulnerability FROM records WHERE source = 'llm' AND model = ?",
+            (model.model,),
+        ))  # fmt: skip
+    by_id, groups = _github_fix_groups(dump, ",".join(picked), None, 0)
+    template = load_template(root / prompt)
+    counter = HfTokenizer(llm_config.tokenizer, root / cache / "tokenizer")
+    github = GitHubClient(root / cache / "http" / "github", offline=True)
+    pypi = PyPIClient(root / cache / "http" / "pypi", offline=True)
+    llm, _ = cache_only_client(llm_config, role, root / cache / "llm", counter)
+    pool: list[drift.PinnedCase] = []
+    skipped: Counter[str] = Counter()
+    try:
+        for group in sorted(groups, key=lambda g: g.key):
+            rendered = pypi_extract.rendered_prompts(
+                group, by_id, github, pypi, [llm_config], role, template, counter
+            )
+            if isinstance(rendered, str) or not rendered[0].candidates:
+                skipped[rendered if isinstance(rendered, str) else "no_candidates"] += 1
+                continue
+            request = first_request(model, rendered[0])
+            try:
+                content = llm.complete(request).content
+            except ResponseNotCachedError:
+                skipped["prompt changed since it was answered"] += 1
+                continue
+            except ProviderRejectedError:
+                skipped["refused"] += 1
+                continue
+            got = drift.decisions(content)
+            if got is None or not drift.answers_every_candidate(content, rendered[0]):
+                skipped["first answer incomplete"] += 1
+                continue
+            pool.append(drift.PinnedCase(
+                vulnerability=group.key, request_key=request.cache_key(),
+                candidates=len(rendered[0].candidates), expected=got,
+                names=drift.names(rendered[0], got.vulnerable),
+            ))  # fmt: skip
+    finally:
+        github.close()
+        pypi.close()
+    pinned = drift.Pinned(
+        name=f"drift-{drift.PINNED.stem}", role=role, model=model.model,
+        prompt_version=template.version,
+        config_sha256=hashlib.sha256((root / config).read_bytes()).hexdigest(),
+        seed=seed, pool=len(pool), cases=tuple(drift.draw(pool, size, seed)),
+    )  # fmt: skip
+    target = root / drift.PINNED
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(pinned.model_dump_json(indent=1) + "\n", "utf-8")
+    typer.echo(
+        f"{len(picked)} vulnerabilities with {model.model} picks, {len(groups)} in the pinned "
+        f"snapshot; {len(pool)} replayable, "
+        f"{sum(c.candidates >= drift.MIN_CANDIDATES for c in pool)} with 2 or more candidates; "
+        f"skipped {dict(sorted(skipped.items()))}; pinned {len(pinned.cases)} -> {drift.PINNED}"
+    )
+
+
+@app.command("drift-check")
+def drift_check_command(
+    root: Root = Path(),
+    pinned: Annotated[Path, typer.Option(help="The pinned prompts.")] = drift.PINNED,
+    config: Annotated[Path, typer.Option(help="LLM config.")] = Path("configs/llm.toml"),
+    prompt: Annotated[Path, typer.Option(help="Prompt template.")] = Path("prompts/extract_v1.md"),
+    cache: Annotated[Path, typer.Option(help="Cache root (HTTP and LLM).")] = Path(".cache"),
+    out: Annotated[Path, typer.Option(help="Report path, without extension.")] = Path(
+        "data/build/nightly-drift"
+    ),
+) -> None:
+    """Ask the nightly model the pinned prompts again, live, and compare its decisions with
+    the pinned answers (ADR 0016). Needs the model's key and GITHUB_TOKEN. It only reports:
+    the exit status is 0 whatever the verdict, and a daily-cap stop leaves the rest not run."""
+    import hashlib
+
+    from patchsight.pipeline import pypi_extract
+    from patchsight.pipeline.extract.extractor import first_request
+    from patchsight.pipeline.llm.client import ProviderRejectedError
+
+    token = _github_token()
+    raw = (root / pinned).read_bytes()
+    pins = drift.Pinned.model_validate_json(raw)
+    llm_config = load_config(root / config)
+    model = llm_config.models[pins.role]
+    if model.model != pins.model:
+        raise typer.BadParameter(
+            f"the config's {pins.role} is {model.model}, the pins are {pins.model}: pin again"
+        )
+    _, dump = _load_verified(root)
+    by_id, groups = _github_fix_groups(dump, ",".join(c.vulnerability for c in pins.cases), None, 0)
+    by_key = {g.key: g for g in groups}
+    template = load_template(root / prompt)
+    counter = HfTokenizer(llm_config.tokenizer, root / cache / "tokenizer")
+    github = GitHubClient(root / cache / "http" / "github", token=token, wait_for_rate_limit=3900)
+    pypi = PyPIClient(root / cache / "http" / "pypi")
+    llm, model_id = client_for(llm_config, pins.role, root / cache / "llm", counter)
+    results: list[drift.CaseResult] = []
+    stopped = False
+    try:
+        with _run_trace(
+            root, f"drift-check-{pins.role}", "drift-check", llm, role=pins.role,
+            model=model_id, prompt_version=template.version, pinned=pins.name,
+            vulnerabilities=len(pins.cases),
+        ) as end:  # fmt: skip
+            for case in pins.cases:
+                key = case.vulnerability
+                if stopped:
+                    results.append(drift.CaseResult(vulnerability=key, status="not_run"))
+                    continue
+                group = by_key.get(key)
+                rendered = (
+                    "no GitHub fix candidate" if group is None
+                    else pypi_extract.rendered_prompts(group, by_id, github, pypi, [llm_config],
+                                                       pins.role, template, counter)
+                )  # fmt: skip
+                if isinstance(rendered, str):
+                    results.append(drift.CaseResult(vulnerability=key, status="no_prompt",
+                                                    detail=rendered.replace("_", " ")))  # fmt: skip
+                    continue
+                request = first_request(model, rendered[0])
+                if request.cache_key() != case.request_key:
+                    results.append(drift.CaseResult(vulnerability=key, status="input_changed"))
+                    continue
+                try:
+                    with llm.tracer.advisory(key):
+                        content = llm.complete(request).content
+                except (QuotaExhaustedError, RateLimitedError):
+                    stopped = True
+                    results.append(drift.CaseResult(vulnerability=key, status="not_run"))
+                    continue
+                except ProviderRejectedError:
+                    # The provider's message is not kept: it can name the account.
+                    results.append(drift.CaseResult(vulnerability=key, status="rejected"))
+                    continue
+                results.append(drift.compare(case, content, rendered[0]))
+            end.update(outcome="stopped" if stopped else "complete",
+                       status=dict(Counter(r.status for r in results)))  # fmt: skip
+    finally:
+        github.close()
+        pypi.close()
+    checked = datetime.now(UTC).date().isoformat()
+    result = drift.report(pins, hashlib.sha256(raw).hexdigest(), checked, results)
+    target = root / out
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.with_name(target.name + ".json").write_text(
+        result.model_dump_json(indent=2) + "\n", "utf-8"
+    )
+    target.with_name(target.name + ".md").write_text(drift.render_markdown(result, pins), "utf-8")
+    typer.echo(f"drift check: {result.verdict} ({result.counts}); {llm.network_calls} model calls")
 
 
 @app.command("gold-sample")

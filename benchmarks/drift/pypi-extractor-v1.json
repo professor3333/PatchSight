@@ -1,0 +1,233 @@
+{
+ "name": "drift-pypi-extractor-v1",
+ "role": "extractor",
+ "model": "qwen/qwen3.8-27b",
+ "prompt_version": "extract-v1",
+ "config_sha256": "725ede20f94c1c4cbc7ef9ad6205fbf40ce0ab713b091899d799c6e8960feb74",
+ "seed": 20261127,
+ "pool": 39,
+ "cases": [
+  {
+   "vulnerability": "GHSA-43mp-35q3-x3fq",
+   "request_key": "ea0dcb1674b46d9eff3eb236672a5384362328d06173eb6e03b92ae7cd0183eb",
+   "candidates": 2,
+   "expected": {
+    "vulnerable": [
+     "F1"
+    ],
+    "entry_points": [
+     "safe_delete"
+    ]
+   },
+   "names": {
+    "F1": "src/virtualenv/util/path/_sync.py:safe_delete"
+   }
+  },
+  {
+   "vulnerability": "GHSA-4v28-j6q3-5m4r",
+   "request_key": "af063ad31cda27031ee209a4ebff056d2f8d9ba5ea35491f8971c9db7eab5c38",
+   "candidates": 4,
+   "expected": {
+    "vulnerable": [
+     "F1",
+     "F2"
+    ],
+    "entry_points": []
+   },
+   "names": {
+    "F1": "backend/open_webui/retrieval/utils.py:_get_content_from_url_sync",
+    "F2": "backend/open_webui/retrieval/web/utils.py:SafePlaywrightURLLoader"
+   }
+  },
+  {
+   "vulnerability": "GHSA-4vqv-7265-gm2w",
+   "request_key": "94e70e681f1927034b24a789b8931d3b427f215860f0a6ce0504fa018d31f45c",
+   "candidates": 9,
+   "expected": {
+    "vulnerable": [
+     "F1",
+     "F2",
+     "F3",
+     "F4",
+     "F5",
+     "F6",
+     "F7",
+     "F8",
+     "F9"
+    ],
+    "entry_points": []
+   },
+   "names": {
+    "F1": "pypdf/_cmap.py:_derive_character_map_from_cff_type1_font_file",
+    "F2": "pypdf/_cmap.py:_parse_encoding",
+    "F3": "pypdf/_codecs/__init__.py:fill_from_encoding",
+    "F4": "pypdf/_page.py:PageObject._extract_text",
+    "F5": "pypdf/_reader.py:PdfReader._rebuild_xref_table",
+    "F6": "pypdf/_reader.py:PdfReader.root_object",
+    "F7": "pypdf/generic/_base.py:FloatObject.__new__",
+    "F8": "pypdf/generic/_data_structures.py:DictionaryObject._clone",
+    "F9": "pypdf/generic/_data_structures.py:DictionaryObject.read_from_stream"
+   }
+  },
+  {
+   "vulnerability": "GHSA-5p9j-w2wx-qx4c",
+   "request_key": "9c2b8d7ed6c4f9b6145a6f598072459907b20444456ebf39a885b0d4a9d80d54",
+   "candidates": 9,
+   "expected": {
+    "vulnerable": [
+     "F3",
+     "F4",
+     "F5",
+     "F6",
+     "F7",
+     "F8",
+     "F9"
+    ],
+    "entry_points": [
+     "custom_login",
+     "custom_logout",
+     "register",
+     "resend_activation_email"
+    ]
+   },
+   "names": {
+    "F3": "spirit/topic/private/views.py:join_in",
+    "F4": "spirit/topic/private/views.py:publish",
+    "F5": "spirit/user/admin/views.py:edit",
+    "F6": "spirit/user/auth/views.py:custom_login",
+    "F7": "spirit/user/auth/views.py:custom_logout",
+    "F8": "spirit/user/auth/views.py:register",
+    "F9": "spirit/user/auth/views.py:resend_activation_email"
+   }
+  },
+  {
+   "vulnerability": "GHSA-799x-qp47-8qwq",
+   "request_key": "f07b46550755504ea84a58000e3959c3a209e40d28a49f4fb08c79f527ae8061",
+   "candidates": 7,
+   "expected": {
+    "vulnerable": [
+     "F3",
+     "F4",
+     "F6",
+     "F7"
+    ],
+    "entry_points": [
+     "SmtpHook.aget_conn",
+     "SmtpHook.get_conn",
+     "send_mime_email"
+    ]
+   },
+   "names": {
+    "F3": "airflow-core/src/airflow/utils/email.py:send_mime_email",
+    "F4": "providers/smtp/src/airflow/providers/smtp/hooks/smtp.py:SmtpHook._build_client_kwargs",
+    "F6": "providers/smtp/src/airflow/providers/smtp/hooks/smtp.py:SmtpHook.aget_conn",
+    "F7": "providers/smtp/src/airflow/providers/smtp/hooks/smtp.py:SmtpHook.get_conn"
+   }
+  },
+  {
+   "vulnerability": "GHSA-8rjx-v5ww-45pp",
+   "request_key": "108995bf2a8af9ce07d2a0c3f7855153f2ad3bda1abcea72c8f366bd0fffb2ca",
+   "candidates": 5,
+   "expected": {
+    "vulnerable": [
+     "F3",
+     "F4"
+    ],
+    "entry_points": []
+   },
+   "names": {
+    "F3": "src/virtualenv/activation/via_template.py:ViaTemplateActivator",
+    "F4": "src/virtualenv/activation/via_template.py:ViaTemplateActivator.instantiate_template"
+   }
+  },
+  {
+   "vulnerability": "GHSA-cw65-gx24-rc82",
+   "request_key": "ac603385b2ccf14e4f6a3a7c9fca029e3fbffd26d4eceba99bc6866189bda0c7",
+   "candidates": 2,
+   "expected": {
+    "vulnerable": [
+     "F1",
+     "F2"
+    ],
+    "entry_points": []
+   },
+   "names": {
+    "F1": "src/virtualenv/create/via_global_ref/builtin/via_global_self_do.py:ViaGlobalRefVirtualenvBuiltin.create",
+    "F2": "src/virtualenv/create/via_global_ref/venv.py:Venv.create"
+   }
+  },
+  {
+   "vulnerability": "GHSA-fc2g-4w5p-6whm",
+   "request_key": "4c263ec9353703e5d80a5cae4996f0c7ad9bee33b95435625fdf2135d82281ac",
+   "candidates": 3,
+   "expected": {
+    "vulnerable": [
+     "F1",
+     "F2",
+     "F3"
+    ],
+    "entry_points": [
+     "copy",
+     "copytree"
+    ]
+   },
+   "names": {
+    "F1": "src/virtualenv/util/path/_sync.py:_copy_file",
+    "F2": "src/virtualenv/util/path/_sync.py:copy",
+    "F3": "src/virtualenv/util/path/_sync.py:copytree"
+   }
+  },
+  {
+   "vulnerability": "GHSA-h582-2pch-3xv3",
+   "request_key": "94fc53054e8bdc8dbc9e64bf1c52635e7c2e6cb88d62919629249d31598ab0f7",
+   "candidates": 9,
+   "expected": {
+    "vulnerable": [
+     "F1",
+     "F2",
+     "F3",
+     "F4",
+     "F5",
+     "F6",
+     "F7",
+     "F8",
+     "F9"
+    ],
+    "entry_points": []
+   },
+   "names": {
+    "F1": "django/contrib/sessions/backends/cached_db.py:SessionStore.exists",
+    "F2": "django/contrib/sessions/backends/cached_db.py:SessionStore.load",
+    "F3": "django/contrib/sessions/backends/file.py:SessionStore.create",
+    "F4": "django/contrib/sessions/backends/file.py:SessionStore.save",
+    "F5": "django/contrib/sessions/backends/file.py:SessionStore.create",
+    "F6": "django/contrib/sessions/backends/file.py:SessionStore.save",
+    "F7": "django/contrib/sessions/backends/cached_db.py:SessionStore.exists",
+    "F8": "django/contrib/sessions/backends/file.py:SessionStore.create",
+    "F9": "django/contrib/sessions/backends/file.py:SessionStore.save"
+   }
+  },
+  {
+   "vulnerability": "GHSA-q326-jhw3-699g",
+   "request_key": "b31f85bd722ac54d4890b4f1eefb4fbea24f5d7bdafc205a64c4570f0a531174",
+   "candidates": 9,
+   "expected": {
+    "vulnerable": [
+     "F1",
+     "F2",
+     "F3",
+     "F8",
+     "F9"
+    ],
+    "entry_points": []
+   },
+   "names": {
+    "F1": "IPython/html/base/handlers.py:APIHandler",
+    "F2": "IPython/html/base/handlers.py:APIHandler.content_security_policy",
+    "F3": "IPython/html/base/handlers.py:APIHandler.finish",
+    "F8": "IPython/html/base/handlers.py:json_errors",
+    "F9": "IPython/html/services/contents/handlers.py:ContentsHandler"
+   }
+  }
+ ]
+}

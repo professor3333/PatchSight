@@ -16,7 +16,7 @@ import time
 from collections import deque
 from collections.abc import Callable, Sequence
 from pathlib import Path
-from typing import Any, cast
+from typing import Any, Literal, cast
 
 from pydantic import BaseModel, ConfigDict
 
@@ -35,7 +35,12 @@ def redact(text: str) -> str:
 
 
 class QuotaExhaustedError(RuntimeError):
-    """The provider's daily request cap for this run is used up."""
+    """A daily cap for this model is used up: by the ledger's count before sending
+    (``source`` "ledger"), or by the provider's own answer (``source`` "provider")."""
+
+    def __init__(self, message: str, source: Literal["ledger", "provider"] = "ledger") -> None:
+        super().__init__(message)
+        self.source = source
 
 
 class RateLimitedError(RuntimeError):
@@ -214,7 +219,7 @@ def openai_backend(base_url: str, api_key: str) -> Backend:
             # Per-minute limits are retried by the SDK; a daily cap cannot be waited out.
             message = redact(str(error))
             if "per day" in message.lower():
-                raise QuotaExhaustedError(message[:300]) from None
+                raise QuotaExhaustedError(message[:300], source="provider") from None
             raise RateLimitedError(message[:300]) from None
         except (BadRequestError, APIStatusError) as error:
             if isinstance(error, BadRequestError) or error.status_code == 413:

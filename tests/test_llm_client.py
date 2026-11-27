@@ -379,3 +379,5 @@ def test_rate_limits_map_to_typed_redacted_errors(
     with pytest.raises(getattr(client_module, expected)) as raised:
         backend(_request())
     assert "org_01abcDEF234567" not in str(raised.value)
+    if expected == "QuotaExhaustedError":
+        assert raised.value.source == "provider"  # type: ignore[attr-defined]

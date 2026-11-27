@@ -75,7 +75,9 @@ def _run_trace(
     try:
         yield end
     except (QuotaExhaustedError, RateLimitedError) as stopped:
-        finish("stopped", reason=type(stopped).__name__)
+        # Which cap stopped it, never the provider's message (traces carry none).
+        cap = {"cap": stopped.source} if isinstance(stopped, QuotaExhaustedError) else {}
+        finish("stopped", reason=type(stopped).__name__, **cap)
         raise
     except BaseException as error:
         finish("crashed", reason=type(error).__name__)

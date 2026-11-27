@@ -148,7 +148,8 @@ def test_a_stopped_or_crashed_run_still_ends_its_trace(
     from patchsight.pipeline.llm.client import QuotaExhaustedError
 
     llm = _client_for_run(tmp_path)
-    raised: Exception = QuotaExhaustedError("cap") if error == "quota" else KeyError("x")
+    quota = QuotaExhaustedError("199,000 used of 200,000")
+    raised: Exception = quota if error == "quota" else KeyError("x")
     with pytest.raises(type(raised)), _run_trace(tmp_path, "run", "pypi-extract", llm):
         raise raised
     end = _run_events(tmp_path)[-1]
@@ -157,3 +158,7 @@ def test_a_stopped_or_crashed_run_still_ends_its_trace(
         outcome,
         type(raised).__name__,
     )
+    # A quota stop says which cap stopped it, here the run's own ledger; the message,
+    # which can be the provider's, never reaches the trace.
+    assert end.get("cap") == ("ledger" if error == "quota" else None)
+    assert "199,000" not in json.dumps(end)

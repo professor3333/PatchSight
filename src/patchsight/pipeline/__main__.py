@@ -3008,7 +3008,8 @@ def drift_check_command(
 
     from patchsight.pipeline import pypi_extract
     from patchsight.pipeline.extract.extractor import first_request
-    from patchsight.pipeline.llm.client import ProviderRejectedError
+    from patchsight.pipeline.extract.prompt import RenderedPrompt
+    from patchsight.pipeline.http import HttpError
 
     token = _github_token()
     raw = (root / pinned).read_bytes()
@@ -3024,48 +3025,33 @@ def drift_check_command(
     by_key = {g.key: g for g in groups}
     template = load_template(root / prompt)
     counter = HfTokenizer(llm_config.tokenizer, root / cache / "tokenizer")
-    github = GitHubClient(root / cache / "http" / "github", token=token, wait_for_rate_limit=3900)
+    # No wait for GitHub's rate limit: the check runs last, and a prompt it cannot render
+    # tonight is reported, not waited for.
+    github = GitHubClient(root / cache / "http" / "github", token=token)
     pypi = PyPIClient(root / cache / "http" / "pypi")
     llm, model_id = client_for(llm_config, pins.role, root / cache / "llm", counter)
-    results: list[drift.CaseResult] = []
-    stopped = False
+
+    def render(key: str) -> RenderedPrompt | str:
+        group = by_key.get(key)
+        if group is None:
+            return "no GitHub fix candidate"
+        try:
+            rendered = pypi_extract.rendered_prompts(
+                group, by_id, github, pypi, [llm_config], pins.role, template, counter
+            )
+        except HttpError as error:
+            return f"a fix request failed ({type(error).__name__})"
+        return rendered if isinstance(rendered, str) else rendered[0]
+
     try:
         with _run_trace(
             root, f"drift-check-{pins.role}", "drift-check", llm, role=pins.role,
             model=model_id, prompt_version=template.version, pinned=pins.name,
             vulnerabilities=len(pins.cases),
         ) as end:  # fmt: skip
-            for case in pins.cases:
-                key = case.vulnerability
-                if stopped:
-                    results.append(drift.CaseResult(vulnerability=key, status="not_run"))
-                    continue
-                group = by_key.get(key)
-                rendered = (
-                    "no GitHub fix candidate" if group is None
-                    else pypi_extract.rendered_prompts(group, by_id, github, pypi, [llm_config],
-                                                       pins.role, template, counter)
-                )  # fmt: skip
-                if isinstance(rendered, str):
-                    results.append(drift.CaseResult(vulnerability=key, status="no_prompt",
-                                                    detail=rendered.replace("_", " ")))  # fmt: skip
-                    continue
-                request = first_request(model, rendered[0])
-                if request.cache_key() != case.request_key:
-                    results.append(drift.CaseResult(vulnerability=key, status="input_changed"))
-                    continue
-                try:
-                    with llm.tracer.advisory(key):
-                        content = llm.complete(request).content
-                except (QuotaExhaustedError, RateLimitedError):
-                    stopped = True
-                    results.append(drift.CaseResult(vulnerability=key, status="not_run"))
-                    continue
-                except ProviderRejectedError:
-                    # The provider's message is not kept: it can name the account.
-                    results.append(drift.CaseResult(vulnerability=key, status="rejected"))
-                    continue
-                results.append(drift.compare(case, content, rendered[0]))
+            results, stopped = drift.check(
+                pins.cases, render, lambda p: first_request(model, p), llm
+            )
             end.update(outcome="stopped" if stopped else "complete",
                        status=dict(Counter(r.status for r in results)))  # fmt: skip
     finally:

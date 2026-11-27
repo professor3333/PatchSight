@@ -42,12 +42,20 @@ Every night, after the release steps, the nightly asks the extractor 10 pinned p
 | `note` | otherwise, 1 prompt changed |
 | `ok` | otherwise |
 
-**What happens on drift:** the run opens an issue labelled `drift` with the report. The check never blocks or delays a release. Its step runs after the release, the pointer and the Hugging Face upload, and a failure in it does not fail the run. The report (`nightly-drift.json` and `.md`) is kept in the run's artifact, and the operations dashboard shows each night's verdict.
+**What happens on drift:** the run opens an issue labelled `drift` with the report. The check never blocks or delays a release. Its step runs after the release, the pointer and the Hugging Face upload, and a failure in it does not fail the run. It also runs on a second run the same UTC day, which publishes and extracts nothing, so a dispatch can check again. The report (`nightly-drift.json` and `.md`) is kept in the run's artifact, and the operations dashboard shows each night's verdict.
 
 ## Consequences
 
-- **The cost** is about 10 requests and 20,000 to 30,000 tokens a night, at Groq's pace of about one request a minute. That is about a tenth of the daily cap, and the check runs after the night's extraction, so it never takes extraction's quota.
+- **The cost** is 10 requests a night, at Groq's pace of about one a minute. The first run took 34,311 tokens (30,226 in, 4,085 out) and 9 minutes, about a sixth of the daily cap. The check runs after the night's extraction, so it never takes extraction's quota.
 - **The threshold rests on little evidence.** E13 saw no decision change in 5 prompts, which cannot say how often one flips by chance. One change is therefore a note, not drift. The threshold may change by amendment once nights of results exist, never by editing past reports.
 - **The pins age.** An advisory that is edited, or a change to the prompt or to the decoding parameters, takes its prompt out of the comparison. When fewer than 5 can be compared, every night is inconclusive. `drift-freeze` then draws a new set (`-v2`) from the nights' answers, pinned like any other evaluation set.
 - **It measures stability, not quality.** A provider change that alters decisions shows up here. Whether the new decisions are better or worse needs the labelled benchmarks.
 - **Only the nightly model is checked.** The Kaggle backfill model runs from pinned weights and is deterministic ([E5](../experiments.md)), so it needs no such check.
+
+## First live run, 2026-11-27
+
+Run locally, from an empty model cache, after this decision was committed:
+
+- **Verdict `ok`:** all 10 prompts were compared, and all 10 got the same decisions.
+- **Wording:** 8 of the 10 answers were byte-identical to the pinned ones. The other 2 reworded a rationale, as in E13.
+- **Cost:** 10 calls and 34,311 tokens over 542 seconds.

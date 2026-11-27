@@ -8,6 +8,7 @@ import pytest
 from patchsight.pipeline import drift
 from patchsight.pipeline.drift import CaseResult, Decisions, PinnedCase
 from patchsight.pipeline.extract.prompt import Candidate, RenderedPrompt
+from patchsight.pipeline.llm.client import LLMRequest
 
 REPO = Path(__file__).resolve().parents[1]
 
@@ -127,3 +128,53 @@ def test_the_report_shows_both_answers_for_a_change() -> None:
     text = drift.render_markdown(report, pinned)
     assert "pinned vulnerable: F1 `pkg/m.py:f_F1`" in text
     assert "tonight vulnerable: F2 `pkg/m.py:f_F2`" in text
+
+
+def _request(prompt: RenderedPrompt) -> LLMRequest:
+    return LLMRequest(model="m", prompt_version=prompt.version,
+                      messages=({"role": "user", "content": ",".join(prompt.hunk_ids)},),
+                      schema_name="s", response_schema={}, max_tokens=10, seed=0)  # fmt: skip
+
+
+def _pinned_for(prompt: RenderedPrompt, vulnerability: str) -> PinnedCase:
+    return _case(("F1",)).model_copy(
+        update={"vulnerability": vulnerability, "request_key": _request(prompt).cache_key()}
+    )
+
+
+def test_check_asks_only_unchanged_prompts_and_stops_at_the_cap(tmp_path: Path) -> None:
+    """Each branch, with a fake provider: same, changed input, refusal, no prompt, cap."""
+    from patchsight.pipeline.llm.client import (
+        LLMClient,
+        ProviderRejectedError,
+        QuotaExhaustedError,
+        RateLimiter,
+    )
+
+    # Each pin has its own prompt (one request key each); V1's was edited since.
+    prompts = [_prompt(["F1", "F2"]).model_copy(update={"hunk_ids": (f"H{i}",)}) for i in range(6)]
+    cases = [_pinned_for(p, f"V{i}") for i, p in enumerate(prompts)]
+    edited = prompts[1].model_copy(update={"hunk_ids": ("H1", "H9")})
+    asked: list[str] = []
+
+    def backend(request: LLMRequest) -> tuple[str, int, int]:
+        asked.append(request.messages[0]["content"])
+        if len(asked) == 2:
+            raise ProviderRejectedError("Failed to generate JSON; org_123")
+        if len(asked) == 3:
+            raise QuotaExhaustedError("daily cap")
+        return _answer({"F1"}, ["F1", "F2"]), 5, 5
+
+    tonight: dict[str, RenderedPrompt | str] = {
+        "V0": prompts[0], "V1": edited, "V2": prompts[2], "V3": "no_python_fix",
+        "V4": prompts[4], "V5": prompts[5],
+    }  # fmt: skip
+    llm = LLMClient(backend, RateLimiter(100_000, 100), tmp_path / "llm")
+    results, stopped = drift.check(cases, tonight.__getitem__, _request, llm)
+    assert [r.status for r in results] == [
+        "same", "input_changed", "rejected", "no_prompt", "not_run", "not_run",
+    ]  # fmt: skip
+    assert stopped
+    assert len(asked) == 3  # the edited prompt is never sent; nothing after the cap
+    assert results[3].detail == "no python fix"
+    assert "org_123" not in json.dumps([r.model_dump() for r in results])

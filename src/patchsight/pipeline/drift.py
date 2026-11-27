@@ -20,7 +20,7 @@ and the entry points: no code, no advisory text and no rationale (rule 13).
 import random
 import re
 from collections import Counter
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import Literal
 
@@ -28,6 +28,13 @@ from pydantic import BaseModel, ConfigDict, ValidationError
 
 from patchsight.pipeline.extract.prompt import RenderedPrompt
 from patchsight.pipeline.extract.schema import Extraction
+from patchsight.pipeline.llm.client import (
+    LLMClient,
+    LLMRequest,
+    ProviderRejectedError,
+    QuotaExhaustedError,
+    RateLimitedError,
+)
 
 PINNED = Path("benchmarks/drift/pypi-extractor-v1.json")
 SIZE = 10
@@ -141,6 +148,46 @@ def compare(case: PinnedCase, content: str, prompt: RenderedPrompt) -> CaseResul
     shown = (*case.expected.vulnerable, *got.vulnerable) if status == "changed" else ()
     return CaseResult(vulnerability=case.vulnerability, status=status, got=got,
                       names={**case.names, **names(prompt, shown)} if shown else {})  # fmt: skip
+
+
+def check(
+    cases: Sequence[PinnedCase],
+    render: Callable[[str], RenderedPrompt | str],
+    request_for: Callable[[RenderedPrompt], LLMRequest],
+    llm: LLMClient,
+) -> tuple[list[CaseResult], bool]:
+    """Ask each pinned prompt again, in order, when tonight's request key is the pinned one.
+    ``render`` gives a vulnerability's prompt tonight, or why there is none. Returns the
+    results, and whether a daily cap stopped the check (the rest are then ``not_run``)."""
+    results: list[CaseResult] = []
+    stopped = False
+    for case in cases:
+        key = case.vulnerability
+        if stopped:
+            results.append(CaseResult(vulnerability=key, status="not_run"))
+            continue
+        prompt = render(key)
+        if isinstance(prompt, str):
+            detail = prompt.replace("_", " ")
+            results.append(CaseResult(vulnerability=key, status="no_prompt", detail=detail))
+            continue
+        request = request_for(prompt)
+        if request.cache_key() != case.request_key:
+            results.append(CaseResult(vulnerability=key, status="input_changed"))
+            continue
+        try:
+            with llm.tracer.advisory(key):
+                content = llm.complete(request).content
+        except (QuotaExhaustedError, RateLimitedError):
+            stopped = True
+            results.append(CaseResult(vulnerability=key, status="not_run"))
+            continue
+        except ProviderRejectedError:
+            # The provider's message is not kept: it can name the account.
+            results.append(CaseResult(vulnerability=key, status="rejected"))
+            continue
+        results.append(compare(case, content, prompt))
+    return results, stopped
 
 
 Verdict = Literal["ok", "note", "drift", "inconclusive"]

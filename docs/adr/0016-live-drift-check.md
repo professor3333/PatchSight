@@ -59,3 +59,12 @@ Run locally, from an empty model cache, after this decision was committed:
 - **Verdict `ok`:** all 10 prompts were compared, and all 10 got the same decisions.
 - **Wording:** 8 of the 10 answers were byte-identical to the pinned ones. The other 2 reworded a rationale, as in E13.
 - **Cost:** 10 calls and 34,311 tokens over 542 seconds.
+
+## First run in the nightly runner, 2026-11-27
+
+A same-day dispatch of the nightly (run 46008895967) published and extracted nothing, because db-2026.11.27 already existed, and asked each prompt 13 minutes after the local run had:
+
+- **Verdict `note`.** All 10 prompts had the pinned request key. 9 kept their decisions.
+- **One changed.** `GHSA-4vqv-7265-gm2w` (pypdf, 9 candidates) came back with only F9 vulnerable, where the pinned answer and the local re-ask both marked all 9.
+- **So an identical request can change a decision on Groq.** Across the first 20 re-asks, 1 did. This is the case the one-change threshold was set for: a note, with no issue opened.
+- **No published record changes.** The record keeps the night's answer, and while no record is high confidence (ADR 0008), a low-confidence record lists every changed definition anyway.

@@ -28,7 +28,7 @@ Every controlled experiment on the extraction system, including the ones that lo
 | E10 | A replacement for BM25 at the prompt budget | file order; smallest first; candidates the advisory names first; BM25 score per token | Chosen on dev: smallest first. Holdout, declared beforehand: +0.094 recall over BM25 (95% CI +0.042 to +0.328) | Passed. An option, off by default (`budget.candidate_order`); switched on with #52 and #53 |
 | E11 | Self-hosted second opinion | gpt-oss-120b on Groq; gpt-oss-20b (MXFP4) on Kaggle | Safety view, frozen rule, dev: overall miss 8.3% and 10.0%; high-confidence misses 1 of 27 and 1 of 25 | Lost: fails ADR 0007's declared miss-rate criterion by one report; the Groq second opinion stays |
 | E12 | The switch-on batch, before and after | as shipped; with the output cap, smallest-first ordering and dotted entry points | Dev F1 0.676 to 0.688 at the same recall; all 280: 0.680 to 0.662 (precision 0.751 to 0.702, recall 0.621 to 0.628); miss rate unchanged; dead letters 1 to 0 | Measured; the PyPI shadow and its review decide the promotion |
-| E13 | Run-to-run determinism (hosted) | last night's Groq answers; the same prompts asked again the next morning | 5 of 7 answers byte-identical; every pick, entry point and cited hunk identical; 2 rationales reworded | Measured: Groq is reproducible in what it decides, not in its wording. The nightly's live drift check therefore compares decisions only ([ADR 0016](adr/0016-live-drift-check.md)) |
+| E13 | Run-to-run determinism (hosted) | last night's Groq answers; the same prompts asked again the next morning | 5 of 7 answers byte-identical; every pick, entry point and cited hunk identical; 2 rationales reworded | Measured: Groq is reproducible in what it decides, not in its wording. The nightly's live drift check therefore compares decisions only ([ADR 0016](adr/0016-live-drift-check.md)). Its first two checks: 19 of 20 answers kept their decisions, 1 changed on an identical request |
 
 ## E1: 4-bit self-hosted against hosted serving
 
@@ -453,4 +453,9 @@ The sample is small: five vulnerabilities on one pair of days ([recorded report]
 **Decision.** None yet. It says how to compare:
 - **A drift check against live models must compare decisions, not text.** That means the vulnerable set, the entry points and the citations. Byte comparison would raise false alarms on reworded rationales.
 - **A record's own text is reproducible only from its cached answer.** So the nightly keeps its answers ([ADR 0013](adr/0013-llm-extraction-in-the-nightly.md)).
+
+**Follow-up, 2026-11-27: the first two drift checks.** The live drift check ([ADR 0016](adr/0016-live-drift-check.md)) asked 10 other answered prompts again, twice: once locally, then 13 minutes later in the nightly runner. Each time all 10 prompts had the pinned request key.
+- **19 of the 20 answers kept the pinned decisions.**
+- **One changed.** In the runner, `GHSA-4vqv-7265-gm2w` (pypdf, 9 candidates) came back with only F9 vulnerable, where the pinned answer and the local re-ask both marked all 9.
+- **So Groq can change a decision on an identical request.** E13's sample was too small to show it. A single change is therefore a note, not drift, as ADR 0016 declared before either check.
 

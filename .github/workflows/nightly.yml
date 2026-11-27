@@ -5,7 +5,8 @@ name: nightly
 # pointer on the db-pointer branch. With the GROQ_API_KEY secret, the night's changed
 # vulnerabilities, then those still waiting for model picks, are also extracted and their
 # picks merged before the gate (ADR 0013); without it, the run makes no model call. With the
-# HF_TOKEN secret, each published release also goes to the Hugging Face dataset.
+# HF_TOKEN secret, each published release also goes to the Hugging Face dataset. Last, with
+# the Groq key, a live drift check asks the model pinned prompts again (ADR 0016).
 
 on:
   schedule:
@@ -178,6 +179,34 @@ jobs:
           uv run python -m patchsight.pipeline hf-publish \
             "data/build/release/patchsight-db-${TAG#db-}.sqlite.gz" --tag "$TAG" --expect-sha256 "$sha"
 
+      - name: Live drift check
+        # ADR 0016: ask the nightly model ten pinned prompts again and compare its decisions
+        # with the pinned answers. After the release steps, and it never fails the run. Unlike
+        # extraction it also runs on a same-day re-run, so a dispatch can check again.
+        id: drift
+        if: env.HAS_GROQ == 'true'
+        continue-on-error: true
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: |
+          uv run python -m patchsight.pipeline drift-check --out data/build/nightly-drift
+          verdict=$(uv run python -c "import json; print(json.load(open('data/build/nightly-drift.json'))['verdict'])")
+          echo "verdict=$verdict" >> "$GITHUB_OUTPUT"
+
+      - name: Open a drift issue
+        if: steps.drift.outputs.verdict == 'drift'
+        continue-on-error: true
+        run: |
+          gh label create drift --repo "$GITHUB_REPOSITORY" --color FBCA04 \
+            --description "The nightly model's decisions changed (ADR 0016)" --force
+          {
+            echo "The live drift check found drift: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            echo
+            cat data/build/nightly-drift.md
+          } > "$RUNNER_TEMP/drift.md"
+          gh issue create --repo "$GITHUB_REPOSITORY" --label drift --body-file "$RUNNER_TEMP/drift.md" \
+            --title "Nightly model drift on $(date -u +%Y-%m-%d)"
+
       - name: Keep the reports
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -195,6 +224,8 @@ jobs:
             data/build/nightly-targets.json
             data/build/nightly-extract-extractor-summary.json
             data/build/nightly-merged-merge.json
+            data/build/nightly-drift.json
+            data/build/nightly-drift.md
             data/interim/traces/*.jsonl
             .cache/llm/*/*.json
           if-no-files-found: ignore

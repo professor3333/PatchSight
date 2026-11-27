@@ -212,8 +212,8 @@ def _nightly(runs: Sequence[NightlyRun]) -> list[str]:
         return ["No nightly report fetched yet (`fetch-nightly`)."]
     lines = [
         "| Started (UTC) | Trigger | Result | Release | Carried / rebuilt / new / removed | "
-        "Gate | To extract | Backlog | Extraction | Dead letters |",
-        "|---|---|---|---|---|---|---:|---:|---|---:|",
+        "Gate | To extract | Backlog | Extraction | Dead letters | Drift check |",
+        "|---|---|---|---|---|---|---:|---:|---|---:|---|",
     ]
     for r in runs:
         release = f"`{r.db_version}`" + ("" if r.published else " (not published)")
@@ -226,10 +226,15 @@ def _nightly(runs: Sequence[NightlyRun]) -> list[str]:
         rate = "—" if r.dead_letter_rate is None else f"{r.dead_letter_rate:.1%}"
         to_extract = "—" if r.to_extract is None else f"{r.to_extract:,}"
         backlog = "—" if r.backlog is None else f"{r.backlog:,}"
+        compared = sum(r.drift_counts.get(k, 0) for k in ("same", "changed", "invalid"))
+        drift = "—" if r.drift is None else (
+            f"{'**drift**' if r.drift == 'drift' else r.drift}: "
+            f"{r.drift_counts.get('same', 0)} of {compared} same"
+        )  # fmt: skip
         lines.append(
             f"| {r.started:%Y-%m-%d %H:%M} | {r.event} | {r.conclusion or '—'} | "
             f"{release if r.db_version else '—'} | {changes} | {gate} | {to_extract} | "
-            f"{backlog} | {extraction} | {rate} |"
+            f"{backlog} | {extraction} | {rate} | {drift} |"
         )
     return lines
 
@@ -286,7 +291,8 @@ def render_markdown(report: OperationsReport) -> str:
         "From the reports each run keeps (`fetch-nightly`). Since ADR 0013 a run with the Groq "
         "secret also extracts, at most 25 a night: its changed vulnerabilities (to extract), "
         "then those waiting from earlier nights for model picks (backlog). The dead-letter "
-        "target is under 2% after retries.",
+        "target is under 2% after retries. Since ADR 0016 the drift check asks the model ten "
+        "pinned prompts again and counts how many it decides the same way.",
         "",
         *_nightly(r.nightly),
         "",

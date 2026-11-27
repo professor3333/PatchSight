@@ -30,7 +30,7 @@ API = "https://api.github.com"
 REPORTS = frozenset({
     "nightly-update.json", "nightly-import-names.json", "gate.json", "gate.md",
     "release-notes.md", "nightly-targets.json", "nightly-extract-extractor-summary.json",
-    "nightly-merged-merge.json",
+    "nightly-merged-merge.json", "nightly-drift.json", "nightly-drift.md",
 })  # fmt: skip
 
 
@@ -166,6 +166,8 @@ class NightlyRun(BaseModel):
     extraction_model: str | None = None
     prompt_tokens: int | None = None
     completion_tokens: int | None = None
+    drift: str | None = None  # the live drift check's verdict (ADR 0016)
+    drift_counts: dict[str, int] = {}
     runs: tuple[TracedRun, ...] = ()
 
     @property
@@ -184,6 +186,7 @@ def load_run(folder: Path) -> NightlyRun:
     gate = _json(folder / "gate.json")
     summary = _json(folder / "nightly-extract-extractor-summary.json") or {}
     targets = _json(folder / "nightly-targets.json") or {}
+    drift = _json(folder / "nightly-drift.json") or {}
     return NightlyRun(
         run_id=int(meta["id"]), event=str(meta.get("event")), conclusion=meta.get("conclusion"),
         started=datetime.fromisoformat(str(meta["created_at"]).replace("Z", "+00:00")),
@@ -198,6 +201,7 @@ def load_run(folder: Path) -> NightlyRun:
         extraction_model=summary.get("model"),
         prompt_tokens=summary.get("prompt_tokens"),
         completion_tokens=summary.get("completion_tokens"),
+        drift=drift.get("verdict"), drift_counts=dict(drift.get("counts") or {}),
         runs=tuple(load_traces(folder / "traces")),
     )  # fmt: skip
 

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-27T13:06:37Z",
+  "generated_at": "2026-11-27T13:24:53Z",
   "sessions": [
     {
       "name": "patchsight-kaggle-run",
@@ -1355,6 +1355,8 @@
       "extraction_model": null,
       "prompt_tokens": null,
       "completion_tokens": null,
+      "drift": null,
+      "drift_counts": {},
       "runs": []
     },
     {
@@ -1376,6 +1378,8 @@
       "extraction_model": null,
       "prompt_tokens": null,
       "completion_tokens": null,
+      "drift": null,
+      "drift_counts": {},
       "runs": []
     },
     {
@@ -1397,6 +1401,8 @@
       "extraction_model": null,
       "prompt_tokens": null,
       "completion_tokens": null,
+      "drift": null,
+      "drift_counts": {},
       "runs": []
     },
     {
@@ -1418,6 +1424,8 @@
       "extraction_model": null,
       "prompt_tokens": null,
       "completion_tokens": null,
+      "drift": null,
+      "drift_counts": {},
       "runs": []
     },
     {
@@ -1439,6 +1447,8 @@
       "extraction_model": null,
       "prompt_tokens": null,
       "completion_tokens": null,
+      "drift": null,
+      "drift_counts": {},
       "runs": []
     },
     {
@@ -1460,6 +1470,8 @@
       "extraction_model": null,
       "prompt_tokens": null,
       "completion_tokens": null,
+      "drift": null,
+      "drift_counts": {},
       "runs": []
     },
     {
@@ -1481,6 +1493,8 @@
       "extraction_model": null,
       "prompt_tokens": null,
       "completion_tokens": null,
+      "drift": null,
+      "drift_counts": {},
       "runs": []
     },
     {
@@ -1502,6 +1516,8 @@
       "extraction_model": null,
       "prompt_tokens": null,
       "completion_tokens": null,
+      "drift": null,
+      "drift_counts": {},
       "runs": []
     },
     {
@@ -1523,6 +1539,8 @@
       "extraction_model": null,
       "prompt_tokens": null,
       "completion_tokens": null,
+      "drift": null,
+      "drift_counts": {},
       "runs": []
     },
     {
@@ -1547,6 +1565,8 @@
       "extraction_model": "qwen/qwen3.8-27b",
       "prompt_tokens": 95389,
       "completion_tokens": 8125,
+      "drift": null,
+      "drift_counts": {},
       "runs": [
         {
           "trace": "pypi-extract-extractor-20261122T115412Z.jsonl",
@@ -1613,6 +1633,8 @@
       "extraction_model": "qwen/qwen3.8-27b",
       "prompt_tokens": 133073,
       "completion_tokens": 7021,
+      "drift": null,
+      "drift_counts": {},
       "runs": [
         {
           "trace": "pypi-extract-extractor-20261123T122601Z.jsonl",
@@ -1680,6 +1702,8 @@
       "extraction_model": "qwen/qwen3.8-27b",
       "prompt_tokens": 106934,
       "completion_tokens": 7360,
+      "drift": null,
+      "drift_counts": {},
       "runs": [
         {
           "trace": "pypi-extract-extractor-20261124T133717Z.jsonl",
@@ -1745,6 +1769,8 @@
       "extraction_model": "qwen/qwen3.8-27b",
       "prompt_tokens": 78251,
       "completion_tokens": 6915,
+      "drift": null,
+      "drift_counts": {},
       "runs": [
         {
           "trace": "pypi-extract-extractor-20261125T124600Z.jsonl",
@@ -1811,6 +1837,8 @@
       "extraction_model": "qwen/qwen3.8-27b",
       "prompt_tokens": 61136,
       "completion_tokens": 7369,
+      "drift": null,
+      "drift_counts": {},
       "runs": [
         {
           "trace": "pypi-extract-extractor-20261126T122258Z.jsonl",
@@ -1879,6 +1907,8 @@
       "extraction_model": "qwen/qwen3.8-27b",
       "prompt_tokens": 34018,
       "completion_tokens": 7699,
+      "drift": null,
+      "drift_counts": {},
       "runs": [
         {
           "trace": "pypi-extract-extractor-20261127T120923Z.jsonl",

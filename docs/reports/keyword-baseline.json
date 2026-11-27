@@ -1,0 +1,232 @@
+{
+  "bootstrap": 2000,
+  "seed": 20261114,
+  "sources": [
+    {
+      "benchmark": "dunlap-v1",
+      "bundle": "benchmarks/dunlap-v1/retrieval.json",
+      "bundle_sha256": "5c576cd4f911aa85eaac4ddfea715fcdc2b98f9ac5e0c3d81dc18a0f55360eb9",
+      "labels": "benchmarks/dunlap-v1/candidates.json"
+    },
+    {
+      "benchmark": "go-holdout-v1",
+      "bundle": "benchmarks/go-holdout-v1/retrieval.json",
+      "bundle_sha256": "5ae3a70ece4a8353fa929662777d05ec95f46ca9995bcedd7da54937e447bb7b",
+      "labels": "benchmarks/go-holdout-v1/reports.json"
+    }
+  ],
+  "splits": [
+    {
+      "benchmark": "dunlap-v1",
+      "split": "all",
+      "reports": 280,
+      "names_a_candidate": 54,
+      "names_a_true_one": 45,
+      "keyword": {
+        "reports": 280,
+        "true_positives": 52,
+        "false_positives": 46,
+        "false_negatives": 536,
+        "precision": 0.5306122448979592,
+        "recall": 0.08843537414965986,
+        "f1": 0.15160349854227406,
+        "miss_rate": 0.8392857142857143,
+        "exact_match": 0.11071428571428571,
+        "precision_ci95": {
+          "low": 0.30432841614906836,
+          "high": 0.8727272727272727
+        },
+        "recall_ci95": {
+          "low": 0.06214390112566989,
+          "high": 0.11905094440010638
+        },
+        "f1_ci95": {
+          "low": 0.10647401406605808,
+          "high": 0.20173554783670816
+        }
+      },
+      "changedfuncs": {
+        "reports": 280,
+        "true_positives": 525,
+        "false_positives": 1805,
+        "false_negatives": 63,
+        "precision": 0.22532188841201717,
+        "recall": 0.8928571428571429,
+        "f1": 0.35983550376970524,
+        "miss_rate": 0.09642857142857143,
+        "exact_match": 0.45357142857142857,
+        "precision_ci95": {
+          "low": 0.1474318713330023,
+          "high": 0.3956876736981789
+        },
+        "recall_ci95": {
+          "low": 0.8596145635673624,
+          "high": 0.9216010447761194
+        },
+        "f1_ci95": {
+          "low": 0.2527385680678062,
+          "high": 0.5520650008301511
+        }
+      }
+    },
+    {
+      "benchmark": "dunlap-v1",
+      "split": "dev",
+      "reports": 60,
+      "names_a_candidate": 9,
+      "names_a_true_one": 8,
+      "keyword": {
+        "reports": 60,
+        "true_positives": 8,
+        "false_positives": 1,
+        "false_negatives": 110,
+        "precision": 0.8888888888888888,
+        "recall": 0.06779661016949153,
+        "f1": 0.12598425196850394,
+        "miss_rate": 0.8666666666666667,
+        "exact_match": 0.05,
+        "precision_ci95": {
+          "low": 0.6,
+          "high": 1.0
+        },
+        "recall_ci95": {
+          "low": 0.02654867256637168,
+          "high": 0.1217444326617179
+        },
+        "f1_ci95": {
+          "low": 0.05128205128205128,
+          "high": 0.2153846153846154
+        }
+      },
+      "changedfuncs": {
+        "reports": 60,
+        "true_positives": 96,
+        "false_positives": 290,
+        "false_negatives": 22,
+        "precision": 0.24870466321243523,
+        "recall": 0.8135593220338984,
+        "f1": 0.38095238095238093,
+        "miss_rate": 0.15,
+        "exact_match": 0.45,
+        "precision_ci95": {
+          "low": 0.11249463342140027,
+          "high": 0.5545568181818181
+        },
+        "recall_ci95": {
+          "low": 0.719276954522228,
+          "high": 0.8931297709923665
+        },
+        "f1_ci95": {
+          "low": 0.1953799416081433,
+          "high": 0.6744885387565289
+        }
+      }
+    },
+    {
+      "benchmark": "dunlap-v1",
+      "split": "test",
+      "reports": 220,
+      "names_a_candidate": 45,
+      "names_a_true_one": 37,
+      "keyword": {
+        "reports": 220,
+        "true_positives": 44,
+        "false_positives": 45,
+        "false_negatives": 426,
+        "precision": 0.4943820224719101,
+        "recall": 0.09361702127659574,
+        "f1": 0.15742397137745973,
+        "miss_rate": 0.8318181818181818,
+        "exact_match": 0.12727272727272726,
+        "precision_ci95": {
+          "low": 0.26720370147094286,
+          "high": 0.875
+        },
+        "recall_ci95": {
+          "low": 0.06060606060606061,
+          "high": 0.13701987419700215
+        },
+        "f1_ci95": {
+          "low": 0.10372519545519437,
+          "high": 0.2229529175532712
+        }
+      },
+      "changedfuncs": {
+        "reports": 220,
+        "true_positives": 429,
+        "false_positives": 1515,
+        "false_negatives": 41,
+        "precision": 0.22067901234567902,
+        "recall": 0.9127659574468086,
+        "f1": 0.35542667771333886,
+        "miss_rate": 0.08181818181818182,
+        "exact_match": 0.45454545454545453,
+        "precision_ci95": {
+          "low": 0.1361836825371907,
+          "high": 0.42322616124411694
+        },
+        "recall_ci95": {
+          "low": 0.8771078062248996,
+          "high": 0.9431077395335331
+        },
+        "f1_ci95": {
+          "low": 0.23722706243973674,
+          "high": 0.5783103599589238
+        }
+      }
+    },
+    {
+      "benchmark": "go-holdout-v1",
+      "split": "holdout",
+      "reports": 83,
+      "names_a_candidate": 18,
+      "names_a_true_one": 17,
+      "keyword": {
+        "reports": 83,
+        "true_positives": 20,
+        "false_positives": 1,
+        "false_negatives": 3012,
+        "precision": 0.9523809523809523,
+        "recall": 0.006596306068601583,
+        "f1": 0.013101867016049788,
+        "miss_rate": 0.7951807228915663,
+        "exact_match": 0.04819277108433735,
+        "precision_ci95": {
+          "low": 0.8333333333333334,
+          "high": 1.0
+        },
+        "recall_ci95": {
+          "low": 0.003183990920216349,
+          "high": 0.0137772803208853
+        },
+        "f1_ci95": {
+          "low": 0.006345152505665876,
+          "high": 0.02715499120996713
+        }
+      },
+      "changedfuncs": {
+        "reports": 83,
+        "true_positives": 1068,
+        "false_positives": 1705,
+        "false_negatives": 1964,
+        "precision": 0.3851424450054093,
+        "recall": 0.35224274406332456,
+        "f1": 0.36795865633074937,
+        "miss_rate": 0.012048192771084338,
+        "exact_match": 0.060240963855421686,
+        "precision_ci95": {
+          "low": 0.08557482425876421,
+          "high": 0.8562746327118947
+        },
+        "recall_ci95": {
+          "low": 0.12992931967458027,
+          "high": 0.6039147822580172
+        },
+        "f1_ci95": {
+          "low": 0.11290125441288866,
+          "high": 0.6681178147305177
+        }
+      }
+    }
+  ]
+}

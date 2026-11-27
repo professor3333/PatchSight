@@ -27,6 +27,8 @@ from patchsight.pipeline.benchmarks import (
     changedfuncs,
     dunlap,
     extraction,
+    go_holdout,
+    keyword,
     replay,
     splits,
 )
@@ -803,6 +805,73 @@ def retrieval_report_command(
     for split in report.splits:
         recalls = ", ".join(f"{g.ranking} {g.recall:.3f}" for g in split.rankings)
         typer.echo(f"{split.split}: {split.truncated}/{split.reports} cut; recall {recalls}")
+
+
+KEYWORD_REPORT = Path("docs/reports/keyword-baseline")
+
+
+def keyword_baseline(root: Path) -> keyword.Report:
+    """The keyword-match baseline on the Dunlap splits and the Go holdout, from the retrieval
+    bundles; each benchmark's ChangedFuncs line must first reproduce its committed baseline,
+    which shows the candidates are ChangedFuncs' own."""
+    import hashlib
+
+    from patchsight.pipeline.benchmarks import retrieval
+
+    reports_dir = root / "docs" / "reports"
+    dunlap_truth = {r.id: set(r.symbols) for r in bundle.load(root / DUNLAP_BUNDLE).reports}
+    dunlap_committed = changedfuncs.BaselineReport.model_validate_json(
+        (root / BASELINE_REPORT).read_text("utf-8")
+    ).ours
+    holdout = go_holdout.load(root / go_holdout.FROZEN)
+    holdout_truth = {r.id: set(r.symbols) for r in holdout.reports}
+    holdout_committed = SetScores.model_validate_json(
+        (reports_dir / "changedfuncs-go-holdout-v1.json").read_text("utf-8")
+    )
+    plan = (
+        ("dunlap-v1", DUNLAP_BUNDLE, dunlap_truth, dunlap_committed, BASELINE_REPORT),
+        (go_holdout.NAME, go_holdout.FROZEN, holdout_truth, holdout_committed,
+         Path("docs/reports/changedfuncs-go-holdout-v1.json")),
+    )  # fmt: skip
+    sources, scored = [], []
+    for name, labels, truth, committed, committed_path in plan:
+        path = RETRIEVAL[name][0]
+        raw = (root / path).read_bytes()
+        cases = retrieval.Bundle.model_validate_json(raw).cases
+        parts = [keyword.score_split(name, s, c, truth) for s, c in keyword.splits_of(cases)]
+        whole = parts[0].changedfuncs
+        counts = ("true_positives", "false_positives", "false_negatives", "reports")
+        if any(getattr(whole, c) != getattr(committed, c) for c in counts):
+            raise typer.BadParameter(
+                f"{path.as_posix()}'s changed functions do not reproduce {committed_path}"
+            )
+        sources.append(keyword.Source(benchmark=name, bundle=path.as_posix(),
+                                      bundle_sha256=hashlib.sha256(raw).hexdigest(),
+                                      labels=labels.as_posix()))  # fmt: skip
+        scored += parts
+    return keyword.Report(bootstrap=keyword.BOOTSTRAP, seed=keyword.SEED,
+                          sources=tuple(sources), splits=tuple(scored))  # fmt: skip
+
+
+@app.command("keyword-baseline")
+def keyword_baseline_command(root: Root = Path()) -> None:
+    """Score the keyword-match baseline (proposal §10: a changed function is vulnerable when
+    the advisory names it) on the Dunlap splits and the Go holdout. Offline, from the
+    committed bundles; no model call."""
+    report = keyword_baseline(root)
+    target = root / KEYWORD_REPORT
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.with_name(target.name + ".json").write_text(
+        report.model_dump_json(indent=2) + "\n", "utf-8"
+    )
+    target.with_name(target.name + ".md").write_text(keyword.render_markdown(report), "utf-8")
+    for s in report.splits:
+        k = s.keyword
+        typer.echo(
+            f"{s.benchmark} {s.split}: keyword P {k.precision:.3f} R {k.recall:.3f} "
+            f"F1 {k.f1:.3f}, miss {k.miss_rate:.1%}; names a changed function in "
+            f"{s.names_a_candidate}/{s.reports}"
+        )
 
 
 ROBUSTNESS = Path("benchmarks/dunlap-v1/robustness.json")
@@ -2126,6 +2195,22 @@ def reproduce_command(root: Root = Path()) -> None:
         typer.echo(f"MISMATCH with {BASELINE_REPORT}", err=True)
         raise typer.Exit(code=1)
     typer.echo(f"\nMatches {BASELINE_REPORT} exactly.")
+
+    typer.echo("\nKeyword match: a changed function the advisory names is vulnerable\n")
+    typer.echo(f"{'part':<14} {'reports':>7} {'TP':>4} {'P':>6} {'R':>6} {'F1':>6} {'miss':>6}")
+    recomputed = keyword_baseline(root)
+    for row in recomputed.splits:
+        k = row.keyword
+        part = "Go holdout" if row.benchmark == go_holdout.NAME else f"Dunlap {row.split}"
+        typer.echo(
+            f"{part:<14} {row.reports:>7} {k.true_positives:>4} {k.precision:>6.3f} "
+            f"{k.recall:>6.3f} {k.f1:>6.3f} {k.miss_rate:>6.1%}"
+        )
+    keyword_json = KEYWORD_REPORT.with_name(KEYWORD_REPORT.name + ".json")
+    if recomputed != keyword.Report.model_validate_json((root / keyword_json).read_text("utf-8")):
+        typer.echo(f"MISMATCH with {keyword_json}", err=True)
+        raise typer.Exit(code=1)
+    typer.echo(f"\nMatches {keyword_json} exactly.")
 
     truth = {r.id: set(r.symbols) for r in data.reports}
     for path in sorted((root / DUNLAP_BUNDLE.parent).glob("extraction-*.json")):

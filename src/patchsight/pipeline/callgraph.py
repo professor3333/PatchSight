@@ -90,7 +90,7 @@ class _Scope:
 class _Definition:
     qualified: str
     kind: str  # function, method or class
-    node: ast.AST
+    node: ast.AST | None  # only while the definition is walked: trees are not kept
     module: str
     cls: str | None  # the qualified name of the enclosing class, for methods
     bases: list[ast.expr] = field(default_factory=list)
@@ -195,29 +195,44 @@ class _Builder:
         self.defs: dict[str, _Definition] = {}
         self.methods: dict[str, set[str]] = defaultdict(set)  # leaf name -> methods
         self.class_methods: dict[str, dict[str, str]] = defaultdict(dict)  # class -> leaf
-        trees: dict[str, ast.Module] = {}
+        # The first pass parses each file once and keeps only what resolution needs: each
+        # module's imports and definitions, the classes' base expressions and the functions'
+        # parameters. Syntax trees are dropped; build() parses one module at a time again.
+        self.files = files
+        self.module_paths: dict[str, str] = {}  # a module's file; a later path wins
+        self.module_defs: dict[str, list[str]] = {}
+        found: dict[str, list[_Definition]] = {}
         for path in sorted(files):
             module = module_for_path(path)
             if module is None:
                 continue
-            try:
-                with warnings.catch_warnings():
-                    warnings.simplefilter("ignore")  # invalid escapes in old code
-                    tree = ast.parse(files[path], filename=path)
-            except (SyntaxError, ValueError):
+            tree = self._parse(path)
+            if tree is None:
                 self.graph.unparsed.append(path)
                 continue
             scope = _Scope(module, path.endswith("__init__.py"))
             _bind_imports(scope, _top_level(tree.body))
             self.scopes[module] = scope
-            trees[module] = tree
-        for module, tree in trees.items():
-            scope = self.scopes[module]
+            self.module_paths[module] = path
+            found[module] = []
             for d in _definitions(scope, tree.body, module, None):
+                node = d.node
+                if d.kind == "function" and isinstance(
+                    node, ast.FunctionDef | ast.AsyncFunctionDef
+                ):
+                    self.graph.params[d.qualified] = tuple(
+                        a.arg for a in (*node.args.posonlyargs, *node.args.args)
+                    )
+                d.node = None
+                found[module].append(d)
+        for module, definitions in found.items():
+            scope = self.scopes[module]
+            self.module_defs[module] = []
+            for d in definitions:
                 if d.qualified in self.defs:  # defined in both branches of a try or an if
-                    self.defs[d.qualified].others.append(d.node)
                     continue
                 self.defs[d.qualified] = d
+                self.module_defs[module].append(d.qualified)
                 self.graph.kinds[d.qualified] = d.kind
                 local = d.qualified[len(module) + 1 :]
                 if "." not in local:
@@ -226,6 +241,7 @@ class _Builder:
                     leaf = d.qualified.rsplit(".", 1)[1]
                     self.methods[leaf].add(d.qualified)
                     self.class_methods[d.cls][leaf] = d.qualified
+        self.graph.params = {q: v for q, v in self.graph.params.items() if q in self.defs}
         self.roots = {m.split(".")[0] for m in self.scopes}
         self._locals: frozenset[str] = frozenset()  # the definition being walked shadows these
         self._types: dict[str, set[str]] = {}  # its local names known to hold these classes
@@ -396,7 +412,7 @@ class _Builder:
                                     | ast.Try | ast.TryStar):  # fmt: skip
                     roots.append(stmt)
             return roots
-        return [node]  # fmt: skip
+        return [node] if node is not None else []
 
     def _classes(self, node: ast.expr | None, d: _Definition) -> set[str]:
         """The package classes an expression names: ``Cls``, ``mod.Cls``, ``"Cls"``,
@@ -489,7 +505,7 @@ class _Builder:
         calls: dict[str, list[Passed]] = {}
         values: set[str] = set()
         defaults: dict[str, set[str]] = {}
-        nodes = [d.node, *d.others]
+        nodes = [n for n in (d.node, *d.others) if n is not None]
         for node in nodes:
             if not isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                 self._locals = frozenset()
@@ -546,15 +562,29 @@ class _Builder:
         self.graph.defaults[q] = {p: names for p, names in only.items() if names}
         self.graph.refers[q] = self.graph.plain[q].union(*self.graph.defaults[q].values())
 
+    def _parse(self, path: str) -> ast.Module | None:
+        try:
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")  # invalid escapes in old code
+                return ast.parse(self.files[path], filename=path)
+        except (SyntaxError, ValueError):
+            return None
+
     def build(self) -> Graph:
-        for qualified, d in self.defs.items():
-            node = d.node
-            if d.kind == "function" and isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
-                self.graph.params[qualified] = tuple(
-                    a.arg for a in (*node.args.posonlyargs, *node.args.args)
-                )
-        for d in self.defs.values():
-            self._record(d)
+        for module, path in self.module_paths.items():
+            tree = self._parse(path)
+            if tree is None:  # pragma: no cover - it parsed in the first pass
+                continue
+            for d in _definitions(self.scopes[module], tree.body, module, None):
+                known = self.defs[d.qualified]
+                if known.node is None:
+                    known.node = d.node
+                elif d.node is not None:  # defined again in the module: its references count
+                    known.others.append(d.node)
+            for qualified in self.module_defs[module]:
+                d = self.defs[qualified]
+                self._record(d)
+                d.node, d.others = None, []  # the module's tree can now be freed
         return self.graph
 
 

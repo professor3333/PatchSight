@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-27T11:53:55Z",
+  "generated_at": "2026-11-27T13:06:37Z",
   "sessions": [
     {
       "name": "patchsight-kaggle-run",
@@ -547,15 +547,14 @@
     }
   ],
   "database": {
-    "db_version": "2026.11.26",
+    "db_version": "2026.11.27",
     "records": {
-      "llm, low": 3723,
-      "fallback, low": 91
+      "llm, low": 3737,
+      "fallback, low": 77
     },
     "tier_reasons": {
-      "no valid second opinion": 3723,
-      "fallback: extraction by ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M (prompt extract-v1) failed: no valid answer after one repair": 15,
-      "fallback: extraction by qwen/qwen3.8-27b (prompt extract-v1) failed: no valid answer after one repair": 4
+      "no valid second opinion": 3737,
+      "fallback: extraction by qwen/qwen3.8-27b (prompt extract-v1) failed: no valid answer after one repair": 6
     },
     "second_opinions": 0,
     "builds": {
@@ -1856,6 +1855,74 @@
           "completion_tokens_per_second": null
         }
       ]
+    },
+    {
+      "run_id": 45996210776,
+      "event": "schedule",
+      "conclusion": "success",
+      "started": "2026-11-27T12:08:54Z",
+      "db_version": "2026.11.27",
+      "previous_version": "2026.11.26",
+      "carried": 4878,
+      "rebuilt": 0,
+      "new": 0,
+      "removed": 0,
+      "to_extract": 0,
+      "backlog": 16,
+      "gate_passed": true,
+      "published": true,
+      "extraction": {
+        "dead_letter": 2,
+        "ok": 13,
+        "repaired": 1
+      },
+      "extraction_model": "qwen/qwen3.8-27b",
+      "prompt_tokens": 34018,
+      "completion_tokens": 7699,
+      "runs": [
+        {
+          "trace": "pypi-extract-extractor-20261127T120923Z.jsonl",
+          "command": "pypi-extract",
+          "role": "extractor",
+          "model": "qwen/qwen3.8-27b",
+          "started": "2026-11-27T12:09:23.881000Z",
+          "outcome": "complete",
+          "seconds": 847.9,
+          "calls": 15,
+          "network_calls": 15,
+          "cache_hits": 0,
+          "rejections": 0,
+          "extractions": {
+            "dead_letter": 2,
+            "ok": 13,
+            "repaired": 1
+          },
+          "latency_p50": 1.5,
+          "latency_p90": 3.4,
+          "completion_tokens_per_second": 318.5
+        },
+        {
+          "trace": "pypi-extract-extractor-20261127T122337Z.jsonl",
+          "command": "pypi-extract",
+          "role": "extractor",
+          "model": "qwen/qwen3.8-27b",
+          "started": "2026-11-27T12:23:37.137000Z",
+          "outcome": "complete",
+          "seconds": 1.4,
+          "calls": 15,
+          "network_calls": 0,
+          "cache_hits": 15,
+          "rejections": 0,
+          "extractions": {
+            "dead_letter": 2,
+            "ok": 13,
+            "repaired": 1
+          },
+          "latency_p50": null,
+          "latency_p90": null,
+          "completion_tokens_per_second": null
+        }
+      ]
     }
   ],
   "pricing_source": "https://console.groq.com/docs/models",
@@ -1871,12 +1938,12 @@
       "unit": "vulnerability"
     },
     {
-      "what": "Nightly extraction (5 nights)",
+      "what": "Nightly extraction (6 nights)",
       "priced_as": "qwen/qwen3.8-27b",
-      "prompt_tokens": 474783,
-      "completion_tokens": 36790,
-      "usd": 0.53,
-      "units": 5,
+      "prompt_tokens": 508801,
+      "completion_tokens": 44489,
+      "usd": 0.58,
+      "units": 6,
       "unit": "night"
     }
   ]

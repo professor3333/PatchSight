@@ -53,6 +53,7 @@ import warnings
 from collections import defaultdict, deque
 from collections.abc import Iterable, Iterator, Mapping
 from dataclasses import dataclass, field
+from functools import lru_cache
 from typing import Literal
 
 from patchsight.names import module_for_path
@@ -406,7 +407,7 @@ class _Builder:
             current = stack.pop()
             if isinstance(current, ast.Constant) and isinstance(current.value, str):
                 try:
-                    current = ast.parse(current.value, mode="eval").body
+                    current = _annotation(current.value)
                 except SyntaxError:
                     continue
             if isinstance(current, ast.Name | ast.Attribute) and self._chain(current) is not None:
@@ -426,29 +427,6 @@ class _Builder:
             if classes:
                 found[a.arg] = classes
         return found
-
-    def _assigned(
-        self, node: ast.FunctionDef | ast.AsyncFunctionDef, d: _Definition
-    ) -> dict[str, set[str]]:
-        """Local names bound to a new instance: ``x = Cls(...)``, ``with Cls(...) as x``."""
-        found: dict[str, set[str]] = defaultdict(set)
-        stack: list[ast.AST] = list(node.body)
-        while stack:
-            current = stack.pop()
-            if isinstance(current, ast.FunctionDef | ast.AsyncFunctionDef | ast.ClassDef
-                          | ast.Lambda):  # fmt: skip
-                continue
-            pairs: list[tuple[ast.expr, ast.expr | None]] = []
-            if isinstance(current, ast.Assign) and len(current.targets) == 1:
-                pairs.append((current.targets[0], current.value))
-            elif isinstance(current, ast.With | ast.AsyncWith):
-                pairs += [(i.optional_vars, i.context_expr) for i in current.items
-                          if i.optional_vars is not None]  # fmt: skip
-            for target, value in pairs:
-                if isinstance(target, ast.Name) and isinstance(value, ast.Call):
-                    found[target.id] |= self._classes(value.func, d)
-            stack.extend(ast.iter_child_nodes(current))
-        return {k: v for k, v in found.items() if v}
 
     def _passed(self, call: ast.Call, target: str) -> Passed:
         if any(isinstance(a, ast.Starred) for a in call.args) or any(
@@ -539,8 +517,12 @@ class _Builder:
                     defaults.setdefault(name, set()).update(named)
             self._locals = frozenset()
             self._types = self._annotated(node, d)  # annotations name module-scope classes
-            self._locals = _local_names(node)
-            self._types = {**self._assigned(node, d), **self._types}
+            local_names, typed = _scope(node)
+            self._locals = local_names
+            assigned: dict[str, set[str]] = defaultdict(set)
+            for name, func in typed:  # x = Cls(...), with Cls(...) as x
+                assigned[name] |= self._classes(func, d)
+            self._types = {**{k: v for k, v in assigned.items() if v}, **self._types}
             in_body: list[tuple[str, ast.expr]] = []
             if d.kind == "function":  # and the body idioms that set one: if p is None: p = X
                 in_body = _body_defaults(node, {a.arg for a in (*positional, *args.kwonlyargs)})
@@ -576,12 +558,17 @@ class _Builder:
         return self.graph
 
 
-def _local_names(node: ast.FunctionDef | ast.AsyncFunctionDef) -> frozenset[str]:
-    """The names a function binds in its own scope (its parameters and its assignments),
-    which shadow the module's. Nested functions have their own scopes and are not read."""
+def _scope(
+    node: ast.FunctionDef | ast.AsyncFunctionDef,
+) -> tuple[frozenset[str], list[tuple[str, ast.expr]]]:
+    """In one walk of a function's own scope (not its nested functions, classes or
+    lambdas): the names it binds (its parameters and assignments), which shadow the
+    module's, and the local names bound to a call's result (``x = f(...)``, ``with f(...)
+    as x``) with the called expression, which may name a class."""
     args = node.args
     names = {a.arg for a in (*args.posonlyargs, *args.args, *args.kwonlyargs)}
     names |= {a.arg for a in (args.vararg, args.kwarg) if a is not None}
+    typed: list[tuple[str, ast.expr]] = []
     stack: list[ast.AST] = list(node.body)
     while stack:
         current = stack.pop()
@@ -594,8 +581,22 @@ def _local_names(node: ast.FunctionDef | ast.AsyncFunctionDef) -> frozenset[str]
             names.add(current.id)
         elif isinstance(current, ast.ExceptHandler) and current.name:
             names.add(current.name)
+        elif isinstance(current, ast.Assign):
+            target = current.targets[0] if len(current.targets) == 1 else None
+            if isinstance(target, ast.Name) and isinstance(current.value, ast.Call):
+                typed.append((target.id, current.value.func))
+        elif isinstance(current, ast.With | ast.AsyncWith):
+            typed += [(i.optional_vars.id, i.context_expr.func) for i in current.items
+                      if isinstance(i.optional_vars, ast.Name)
+                      and isinstance(i.context_expr, ast.Call)]  # fmt: skip
         stack.extend(ast.iter_child_nodes(current))
-    return frozenset(names)
+    return frozenset(names), typed
+
+
+@lru_cache(maxsize=4096)
+def _annotation(text: str) -> ast.expr:
+    """A string annotation, parsed once per text."""
+    return ast.parse(text, mode="eval").body
 
 
 def _is_unset(test: ast.expr, name: str) -> bool:

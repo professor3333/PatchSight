@@ -2488,6 +2488,86 @@ def import_names_command(
     )
 
 
+@app.command("callers")
+def callers_command(
+    database: Annotated[Path, typer.Argument(help="The database to annotate, in place.")],
+    previous: Annotated[
+        Path | None,
+        typer.Option(help="A previous database whose callers are reused for unchanged records."),
+    ] = None,
+    root: Root = Path(),
+    cache: Annotated[Path, typer.Option(help="HTTP response cache.")] = Path(".cache/http"),
+    offline: Annotated[bool, typer.Option(help="Answer only from the cache.")] = False,
+    ids: Annotated[
+        str | None,
+        typer.Option(help="Only these vulnerabilities (comma-separated); others keep theirs."),
+    ] = None,
+    jobs: Annotated[int, typer.Option(help="Release files read in parallel processes.")] = 1,
+) -> None:
+    """Store, for each record, the package's definitions that reach its symbols, read from
+    a release the record affects (issue #162). Run after import-names, which renames
+    symbols, and before gate-db. update-db, merge-llm and import-names rewrite the database
+    without the callers, so run this again after any of them."""
+    from patchsight.pipeline import callers
+
+    target = root / database
+    source = db.SymbolDatabase(target)
+    try:
+        records, aliases = source.all_records(), source.alias_map()
+        builds, meta = list(source.build_ledger().values()), dict(source.meta)
+        names, existing = list(source.import_names().values()), source.callers()
+    finally:
+        source.close()
+    reuse = dict(existing)
+    if previous is not None:
+        prior = db.SymbolDatabase(root / previous)
+        try:
+            reuse = {**prior.callers(), **reuse}
+        finally:
+            prior.close()
+    wanted = {i.strip() for i in ids.split(",") if i.strip()} if ids else None
+    chosen = [r for r in records if wanted is None or r.vulnerability in wanted]
+    _, dump = _load_verified(root)
+    by_id, groups, _ = _fix_groups(dump)
+    by_key = {g.key: g for g in groups}
+
+    def advisories_for(vulnerability: str) -> list[Advisory]:
+        group = by_key.get(vulnerability)
+        return [by_id[i] for i in group.advisory_ids if i in by_id] if group else []
+
+    pypi = PyPIClient(root / cache / "pypi", offline=offline)
+    fetcher = callers.DistFetcher(root / cache / "dists", offline=offline)
+    try:
+        computed, report = callers.annotate(
+            chosen, advisories_for, pypi, fetcher, reuse, jobs=jobs,
+            progress=lambda done, total: typer.echo(f"files {done}/{total}", err=True)
+            if done % 50 == 0 else None,
+        )  # fmt: skip
+    finally:
+        fetcher.close()
+        pypi.close()
+    done = {(c.vulnerability, c.package): c for c in computed}
+    kept = [existing[k] for k in sorted(existing) if k not in done]
+    meta.pop("schema_version", None)  # db.write sets it
+    stored = [*computed, *kept]
+    meta["callers"] = json.dumps(
+        {"records": len(records), "with_callers": sum(1 for c in stored if c.callers)}
+    )
+    staged = target.with_name(target.name + ".tmp")
+    db.write(staged, records, aliases, meta, builds=builds, import_names=names, callers=stored)
+    staged.replace(target)
+    target.with_name(target.stem + "-callers.json").write_text(
+        report.model_dump_json(indent=2) + "\n", "utf-8"
+    )
+    typer.echo(
+        f"{report.records} records: {report.reused} reused, {report.computed} computed; "
+        f"statuses {report.statuses}; {report.records_with_callers} with callers, "
+        f"{report.callers} in all (median {report.callers_median:g}, p90 {report.callers_p90}, "
+        f"max {report.callers_max}); {report.releases_read} releases read, "
+        f"{report.downloads} downloaded ({report.downloaded_bytes:,} bytes), {report.seconds} s"
+    )
+
+
 @app.command("db-diff")
 def db_diff_command(
     production: Annotated[Path, typer.Argument(help="The production database.")],

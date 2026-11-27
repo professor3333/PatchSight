@@ -73,15 +73,28 @@ def test_self_and_super_reach_the_class_hierarchy_only() -> None:
     assert graph.refers["pkg.m.Child.again"] == {"pkg.m.Base.step"}
 
 
-def test_an_unknown_receiver_reaches_every_method_of_that_name() -> None:
-    files = {
-        "pkg/m.py": (
-            "class A:\n    def close(self):\n        pass\n"
-            "class B:\n    def close(self):\n        pass\n"
-            "def shut(x):\n    x.close()\n    getattr(x, 'close')()\n"
-        )
-    }
-    assert _refers(files, "pkg.m.shut") == {"pkg.m.A.close", "pkg.m.B.close"}
+UNKNOWN = {
+    "pkg/m.py": (
+        "class A:\n    def close(self):\n        pass\n    def flush_frames(self):\n        pass\n"
+        "class B:\n    def close(self):\n        pass\n    def drain(self):\n        pass\n"
+        "class C:\n    def drain(self):\n        pass\n"
+        "def shut(x):\n    x.close()\n    getattr(x, 'close')()\n"
+        "def flush(x):\n    x.flush_frames()\n    x.drain()\n"
+    )
+}
+
+
+def test_an_unknown_receiver_links_only_a_unique_non_builtin_method_by_default() -> None:
+    graph = callgraph.build({p: s.encode() for p, s in UNKNOWN.items()})
+    assert graph.refers["pkg.m.shut"] == set()  # close: two classes, and a file's method
+    assert graph.refers["pkg.m.flush"] == {"pkg.m.A.flush_frames"}  # drain: two classes
+
+
+def test_with_all_receivers_an_unknown_receiver_reaches_every_method_of_that_name() -> None:
+    graph = callgraph.build({p: s.encode() for p, s in UNKNOWN.items()}, receivers="all")
+    assert graph.refers["pkg.m.shut"] == {"pkg.m.A.close", "pkg.m.B.close"}
+    assert graph.refers["pkg.m.flush"] == {"pkg.m.A.flush_frames", "pkg.m.B.drain",
+                                           "pkg.m.C.drain"}  # fmt: skip
 
 
 def test_another_packages_attributes_and_type_hints_are_not_references() -> None:

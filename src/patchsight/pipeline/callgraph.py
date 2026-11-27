@@ -23,8 +23,9 @@ it in one of these ways:
   attribute, or a method of another package's base, so nothing;
 * ``x.m`` where ``x`` is known to hold a package class (``x = Cls(...)``, ``with Cls(...) as
   x``, or a parameter annotated ``x: Cls``): the methods ``m`` of that class's hierarchy;
-* ``x.m`` on anything else: every method ``m`` in the package. The type of ``x`` is not
-  known, so this over-approximates, as design rule 3 prefers. A literal receiver
+* ``x.m`` on anything else: the type of ``x`` is not known. By default only the one class
+  that defines ``m`` is linked, if exactly one does and ``m`` is no builtin type's method;
+  with ``receivers="all"``, every method ``m`` (see ``build``). A literal receiver
   (``"".join``, ``{}.items``) is a builtin's, so nothing;
 * ``getattr(x, "m")`` with a constant name, like ``x.m``.
 
@@ -47,14 +48,27 @@ itself.
 """
 
 import ast
+import io
 import warnings
 from collections import defaultdict, deque
 from collections.abc import Iterable, Iterator, Mapping
 from dataclasses import dataclass, field
+from typing import Literal
 
 from patchsight.names import module_for_path
 
 CONSTRUCTORS = ("__init__", "__new__", "__post_init__")
+# Methods of builtin types and files: ``x.get()`` or ``x.read()`` on an unknown ``x`` is as
+# likely a dict's or a file's as the package's, so a unique package method of that name is
+# not evidence enough.
+BUILTIN_METHODS = frozenset(
+    name
+    for kind in (dict, list, str, bytes, bytearray, set, frozenset, tuple, int, float,
+                 io.IOBase, io.RawIOBase, io.BufferedIOBase, io.TextIOBase)
+    for name in dir(kind)
+    if not name.startswith("__")
+)  # fmt: skip
+Receivers = Literal["unique", "all"]
 _LITERALS = (ast.Constant, ast.JoinedStr, ast.List, ast.Tuple, ast.Dict, ast.Set, ast.ListComp,
              ast.SetComp, ast.DictComp, ast.GeneratorExp)  # fmt: skip
 _ALIAS_DEPTH = 10  # re-export chains longer than this are not followed
@@ -173,7 +187,8 @@ def _definitions(
 
 
 class _Builder:
-    def __init__(self, files: Mapping[str, bytes]) -> None:
+    def __init__(self, files: Mapping[str, bytes], receivers: Receivers = "unique") -> None:
+        self.receivers = receivers
         self.graph = Graph()
         self.scopes: dict[str, _Scope] = {}
         self.defs: dict[str, _Definition] = {}
@@ -309,7 +324,12 @@ class _Builder:
             # from another package. Either way, not one of this package's methods.
             return {self.class_methods[c][leaf] for c in self._hierarchy(d.cls)
                     if leaf in self.class_methods[c]}  # fmt: skip
-        return set(self.methods.get(leaf, ()))
+        found = self.methods.get(leaf, set())
+        if self.receivers == "unique" and (
+            leaf in BUILTIN_METHODS or len({m.rsplit(".", 1)[0] for m in found}) != 1
+        ):
+            return set()
+        return set(found)
 
     def _expression(self, node: ast.expr, d: _Definition) -> set[str]:
         chain = self._chain(node) if isinstance(node, ast.Attribute | ast.Name) else None
@@ -625,10 +645,18 @@ def _children(node: ast.AST) -> list[ast.AST]:
     return list(ast.iter_child_nodes(node))
 
 
-def build(files: Mapping[str, bytes]) -> Graph:
+def build(files: Mapping[str, bytes], receivers: Receivers = "unique") -> Graph:
     """The reference graph of a package from its source files, keyed by path (the paths
-    give the module names, as in the database)."""
-    return _Builder(files).build()
+    give the module names, as in the database).
+
+    ``receivers`` decides what ``x.m`` means when the type of ``x`` is unknown. ``"unique"``
+    (the default) links it only to the one class in the package that defines ``m``, and not
+    at all when ``m`` is also a builtin type's method (``get``, ``read``, ``decode``): an
+    alert raised on the closure should rest on a likely call. ``"all"`` links it to every
+    method ``m``, which also follows dispatch through registries and plugins, as when
+    ``Image.open(f).load()`` reaches whichever decoder the file selects; most of a large
+    package can then reach one definition."""
+    return _Builder(files, receivers).build()
 
 
 class _Unreached:

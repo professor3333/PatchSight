@@ -2766,6 +2766,10 @@ def pypi_extract_command(
             f"{len(sized)} prompts; truncated under the {role} budget: "
             f"{sum(p.truncated for p in sized)}"
         )
+        limit = llm_config.input_limit(role)
+        if limit is not None:
+            over = sum(p.prompt_tokens > limit for p in sized)
+            typer.echo(f"over the provider's {limit:,}-token request limit (not sent): {over}")
         return
     make_client = cache_only_client if cache_only else client_for
     llm, model_id = make_client(llm_config, role, root / cache / "llm", counter)

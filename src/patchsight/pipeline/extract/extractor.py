@@ -24,6 +24,7 @@ from patchsight.pipeline.llm.client import (
     LLMClient,
     LLMRequest,
     LLMResponse,
+    PromptTooLargeError,
     ProviderRejectedError,
 )
 from patchsight.pipeline.llm.config import ModelConfig
@@ -190,6 +191,9 @@ def _extract(
     for attempt in range(2):
         try:
             response = llm.complete(_request(model, prompt, messages))
+        except PromptTooLargeError as too_large:
+            errors = [*errors, str(too_large)]  # never sent; a retry would be larger still
+            break
         except ProviderRejectedError as rejected:
             rejections += 1
             errors = [f"the provider rejected the generation: {rejected}"]

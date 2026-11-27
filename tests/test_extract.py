@@ -308,6 +308,36 @@ def test_repeated_provider_rejection_is_dead_lettered(tmp_path: Path) -> None:
     assert (outcome.status, outcome.calls, outcome.provider_rejections) == ("dead_letter", 2, 2)
 
 
+def test_a_prompt_over_the_input_limit_is_dead_lettered_without_a_call(tmp_path: Path) -> None:
+    seen: list[LLMRequest] = []
+
+    def backend(request: LLMRequest) -> tuple[str, int, int]:
+        seen.append(request)
+        return _answer(), 100, 20
+
+    client = LLMClient(backend, RateLimiter(100_000, 100), tmp_path, input_limit=50)
+    outcome = _extract(client)
+    assert (outcome.status, outcome.calls, outcome.provider_rejections) == ("dead_letter", 0, 0)
+    assert not seen  # and no retry: the repair round would only be larger
+    (error,) = outcome.errors
+    assert error.startswith("not sent: about ")
+    assert "limit of 50 for one request" in error
+
+
+def test_a_repair_round_over_the_input_limit_keeps_the_validation_errors(
+    tmp_path: Path,
+) -> None:
+    broken = json.loads(_answer())
+    broken["items"][0]["candidate_id"] = "F7"
+    client, seen = _client(tmp_path, [json.dumps(broken)])
+    first = client.estimate_tokens("".join(m["content"] for m in _render().messages))
+    client.input_limit = first + 5  # the prompt fits; prompt + answer + repair note does not
+    outcome = _extract(client)
+    assert (outcome.status, outcome.calls, len(seen)) == ("dead_letter", 1, 1)
+    assert "unknown candidate IDs: F7" in outcome.errors[0]
+    assert outcome.errors[-1].startswith("not sent: ")
+
+
 TIE_SCRIPT = """
 from patchsight.pipeline.extract.prompt import bm25_rank
 words = ["alpha", "bravo", "charlie", "delta", "echo", "foxtrot", "golf", "hotel"]

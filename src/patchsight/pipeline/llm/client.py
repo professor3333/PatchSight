@@ -14,7 +14,7 @@ import os
 import re
 import time
 from collections import deque
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import Any, cast
 
@@ -45,6 +45,20 @@ class RateLimitedError(RuntimeError):
 class ProviderRejectedError(RuntimeError):
     """The provider refused this one generation, for example output that failed its schema
     check or a request too large. Worth one retry; it does not mean the provider is down."""
+
+
+class PromptTooLargeError(ProviderRejectedError):
+    """A request with more input tokens than the provider accepts in one request. It was
+    never sent: the provider refuses it every time (HTTP 413), so a retry cannot help, and
+    a refused request still counts against the daily ledger."""
+
+
+TOO_LARGE = "too_large"  # the traced outcome of a request refused here, before sending
+
+
+def input_tokens(counter: TokenCounter, messages: Sequence[dict[str, str]]) -> int:
+    """A request's input tokens as the client counts them, for its limits and the plan."""
+    return counter.count("".join(m["content"] for m in messages))
 
 
 class LLMRequest(BaseModel):
@@ -246,11 +260,14 @@ class LLMClient:
         cache_dir: Path,
         counter: TokenCounter | None = None,
         tracer: Tracer | None = None,
+        input_limit: int | None = None,
     ) -> None:
         self._backend = backend
         self._limiter = limiter
         self._cache_dir = cache_dir
         self._counter: TokenCounter = counter or CharEstimate()
+        # The most input tokens the provider takes in one request; larger ones are not sent.
+        self.input_limit = input_limit
         self.network_calls = 0
         self.tracer = tracer or Tracer()
 
@@ -281,8 +298,16 @@ class LLMClient:
                         response.completion_tokens)  # fmt: skip
             return response
 
-        prompt_text = "".join(m["content"] for m in request.messages)
-        estimate = self.estimate_tokens(prompt_text) + request.max_tokens
+        prompt = input_tokens(self._counter, request.messages)
+        if self.input_limit is not None and prompt > self.input_limit:
+            # Not cached: the outcome follows from the request and the configured limit,
+            # so a raised limit takes effect at once, and a cache-only replay agrees.
+            self._trace(request, key, False, TOO_LARGE, 0.0)
+            raise PromptTooLargeError(
+                f"not sent: about {prompt:,} input tokens, over the provider's limit of "
+                f"{self.input_limit:,} for one request"
+            )
+        estimate = prompt + request.max_tokens
         self._limiter.acquire(estimate, output=request.max_tokens)
         started = time.monotonic()
         try:
@@ -333,9 +358,10 @@ def cache_only_client(
     def refuse(request: LLMRequest) -> tuple[str, int, int]:
         raise ResponseNotCachedError(f"no cached response for this {request.model} prompt")
 
-    return LLMClient(refuse, RateLimiter(10**9, 10**9), cache_dir, counter), config.models[
-        role
-    ].model
+    client = LLMClient(
+        refuse, RateLimiter(10**9, 10**9), cache_dir, counter, input_limit=config.input_limit(role)
+    )
+    return client, config.models[role].model
 
 
 def client_for(
@@ -356,4 +382,5 @@ def client_for(
         output_tokens_per_minute=model.output_tokens_per_minute,
     )
     backend = openai_backend(provider.base_url, api_key)
-    return LLMClient(backend, limiter, cache_dir, counter), model.model
+    client = LLMClient(backend, limiter, cache_dir, counter, input_limit=config.input_limit(role))
+    return client, model.model

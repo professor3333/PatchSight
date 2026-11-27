@@ -79,9 +79,11 @@ def load_trace(path: Path) -> TracedRun | None:
     if start is None:
         return None
     end = next((e for e in reversed(events) if e.get("kind") == "run_end"), None)
-    # A cache-only replay's miss sent nothing (traces before 2026-11-23 name it by the error).
+    # A cache-only replay's miss sent nothing (traces before 2026-11-23 name it by the error),
+    # and neither did a request refused here for being larger than the provider accepts.
     calls = [e for e in events if e.get("kind") == "llm_call"
-             and e.get("outcome") not in ("not_cached", "ResponseNotCachedError")]  # fmt: skip
+             and e.get("outcome") not in ("not_cached", "ResponseNotCachedError", "too_large")
+             ]  # fmt: skip
     answered = [c for c in calls if not c.get("cached") and c.get("outcome") == "ok"]
     seconds = [float(c.get("seconds") or 0) for c in answered]
     generated = sum(int(c.get("completion_tokens") or 0) for c in answered)

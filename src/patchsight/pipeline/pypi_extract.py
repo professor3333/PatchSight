@@ -31,7 +31,7 @@ from patchsight.pipeline.extract.prompt import AdvisoryText, PromptTemplate, Ren
 from patchsight.pipeline.http import CacheMissError
 from patchsight.pipeline.ingest.aliases import AliasGroup
 from patchsight.pipeline.ingest.osv import Advisory
-from patchsight.pipeline.llm.client import LLMClient, ResponseNotCachedError
+from patchsight.pipeline.llm.client import LLMClient, ResponseNotCachedError, input_tokens
 from patchsight.pipeline.llm.config import LLMConfig
 from patchsight.pipeline.llm.tokens import TokenCounter
 from patchsight.pipeline.pypi import PyPIClient
@@ -88,6 +88,8 @@ class PromptPlan(BaseModel):
     full_prompt_tokens: int  # every candidate, no budget
     kept: int  # candidates kept under the role's budget and candidate limit
     truncated: bool
+    # The prompt as sent, counted as the client counts a request against its input limit.
+    prompt_tokens: int
 
 
 def plan_vulnerability(
@@ -123,6 +125,7 @@ def plan_vulnerability(
         full_prompt_tokens=full.estimated_tokens,
         kept=len(sent.candidates),
         truncated=sent.truncated,
+        prompt_tokens=input_tokens(counter, sent.messages),
     )
 
 

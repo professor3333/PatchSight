@@ -217,6 +217,54 @@ def test_rejections_are_cached_and_redacted(tmp_path: Path) -> None:
     assert "org_01abcDEF234567" not in stored
 
 
+def test_a_prompt_over_the_input_limit_is_never_sent(tmp_path: Path) -> None:
+    # 2026-11-26 nightly: a prompt keeps its top candidate even when that one is over the
+    # budget, so 24,000-token prompts went to Groq, which refuses any request over 7,000
+    # input tokens (HTTP 413). Each refusal was booked as ~25,000 tokens in the daily
+    # ledger, and the run stopped at the cap with 4 vulnerabilities still to do.
+    from patchsight.pipeline.llm.client import PromptTooLargeError
+    from patchsight.pipeline.llm.tokens import CharEstimate
+    from patchsight.pipeline.trace import Tracer
+
+    calls: list[LLMRequest] = []
+
+    def backend(request: LLMRequest) -> tuple[str, int, int]:
+        calls.append(request)
+        return '{"ok": true}', 5, 1
+
+    ledger = tmp_path / "usage.jsonl"
+    traces = tmp_path / "trace.jsonl"
+    client = LLMClient(
+        backend, RateLimiter(100_000, 100, tokens_per_day=10**6, ledger=ledger),
+        tmp_path / "llm", CharEstimate(1.0), Tracer(traces), input_limit=10,
+    )  # fmt: skip
+    large = _request(messages=({"role": "user", "content": "x" * 10},))  # 11 tokens
+    for _ in range(2):
+        with pytest.raises(PromptTooLargeError, match="11 input tokens"):
+            client.complete(large)
+    assert (calls, client.network_calls, ledger.exists()) == ([], 0, False)
+    assert not (tmp_path / "llm").exists()  # not cached: a raised limit applies at once
+    assert '"outcome": "too_large"' in traces.read_text()
+    # At the limit it is sent.
+    client.complete(_request(messages=({"role": "user", "content": "x" * 9},)))
+    assert len(calls) == 1
+
+
+def test_both_clients_take_the_input_limit_from_the_providers_config(tmp_path: Path) -> None:
+    from patchsight.pipeline.llm.client import cache_only_client
+    from patchsight.pipeline.llm.tokens import CharEstimate
+
+    config = load_config(ROOT / "configs" / "llm.toml")
+    assert config.input_limit("extractor") == 7000  # Groq, from a 413 on 2026-11-15
+    assert config.input_limit("second_opinion") == 7000
+    assert config.input_limit("kaggle_extractor") is None  # a local server: no such limit
+    # A cache-only replay of a nightly run reaches the same outcome as the live pass.
+    replay, _ = cache_only_client(config, "extractor", tmp_path, CharEstimate(1.0))
+    assert replay.input_limit == 7000
+    for role in ("extractor", "kaggle_extractor"):
+        assert config.prompt_budget(role) < (config.input_limit(role) or 10**9)
+
+
 def test_prompt_budget_leaves_room_for_the_repair_round() -> None:
     from patchsight.pipeline.llm.config import LLMConfig
 

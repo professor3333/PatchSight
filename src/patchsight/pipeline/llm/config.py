@@ -96,6 +96,13 @@ class LLMConfig(BaseModel):
             limits.append(provider.input_tokens_per_minute - model.max_output_tokens - repair_note)
         return max(0, min(limits))
 
+    def input_limit(self, role: str) -> int | None:
+        """The most input tokens the role's provider accepts in one request, or None.
+
+        The prompt budget keeps prompts under it, except where the top candidate alone is
+        larger (a prompt keeps at least one); the client then refuses to send it."""
+        return self.providers[self.models[role].provider].input_tokens_per_minute
+
     def candidate_limit(self, role: str) -> int | None:
         """Most candidates whose answers fit the role's output limit, or None for no limit.
         A role's own ``output_tokens_per_candidate`` takes the place of the budget's."""

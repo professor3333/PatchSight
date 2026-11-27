@@ -116,6 +116,7 @@ def test_a_trace_becomes_one_run(tmp_path: Path) -> None:
     events = [RUN_START, _call(False, "ok", 30.0, 330), _call(False, "ok", 10.0, 110),
               _call(True, "ok", 0.0, 50), _call(False, "rejected", 5.0, 0),
               _call(False, "not_cached", 0.0, 0), _call(False, "ResponseNotCachedError", 0.0, 0),
+              _call(False, "too_large", 0.0, 0),
               {"kind": "extraction", "status": "ok"},
               {"kind": "extraction", "status": "dead_letter"},
               {"kind": "run_end", "outcome": "time budget", "seconds": 36000.0}]  # fmt: skip
@@ -124,7 +125,8 @@ def test_a_trace_becomes_one_run(tmp_path: Path) -> None:
     assert (run.command, run.role, run.outcome, run.seconds) == (
         "pypi-extract", "kaggle_extractor", "time budget", 36000.0,
     )  # fmt: skip
-    # Cache-only misses, under either spelling, are no calls: nothing was sent.
+    # Cache-only misses, under either spelling, and requests too large to send are no
+    # calls: nothing was sent.
     assert (run.calls, run.network_calls, run.cache_hits, run.rejections) == (4, 3, 1, 1)
     assert run.extractions == {"dead_letter": 1, "ok": 1}
     assert (run.latency_p50, run.latency_p90) == (20.0, 30.0)  # answered network calls only

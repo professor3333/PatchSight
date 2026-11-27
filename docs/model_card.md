@@ -49,12 +49,13 @@ Every success target against what was measured, with each miss explained, is on 
 | System | Split | Precision | Recall | F1 (95% CI) | Miss rate |
 |---|---|---|---|---|---|
 | ChangedFuncs (every changed function) | all | 0.225 | 0.893 | 0.360 | 9.6% |
+| Keyword match (changed functions the advisory names) | all | 0.531 | 0.088 | 0.152 (0.11 to 0.20) | 83.9% |
 | Best open model in Dunlap et al. (Mixtral 8x7B), as published | all | 0.60 | 0.74 | 0.66 | n/a |
 | **Qwen3.8-27B Q4_K_M** | all | **0.751** | **0.621** | **0.680** (0.62 to 0.74) | 17.1% |
 | Qwen3.8-27B Q4_K_M | test | 0.763 | 0.615 | 0.681 (0.61 to 0.75) | 15.9% |
 | gpt-oss-120b | test | 0.691 | 0.589 | 0.636 (0.57 to 0.71) | 16.8% |
 
-Intervals are bootstrapped over reports. The miss rate is the share of reports where no labelled symbol was returned. Reports: [Qwen, all](reports/extraction-dunlap-all-extract-v1-qwen3.8-27b-q4km.md), [Qwen, test](reports/extraction-dunlap-test-extract-v1-qwen3.8-27b-q4km.md), [gpt-oss, test](reports/extraction-dunlap-test-extract-v1-gpt-oss-120b.md). Rebuild the table with `make reproduce`.
+Intervals are bootstrapped over reports. The miss rate is the share of reports where no labelled symbol was returned. Only 54 of the 280 advisories name any changed function, so the keyword baseline misses most reports. Reports: [keyword match](reports/keyword-baseline.md), [Qwen, all](reports/extraction-dunlap-all-extract-v1-qwen3.8-27b-q4km.md), [Qwen, test](reports/extraction-dunlap-test-extract-v1-qwen3.8-27b-q4km.md), [gpt-oss, test](reports/extraction-dunlap-test-extract-v1-gpt-oss-120b.md). Rebuild the table with `make reproduce`.
 
 ### Reliability (Qwen on Kaggle, all 280 reports)
 

@@ -27,6 +27,7 @@ from patchsight.eval.metrics import SetScores
 from patchsight.eval.panel import PanelReport
 from patchsight.eval.reachability import FixtureRun
 from patchsight.pipeline.benchmarks.extraction import BOOTSTRAP, ExtractionRun
+from patchsight.pipeline.benchmarks.keyword import Report as KeywordReport
 from patchsight.pipeline.benchmarks.python_gold import DECLARED, GoldScores
 from patchsight.pipeline.benchmarks.python_gold import NAME as GOLD
 from patchsight.pipeline.locator.masked import LocatorReport
@@ -42,6 +43,7 @@ SECOND = "extract-v1-gpt-oss-120b"
 LABELS = {EXTRACTOR: "Qwen3.8-27B 4-bit", SECOND: "gpt-oss-120b"}
 DUNLAP_TEST_TIERS = f"confidence-dunlap-test-{EXTRACTOR}-vs-{SECOND}"
 HOLDOUT = f"holdout-go-holdout-v1-{EXTRACTOR}-vs-{SECOND}"
+KEYWORD = "keyword-baseline"
 
 Status = Literal[
     "met", "met at the point estimate", "met by construction", "missed", "not measured yet"
@@ -59,13 +61,15 @@ class Row(BaseModel):
 
 
 class SplitRow(BaseModel):
-    """Function-level extraction scores on one split, next to ChangedFuncs on the same."""
+    """Function-level extraction scores on one split, next to ChangedFuncs and keyword
+    match on the same."""
 
     model_config = ConfigDict(frozen=True)
 
     split: str
     scores: SetScores | None  # None: not measured yet
     changedfuncs_f1: float | None
+    keyword_f1: float | None
     source: str
 
 
@@ -307,11 +311,15 @@ def extraction_splits(reports: Path) -> list[SplitRow]:
     found = []
     benchmarks = {"dunlap-all": "Dunlap, all", "dunlap-dev": "Dunlap, dev",
                   "dunlap-test": "Dunlap, test", "go-holdout-v1": "Go holdout"}  # fmt: skip
+    keyword = KeywordReport.model_validate_json((reports / f"{KEYWORD}.json").read_text())
+    keyword_f1 = {("dunlap-" + s.split if s.benchmark == "dunlap-v1" else s.benchmark):
+                  s.keyword.f1 for s in keyword.splits}  # fmt: skip
     for benchmark, label in benchmarks.items():
         path = reports / f"extraction-{benchmark}-{EXTRACTOR}.json"
         run = ExtractionRun.model_validate_json(path.read_text())
         found.append(SplitRow(split=label, scores=run.extraction,
                               changedfuncs_f1=run.changedfuncs.f1,
+                              keyword_f1=keyword_f1[benchmark],
                               source=_source(path)))  # fmt: skip
     gold = reports / f"{GOLD}-eval.json"
     label = f"Python gold set ({DECLARED} declared)"
@@ -319,10 +327,10 @@ def extraction_splits(reports: Path) -> list[SplitRow]:
         scores = [GoldScores.model_validate(s) for s in json.loads(gold.read_text())]
         strict = next(s for s in scores if s.system == "Extractor alone").strict
         found.append(SplitRow(split=label, scores=strict, changedfuncs_f1=None,
-                              source=_source(gold)))  # fmt: skip
+                              keyword_f1=None, source=_source(gold)))  # fmt: skip
     else:
         found.append(SplitRow(split=label, scores=None, changedfuncs_f1=None,
-                              source="labelling-guideline.md"))  # fmt: skip
+                              keyword_f1=None, source="labelling-guideline.md"))  # fmt: skip
     return found
 
 
@@ -357,12 +365,13 @@ def _split_line(row: SplitRow) -> str:
     link = _link(row.source)
     s = row.scores
     if s is None:
-        return f"| {row.split} | — | — | — | — | — | — | not measured yet; {link} |"
+        return f"| {row.split} | — | — | — | — | — | — | — | not measured yet; {link} |"
     ci = s.f1_ci95
     f1 = f"**{s.f1:.3f}**" + (f" ({ci.low:.2f} to {ci.high:.2f})" if ci else "")
     changedfuncs = "—" if row.changedfuncs_f1 is None else f"{row.changedfuncs_f1:.3f}"
+    keyword = "—" if row.keyword_f1 is None else f"{row.keyword_f1:.3f}"
     return (f"| {row.split} | {s.reports} | {s.precision:.3f} | {s.recall:.3f} | {f1} | "
-            f"{s.miss_rate:.1%} | {changedfuncs} | {link} |")  # fmt: skip
+            f"{s.miss_rate:.1%} | {changedfuncs} | {keyword} | {link} |")  # fmt: skip
 
 
 def render(card: Scorecard) -> str:
@@ -388,11 +397,13 @@ def render(card: Scorecard) -> str:
         "### Extraction on each split",
         "",
         f"{LABELS[EXTRACTOR]} on Kaggle, scored by function. Intervals come from "
-        f"{BOOTSTRAP:,} bootstrap resamples of whole advisories.",
+        f"{BOOTSTRAP:,} bootstrap resamples of whole advisories. The two baselines use the "
+        "same candidates: ChangedFuncs marks every changed function vulnerable, keyword match "
+        f"only those the advisory names ([{KEYWORD}]({REPORTS.name}/{KEYWORD}.md)).",
         "",
         "| Split | Reports | Precision | Recall | F1 (95% CI) | Advisory miss rate | "
-        "ChangedFuncs F1 | Source |",
-        "|---|---:|---:|---:|---|---:|---:|---|",
+        "ChangedFuncs F1 | Keyword F1 | Source |",
+        "|---|---:|---:|---:|---|---:|---:|---:|---|",
         *(_split_line(row) for row in card.splits),
         "",
         END,

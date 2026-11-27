@@ -59,6 +59,7 @@ On the Go benchmark of Dunlap et al. (DIMVA 2024), 280 vulnerability reports:
 | System | Precision | Recall | F1 |
 |:---|:---:|:---:|:---:|
 | Every changed function (naive baseline, reproduced) | 0.225 | 0.893 | 0.360 |
+| Changed functions the advisory names (keyword match) | 0.531 | 0.088 | 0.152 |
 | Best open model in the paper (Mixtral 8x7B) | 0.60 | 0.74 | 0.66 |
 | **PatchSight: Qwen3.8-27B, 4-bit** | **0.751** | **0.621** | **0.680** |
 

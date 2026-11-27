@@ -290,7 +290,7 @@ diffs) and a wider search (commit search by advisory ID). Report:
 
 1. `file_order`: no ranking, as the path filter and the mapping produce candidates.
 2. `smallest_first`: fewest tokens first, ties in file order. It keeps the most candidates.
-3. `named_first`: candidates the advisory names first, then the rest, each group in file order. A candidate is named when its full name, or the part after its last dot, appears in the advisory's summary or details as a whole word, case-sensitively. This is the proposal's keyword baseline used as an order.
+3. `named_first`: candidates the advisory names first, then the rest, each group in file order. A candidate is named when its full name, or the part after its last dot, appears in the advisory's summary or details as a whole word, case-sensitively. This is the proposal's keyword baseline used as an order. The same rule, scored as an extractor on its own, is the [keyword-match baseline](reports/keyword-baseline.md) (measured 2026-11-27, after E10).
 4. `bm25_per_token`: BM25 score divided by token cost, highest first, ties in file order.
 
 BM25 as built is the baseline; the oracle is the ceiling.

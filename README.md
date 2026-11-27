@@ -63,10 +63,11 @@ On the Go benchmark of [Dunlap et al. (DIMVA 2024)](https://www.enck.org/pubs/du
 | System | Precision | Recall | F1 |
 |:---|:---:|:---:|:---:|
 | Mark every changed function vulnerable (*ChangedFuncs*, reproduced) | 0.225 | 0.893 | 0.360 |
+| Mark the changed functions the advisory names (*keyword match*) | 0.531 | 0.088 | 0.152 |
 | Best open model in the paper (Mixtral 8x7B) | 0.60 | 0.74 | 0.66 |
 | **PatchSight: Qwen3.8-27B, 4-bit, prompt not tuned** | **0.751** | **0.621** | **0.680** |
 
-<sub>The F1 95% interval for PatchSight is 0.62 to 0.74. 220 of the 280 reports form a held-out test split that has never been used for any decision; on it, F1 is 0.681. Reports: [baseline](docs/reports/changedfuncs-baseline.md) · [LLM run](docs/reports/extraction-dunlap-all-extract-v1-qwen3.8-27b-q4km.md) · [run provenance](docs/reports/kaggle-run-extract-v1-qwen3.8-27b-q4km.json)</sub>
+<sub>The F1 95% interval for PatchSight is 0.62 to 0.74. 220 of the 280 reports form a held-out test split that has never been used for any decision; on it, F1 is 0.681. Reports: [baseline](docs/reports/changedfuncs-baseline.md) · [keyword match](docs/reports/keyword-baseline.md) · [LLM run](docs/reports/extraction-dunlap-all-extract-v1-qwen3.8-27b-q4km.md) · [run provenance](docs/reports/kaggle-run-extract-v1-qwen3.8-27b-q4km.json)</sub>
 
 **Precision is three times the naive baseline's.** Recall is lower, so the model alone sometimes misses the vulnerable function. That is why PatchSight never trusts it alone to say "not called" (see [the safety rule](#reading-the-verdicts)).
 

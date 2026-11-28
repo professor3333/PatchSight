@@ -7,9 +7,11 @@ from pathlib import Path
 import pytest
 from hypothesis import given
 from hypothesis import strategies as st
+from typer.testing import CliRunner
 
 from patchsight import db
-from patchsight.scan import ast_scanner, run
+from patchsight.cli import app
+from patchsight.scan import ast_scanner, explain, run
 from patchsight.scan.ast_scanner import Location, Reference, Usage
 from patchsight.scan.report import render_markdown, render_text
 from patchsight.scan.sarif import render_sarif
@@ -200,3 +202,31 @@ def test_a_scan_shows_the_call_path_in_every_format(
     found = result["runs"][0]["results"][0]
     assert found["properties"]["callPath"] == path.split(" -> ")
     assert f"Call path: {path}." in found["message"]["text"]
+
+
+def test_explain_says_which_callers_a_scan_uses(tmp_path: Path) -> None:
+    record = _record()
+    database = tmp_path / "db.sqlite"
+    db.write(database, [record], {record.vulnerability: record.vulnerability},
+             {"db_version": "t"}, callers=[_callers(record)])  # fmt: skip
+    shown = CliRunner().invoke(app, ["explain", record.vulnerability, "--db", str(database)])
+    assert shown.exit_code == 0
+    assert (
+        "callers (4, read from pyyaml 5.3.1): a reference to one marks an alert CALLED too: "
+        "yaml.full_load, yaml.load, yaml.constructor.FullConstructor, yaml.loader.FullLoader"
+    ) in shown.output
+    as_json = CliRunner().invoke(
+        app, ["explain", record.vulnerability, "--db", str(database), "--format", "json"]
+    )
+    assert json.loads(as_json.output)["callers"]["pyyaml"]["version"] == "5.3.1"
+
+    def line(stored: db.Callers) -> str:
+        text = explain.render_text("A", "A", ["A"], [record], {}, None, {"pyyaml": stored})
+        return next(t.strip() for t in text.splitlines() if t.strip().startswith("callers"))
+
+    assert line(_callers(record, "too many callers")) == "callers: none stored (too many callers)"
+    assert "so a scan does not use them" in line(_callers(record, digest="0" * 64))
+    alone = _callers(record).model_copy(update={"callers": ()})
+    assert line(alone) == (
+        "callers: no other definition reaches these symbols (read from pyyaml 5.3.1)"
+    )

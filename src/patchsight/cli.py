@@ -181,12 +181,13 @@ def explain(
     try:
         vulnerability, identifiers, records = explaining.lookup(opened, identifier)
         status = opened.build_status(vulnerability)
+        callers = explaining.callers_of(opened, records)
         meta = opened.meta
     finally:
         opened.close()
     canonical = explaining.normalise_identifier(identifier)
     render = explaining.render_json if output == "json" else explaining.render_text
-    typer.echo(render(canonical, vulnerability, identifiers, records, meta, status))
+    typer.echo(render(canonical, vulnerability, identifiers, records, meta, status, callers))
     if not records:
         raise typer.Exit(code=1)
 
@@ -219,11 +220,14 @@ def report(
     try:
         vulnerability, identifiers, records = explaining.lookup(opened, identifier)
         status = opened.build_status(vulnerability)
+        callers = explaining.callers_of(opened, records)
         meta = opened.meta
     finally:
         opened.close()
     canonical = explaining.normalise_identifier(identifier)
-    text = explaining.render_text(canonical, vulnerability, identifiers, records, meta, status)
+    text = explaining.render_text(
+        canonical, vulnerability, identifiers, records, meta, status, callers
+    )
     url = issue_url(canonical, text)
     typer.echo(f"Draft issue for {canonical} (review it before submitting):\n{url}")
     if open_browser:

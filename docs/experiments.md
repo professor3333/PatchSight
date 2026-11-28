@@ -31,6 +31,7 @@ Every controlled experiment on the extraction system, including the ones that lo
 | E13 | Run-to-run determinism (hosted) | last night's Groq answers; the same prompts asked again the next morning | 5 of 7 answers byte-identical; every pick, entry point and cited hunk identical; 2 rationales reworded | Measured: Groq is reproducible in what it decides, not in its wording. The nightly's live drift check therefore compares decisions only ([ADR 0016](adr/0016-live-drift-check.md)). Its first two checks: 19 of 20 answers kept their decisions, 1 changed on an identical request |
 | E14 | The call graph behind stored callers, which raise an alert to CALLED | `self.m` follows every subclass override; it does not; it does not and unknown receivers are not linked either | Panel CALLED 163 to 546 with overrides and 428 without; the overrides gave hub paths (any Django middleware into the cache middleware). Rebuilt on the first graph's 383 new alerts, the second keeps 240 and the third 221 | Decided: no overrides, unknown receivers as #164 left them ([ADR 0017](adr/0017-stored-callers-mark-an-alert-called.md)) |
 | E15 | Matching a reference to stored callers | by name: same package and final name (the re-export rule); through the names the package binds | Panel CALLED 428 and 474; 8 collisions gone, 56 alerts gained, 2 dispatch uses lost; sample of 40: 33 genuine, 7 doubtful, 0 false | Decided: the package's names ([ADR 0017](adr/0017-stored-callers-mark-an-alert-called.md#amendment-2026-11-28-the-packages-own-names)) |
+| E16 | Matching a symbol or entry point where the package's source was read | the re-export rule; the package's names with no re-export rule; the rule kept except for a name the package defines otherwise, stored for symbols and entry points, or for entry points only | Panel CALLED 474, 453, 467 and 468. Without the rule, 10 genuine uses of a function Werkzeug later moved were lost; the last two lose none. Their storage: +1.8 MB and +0.35 MB | Decided: entry points only ([ADR 0018](adr/0018-a-name-the-package-defines-is-not-a-re-export.md)) |
 
 ## E1: 4-bit self-hosted against hosted serving
 
@@ -571,3 +572,21 @@ The sample is small: five vulnerabilities on one pair of days ([recorded report]
 - **Keeping a plain module's own imports too** stored 67,470 names (10.9 MB gzip). Leaving them out cost 2 panel alerts: Django's `AbstractBaseUser`, which `django.contrib.auth.models` re-exports.
 
 **Decision.** Match through the package's names, as the amendment to ADR 0017 records.
+
+## E16: Matching symbols where the package's source was read
+
+**Question.** The re-export rule (same package and final name) matches `PIL.Image.open` to the entry point `PIL.GdImageFile.open`. Where the callers step has read the package's source, can a scan tell a real re-export from a collision of names?
+
+**Factor.** How rule 2 matches a reference to a record's symbols and entry points, for records with stored callers. The same shadow (callers on db-2026.11.27, graph revision 5) and the same panel.
+
+| Variant | Panel CALLED | Lost from the re-export rule | Asset |
+|---|---:|---|---:|
+| The re-export rule (as before) | 474 | | 9.0 MB |
+| The package's names, no re-export rule | 453 | 21: 8 collisions, 3 uses through dispatch, 10 genuine | 9.0 MB |
+| The rule, except for a definition sharing a symbol's or entry point's name | 467 | 7: 6 collisions, 1 use through dispatch | 10.8 MB |
+| The rule, except for a definition sharing an entry point's name | 468 | 6: 5 collisions, 1 use through dispatch | 9.36 MB |
+
+- **The 10 genuine losses** are `werkzeug.utils.safe_join`, in 5 advisories and 2 projects. The projects pin a Werkzeug that defined it there. The release read, the newest affected one, defines it only in `werkzeug.security`. Only the re-export rule finds that, and only the last two variants keep it.
+- **With the cap-dotted shadow's dotted entry points,** the last two variants also drop the 7 false Pillow matches.
+
+**Decision.** The last variant ([ADR 0018](adr/0018-a-name-the-package-defines-is-not-a-re-export.md)). With the cap-dotted entry points, it takes 13 of the 14 alerts the third variant takes out of CALLED, at a fifth of the storage.

@@ -711,7 +711,7 @@
       "form": "import name differs; package in a monorepo",
       "expected": "CALLED",
       "verdict": "CALLED",
-      "reason": "your code references langgraph.store.sqlite.SqliteStore, which reaches a vulnerable symbol (static call path in the source of langgraph-checkpoint-sqlite 2.0.10)",
+      "reason": "your code references a vulnerable symbol",
       "confidence": "low",
       "false_suppression": false,
       "as_expected": true

@@ -26,13 +26,13 @@
         "a computed dynamic import somewhere in the code": 38
       },
       "seconds": [
-        3.785,
-        3.523,
-        3.531,
-        3.723,
-        3.486
+        4.118,
+        4.042,
+        4.032,
+        4.328,
+        4.052
       ],
-      "code_scan_seconds": 2.123
+      "code_scan_seconds": 2.188
     },
     {
       "name": "healthchecks",
@@ -54,13 +54,13 @@
         "no symbol data for the advisory": 3
       },
       "seconds": [
-        1.233,
-        1.194,
-        1.36,
-        1.188,
-        1.216
+        1.523,
+        1.303,
+        1.261,
+        1.504,
+        1.369
       ],
-      "code_scan_seconds": 0.412
+      "code_scan_seconds": 0.447
     },
     {
       "name": "saleor",
@@ -72,24 +72,24 @@
       "alerts": 230,
       "with_data": 168,
       "verdicts": {
-        "CALLED": 22,
+        "CALLED": 21,
         "IMPORTED_NOT_CALLED": 0,
         "NOT_IMPORTED": 0,
-        "UNKNOWN": 208
+        "UNKNOWN": 209
       },
       "unknown_reasons": {
-        "dynamic use of the package": 75,
+        "dynamic use of the package": 76,
         "a computed dynamic import somewhere in the code": 71,
         "no symbol data for the advisory": 62
       },
       "seconds": [
-        5.5,
-        5.441,
-        5.481,
-        5.501,
-        5.47
+        5.814,
+        5.598,
+        5.64,
+        5.625,
+        5.85
       ],
-      "code_scan_seconds": 4.593
+      "code_scan_seconds": 4.675
     },
     {
       "name": "zulip",
@@ -112,13 +112,13 @@
         "dynamic use of the package": 82
       },
       "seconds": [
-        4.421,
-        4.325,
-        4.299,
-        4.054,
-        4.117
+        4.941,
+        5.134,
+        5.647,
+        6.135,
+        5.12
       ],
-      "code_scan_seconds": 2.827
+      "code_scan_seconds": 3.228
     },
     {
       "name": "redash",
@@ -130,24 +130,24 @@
       "alerts": 152,
       "with_data": 119,
       "verdicts": {
-        "CALLED": 23,
+        "CALLED": 22,
         "IMPORTED_NOT_CALLED": 0,
         "NOT_IMPORTED": 0,
-        "UNKNOWN": 129
+        "UNKNOWN": 130
       },
       "unknown_reasons": {
         "a computed dynamic import somewhere in the code": 61,
         "no symbol data for the advisory": 33,
-        "dynamic use of the package": 35
+        "dynamic use of the package": 36
       },
       "seconds": [
-        1.138,
-        1.23,
-        1.146,
-        1.158,
-        1.209
+        1.317,
+        1.348,
+        1.376,
+        1.302,
+        1.248
       ],
-      "code_scan_seconds": 0.354
+      "code_scan_seconds": 0.398
     },
     {
       "name": "superset",
@@ -170,13 +170,13 @@
         "dynamic use of the package": 23
       },
       "seconds": [
-        1.986,
-        1.716,
-        1.733,
-        1.709,
-        1.75
+        2.007,
+        1.969,
+        1.932,
+        1.934,
+        1.875
       ],
-      "code_scan_seconds": 1.636
+      "code_scan_seconds": 1.91
     },
     {
       "name": "posthog",
@@ -188,24 +188,24 @@
       "alerts": 312,
       "with_data": 238,
       "verdicts": {
-        "CALLED": 80,
+        "CALLED": 79,
         "IMPORTED_NOT_CALLED": 0,
         "NOT_IMPORTED": 28,
-        "UNKNOWN": 204
+        "UNKNOWN": 205
       },
       "unknown_reasons": {
-        "low-confidence record, no reference": 102,
+        "low-confidence record, no reference": 103,
         "no symbol data for the advisory": 74,
         "the project runs the package as a command": 28
       },
       "seconds": [
-        5.013,
-        4.989,
-        5.053,
-        5.015,
-        5.042
+        6.255,
+        5.752,
+        6.14,
+        5.742,
+        5.702
       ],
-      "code_scan_seconds": 3.668
+      "code_scan_seconds": 3.795
     },
     {
       "name": "open-webui",
@@ -228,13 +228,13 @@
         "the project runs the package as a command": 3
       },
       "seconds": [
-        1.284,
-        1.316,
-        1.335,
-        1.452,
-        1.279
+        1.449,
+        3.638,
+        1.27,
+        1.437,
+        1.426
       ],
-      "code_scan_seconds": 0.088
+      "code_scan_seconds": 0.09
     },
     {
       "name": "langflow",
@@ -257,13 +257,13 @@
         "dynamic use of the package": 112
       },
       "seconds": [
-        1.766,
-        1.8,
-        1.853,
-        2.005,
-        1.857
+        2.168,
+        1.86,
+        1.961,
+        1.941,
+        2.119
       ],
-      "code_scan_seconds": 0.311
+      "code_scan_seconds": 0.344
     },
     {
       "name": "tandoor-recipes",
@@ -275,24 +275,24 @@
       "alerts": 178,
       "with_data": 136,
       "verdicts": {
-        "CALLED": 23,
+        "CALLED": 22,
         "IMPORTED_NOT_CALLED": 0,
         "NOT_IMPORTED": 0,
-        "UNKNOWN": 155
+        "UNKNOWN": 156
       },
       "unknown_reasons": {
-        "dynamic use of the package": 112,
+        "dynamic use of the package": 113,
         "no symbol data for the advisory": 42,
         "a computed dynamic import somewhere in the code": 1
       },
       "seconds": [
-        1.85,
-        1.818,
-        1.779,
-        1.755,
-        1.764
+        2.071,
+        3.114,
+        2.015,
+        2.104,
+        2.037
       ],
-      "code_scan_seconds": 0.402
+      "code_scan_seconds": 0.441
     },
     {
       "name": "mealie",
@@ -316,13 +316,13 @@
         "the project runs the package as a command": 1
       },
       "seconds": [
-        1.42,
-        1.69,
-        1.378,
-        1.473,
-        1.395
+        1.423,
+        5.961,
+        1.542,
+        1.644,
+        1.605
       ],
-      "code_scan_seconds": 0.414
+      "code_scan_seconds": 0.473
     },
     {
       "name": "addons-server",
@@ -334,24 +334,24 @@
       "alerts": 159,
       "with_data": 111,
       "verdicts": {
-        "CALLED": 21,
+        "CALLED": 20,
         "IMPORTED_NOT_CALLED": 0,
         "NOT_IMPORTED": 0,
-        "UNKNOWN": 138
+        "UNKNOWN": 139
       },
       "unknown_reasons": {
         "no symbol data for the advisory": 48,
         "a computed dynamic import somewhere in the code": 16,
-        "dynamic use of the package": 74
+        "dynamic use of the package": 75
       },
       "seconds": [
-        3.504,
-        3.453,
-        3.357,
-        3.366,
-        3.344
+        4.2,
+        4.274,
+        4.832,
+        4.371,
+        4.175
       ],
-      "code_scan_seconds": 2.09
+      "code_scan_seconds": 2.351
     },
     {
       "name": "bakerydemo",
@@ -370,13 +370,13 @@
       },
       "unknown_reasons": {},
       "seconds": [
-        0.905,
-        0.606,
-        0.554,
-        0.97,
-        0.599
+        0.53,
+        0.551,
+        0.593,
+        0.581,
+        0.618
       ],
-      "code_scan_seconds": 0.083
+      "code_scan_seconds": 0.088
     },
     {
       "name": "jumpserver",
@@ -388,24 +388,24 @@
       "alerts": 301,
       "with_data": 236,
       "verdicts": {
-        "CALLED": 16,
+        "CALLED": 15,
         "IMPORTED_NOT_CALLED": 0,
         "NOT_IMPORTED": 0,
-        "UNKNOWN": 285
+        "UNKNOWN": 286
       },
       "unknown_reasons": {
         "a computed dynamic import somewhere in the code": 171,
         "no symbol data for the advisory": 65,
-        "dynamic use of the package": 49
+        "dynamic use of the package": 50
       },
       "seconds": [
-        1.896,
-        1.887,
-        1.908,
-        2.079,
-        1.95
+        2.432,
+        2.215,
+        2.537,
+        2.493,
+        2.357
       ],
-      "code_scan_seconds": 0.803
+      "code_scan_seconds": 0.921
     },
     {
       "name": "defectdojo",
@@ -428,13 +428,13 @@
         "a computed dynamic import somewhere in the code": 52
       },
       "seconds": [
-        2.516,
-        2.28,
-        2.286,
-        2.353,
-        2.306
+        2.775,
+        2.756,
+        2.808,
+        2.728,
+        2.702
       ],
-      "code_scan_seconds": 1.751
+      "code_scan_seconds": 1.965
     },
     {
       "name": "ctfd",
@@ -458,13 +458,13 @@
         "the project runs the package as a command": 3
       },
       "seconds": [
-        1.134,
-        1.59,
-        1.183,
-        1.211,
-        1.168
+        1.301,
+        1.036,
+        1.112,
+        1.16,
+        1.289
       ],
-      "code_scan_seconds": 0.367
+      "code_scan_seconds": 0.357
     },
     {
       "name": "aws-sam-cli",
@@ -483,13 +483,13 @@
       },
       "unknown_reasons": {},
       "seconds": [
-        1.75,
-        1.61,
-        1.571,
-        1.627,
-        1.577
+        1.98,
+        1.788,
+        1.749,
+        1.671,
+        1.588
       ],
-      "code_scan_seconds": 1.594
+      "code_scan_seconds": 1.58
     },
     {
       "name": "label-studio",
@@ -512,13 +512,13 @@
         "dynamic use of the package": 27
       },
       "seconds": [
-        1.697,
-        1.702,
-        1.729,
-        1.721,
-        1.822
+        1.829,
+        1.933,
+        1.807,
+        1.815,
+        1.907
       ],
-      "code_scan_seconds": 0.438
+      "code_scan_seconds": 0.43
     },
     {
       "name": "warehouse",
@@ -542,13 +542,13 @@
         "the project runs the package as a command": 4
       },
       "seconds": [
-        1.342,
-        1.2,
-        1.215,
-        1.183,
-        1.19
+        1.369,
+        1.52,
+        3.49,
+        1.267,
+        1.213
       ],
-      "code_scan_seconds": 1.16
+      "code_scan_seconds": 1.193
     },
     {
       "name": "awx",
@@ -572,13 +572,13 @@
         "the project runs the package as a command": 1
       },
       "seconds": [
-        2.891,
-        2.856,
-        2.754,
-        2.63,
-        2.691
+        3.425,
+        3.413,
+        3.567,
+        3.255,
+        3.141
       ],
-      "code_scan_seconds": 1.421
+      "code_scan_seconds": 1.629
     }
   ]
 }

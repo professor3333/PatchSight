@@ -23,13 +23,12 @@ from patchsight.pipeline.benchmarks import dunlap
 from patchsight.pipeline.benchmarks.extraction import candidate_inputs
 from patchsight.pipeline.diffs.commits import map_commit
 from patchsight.pipeline.diffs.github import GitHubClient
-from patchsight.pipeline.extract.extractor import extract
+from patchsight.pipeline.extract.extractor import extract_attempts
 from patchsight.pipeline.extract.prompt import (
     AdvisoryText,
     Candidate,
     PromptTemplate,
     RenderedPrompt,
-    render,
 )
 from patchsight.pipeline.extract.validate import ValidationFailedError, validate
 from patchsight.pipeline.llm.client import (
@@ -111,20 +110,21 @@ def export(
             for c in report.commits
         ]
         inputs, known = candidate_inputs(mappings)
-        prompt = render(
-            template, advisories[report.id], inputs, budget, counter,
-            config.budget.max_hunk_lines, limit, config.budget.candidate_order,
-        )  # fmt: skip
         recorder = _Recorder(llm_cache, counter)
-        extract(
+        attempts = extract_attempts(
             recorder, model, template, advisories[report.id], inputs, known, budget, counter,
             config.budget.max_hunk_lines, limit, candidate_order=config.budget.candidate_order,
+            retry_candidates=config.retry_candidate_limit(role),
         )  # fmt: skip
+        # A retried prompt replays as the one that was answered: the cut prompt, with the
+        # answers given to it.
+        prompt = attempts[-1][0]
+        earlier = sum(o.calls for _, o in attempts[:-1])
         exported.append(
             ReplayReport(
                 id=report.id,
                 candidates=prompt.candidates,
-                answers=tuple(recorder.answers),
+                answers=tuple(recorder.answers[earlier:]),
                 truncated=prompt.truncated,
                 dropped=prompt.dropped,
             )

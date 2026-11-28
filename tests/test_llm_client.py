@@ -335,6 +335,19 @@ def test_candidate_limit_follows_the_output_limit() -> None:
     assert role_cap.candidate_limit("m") == 9  # the role's own cap: 1,000 // 105
     assert config(output_tokens_per_candidate=105).candidate_limit("m") == 14  # 1,500 // 105
     assert config(output_tokens_per_candidate=5000).candidate_limit("m") == 1
+    # As a retry only: no prompt is cut, a second try after a dead letter holds 14.
+    retry = LLMConfig.model_validate(
+        {**config().model_dump(), "budget": {**config().model_dump()["budget"],
+         "output_tokens_per_candidate": 105, "output_cap": "retry"}}
+    )  # fmt: skip
+    assert (retry.candidate_limit("m"), retry.retry_candidate_limit("m")) == (None, 14)
+    assert config(output_tokens_per_candidate=105).retry_candidate_limit("m") is None
+    # A role's own cap (a provider's output limit) applies to every prompt either way.
+    own = LLMConfig.model_validate(
+        {**retry.model_dump(), "models": {"m": {"provider": "p", "model": "x",
+         "max_output_tokens": 1000, "seed": 1, "output_tokens_per_candidate": 105}}}
+    )  # fmt: skip
+    assert (own.candidate_limit("m"), own.retry_candidate_limit("m")) == (9, None)
 
 
 def test_tokenizer_file_must_match_its_pin(tmp_path: Path) -> None:

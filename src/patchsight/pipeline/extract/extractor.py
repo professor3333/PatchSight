@@ -128,13 +128,66 @@ def extract(
     max_candidates: int | None = None,
     dotted_entry_points: bool = False,
     candidate_order: CandidateOrder = "bm25",
+    retry_candidates: int | None = None,
 ) -> ExtractionOutcome:
-    """Extract one advisory; its model calls and its outcome go to the client's trace."""
+    """Extract one advisory; its model calls and its outcome go to the client's trace.
+
+    With ``retry_candidates``, a prompt holding more candidates than that which gets no
+    valid answer is tried once more, cut to that many (``attempts``)."""
+    attempts = extract_attempts(
+        llm, model, template, advisory, inputs, known_names, budget_tokens, counter,
+        max_hunk_lines, max_candidates, dotted_entry_points, candidate_order, retry_candidates,
+    )  # fmt: skip
+    return combined(attempts)
+
+
+def extract_attempts(
+    llm: LLMClient,
+    model: ModelConfig,
+    template: PromptTemplate,
+    advisory: AdvisoryText,
+    inputs: Sequence[CandidateInput],
+    known_names: Set[str],
+    budget_tokens: int,
+    counter: TokenCounter,
+    max_hunk_lines: int,
+    max_candidates: int | None = None,
+    dotted_entry_points: bool = False,
+    candidate_order: CandidateOrder = "bm25",
+    retry_candidates: int | None = None,
+) -> list[tuple[RenderedPrompt, ExtractionOutcome]]:
+    """Each prompt sent for one advisory, with its outcome: one, or two when a dead letter
+    is retried with at most ``retry_candidates`` candidates. An answer that overruns the
+    output limit fails validation; fewer candidates need a shorter answer (experiment E4),
+    so the cap is spent only where the full prompt could not be answered."""
     prompt = render(
         template, advisory, inputs, budget_tokens, counter, max_hunk_lines, max_candidates,
         candidate_order,
     )  # fmt: skip
-    return extract_prompt(llm, model, advisory.id, prompt, known_names, dotted_entry_points)
+    first = extract_prompt(llm, model, advisory.id, prompt, known_names, dotted_entry_points)
+    attempts = [(prompt, first)]
+    if (
+        first.status == "dead_letter"
+        and retry_candidates is not None
+        and len(prompt.candidates) > retry_candidates
+    ):
+        capped = render(
+            template, advisory, inputs, budget_tokens, counter, max_hunk_lines,
+            retry_candidates, candidate_order,
+        )  # fmt: skip
+        again = extract_prompt(llm, model, advisory.id, capped, known_names, dotted_entry_points)
+        attempts.append((capped, again))
+    return attempts
+
+
+def combined(attempts: Sequence[tuple[RenderedPrompt, ExtractionOutcome]]) -> ExtractionOutcome:
+    """The last attempt's outcome, with the calls and tokens of every attempt."""
+    outcome = attempts[-1][1]
+    if len(attempts) == 1:
+        return outcome
+    spent = ("prompt_tokens", "completion_tokens", "calls", "cached_calls",
+             "provider_rejections")  # fmt: skip
+    return outcome.model_copy(update={k: sum(getattr(o, k) for _, o in attempts) for k in spent})
 
 
 def extract_prompt(

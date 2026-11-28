@@ -60,6 +60,11 @@ class BudgetConfig(BaseModel):
     # How candidates are ordered when a prompt must be cut to its budget (experiment E10):
     # BM25 against the advisory, or the smallest first, which kept more true functions.
     candidate_order: Literal["bm25", "smallest_first"] = "bm25"
+    # When output_tokens_per_candidate applies: to every prompt, or only to a second try
+    # after a prompt with more candidates got no valid answer (E12: cutting every prompt
+    # left vulnerable functions out). A role's own output_tokens_per_candidate, set for a
+    # provider's output limit, always applies.
+    output_cap: Literal["always", "retry"] = "always"
 
 
 class ValidationConfig(BaseModel):
@@ -104,13 +109,28 @@ class LLMConfig(BaseModel):
         return self.providers[self.models[role].provider].input_tokens_per_minute
 
     def candidate_limit(self, role: str) -> int | None:
-        """Most candidates whose answers fit the role's output limit, or None for no limit.
-        A role's own ``output_tokens_per_candidate`` takes the place of the budget's."""
+        """Most candidates a prompt holds so its answer fits the role's output limit, or
+        None for no limit. A role's own ``output_tokens_per_candidate`` takes the place of
+        the budget's, which applies here only with ``output_cap = "always"``."""
         model = self.models[role]
-        per_candidate = model.output_tokens_per_candidate or self.budget.output_tokens_per_candidate
+        if model.output_tokens_per_candidate is not None:
+            return max(1, model.max_output_tokens // model.output_tokens_per_candidate)
+        if self.budget.output_cap == "always":
+            return self._budget_limit(role)
+        return None
+
+    def retry_candidate_limit(self, role: str) -> int | None:
+        """With ``output_cap = "retry"``: the most candidates a second try holds after a
+        prompt got no valid answer. None when the cap already applies to every prompt."""
+        if self.models[role].output_tokens_per_candidate is not None:
+            return None
+        return self._budget_limit(role) if self.budget.output_cap == "retry" else None
+
+    def _budget_limit(self, role: str) -> int | None:
+        per_candidate = self.budget.output_tokens_per_candidate
         if per_candidate is None:
             return None
-        return max(1, model.max_output_tokens // per_candidate)
+        return max(1, self.models[role].max_output_tokens // per_candidate)
 
 
 def load_config(path: Path) -> LLMConfig:

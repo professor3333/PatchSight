@@ -145,6 +145,7 @@ def run(
             limit,
             config.validation.dotted_entry_points,
             config.budget.candidate_order,
+            config.retry_candidate_limit(role),
         )
         outcomes.append(outcome)
         truth[report.id] = set(report.symbols)

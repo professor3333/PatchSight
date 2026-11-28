@@ -279,6 +279,32 @@ def test_extract_applies_the_candidate_limit(tmp_path: Path) -> None:
     assert 'id="F2"' not in seen[0].messages[1]["content"]
 
 
+def test_a_dead_letter_is_retried_once_with_fewer_candidates(tmp_path: Path) -> None:
+    one = json.dumps({"items": [{"candidate_id": "F1", "is_vulnerable": True,
+                                 "rationale": "Bounds fix.", "evidence_hunk_ids": ["H2"]}],
+                      "public_entry_points": []})  # fmt: skip
+    client, seen = _client(tmp_path, ["{overrun", "{overrun again", one])
+    outcome = extract(
+        client, MODEL, TEMPLATE, ADVISORY, INPUTS, {"ParseHeader"}, 5000, CharEstimate(3.0), 80,
+        retry_candidates=1,
+    )  # fmt: skip
+    assert (outcome.status, outcome.vulnerable, outcome.candidates) == ("ok", ("ParseHeader",), 1)
+    assert (outcome.truncated, outcome.calls, outcome.prompt_tokens) == (True, 3, 300)
+    assert 'id="F2"' in seen[0].messages[1]["content"]  # the first try: every candidate
+    assert 'id="F2"' not in seen[2].messages[1]["content"]  # the second: cut to one
+
+
+def test_no_retry_when_answered_or_already_within_the_cap(tmp_path: Path) -> None:
+    client, seen = _client(tmp_path, [_answer()])
+    ok = extract(client, MODEL, TEMPLATE, ADVISORY, INPUTS, {"ParseHeader"}, 5000,
+                 CharEstimate(3.0), 80, retry_candidates=1)  # fmt: skip
+    assert (ok.status, ok.calls, len(seen)) == ("ok", 1, 1)
+    client, seen = _client(tmp_path / "b", ["{bad", "{still bad"])
+    failed = extract(client, MODEL, TEMPLATE, ADVISORY, INPUTS, {"ParseHeader"}, 5000,
+                     CharEstimate(3.0), 80, retry_candidates=len(INPUTS))  # fmt: skip
+    assert (failed.status, failed.calls, len(seen)) == ("dead_letter", 2, 2)
+
+
 def _rejecting_client(tmp_path: Path, script: list[str | None]) -> LLMClient:
     """A fake provider that rejects the generation wherever the script says None."""
     from patchsight.pipeline.llm.client import ProviderRejectedError

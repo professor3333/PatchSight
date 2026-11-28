@@ -47,6 +47,10 @@ MAX_BYTES = 50_000_000  # largest file read
 MAX_MEMBER_BYTES = 5_000_000  # largest .py file read from it
 MAX_SOURCE_BYTES = 200_000_000  # Python source read from one file, in all
 CACHE_SUFFIX = ".dist"
+# A record whose callers are more than this many keeps none ("too many callers"): almost
+# anything in such a package reaches its symbols, so the callers would sharpen no alert,
+# and they would multiply the database. The same bound as a fix too broad to extract.
+MAX_CALLERS = 500
 
 
 def symbols_digest(record: Record) -> str:
@@ -273,7 +277,7 @@ def annotate(
         digest = symbols_digest(record)
         earlier = previous.get((record.vulnerability, record.package))
         if earlier is not None and earlier.symbols_digest == digest:
-            found[index], reused = earlier, reused + 1
+            found[index], reused = _capped(earlier), reused + 1
             continue
         planned = _plan(record, digest, advisories_for, pypi)
         if isinstance(planned, Callers):
@@ -341,6 +345,12 @@ class _Item(BaseModel):
     seeds: frozenset[str]
 
 
+def _capped(found: Callers) -> Callers:
+    if len(found.callers) <= MAX_CALLERS:
+        return found
+    return found.model_copy(update={"status": "too many callers", "callers": ()})
+
+
 def _seeds(record: Record) -> frozenset[str]:
     return frozenset(s.qualified_name for s in record.symbols)
 
@@ -403,8 +413,8 @@ def _run_group(
             continue
         toward = callgraph.closure(graph, seeds)
         edges = tuple(sorted((c, t) for c, t in toward.items() if c not in seeds))
-        results.append(Callers(**{**item.base, "seeds_found": len(seeds)}, status="ok",
-                               callers=edges))  # fmt: skip
+        results.append(_capped(Callers(**{**item.base, "seeds_found": len(seeds)}, status="ok",
+                                       callers=edges)))  # fmt: skip
     return results, not isinstance(graph, str), time.monotonic() - started
 
 

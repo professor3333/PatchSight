@@ -209,3 +209,21 @@ def test_a_database_without_callers_keeps_exactly_its_old_tables(tmp_path: Path)
         }
     assert tables == {"meta", "aliases", "records", "symbols", "extraction", "builds", "evidence",
                       "import_names"}  # fmt: skip
+
+
+def test_a_record_with_too_many_callers_keeps_none(tmp_path: Path) -> None:
+    count = callers.MAX_CALLERS + 1
+    api = "".join(f"def c{i}():\n    _parse(1)\n" for i in range(count))
+    wheel = _wheel(
+        {"pkg/core.py": CORE, "pkg/api.py": b"from .core import _parse\n" + api.encode()}
+    )
+    pypi = _pypi(tmp_path, {"1.0": [_file("pkg-1.0-py3-none-any.whl", wheel)]})
+    advisory = _advisory(_package(versions=("1.0",)))
+    fetcher = _fetcher(tmp_path, {"pkg-1.0-py3-none-any.whl": wheel})
+    found, _ = callers.annotate([_record("pkg.core._parse")], lambda v: [advisory], pypi,
+                                fetcher)  # fmt: skip
+    assert (found[0].status, found[0].callers, found[0].seeds_found) == ("too many callers", (), 1)
+    earlier = found[0].model_copy(update={"status": "ok", "callers": (("a", "b"),) * count})
+    again, _ = callers.annotate([_record("pkg.core._parse")], lambda v: [], pypi, fetcher,
+                                {("GHSA-1", "pkg"): earlier})  # fmt: skip
+    assert again[0].status == "too many callers"  # the cap holds for reused callers too

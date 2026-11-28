@@ -1,0 +1,504 @@
+{
+  "panel": "benchmarks/panel-v1.toml",
+  "db_version": "2026.11.28-shadow-cap-dotted",
+  "machine": "Darwin 25.6.0 arm64, 8 CPUs, Python 3.12.6",
+  "measured_at": "2026-11-28",
+  "runs": 1,
+  "results": [
+    {
+      "name": "netbox",
+      "commit": "0dde0b506e942661d234cb235e67b5b8694a8b44",
+      "lockfile": "requirements.txt",
+      "dependencies": 37,
+      "pinned": 37,
+      "python_files": 823,
+      "alerts": 110,
+      "with_data": 86,
+      "verdicts": {
+        "CALLED": 8,
+        "IMPORTED_NOT_CALLED": 0,
+        "NOT_IMPORTED": 0,
+        "UNKNOWN": 102
+      },
+      "unknown_reasons": {
+        "dynamic use of the package": 40,
+        "no symbol data for the advisory": 24,
+        "a computed dynamic import somewhere in the code": 38
+      },
+      "seconds": [
+        3.24
+      ],
+      "code_scan_seconds": 2.226
+    },
+    {
+      "name": "healthchecks",
+      "commit": "24e5e83bbcdd221e99642c0265251f8cbbf0bf0d",
+      "lockfile": "requirements.txt",
+      "dependencies": 14,
+      "pinned": 14,
+      "python_files": 451,
+      "alerts": 27,
+      "with_data": 24,
+      "verdicts": {
+        "CALLED": 4,
+        "IMPORTED_NOT_CALLED": 0,
+        "NOT_IMPORTED": 0,
+        "UNKNOWN": 23
+      },
+      "unknown_reasons": {
+        "dynamic use of the package": 20,
+        "no symbol data for the advisory": 3
+      },
+      "seconds": [
+        1.162
+      ],
+      "code_scan_seconds": 0.406
+    },
+    {
+      "name": "saleor",
+      "commit": "02236f6b1603a0fc4abb2f2eb8f2301685a6d86e",
+      "lockfile": "poetry.lock",
+      "dependencies": 246,
+      "pinned": 246,
+      "python_files": 3486,
+      "alerts": 230,
+      "with_data": 168,
+      "verdicts": {
+        "CALLED": 6,
+        "IMPORTED_NOT_CALLED": 0,
+        "NOT_IMPORTED": 0,
+        "UNKNOWN": 224
+      },
+      "unknown_reasons": {
+        "dynamic use of the package": 91,
+        "a computed dynamic import somewhere in the code": 71,
+        "no symbol data for the advisory": 62
+      },
+      "seconds": [
+        5.314
+      ],
+      "code_scan_seconds": 4.617
+    },
+    {
+      "name": "zulip",
+      "commit": "58145836940fc18b4cbb85c3591f451b06d8477e",
+      "lockfile": "requirements/prod.txt",
+      "dependencies": 156,
+      "pinned": 152,
+      "python_files": 1621,
+      "alerts": 255,
+      "with_data": 204,
+      "verdicts": {
+        "CALLED": 20,
+        "IMPORTED_NOT_CALLED": 0,
+        "NOT_IMPORTED": 0,
+        "UNKNOWN": 235
+      },
+      "unknown_reasons": {
+        "a computed dynamic import somewhere in the code": 82,
+        "no symbol data for the advisory": 51,
+        "dynamic use of the package": 102
+      },
+      "seconds": [
+        5.858
+      ],
+      "code_scan_seconds": 2.985
+    },
+    {
+      "name": "redash",
+      "commit": "ec051a89398a0c2483ed56a4773509af15bc03f4",
+      "lockfile": "poetry.lock",
+      "dependencies": 230,
+      "pinned": 230,
+      "python_files": 279,
+      "alerts": 152,
+      "with_data": 119,
+      "verdicts": {
+        "CALLED": 7,
+        "IMPORTED_NOT_CALLED": 0,
+        "NOT_IMPORTED": 0,
+        "UNKNOWN": 145
+      },
+      "unknown_reasons": {
+        "a computed dynamic import somewhere in the code": 61,
+        "no symbol data for the advisory": 33,
+        "dynamic use of the package": 51
+      },
+      "seconds": [
+        1.23
+      ],
+      "code_scan_seconds": 0.335
+    },
+    {
+      "name": "superset",
+      "commit": "35e1820f8a6a27fd66e581e0702458eb9db7386b",
+      "lockfile": "requirements/base.txt",
+      "dependencies": 134,
+      "pinned": 133,
+      "python_files": 1396,
+      "alerts": 85,
+      "with_data": 61,
+      "verdicts": {
+        "CALLED": 4,
+        "IMPORTED_NOT_CALLED": 0,
+        "NOT_IMPORTED": 0,
+        "UNKNOWN": 81
+      },
+      "unknown_reasons": {
+        "a computed dynamic import somewhere in the code": 20,
+        "no symbol data for the advisory": 24,
+        "dynamic use of the package": 37
+      },
+      "seconds": [
+        1.929
+      ],
+      "code_scan_seconds": 1.695
+    },
+    {
+      "name": "posthog",
+      "commit": "9e2003c8d389a3a6ed531aa5036cc77052896979",
+      "lockfile": "requirements.txt",
+      "dependencies": 227,
+      "pinned": 226,
+      "python_files": 1865,
+      "alerts": 312,
+      "with_data": 238,
+      "verdicts": {
+        "CALLED": 27,
+        "IMPORTED_NOT_CALLED": 0,
+        "NOT_IMPORTED": 28,
+        "UNKNOWN": 257
+      },
+      "unknown_reasons": {
+        "low-confidence record, no reference": 148,
+        "no symbol data for the advisory": 74,
+        "the project runs the package as a command": 35
+      },
+      "seconds": [
+        4.589
+      ],
+      "code_scan_seconds": 3.629
+    },
+    {
+      "name": "open-webui",
+      "commit": "5b01d7994a8627abfb40fcbb0aae259d12f6c271",
+      "lockfile": "backend/requirements.txt",
+      "dependencies": 47,
+      "pinned": 47,
+      "python_files": 52,
+      "alerts": 176,
+      "with_data": 150,
+      "verdicts": {
+        "CALLED": 1,
+        "IMPORTED_NOT_CALLED": 0,
+        "NOT_IMPORTED": 79,
+        "UNKNOWN": 96
+      },
+      "unknown_reasons": {
+        "low-confidence record, no reference": 66,
+        "no symbol data for the advisory": 26,
+        "the project runs the package as a command": 4
+      },
+      "seconds": [
+        1.371
+      ],
+      "code_scan_seconds": 0.087
+    },
+    {
+      "name": "langflow",
+      "commit": "81f61201be8d1869d81877d649100ac2e2beb446",
+      "lockfile": "poetry.lock",
+      "dependencies": 390,
+      "pinned": 389,
+      "python_files": 465,
+      "alerts": 468,
+      "with_data": 337,
+      "verdicts": {
+        "CALLED": 10,
+        "IMPORTED_NOT_CALLED": 0,
+        "NOT_IMPORTED": 0,
+        "UNKNOWN": 458
+      },
+      "unknown_reasons": {
+        "a computed dynamic import somewhere in the code": 182,
+        "no symbol data for the advisory": 131,
+        "dynamic use of the package": 145
+      },
+      "seconds": [
+        2.03
+      ],
+      "code_scan_seconds": 0.316
+    },
+    {
+      "name": "tandoor-recipes",
+      "commit": "6d4dbc26a4aaa977d0764f6d4679fc4b48bb171d",
+      "lockfile": "requirements.txt",
+      "dependencies": 56,
+      "pinned": 55,
+      "python_files": 374,
+      "alerts": 178,
+      "with_data": 136,
+      "verdicts": {
+        "CALLED": 4,
+        "IMPORTED_NOT_CALLED": 0,
+        "NOT_IMPORTED": 0,
+        "UNKNOWN": 174
+      },
+      "unknown_reasons": {
+        "dynamic use of the package": 131,
+        "no symbol data for the advisory": 42,
+        "a computed dynamic import somewhere in the code": 1
+      },
+      "seconds": [
+        1.587
+      ],
+      "code_scan_seconds": 0.42
+    },
+    {
+      "name": "mealie",
+      "commit": "f4f2b863e054bae15735ab1250c49cef9304343e",
+      "lockfile": "poetry.lock",
+      "dependencies": 138,
+      "pinned": 138,
+      "python_files": 511,
+      "alerts": 211,
+      "with_data": 143,
+      "verdicts": {
+        "CALLED": 2,
+        "IMPORTED_NOT_CALLED": 0,
+        "NOT_IMPORTED": 66,
+        "UNKNOWN": 143
+      },
+      "unknown_reasons": {
+        "no symbol data for the advisory": 68,
+        "dynamic use of the package": 21,
+        "low-confidence record, no reference": 53,
+        "the project runs the package as a command": 1
+      },
+      "seconds": [
+        1.558
+      ],
+      "code_scan_seconds": 0.434
+    },
+    {
+      "name": "addons-server",
+      "commit": "ee3a753da0436a19d0fb8c1ad81dd12f9a537b4d",
+      "lockfile": "requirements/prod.txt",
+      "dependencies": 109,
+      "pinned": 109,
+      "python_files": 1190,
+      "alerts": 159,
+      "with_data": 111,
+      "verdicts": {
+        "CALLED": 14,
+        "IMPORTED_NOT_CALLED": 0,
+        "NOT_IMPORTED": 0,
+        "UNKNOWN": 145
+      },
+      "unknown_reasons": {
+        "no symbol data for the advisory": 48,
+        "a computed dynamic import somewhere in the code": 16,
+        "dynamic use of the package": 81
+      },
+      "seconds": [
+        3.147
+      ],
+      "code_scan_seconds": 2.242
+    },
+    {
+      "name": "bakerydemo",
+      "commit": "cd572f58a8ce8300a815d4f4e36205c7f8f372f2",
+      "lockfile": "requirements/base.txt",
+      "dependencies": 8,
+      "pinned": 4,
+      "python_files": 81,
+      "alerts": 0,
+      "with_data": 0,
+      "verdicts": {
+        "CALLED": 0,
+        "IMPORTED_NOT_CALLED": 0,
+        "NOT_IMPORTED": 0,
+        "UNKNOWN": 0
+      },
+      "unknown_reasons": {},
+      "seconds": [
+        0.541
+      ],
+      "code_scan_seconds": 0.053
+    },
+    {
+      "name": "jumpserver",
+      "commit": "a313753757a5be516bda64b5b9a11aa1d44efc7d",
+      "lockfile": "poetry.lock",
+      "dependencies": 296,
+      "pinned": 292,
+      "python_files": 1144,
+      "alerts": 301,
+      "with_data": 236,
+      "verdicts": {
+        "CALLED": 7,
+        "IMPORTED_NOT_CALLED": 0,
+        "NOT_IMPORTED": 0,
+        "UNKNOWN": 294
+      },
+      "unknown_reasons": {
+        "a computed dynamic import somewhere in the code": 171,
+        "no symbol data for the advisory": 65,
+        "dynamic use of the package": 58
+      },
+      "seconds": [
+        1.828
+      ],
+      "code_scan_seconds": 0.798
+    },
+    {
+      "name": "defectdojo",
+      "commit": "bacd367076dd182e6661712b32dbf9d921d069db",
+      "lockfile": "requirements.txt",
+      "dependencies": 75,
+      "pinned": 72,
+      "python_files": 1135,
+      "alerts": 162,
+      "with_data": 115,
+      "verdicts": {
+        "CALLED": 23,
+        "IMPORTED_NOT_CALLED": 0,
+        "NOT_IMPORTED": 0,
+        "UNKNOWN": 139
+      },
+      "unknown_reasons": {
+        "no symbol data for the advisory": 47,
+        "dynamic use of the package": 40,
+        "a computed dynamic import somewhere in the code": 52
+      },
+      "seconds": [
+        2.548
+      ],
+      "code_scan_seconds": 1.95
+    },
+    {
+      "name": "ctfd",
+      "commit": "2cf0aeca5b13e20f6b94840e059d01201640ace6",
+      "lockfile": "requirements.txt",
+      "dependencies": 62,
+      "pinned": 62,
+      "python_files": 300,
+      "alerts": 113,
+      "with_data": 78,
+      "verdicts": {
+        "CALLED": 8,
+        "IMPORTED_NOT_CALLED": 0,
+        "NOT_IMPORTED": 0,
+        "UNKNOWN": 105
+      },
+      "unknown_reasons": {
+        "no symbol data for the advisory": 35,
+        "a computed dynamic import somewhere in the code": 18,
+        "dynamic use of the package": 49,
+        "the project runs the package as a command": 3
+      },
+      "seconds": [
+        3.346
+      ],
+      "code_scan_seconds": 0.397
+    },
+    {
+      "name": "aws-sam-cli",
+      "commit": "dc0b6b9ca0407a940cb5a0bdb6053c43b12fad5c",
+      "lockfile": "requirements/base.txt",
+      "dependencies": 23,
+      "pinned": 6,
+      "python_files": 1352,
+      "alerts": 0,
+      "with_data": 0,
+      "verdicts": {
+        "CALLED": 0,
+        "IMPORTED_NOT_CALLED": 0,
+        "NOT_IMPORTED": 0,
+        "UNKNOWN": 0
+      },
+      "unknown_reasons": {},
+      "seconds": [
+        1.882
+      ],
+      "code_scan_seconds": 1.652
+    },
+    {
+      "name": "label-studio",
+      "commit": "b59fb98c35b73b36b111e004639807a637f3f74b",
+      "lockfile": "poetry.lock",
+      "dependencies": 180,
+      "pinned": 178,
+      "python_files": 429,
+      "alerts": 246,
+      "with_data": 189,
+      "verdicts": {
+        "CALLED": 3,
+        "IMPORTED_NOT_CALLED": 0,
+        "NOT_IMPORTED": 0,
+        "UNKNOWN": 243
+      },
+      "unknown_reasons": {
+        "a computed dynamic import somewhere in the code": 153,
+        "no symbol data for the advisory": 57,
+        "dynamic use of the package": 33
+      },
+      "seconds": [
+        2.0
+      ],
+      "code_scan_seconds": 0.478
+    },
+    {
+      "name": "warehouse",
+      "commit": "cfda7f268889d9a687cd76ebcd06fd7906f4617d",
+      "lockfile": "requirements/main.txt",
+      "dependencies": 166,
+      "pinned": 166,
+      "python_files": 717,
+      "alerts": 97,
+      "with_data": 70,
+      "verdicts": {
+        "CALLED": 0,
+        "IMPORTED_NOT_CALLED": 0,
+        "NOT_IMPORTED": 0,
+        "UNKNOWN": 97
+      },
+      "unknown_reasons": {
+        "a computed dynamic import somewhere in the code": 25,
+        "no symbol data for the advisory": 27,
+        "dynamic use of the package": 41,
+        "the project runs the package as a command": 4
+      },
+      "seconds": [
+        1.371
+      ],
+      "code_scan_seconds": 1.102
+    },
+    {
+      "name": "awx",
+      "commit": "a15bcf1d552d5430f5dfe7cdcb71906f327fe57b",
+      "lockfile": "requirements/requirements.txt",
+      "dependencies": 177,
+      "pinned": 177,
+      "python_files": 980,
+      "alerts": 263,
+      "with_data": 214,
+      "verdicts": {
+        "CALLED": 23,
+        "IMPORTED_NOT_CALLED": 0,
+        "NOT_IMPORTED": 0,
+        "UNKNOWN": 240
+      },
+      "unknown_reasons": {
+        "dynamic use of the package": 146,
+        "no symbol data for the advisory": 49,
+        "a computed dynamic import somewhere in the code": 44,
+        "the project runs the package as a command": 1
+      },
+      "seconds": [
+        2.519
+      ],
+      "code_scan_seconds": 1.617
+    }
+  ]
+}

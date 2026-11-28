@@ -19,7 +19,7 @@ Every controlled experiment on the extraction system, including the ones that lo
 | E1 | Serving: 4-bit self-hosted against hosted | Qwen3.8-27B Q4_K_M on Kaggle; `qwen/qwen3.8-27b` on Groq | Kaggle not worse; Groq less reliable | Decided: Kaggle for the backfill |
 | E2 | Extractor model family | Qwen3.8-27B; gpt-oss-120b | Qwen F1 0.676, gpt-oss 0.626 | Decided: Qwen extracts, gpt-oss is the second opinion |
 | E3 | Confidence rule | 3 agreement rules, with and without a public symbol | `subset` + public symbol | Decided on dev; declared test evaluation: high-confidence miss 7.0%, target 2% **not met** ([ADR 0004](adr/0004-fall-back-to-the-baseline.md)); Go holdout: 0 misses in 36, but 26 of 36 records leave out a labelled exported function ([ADR 0010](adr/0010-go-temporal-holdout.md#result-2026-11-22)) |
-| E4 | Output-capacity cap | none; 105 output tokens per candidate | F1 unchanged; 1 more truncated report | Measured. On for the nightly's Groq extractor since 2026-11-21, when Groq limited its output to 1,000 tokens a minute ([ADR 0013](adr/0013-llm-extraction-in-the-nightly.md#amendment-2026-11-21-groqs-output-limit)); for the Kaggle roles after the gpt-oss-20b evaluation ([#52](https://github.com/professor3333/PatchSight/issues/52)) |
+| E4 | Output-capacity cap | none; 105 output tokens per candidate | F1 unchanged; 1 more truncated report | Measured. On for the nightly's Groq extractor since 2026-11-21, when Groq limited its output to 1,000 tokens a minute ([ADR 0013](adr/0013-llm-extraction-in-the-nightly.md#amendment-2026-11-21-groqs-output-limit)); for the Kaggle roles through shadow-then-promote with dotted entry points: top-up run and shadow done 2026-11-28, the review and promotion follow ([E12](#the-output-cap-with-dotted-entry-points-bm25-order-kept), [#52](https://github.com/professor3333/PatchSight/issues/52)) |
 | E5 | Run-to-run determinism (self-hosted) | two full Kaggle runs, two days apart | 277 of 277 answers identical | Confirmed |
 | E6 | Entry-point name matching | exact names; a unique dotted-boundary match | dev high-confidence misses 1 of 27 to 0 of 27; F1 unchanged; Go holdout, unseen: 0 misses in 38 against 0 in 36 | Evaluated on unseen data; to be switched on with the output cap, through shadow-then-promote ([#53](https://github.com/professor3333/PatchSight/issues/53)) |
 | E7 | Fix-commit locator without the fix link | the proposal's message baseline; a ranking that prefers the advisory's own IDs | exact SHA 9.0% and 25.0%; wrong commit 64.0% and 47.0% | Neither is used: both are far from the 5% wrong-commit cap. Baseline for the agent ([#56](https://github.com/professor3333/PatchSight/issues/56)) |
@@ -27,7 +27,7 @@ Every controlled experiment on the extraction system, including the ones that lo
 | E9 | Ordering candidates to fit the prompt budget | BM25 against the advisory (as built); no ranking (file order); an oracle ceiling | On the 32 cut prompts: BM25 keeps 59 of 140 true functions (0.421), file order 97 (0.693), the oracle 133 (0.950) | Measured: BM25 loses to no ranking. It stays until a replacement is chosen on dev and evaluated on data not used to choose it |
 | E10 | A replacement for BM25 at the prompt budget | file order; smallest first; candidates the advisory names first; BM25 score per token | Chosen on dev: smallest first. Holdout, declared beforehand: +0.094 recall over BM25 (95% CI +0.042 to +0.328) | Passed. An option, off by default (`budget.candidate_order`); switched on with #52 and #53 |
 | E11 | Self-hosted second opinion | gpt-oss-120b on Groq; gpt-oss-20b (MXFP4) on Kaggle | Safety view, frozen rule, dev: overall miss 8.3% and 10.0%; high-confidence misses 1 of 27 and 1 of 25 | Lost: fails ADR 0007's declared miss-rate criterion by one report; the Groq second opinion stays |
-| E12 | The switch-on batch, before and after | as shipped; with the output cap, smallest-first ordering and dotted entry points | Dev F1 0.676 to 0.688 at the same recall; all 280: 0.680 to 0.662 (precision 0.751 to 0.702, recall 0.621 to 0.628); miss rate unchanged; dead letters 1 to 0 | Measured; the PyPI shadow and its review decide the promotion |
+| E12 | The switch-on batch, before and after | as shipped; with the output cap, smallest-first ordering and dotted entry points | Dev F1 0.676 to 0.688 at the same recall; all 280: 0.680 to 0.662 (precision 0.751 to 0.702, recall 0.621 to 0.628); miss rate unchanged; dead letters 1 to 0 | Measured; the PyPI shadow and its review decide the promotion; cap and dotted without the order (2026-11-28): dev unchanged, all F1 0.680 to 0.675, the dead letter answered, PyPI shadow awaiting review |
 | E13 | Run-to-run determinism (hosted) | last night's Groq answers; the same prompts asked again the next morning | 5 of 7 answers byte-identical; every pick, entry point and cited hunk identical; 2 rationales reworded | Measured: Groq is reproducible in what it decides, not in its wording. The nightly's live drift check therefore compares decisions only ([ADR 0016](adr/0016-live-drift-check.md)). Its first two checks: 19 of 20 answers kept their decisions, 1 changed on an identical request |
 | E14 | The call graph behind stored callers, which raise an alert to CALLED | `self.m` follows every subclass override; it does not; it does not and unknown receivers are not linked either | Panel CALLED 163 to 546 with overrides and 428 without; the overrides gave hub paths (any Django middleware into the cache middleware). Rebuilt on the first graph's 383 new alerts, the second keeps 240 and the third 221 | Decided: no overrides, unknown receivers as #164 left them ([ADR 0017](adr/0017-stored-callers-mark-an-alert-called.md)) |
 | E15 | Matching a reference to stored callers | by name: same package and final name (the re-export rule); through the names the package binds | Panel CALLED 428 and 474; 8 collisions gone, 56 alerts gained, 2 dispatch uses lost; sample of 40: 33 genuine, 7 doubtful, 0 false | Decided: the package's names ([ADR 0017](adr/0017-stored-callers-mark-an-alert-called.md#amendment-2026-11-28-the-packages-own-names)) |
@@ -421,6 +421,44 @@ The Kaggle GPU quota ran out before the cap's top-up could run. Dotted entry poi
 - **Worse, from the entry point (1):** cbor2's resolves to `cbor2._decoder.loads`, the pure-Python fallback, while the fix is in the C extension, which has no Python definition to resolve to.
 
 The worse verdicts err towards noise (an alert marked CALLED that should not be), never towards silence.
+
+### The output cap with dotted entry points (BM25 order kept)
+
+The owner's decision of 2026-11-23, carried out once the Kaggle GPU quota reset. Kaggle Qwen answered the 3 Dunlap and 82 PyPI prompts this configuration changes (`configs/experiments/llm-cap-dotted.toml`; plan `configs/experiments/llm-cap-dotted-topup.json`; PatchSight `d2272a3`, 2.4 GPU hours, every prompt answered, no rejection). Everything else replays from the cache with 0 model calls.
+
+**Dunlap** ([all](reports/extraction-dunlap-all-extract-v1-qwen3.8-27b-q4km-cap-dotted.md), [dev](reports/extraction-dunlap-dev-extract-v1-qwen3.8-27b-q4km-cap-dotted.md), [test](reports/extraction-dunlap-test-extract-v1-qwen3.8-27b-q4km-cap-dotted.md); replay bundle checked by `make reproduce`):
+
+| Split | Before: P / R / F1 | After: P / R / F1 | Miss rate |
+|---|---|---|---|
+| all | 0.751 / 0.621 / 0.680 | 0.734 / 0.624 / 0.675 | 17.1% to 16.8% |
+| dev | 0.710 / 0.644 / 0.676 | 0.710 / 0.644 / 0.676 | unchanged |
+| test | 0.763 / 0.615 / 0.681 | 0.740 / 0.619 / 0.674 | 15.9% to 15.5% |
+
+- Only the 3 changed reports differ.
+- **GO-2021-0053**, the one dead letter, now has a valid answer. It finds 2 true functions and flags 12 false ones, which is the whole change in precision.
+- **GO-2021-0085** (dev, 16 candidates) is now cut to 14, with the same score.
+- **GO-2023-2101** is cut differently, also with the same score.
+
+**PyPI: the shadow.** `scripts/prepare-shadow.sh` built the shadow on `db-2026.11.27` with the release gate (7 of 7 pass) and compared the two ([diff](reports/shadow-cap-dotted.md)).
+
+| | Production `db-2026.11.27` | Shadow |
+|---|---|---|
+| Records changed | | 109: picks 49, entry points 62, truncation 32, model 21, tier reason 4 |
+| Names a scan matches: lost / gained | | 0 / 22 in 20 records |
+| Fixtures: false suppressions; as expected | 0; 22 of 58 ([report](reports/reachability-fixtures-db-2026.11.27.md)) | 0; 23 of 58 ([report](reports/reachability-fixtures-db-2026.11.28-shadow-cap-dotted.md)) |
+| Panel, 3,545 alerts: CALLED | 163 ([report](reports/panel-db-2026.11.27.md)) | 171 ([report](reports/panel-db-2026.11.28-shadow-cap-dotted.md)) |
+
+- **The cap answers 21 of the backfill's 25 dead letters.**
+  - The nightly Groq extractor had answered all 21 since, with at most 9 candidates. The shadow takes the Kaggle answer instead, with at most 14. Both are Qwen3.8-27B under `extract-v1`, on two hosts.
+  - The other 4 failed on both hosts. Only the model named in their failure note changes, and no record loses picks.
+- **What a scan sees comes from the dotted entry points alone:** the same 22 names in 20 records as the dotted shadow.
+  - In the fixtures, `keras-load-model` becomes CALLED, as its label expects.
+  - On the panel, 7 of the 8 new CALLED alerts are the false Pillow match described above: `PIL.Image.open` against the entry point `PIL.GdImageFile.open`, through the re-export rule.
+  - The eighth is genuine. pypdf's GHSA-4vqv-7265-gm2w record gains `pypdf._reader.PdfReader`, which langflow uses as `pypdf.PdfReader`.
+
+**Review.** The sample of 20 in the [diff](reports/shadow-cap-dotted.md#review-sample-20-of-109-seed-20261121) waits for the owner's verdicts. Five of its rows are records that move from the Groq answer to the Kaggle one.
+
+**Promotion.** It changes `configs/llm.toml`, which the nightly reads, so it waits for the 14-night count (2026-12-02) and for a week of shadow. That is no earlier than 2026-12-05, rebuilt on the release current then.
 
 ## Failure analysis
 

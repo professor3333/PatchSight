@@ -456,7 +456,28 @@ The owner's decision of 2026-11-23, carried out once the Kaggle GPU quota reset.
   - On the panel, 7 of the 8 new CALLED alerts are the false Pillow match described above: `PIL.Image.open` against the entry point `PIL.GdImageFile.open`, through the re-export rule.
   - The eighth is genuine. pypdf's GHSA-4vqv-7265-gm2w record gains `pypdf._reader.PdfReader`, which langflow uses as `pypdf.PdfReader`.
 
-**Review.** The sample of 20 in the [diff](reports/shadow-cap-dotted.md#review-sample-20-of-109-seed-20261121) waits for the owner's verdicts. Five of its rows are records that move from the Groq answer to the Kaggle one.
+**Review.** The owner marked the 20 sampled records against their advisories and fix commits ([verdicts](reports/shadow-cap-dotted.md#review-sample-20-of-109-seed-20261121)): 4 better, 5 same, 11 worse. By the part of the change that moved each record:
+
+| Changed by | Records | Better | Same | Worse |
+|---|---:|---:|---:|---:|
+| A backfill dead letter the cap lets Kaggle answer, replacing the nightly's Groq answer | 5 | 3 | 1 | 1 |
+| The same model's prompt, cut to 14 candidates by the cap | 11 | 1 | 2 | 8 |
+| Dotted entry points only (prompt unchanged) | 4 | 0 | 2 | 2 |
+
+- **Cutting prompts to 14 candidates is the worse part.** 7 of its 8 worse verdicts are a vulnerable function the shorter prompt left out:
+  - graphite-web's dashboard `template`;
+  - wagtail's preview views;
+  - langgraph's inherited `AsyncBatchedBaseStore.adelete`, in two records;
+  - codechecker's `getPackageVersion`;
+  - weblate's `Repository.resolve_symlinks`;
+  - Django's `django.utils.archive.extract`.
+
+  The eighth (kafka-python) adds a whole class and a helper the fix introduced. The cut keeps candidates in BM25 order, which keeps fewer true functions than no ranking at all ([E9](#e9-ordering-candidates-to-fit-the-prompt-budget)).
+- **The rescued dead letters are mostly better.**
+  - The owner keeps the Kaggle answer for 3 of the 5: jupyter-server's `check_origin`, Django's PBKDF2 encoder and account form, and dbt's `GitPinnedPackage.to_dict`.
+  - The owner keeps the Groq answer for ipython (worse) and for jupyterlab (a tie).
+- **Both worse verdicts for dotted entry points come from the scanner, not the entry point.** The TensorFlow and Pillow entry points are accurate, but the re-export rule matches them to `tf.constant` and `PIL.Image.open`, as in the dotted review.
+- **No scan result is lost in any of the 20,** because low-confidence records keep every changed definition. The picks matter once high confidence returns.
 
 **Promotion.** It changes `configs/llm.toml`, which the nightly reads, so it waits for the 14-night count (2026-12-02) and for a week of shadow. That is no earlier than 2026-12-05, rebuilt on the release current then.
 

@@ -1,0 +1,806 @@
+{
+  "production": "2026.11.27",
+  "shadow": "2026.11.28-shadow-cap-retry",
+  "records_before": 3814,
+  "records_after": 3814,
+  "unchanged": 3789,
+  "kinds": {
+    "changed": 25
+  },
+  "fields": {
+    "entry_points": 10,
+    "model": 21,
+    "picks": 15,
+    "tier_reason": 4
+  },
+  "changes": [
+    {
+      "vulnerability": "GHSA-24qx-w28j-9m6p",
+      "package": "jupyter-server",
+      "kind": "changed",
+      "fields": [
+        "model",
+        "picks"
+      ],
+      "before": {
+        "model": "qwen/qwen3.8-27b"
+      },
+      "after": {
+        "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M"
+      },
+      "added": {
+        "picks": [
+          "jupyter_server.base.handlers.JupyterHandler.check_origin"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-24qx-w28j-9m6p",
+        "https://github.com/jupyter-server/jupyter_server/commit/3ecb4e0184b7842d62e6db4357c1fbb22138781d",
+        "https://github.com/jupyter-server/jupyter_server/commit/057869a327c46730afede3eab0ca2d2e3e74acea",
+        "https://github.com/jupyter-server/jupyter_server/commit/49b34392feaa97735b3b777e3baf8f22f2a14ed8"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-2mvc-557g-5638",
+      "package": "pgadmin4",
+      "kind": "changed",
+      "fields": [
+        "model",
+        "entry_points",
+        "picks"
+      ],
+      "before": {
+        "model": "qwen/qwen3.8-27b"
+      },
+      "after": {
+        "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M"
+      },
+      "added": {
+        "entry_points": [
+          "web.pgadmin.misc.validate_binary_path",
+          "web.pgadmin.tools.sqleditor.append_filter_exclusive",
+          "web.pgadmin.tools.sqleditor.append_filter_inclusive",
+          "web.pgadmin.tools.sqleditor.set_limit",
+          "web.pgadmin.tools.sqleditor.validate_filter"
+        ],
+        "picks": [
+          "web.pgadmin.misc.validate_binary_path",
+          "web.pgadmin.tools.sqleditor.append_filter_exclusive",
+          "web.pgadmin.tools.sqleditor.append_filter_inclusive",
+          "web.pgadmin.tools.sqleditor.set_limit",
+          "web.pgadmin.tools.sqleditor.validate_filter"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-2mvc-557g-5638",
+        "https://github.com/pgadmin-org/pgadmin4/commit/f4761f55f7cf6d56d6c5129f921393b0b47fd976"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-4c42-4rxm-x6qf",
+      "package": "django",
+      "kind": "changed",
+      "fields": [
+        "model",
+        "picks"
+      ],
+      "before": {
+        "model": "qwen/qwen3.8-27b"
+      },
+      "after": {
+        "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M"
+      },
+      "added": {
+        "picks": [
+          "django.contrib.auth.forms.UserCreationForm",
+          "django.contrib.auth.hashers.MD5PasswordHasher.encode",
+          "django.contrib.auth.hashers.PBKDF2PasswordHasher.encode"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-4c42-4rxm-x6qf",
+        "https://github.com/django/django/commit/22b74fa09d7ccbc8c52270d648a0da7f3f0fa2bc",
+        "https://github.com/django/django/commit/3f3d887a6844ec2db743fee64c9e53e04d39a368"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-4vqv-7265-gm2w",
+      "package": "pypdf",
+      "kind": "changed",
+      "fields": [
+        "model",
+        "entry_points",
+        "picks"
+      ],
+      "before": {
+        "model": "qwen/qwen3.8-27b"
+      },
+      "after": {
+        "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M"
+      },
+      "added": {
+        "entry_points": [
+          "pypdf._reader.PdfReader"
+        ]
+      },
+      "removed": {
+        "picks": [
+          "pypdf._cmap._derive_character_map_from_cff_type1_font_file",
+          "pypdf._cmap._parse_encoding",
+          "pypdf._codecs.fill_from_encoding",
+          "pypdf._page.PageObject._extract_text",
+          "pypdf._reader.PdfReader._rebuild_xref_table",
+          "pypdf._reader.PdfReader.root_object",
+          "pypdf.generic._base.FloatObject.__new__",
+          "pypdf.generic._data_structures.DictionaryObject._clone"
+        ]
+      },
+      "lost": [],
+      "gained": [],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-4vqv-7265-gm2w",
+        "https://github.com/py-pdf/pypdf/commit/64270258c0eced720f7960aecf8cef31afd39f8d"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-5p9j-w2wx-qx4c",
+      "package": "django-spirit",
+      "kind": "changed",
+      "fields": [
+        "model",
+        "picks"
+      ],
+      "before": {
+        "model": "qwen/qwen3.8-27b"
+      },
+      "after": {
+        "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M"
+      },
+      "added": {
+        "picks": [
+          "spirit.admin.views.config_basic",
+          "spirit.comment.poll.views.close_or_open",
+          "spirit.comment.views.publish",
+          "spirit.topic.notification.views.mark_all_as_read",
+          "spirit.topic.views.publish"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-5p9j-w2wx-qx4c",
+        "https://github.com/nitely/spirit/commit/8f32f89654d6c30d56e0dd167059d32146fb32ef"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-66gw-5xpf-gfp5",
+      "package": "ipython",
+      "kind": "changed",
+      "fields": [
+        "model",
+        "entry_points",
+        "picks"
+      ],
+      "before": {
+        "model": "qwen/qwen3.8-27b"
+      },
+      "after": {
+        "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M"
+      },
+      "added": {
+        "entry_points": [
+          "IPython.html.base.handlers.APIHandler"
+        ],
+        "picks": [
+          "IPython.html.base.handlers.APIHandler.content_security_policy",
+          "IPython.html.base.handlers.APIVersionHandler",
+          "IPython.html.base.handlers.ApiVersionHandler",
+          "IPython.html.services.kernels.handlers.MainKernelHandler",
+          "IPython.html.services.sessions.handlers.SessionRootHandler",
+          "IPython.html.terminal.api_handlers.TerminalRootHandler"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-66gw-5xpf-gfp5",
+        "https://github.com/ipython/ipython/commit/7222bd53ad089a65fd610fab4626f9d0ab47dfce",
+        "https://github.com/ipython/ipython/commit/c2078a53543ed502efd968649fee1125e0eb549c"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-7wxf-r2qv-9xwr",
+      "package": "docassemble-webapp",
+      "kind": "changed",
+      "fields": [
+        "tier_reason"
+      ],
+      "before": {
+        "tier_reason": "fallback: extraction by qwen/qwen3.8-27b (prompt extract-v1) failed: no valid answer after one repair"
+      },
+      "after": {
+        "tier_reason": "fallback: extraction by ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M (prompt extract-v1) failed: no valid answer after one repair"
+      },
+      "added": {},
+      "removed": {},
+      "lost": [],
+      "gained": [],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-7wxf-r2qv-9xwr",
+        "https://github.com/jhpyle/docassemble/commit/4801ac7ff7c90df00ac09523077930cdb6dea2aa"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-89vp-jrxv-24w8",
+      "package": "jupyterlab",
+      "kind": "changed",
+      "fields": [
+        "model",
+        "picks"
+      ],
+      "before": {
+        "model": "qwen/qwen3.8-27b"
+      },
+      "after": {
+        "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M"
+      },
+      "added": {
+        "picks": [
+          "jupyterlab.extensions.pypi.PyPIExtensionManager._canonicalize_name"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-89vp-jrxv-24w8",
+        "https://github.com/jupyterlab/jupyterlab/commit/9365f020baec5221deaf11535ed554c06637c999",
+        "https://github.com/jupyterlab/jupyterlab/commit/f1beab4a2027af4719d6edc07d52d6cf5a39a432",
+        "https://github.com/jupyterlab/jupyterlab/commit/be9303f5bcd5308eaeae953c5a3c903046682c2c"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-8fvv-fgr5-f8ch",
+      "package": "pymongo",
+      "kind": "changed",
+      "fields": [
+        "model",
+        "entry_points",
+        "picks"
+      ],
+      "before": {
+        "model": "qwen/qwen3.8-27b"
+      },
+      "after": {
+        "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M"
+      },
+      "added": {
+        "entry_points": [
+          "gridfs.asynchronous.grid_file.AsyncGridFS.find_one",
+          "gridfs.asynchronous.grid_file.AsyncGridIn.__setattr__",
+          "gridfs.synchronous.grid_file.GridFS.find_one",
+          "gridfs.synchronous.grid_file.GridIn.__setattr__"
+        ],
+        "picks": [
+          "gridfs.asynchronous.grid_file.AsyncGridFS.find_one",
+          "gridfs.synchronous.grid_file.GridFS.find_one"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-8fvv-fgr5-f8ch",
+        "https://github.com/mongodb/mongo-python-driver/commit/fa676586ba4b399168a4d1d41c30dc2166cc44fd",
+        "https://github.com/mongodb/mongo-python-driver/commit/3ef1c607859589a0086446ad6f557791a2813681"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-9fqr-pqc9-f7pj",
+      "package": "cobbler",
+      "kind": "changed",
+      "fields": [
+        "model",
+        "entry_points",
+        "picks"
+      ],
+      "before": {
+        "model": "qwen/qwen3.8-27b"
+      },
+      "after": {
+        "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M"
+      },
+      "added": {
+        "entry_points": [
+          "web.cobbler_web.views.generic_save",
+          "web.cobbler_web.views.snippet_save"
+        ],
+        "picks": [
+          "web.cobbler_web.views.generic_save",
+          "web.cobbler_web.views.snippet_save"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-9fqr-pqc9-f7pj",
+        "https://github.com/cobbler/cobbler/commit/18eb1c06779b37d89dfb2962a08236dd1bab24a6",
+        "https://github.com/cobbler/cobbler/commit/4bee30b4086a8d845bea5d39d6f2cba1f4a396aa"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-f42p-vc8p-7x54",
+      "package": "mobsf",
+      "kind": "changed",
+      "fields": [
+        "model",
+        "entry_points",
+        "picks"
+      ],
+      "before": {
+        "model": "qwen/qwen3.8-27b"
+      },
+      "after": {
+        "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M"
+      },
+      "added": {},
+      "removed": {
+        "entry_points": [
+          "StaticAnalyzer.views.ManifestView",
+          "StaticAnalyzer.views.PDF",
+          "StaticAnalyzer.views.StaticAnalyzer",
+          "StaticAnalyzer.views.StaticAnalyzer_iOS",
+          "StaticAnalyzer.views.ViewFile"
+        ],
+        "picks": [
+          "StaticAnalyzer.views.ManifestView",
+          "StaticAnalyzer.views.PDF",
+          "StaticAnalyzer.views.StaticAnalyzer",
+          "StaticAnalyzer.views.StaticAnalyzer_iOS",
+          "StaticAnalyzer.views.ViewFile"
+        ]
+      },
+      "lost": [],
+      "gained": [],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-f42p-vc8p-7x54",
+        "https://github.com/mobsf/mobile-security-framework-mobsf/commit/b9cdd1f52bdf127cf33bb1be369e374a2855f8e6"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-gx64-gj6p-pc4c",
+      "package": "jupyterlab",
+      "kind": "changed",
+      "fields": [
+        "model"
+      ],
+      "before": {
+        "model": "qwen/qwen3.8-27b"
+      },
+      "after": {
+        "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M"
+      },
+      "added": {},
+      "removed": {},
+      "lost": [],
+      "gained": [],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-gx64-gj6p-pc4c",
+        "https://github.com/jupyterlab/jupyterlab/commit/9365f020baec5221deaf11535ed554c06637c999",
+        "https://github.com/jupyterlab/jupyterlab/commit/f1beab4a2027af4719d6edc07d52d6cf5a39a432",
+        "https://github.com/jupyterlab/jupyterlab/commit/be9303f5bcd5308eaeae953c5a3c903046682c2c"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-h582-2pch-3xv3",
+      "package": "django",
+      "kind": "changed",
+      "fields": [
+        "model",
+        "picks"
+      ],
+      "before": {
+        "model": "qwen/qwen3.8-27b"
+      },
+      "after": {
+        "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M"
+      },
+      "added": {
+        "picks": [
+          "django.contrib.sessions.backends.cache.SessionStore.exists"
+        ]
+      },
+      "removed": {
+        "picks": [
+          "django.contrib.sessions.backends.file.SessionStore.create"
+        ]
+      },
+      "lost": [],
+      "gained": [],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-h582-2pch-3xv3",
+        "https://github.com/django/django/commit/1828f4341ec53a8684112d24031b767eba557663",
+        "https://github.com/django/django/commit/2e47f3e401c29bc2ba5ab794d483cb0820855fb9",
+        "https://github.com/django/django/commit/66d12d1ababa8f062857ee5eb43276493720bf16"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-h5v5-8746-g7mm",
+      "package": "jupyterlab",
+      "kind": "changed",
+      "fields": [
+        "model"
+      ],
+      "before": {
+        "model": "qwen/qwen3.8-27b"
+      },
+      "after": {
+        "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M"
+      },
+      "added": {},
+      "removed": {},
+      "lost": [],
+      "gained": [],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-h5v5-8746-g7mm",
+        "https://github.com/jupyterlab/jupyterlab/commit/9365f020baec5221deaf11535ed554c06637c999",
+        "https://github.com/jupyterlab/jupyterlab/commit/f1beab4a2027af4719d6edc07d52d6cf5a39a432",
+        "https://github.com/jupyterlab/jupyterlab/commit/be9303f5bcd5308eaeae953c5a3c903046682c2c"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-j4g3-3q8x-jxqp",
+      "package": "dbt-core",
+      "kind": "changed",
+      "fields": [
+        "model",
+        "picks"
+      ],
+      "before": {
+        "model": "qwen/qwen3.8-27b"
+      },
+      "after": {
+        "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M"
+      },
+      "added": {
+        "picks": [
+          "dbt.deps.git.GitPinnedPackage.__init__",
+          "dbt.deps.git.GitPinnedPackage.to_dict"
+        ]
+      },
+      "removed": {
+        "picks": [
+          "dbt.config.project.PartialProject.render_package_metadata",
+          "dbt.config.project.package_config_from_data",
+          "dbt.contracts.project.RegistryPackage",
+          "dbt.deps.tarball.TarballPackageMixin.__init__",
+          "dbt.task.deps.DepsTask.run"
+        ]
+      },
+      "lost": [],
+      "gained": [],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-j4g3-3q8x-jxqp",
+        "https://github.com/dbt-labs/dbt/commit/09f5bb3dcffeda7a60ad2b22c2891f237628ecd1"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-j4mh-9wq6-8rg6",
+      "package": "glance",
+      "kind": "changed",
+      "fields": [
+        "model",
+        "entry_points",
+        "picks"
+      ],
+      "before": {
+        "model": "qwen/qwen3.8-27b"
+      },
+      "after": {
+        "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M"
+      },
+      "added": {
+        "picks": [
+          "glance.db.ImageRepo.save"
+        ]
+      },
+      "removed": {
+        "entry_points": [
+          "glance.api.policy.ImageRepoProxy.save",
+          "glance.location.ImageRepoProxy.save",
+          "glance.notifier.ImageRepoProxy.save",
+          "glance.quota.ImageRepoProxy.save",
+          "glance.store.ImageRepoProxy.save"
+        ],
+        "picks": [
+          "glance.quota.ImageRepoProxy.save"
+        ]
+      },
+      "lost": [],
+      "gained": [],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-j4mh-9wq6-8rg6",
+        "https://github.com/openstack/glance/commit/0dc8fbb3479a53c5bba8475d14f4c7206904c5ea",
+        "https://github.com/openstack/glance/commit/7d5d8657fd70b20518610b3c6f8e41e16c72fa31",
+        "https://github.com/openstack/glance/commit/f1260cc771ee068651aa62b972bef49d9af81eb0"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-j57p-g33w-95c5",
+      "package": "horizon",
+      "kind": "changed",
+      "fields": [
+        "model"
+      ],
+      "before": {
+        "model": "qwen/qwen3.8-27b"
+      },
+      "after": {
+        "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M"
+      },
+      "added": {},
+      "removed": {},
+      "lost": [],
+      "gained": [],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-j57p-g33w-95c5",
+        "https://github.com/openstack/horizon/commit/32a7b713468161282f2ea01d5e2faff980d924cd",
+        "https://github.com/openstack/horizon/commit/c844bd692894353c60b320005b804970605e910f",
+        "https://github.com/openstack/horizon/commit/de4466d88b816437fb29eff5ab23b9b964cd3985"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-pcfx-g2j2-f6f6",
+      "package": "docassemble-webapp",
+      "kind": "changed",
+      "fields": [
+        "tier_reason"
+      ],
+      "before": {
+        "tier_reason": "fallback: extraction by qwen/qwen3.8-27b (prompt extract-v1) failed: no valid answer after one repair"
+      },
+      "after": {
+        "tier_reason": "fallback: extraction by ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M (prompt extract-v1) failed: no valid answer after one repair"
+      },
+      "added": {},
+      "removed": {},
+      "lost": [],
+      "gained": [],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-pcfx-g2j2-f6f6",
+        "https://github.com/jhpyle/docassemble/commit/4801ac7ff7c90df00ac09523077930cdb6dea2aa"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-pppj-hq3g-57pj",
+      "package": "jupyterlab",
+      "kind": "changed",
+      "fields": [
+        "model"
+      ],
+      "before": {
+        "model": "qwen/qwen3.8-27b"
+      },
+      "after": {
+        "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M"
+      },
+      "added": {},
+      "removed": {},
+      "lost": [],
+      "gained": [],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-pppj-hq3g-57pj",
+        "https://github.com/jupyterlab/jupyterlab/commit/9365f020baec5221deaf11535ed554c06637c999",
+        "https://github.com/jupyterlab/jupyterlab/commit/f1beab4a2027af4719d6edc07d52d6cf5a39a432",
+        "https://github.com/jupyterlab/jupyterlab/commit/be9303f5bcd5308eaeae953c5a3c903046682c2c"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-q326-jhw3-699g",
+      "package": "ipython",
+      "kind": "changed",
+      "fields": [
+        "model",
+        "entry_points",
+        "picks"
+      ],
+      "before": {
+        "model": "qwen/qwen3.8-27b"
+      },
+      "after": {
+        "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M"
+      },
+      "added": {
+        "entry_points": [
+          "IPython.html.base.handlers.APIHandler",
+          "IPython.html.base.handlers.json_errors"
+        ]
+      },
+      "removed": {
+        "picks": [
+          "IPython.html.services.contents.handlers.ContentsHandler"
+        ]
+      },
+      "lost": [],
+      "gained": [],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-q326-jhw3-699g",
+        "https://github.com/ipython/ipython/commit/7222bd53ad089a65fd610fab4626f9d0ab47dfce",
+        "https://github.com/ipython/ipython/commit/c2078a53543ed502efd968649fee1125e0eb549c"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-rxjp-mfm9-w4wr",
+      "package": "django",
+      "kind": "changed",
+      "fields": [
+        "model",
+        "entry_points",
+        "picks"
+      ],
+      "before": {
+        "model": "qwen/qwen3.8-27b"
+      },
+      "after": {
+        "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M"
+      },
+      "added": {
+        "entry_points": [
+          "django.db.models.fields.files.FileField.generate_filename"
+        ],
+        "picks": [
+          "django.db.models.fields.files.FileField.generate_filename"
+        ]
+      },
+      "removed": {
+        "entry_points": [
+          "django.core.files.utils.validate_file_name"
+        ]
+      },
+      "lost": [],
+      "gained": [],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-rxjp-mfm9-w4wr",
+        "https://github.com/django/django/commit/04ac1624bdc2fa737188401757cf95ced122d26d",
+        "https://github.com/django/django/commit/25d84d64122c15050a0ee739e859f22ddab5ac48",
+        "https://github.com/django/django/commit/c98f446c188596d4ba6de71d1b77b4a6c5c2a007"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-vgf2-gvx8-xwc3",
+      "package": "vyper",
+      "kind": "changed",
+      "fields": [
+        "tier_reason"
+      ],
+      "before": {
+        "tier_reason": "fallback: extraction by qwen/qwen3.8-27b (prompt extract-v1) failed: no valid answer after one repair"
+      },
+      "after": {
+        "tier_reason": "fallback: extraction by ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M (prompt extract-v1) failed: no valid answer after one repair"
+      },
+      "added": {},
+      "removed": {},
+      "lost": [],
+      "gained": [],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-vgf2-gvx8-xwc3",
+        "https://github.com/vyperlang/vyper/commit/7136eab0a254aa2ff7ddca41cc05f2ee1fa99caf"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-whvh-wf3x-g77j",
+      "package": "jupyterlab",
+      "kind": "changed",
+      "fields": [
+        "model"
+      ],
+      "before": {
+        "model": "qwen/qwen3.8-27b"
+      },
+      "after": {
+        "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M"
+      },
+      "added": {},
+      "removed": {},
+      "lost": [],
+      "gained": [],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-whvh-wf3x-g77j",
+        "https://github.com/jupyterlab/jupyterlab/commit/9365f020baec5221deaf11535ed554c06637c999",
+        "https://github.com/jupyterlab/jupyterlab/commit/f1beab4a2027af4719d6edc07d52d6cf5a39a432",
+        "https://github.com/jupyterlab/jupyterlab/commit/be9303f5bcd5308eaeae953c5a3c903046682c2c"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-xp97-6w7r-4cjc",
+      "package": "keystone",
+      "kind": "changed",
+      "fields": [
+        "model",
+        "entry_points"
+      ],
+      "before": {
+        "model": "qwen/qwen3.8-27b"
+      },
+      "after": {
+        "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M"
+      },
+      "added": {
+        "entry_points": [
+          "keystone.identity.core.UserController.update_user"
+        ]
+      },
+      "removed": {},
+      "lost": [],
+      "gained": [],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-xp97-6w7r-4cjc",
+        "https://github.com/openstack/keystone/commit/375838cfceb88cacc312ff6564e64eb18ee6a355",
+        "https://github.com/openstack/keystone/commit/628149b3dc6b58b91fd08e6ca8d91c728ccb8626",
+        "https://github.com/openstack/keystone/commit/a67b24878a6156eab17b9098fa649f0279256f5d",
+        "https://github.com/openstack/keystone/commit/29e74e73a6e51cffc0371b32354558391826a4aa",
+        "https://github.com/openstack/keystone/commit/d9600434da14976463a0bd03abd8e0309f0db454",
+        "https://github.com/openstack/keystone/commit/ea03d05ed5de0c015042876100d37a6a14bf56de"
+      ]
+    },
+    {
+      "vulnerability": "GHSA-xvh5-g6gv-559v",
+      "package": "pillow",
+      "kind": "changed",
+      "fields": [
+        "tier_reason"
+      ],
+      "before": {
+        "tier_reason": "fallback: extraction by qwen/qwen3.8-27b (prompt extract-v1) failed: no valid answer after one repair"
+      },
+      "after": {
+        "tier_reason": "fallback: extraction by ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M (prompt extract-v1) failed: no valid answer after one repair"
+      },
+      "added": {},
+      "removed": {},
+      "lost": [],
+      "gained": [],
+      "links": [
+        "https://osv.dev/vulnerability/GHSA-xvh5-g6gv-559v",
+        "https://github.com/python-pillow/pillow/commit/af56ace297b0991d02988fcc2ea933e4824b4fb3",
+        "https://github.com/python-pillow/pillow/commit/570df030c0d30c2bf5336b2ab59f3902d8ab0b6d"
+      ]
+    }
+  ],
+  "review": [
+    "GHSA-24qx-w28j-9m6p/jupyter-server",
+    "GHSA-4c42-4rxm-x6qf/django",
+    "GHSA-66gw-5xpf-gfp5/ipython",
+    "GHSA-7wxf-r2qv-9xwr/docassemble-webapp",
+    "GHSA-89vp-jrxv-24w8/jupyterlab",
+    "GHSA-8fvv-fgr5-f8ch/pymongo",
+    "GHSA-9fqr-pqc9-f7pj/cobbler",
+    "GHSA-f42p-vc8p-7x54/mobsf",
+    "GHSA-gx64-gj6p-pc4c/jupyterlab",
+    "GHSA-h582-2pch-3xv3/django",
+    "GHSA-h5v5-8746-g7mm/jupyterlab",
+    "GHSA-j4g3-3q8x-jxqp/dbt-core",
+    "GHSA-j4mh-9wq6-8rg6/glance",
+    "GHSA-j57p-g33w-95c5/horizon",
+    "GHSA-pcfx-g2j2-f6f6/docassemble-webapp",
+    "GHSA-pppj-hq3g-57pj/jupyterlab",
+    "GHSA-q326-jhw3-699g/ipython",
+    "GHSA-rxjp-mfm9-w4wr/django",
+    "GHSA-vgf2-gvx8-xwc3/vyper",
+    "GHSA-xp97-6w7r-4cjc/keystone"
+  ],
+  "seed": 20261121
+}

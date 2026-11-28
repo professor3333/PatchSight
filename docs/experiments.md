@@ -481,6 +481,25 @@ The owner's decision of 2026-11-23, carried out once the Kaggle GPU quota reset.
 
 **Promotion.** It changes `configs/llm.toml`, which the nightly reads, so it waits for the 14-night count (2026-12-02) and for a week of shadow. That is no earlier than 2026-12-05, rebuilt on the release current then.
 
+### The output cap as a retry only
+
+The review above found the two parts of the cap pulling apart. Cutting every prompt over 14 candidates left vulnerable functions out, while answering the backfill's dead letters was mostly better. So the cap now has a second mode, `budget.output_cap = "retry"` (`configs/experiments/llm-cap-retry.toml`: `configs/llm.toml` with only this change). A prompt is sent as it is. Only if it gets no valid answer, and holds more candidates than the cap allows, is it tried once more with at most 14. A role's own cap, set for a provider's output limit (the Groq extractor's 9), still applies to every prompt.
+
+Its retries are the cut prompts the cap-dotted top-up already answered, so everything below replays from the cache with 0 model calls.
+
+- **Dunlap** ([all](reports/extraction-dunlap-all-extract-v1-qwen3.8-27b-q4km-cap-retry.md), [dev](reports/extraction-dunlap-dev-extract-v1-qwen3.8-27b-q4km-cap-retry.md), [test](reports/extraction-dunlap-test-extract-v1-qwen3.8-27b-q4km-cap-retry.md)):
+  - Only GO-2021-0053, the dead letter, changes, exactly as under the always-on cap.
+  - The scores equal the always-on cap's: all 0.734 / 0.624 / 0.675, dev unchanged, miss rate 17.1% to 16.8%. The two prompts the always-on cap cut without changing a score stay as they were.
+- **PyPI shadow** on `db-2026.11.27`, gate 7 of 7 ([diff](reports/shadow-cap-retry.md)):
+  - 25 records change, against 109 under the always-on cap.
+  - 21 are the backfill dead letters now answered by Kaggle, the same answers the always-on cap gave. The other 4 still fail on both hosts, and only their failure note changes.
+  - No prompt is cut, so none of the 61 cut-prompt changes the review marked mostly worse.
+  - A scan sees no change: 0 names lost or gained, and the fixtures are unchanged at 22 of 58 as expected, 0 false suppressions ([report](reports/reachability-fixtures-db-2026.11.28-shadow-cap-retry.md)). So the panel was not run again.
+
+**Review.** The sample of 20 of the 25 in the [diff](reports/shadow-cap-retry.md) waits for the owner's verdicts. Five of the 21 rescued records were reviewed in the cap-dotted sample (3 better, 1 same, 1 worse), with dotted entry points then.
+
+**Promotion.** It changes `configs/llm.toml`, so it waits for the 14-night count (2026-12-02) and a week of shadow: no earlier than 2026-12-05.
+
 ## Failure analysis
 
 The causes of every benchmark error are in the failure reports

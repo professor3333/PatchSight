@@ -31,6 +31,12 @@ it in one of these ways:
   (``"".join``, ``{}.items``) is a builtin's, so nothing;
 * ``getattr(x, "m")`` with a constant name, like ``x.m``.
 
+A module-level alias (``connect = Connect``, ``decode = _obj.decode``) names what its value
+names, and a module-level instance (``_obj = PyJWT()``) gives ``_obj.m`` the method its class
+runs. ``Graph.names`` records every name a module binds to a definition other than its own,
+through imports, star imports and these assignments: the names users write for it, such as
+``requests.get`` for ``requests.api.get``.
+
 Names bound in a function (its parameters and assignments) shadow the module's in its body,
 but not in its decorators and defaults, which run in the enclosing scope. Type hints, and
 names being assigned or deleted, are not references.
@@ -60,9 +66,11 @@ from typing import Literal
 
 from patchsight.names import module_for_path
 
-# Bumped whenever a change alters what the graph links: stored callers of another revision
-# are computed again, never reused. 2: ``self.m`` no longer follows subclass overrides.
-REVISION = 2
+# Bumped whenever a change alters what the graph links or what is stored from it: stored
+# callers of another revision are computed again, never reused. 2: ``self.m`` no longer
+# follows subclass overrides. 3: module-level aliases and instances resolve, and the
+# package's own names for its definitions are recorded.
+REVISION = 3
 CONSTRUCTORS = ("__init__", "__new__", "__post_init__")
 # Methods of builtin types and files: ``x.get()`` or ``x.read()`` on an unknown ``x`` is as
 # likely a dict's or a file's as the package's, so a unique package method of that name is
@@ -89,6 +97,11 @@ class _Scope:
     definitions: dict[str, str] = field(default_factory=dict)  # local name -> qualified
     imports: dict[str, str] = field(default_factory=dict)  # local name -> dotted target
     star: list[str] = field(default_factory=list)  # modules imported with *
+    # Module-level assignments: ``connect = Connect`` or ``decode = _obj.decode`` (local name
+    # -> the dotted name assigned, as written in the module), and ``_obj = PyJWT()`` (local
+    # name -> the dotted name called, which makes it an instance if that is a class).
+    assigned: dict[str, str] = field(default_factory=dict)
+    instances: dict[str, str] = field(default_factory=dict)
 
 
 @dataclass
@@ -123,6 +136,9 @@ class Graph:
     defaults: dict[str, dict[str, set[str]]] = field(default_factory=dict)
     params: dict[str, tuple[str, ...]] = field(default_factory=dict)  # positional, in order
     unparsed: list[str] = field(default_factory=list)  # paths that did not parse
+    # Names the package binds to its definitions other than their own (``Builder._names``):
+    # ``requests.get`` -> ``requests.api.get``, ``jwt.decode`` -> ``jwt.api_jwt.PyJWT.decode``.
+    names: dict[str, set[str]] = field(default_factory=dict)
 
     def callers(self) -> dict[str, set[str]]:
         reverse: dict[str, set[str]] = defaultdict(set)
@@ -179,6 +195,34 @@ def _bind_imports(scope: _Scope, statements: Iterable[ast.stmt]) -> None:
                     scope.imports[alias.asname or alias.name] = f"{source}.{alias.name}"
 
 
+def _private(dotted: str) -> bool:
+    """Whether a part of a dotted name is private: ``_x``, though not a dunder."""
+    return any(p.startswith("_") and not p.endswith("__") for p in dotted.split("."))
+
+
+def _dotted(node: ast.expr) -> str | None:
+    parts: list[str] = []
+    while isinstance(node, ast.Attribute):
+        parts.append(node.attr)
+        node = node.value
+    return ".".join([node.id, *reversed(parts)]) if isinstance(node, ast.Name) else None
+
+
+def _bind_assignments(scope: _Scope, statements: Iterable[ast.stmt]) -> None:
+    for stmt in statements:
+        if isinstance(stmt, ast.Assign):
+            targets, value = stmt.targets, stmt.value
+        elif isinstance(stmt, ast.AnnAssign) and stmt.value is not None:
+            targets, value = [stmt.target], stmt.value
+        else:
+            continue
+        names = [target.id for target in targets if isinstance(target, ast.Name)]
+        if isinstance(value, ast.Call) and (called := _dotted(value.func)) is not None:
+            scope.instances.update(dict.fromkeys(names, called))
+        elif (assigned := _dotted(value)) is not None:
+            scope.assigned.update(dict.fromkeys(names, assigned))
+
+
 def _definitions(
     scope: _Scope, body: Iterable[ast.stmt], prefix: str, cls: str | None
 ) -> Iterator[_Definition]:
@@ -220,6 +264,7 @@ class _Builder:
                 continue
             scope = _Scope(module, path.endswith("__init__.py"))
             _bind_imports(scope, _top_level(tree.body))
+            _bind_assignments(scope, _top_level(tree.body))
             self.scopes[module] = scope
             self.module_paths[module] = path
             found[module] = []
@@ -264,6 +309,9 @@ class _Builder:
         for cls, bases in self.bases.items():
             for base in bases:
                 self.subclasses[base].add(cls)
+        # Names resolved while the bases were read could not yet see methods inherited
+        # through them: resolve again from here on.
+        self._resolved.clear()
 
     # Resolution -------------------------------------------------------------------------
 
@@ -320,8 +368,58 @@ class _Builder:
             if head in starred:
                 return self.resolve_dotted(".".join(filter(None, (starred[head], tail))),
                                            depth + 1)  # fmt: skip
+            if head in scope.assigned:
+                return self.resolve_dotted(
+                    ".".join(filter(None, (module, scope.assigned[head], tail))), depth + 1
+                )
+            if head in scope.instances and tail and "." not in tail:
+                return {m for c in self._classes_called(module, scope.instances[head], depth)
+                        for m in self._runs(c, tail)}  # fmt: skip
             return set()
         return set()
+
+    def _classes_called(self, module: str, called: str, depth: int) -> set[str]:
+        """The package classes a module-level call such as ``PyJWT()`` constructs."""
+        found = self.resolve_dotted(f"{module}.{called}", depth + 1)
+        return {c for c in found if self.graph.kinds.get(c) == "class"}
+
+    def _names(self) -> dict[str, set[str]]:
+        """Every public name a module binds to a package definition other than its own:
+        imports and star imports (re-exports), module-level aliases, and the methods of
+        module-level instances (``django.conf.settings.configure``). A name with a private
+        part (``pkg._compat.x``, ``pkg.api._helper``) is left out: users write a package's
+        public names, and a definition's own name needs no other."""
+        names: dict[str, set[str]] = {}
+        for module, scope in sorted(self.scopes.items()):
+            if _private(module):
+                continue
+            bound = {*scope.imports, *self.star_names.get(module, {}), *scope.assigned}
+            for name in sorted(bound - set(scope.definitions)):
+                dotted = f"{module}.{name}"
+                if not _private(name) and (found := self.resolve_dotted(dotted) - {dotted}):
+                    names[dotted] = found
+            for name, called in sorted(scope.instances.items()):
+                if name in scope.definitions or name in scope.imports or _private(name):
+                    continue
+                for cls in sorted(self._classes_called(module, called, 0)):
+                    for leaf in sorted(self._leaves(cls)):
+                        if not _private(leaf):
+                            names.setdefault(f"{module}.{name}.{leaf}", set()).update(
+                                self._runs(cls, leaf)
+                            )
+        return names
+
+    def _leaves(self, cls: str) -> set[str]:
+        """The method names an instance of ``cls`` has: its own and its ancestors'."""
+        leaves: set[str] = set()
+        seen, todo = set(), [cls]
+        while todo:
+            current = todo.pop()
+            if current not in seen:
+                seen.add(current)
+                leaves |= set(self.class_methods.get(current, {}))
+                todo.extend(self.bases.get(current, set()))
+        return leaves
 
     def _bare(self, name: str, d: _Definition) -> set[str]:
         if name in self._locals:
@@ -334,6 +432,8 @@ class _Builder:
         starred = self.star_names.get(d.module, {})
         if name in starred:
             return self.resolve_dotted(starred[name])
+        if name in scope.assigned:
+            return self.resolve_dotted(f"{d.module}.{name}")
         return set()
 
     def _chain(self, node: ast.expr) -> list[str] | None:
@@ -433,6 +533,9 @@ class _Builder:
             found = self.resolve_dotted(".".join((target, *rest)))
             if found or target.split(".")[0] not in self.roots:
                 return found  # another package's module: its attributes are not ours
+        if head in scope.instances and head not in self._locals and len(rest) == 1:
+            # A module-level instance (_obj = PyJWT()): the method its class runs, or none.
+            return self.resolve_dotted(".".join((d.module, head, *rest)))
         return self._member(rest[-1], d, None)
 
     def _resolve_all(self, nodes: Iterable[ast.expr], d: _Definition) -> set[str]:
@@ -633,6 +736,7 @@ class _Builder:
                 d = self.defs[qualified]
                 self._record(d)
                 d.node, d.others = None, []  # the module's tree can now be freed
+        self.graph.names = self._names()
         return self.graph
 
 

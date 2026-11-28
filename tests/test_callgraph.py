@@ -367,3 +367,57 @@ def test_star_import_cycles_resolve_once_and_keep_private_names_private() -> Non
     graph = _graph(files)
     # f1 comes through the star imports; _hidden0 is defined in m29 and stays private there.
     assert graph.refers["pkg.m0.f0"] == {"pkg.m1.f1"}
+
+
+def test_module_level_aliases_and_instances_resolve() -> None:
+    files = {
+        "pkg/m.py": (
+            "class C:\n    def get(self):\n        pass\n"
+            "_c = C()\nget = _c.get\n"
+            "def old():\n    pass\nnew = old\n"
+            "def a():\n    get()\n"
+            "def b():\n    new()\n"
+            "def c():\n    _c.get()\n"
+            "def d(x):\n    x.get()\n"
+        )
+    }
+    graph = _graph(files)
+    assert graph.refers["pkg.m.a"] == {"pkg.m.C.get"}  # get = _c.get, a bound method
+    assert graph.refers["pkg.m.b"] == {"pkg.m.old"}
+    # _c is known to be a C, so its get is C's, though get is also a dict's method...
+    assert graph.refers["pkg.m.c"] == {"pkg.m.C.get"}
+    assert graph.refers["pkg.m.d"] == set()  # ...which an unknown receiver may be
+
+
+def test_the_package_names_its_definitions_by() -> None:
+    files = {
+        "pkg/__init__.py": (
+            "from .api import get\nfrom .pool import *\nfrom .tokens import decode\n"
+            "from . import sub\nfrom typing import Any\n"
+        ),
+        "pkg/api.py": (
+            "from .core import request\ndef get(url):\n    return request(url)\nfetch = get\n"
+        ),
+        "pkg/core.py": "def request(url):\n    pass\n",
+        "pkg/pool.py": (
+            "class Pool:\n    def urlopen(self):\n        pass\nclass _Hidden:\n    pass\n"
+        ),
+        "pkg/tokens.py": (
+            "class Base:\n    def verify(self):\n        pass\n"
+            "class JWT(Base):\n    def decode(self):\n        pass\n"
+            "_obj = JWT()\ndecode = _obj.decode\nclient = JWT()\n"
+        ),
+        "pkg/sub.py": "",
+    }
+    names = _graph(files).names
+    assert names["pkg.get"] == {"pkg.api.get"}  # a re-export
+    assert names["pkg.Pool"] == {"pkg.pool.Pool"}  # through a star import
+    assert names["pkg.decode"] == {"pkg.tokens.JWT.decode"}  # a bound method, re-exported
+    assert names["pkg.api.fetch"] == {"pkg.api.get"}  # a module-level alias
+    assert names["pkg.api.request"] == {"pkg.core.request"}  # imported for its own use
+    assert names["pkg.tokens.client.verify"] == {"pkg.tokens.Base.verify"}  # an instance's
+    assert "pkg.tokens._obj.decode" not in names  # a private name
+    assert "pkg._Hidden" not in names  # a star import binds public names only
+    assert "pkg.sub" not in names  # a module, not a definition
+    assert "pkg.Any" not in names  # another package's
+    assert "pkg.api.get" not in names  # a definition's own name

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-27T13:49:33Z",
+  "generated_at": "2026-11-28T09:07:06Z",
   "sessions": [
     {
       "name": "patchsight-kaggle-run",
@@ -441,6 +441,73 @@
           "completion_tokens_per_second": 10.2
         }
       ]
+    },
+    {
+      "name": "patchsight-kaggle-run-topup-cap-dotted-qwen",
+      "mode": "topup",
+      "part": "cap-dotted",
+      "model": "ggml-org/Qwen3.8-27B-GGUF:Qwen3.8-27B-Q4_K_M.gguf",
+      "code_commit": "d2272a34ab55",
+      "gpus": [
+        "Tesla T4, 15360 MiB",
+        "Tesla T4, 15360 MiB"
+      ],
+      "first_answer": "2026-11-28T04:12:36.483350Z",
+      "last_answer": "2026-11-28T06:34:41.621029Z",
+      "hours": 2.37,
+      "calls": 82,
+      "tokens": 383755,
+      "seconds_per_call_p50": 105.1,
+      "seconds_per_call_p90": 117.4,
+      "vulnerabilities": 82,
+      "complete": true,
+      "status": {
+        "ok": 82
+      },
+      "truncated": 82,
+      "prompt_tokens": 290716,
+      "completion_tokens": 91796,
+      "provider_rejections": 0,
+      "runs": [
+        {
+          "trace": "dunlap-extract-dunlap-v1-all-kaggle_extractor-20261128T041043Z.jsonl",
+          "command": "dunlap-extract",
+          "role": "kaggle_extractor",
+          "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+          "started": "2026-11-28T04:10:43.212000Z",
+          "outcome": "complete",
+          "seconds": 343.7,
+          "calls": 3,
+          "network_calls": 3,
+          "cache_hits": 0,
+          "rejections": 0,
+          "extractions": {
+            "ok": 3
+          },
+          "latency_p50": 108.9,
+          "latency_p90": 110.3,
+          "completion_tokens_per_second": 10.7
+        },
+        {
+          "trace": "pypi-extract-kaggle_extractor-20261128T041635Z.jsonl",
+          "command": "pypi-extract",
+          "role": "kaggle_extractor",
+          "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+          "started": "2026-11-28T04:16:35.123000Z",
+          "outcome": "complete",
+          "seconds": 8286.5,
+          "calls": 82,
+          "network_calls": 79,
+          "cache_hits": 3,
+          "rejections": 0,
+          "extractions": {
+            "ok": 82
+          },
+          "latency_p50": 104.2,
+          "latency_p90": 117.2,
+          "completion_tokens_per_second": 10.7
+        }
+      ]
     }
   ],
   "weeks": [
@@ -456,8 +523,8 @@
     },
     {
       "week": "2026-W48",
-      "hours": 7.57,
-      "sessions": 1
+      "hours": 9.94,
+      "sessions": 2
     }
   ],
   "hosted": [
@@ -1356,6 +1423,145 @@
       "latency_p50": 1.3,
       "latency_p90": 3.3,
       "completion_tokens_per_second": 275.3
+    },
+    {
+      "trace": "dunlap-extract-dunlap-v1-all-kaggle_extractor-20261128T064011Z.jsonl",
+      "command": "dunlap-extract",
+      "role": "kaggle_extractor",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "started": "2026-11-28T06:40:11.698000Z",
+      "outcome": "complete",
+      "seconds": 10.0,
+      "calls": 276,
+      "network_calls": 0,
+      "cache_hits": 276,
+      "rejections": 0,
+      "extractions": {
+        "no_candidates": 4,
+        "ok": 276
+      },
+      "latency_p50": null,
+      "latency_p90": null,
+      "completion_tokens_per_second": null
+    },
+    {
+      "trace": "dunlap-extract-dunlap-v1-dev-kaggle_extractor-20261128T064024Z.jsonl",
+      "command": "dunlap-extract",
+      "role": "kaggle_extractor",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "started": "2026-11-28T06:40:24.560000Z",
+      "outcome": "complete",
+      "seconds": 2.6,
+      "calls": 59,
+      "network_calls": 0,
+      "cache_hits": 59,
+      "rejections": 0,
+      "extractions": {
+        "no_candidates": 1,
+        "ok": 59
+      },
+      "latency_p50": null,
+      "latency_p90": null,
+      "completion_tokens_per_second": null
+    },
+    {
+      "trace": "dunlap-extract-dunlap-v1-test-kaggle_extractor-20261128T064029Z.jsonl",
+      "command": "dunlap-extract",
+      "role": "kaggle_extractor",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "started": "2026-11-28T06:40:29.696000Z",
+      "outcome": "complete",
+      "seconds": 7.3,
+      "calls": 217,
+      "network_calls": 0,
+      "cache_hits": 217,
+      "rejections": 0,
+      "extractions": {
+        "no_candidates": 3,
+        "ok": 217
+      },
+      "latency_p50": null,
+      "latency_p90": null,
+      "completion_tokens_per_second": null
+    },
+    {
+      "trace": "pypi-extract-kaggle_extractor-shard1of4-20261128T064204Z.jsonl",
+      "command": "pypi-extract",
+      "role": "kaggle_extractor",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "started": "2026-11-28T06:42:04.437000Z",
+      "outcome": "complete",
+      "seconds": 54.3,
+      "calls": 907,
+      "network_calls": 0,
+      "cache_hits": 907,
+      "rejections": 4,
+      "extractions": {
+        "dead_letter": 2,
+        "ok": 901,
+        "repaired": 1
+      },
+      "latency_p50": null,
+      "latency_p90": null,
+      "completion_tokens_per_second": null
+    },
+    {
+      "trace": "pypi-extract-kaggle_extractor-shard2of4-20261128T064302Z.jsonl",
+      "command": "pypi-extract",
+      "role": "kaggle_extractor",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "started": "2026-11-28T06:43:02.328000Z",
+      "outcome": "complete",
+      "seconds": 56.5,
+      "calls": 885,
+      "network_calls": 0,
+      "cache_hits": 885,
+      "rejections": 0,
+      "extractions": {
+        "ok": 885
+      },
+      "latency_p50": null,
+      "latency_p90": null,
+      "completion_tokens_per_second": null
+    },
+    {
+      "trace": "pypi-extract-kaggle_extractor-shard3of4-20261128T064402Z.jsonl",
+      "command": "pypi-extract",
+      "role": "kaggle_extractor",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "started": "2026-11-28T06:44:02.092000Z",
+      "outcome": "complete",
+      "seconds": 66.9,
+      "calls": 843,
+      "network_calls": 0,
+      "cache_hits": 843,
+      "rejections": 4,
+      "extractions": {
+        "dead_letter": 2,
+        "ok": 839
+      },
+      "latency_p50": null,
+      "latency_p90": null,
+      "completion_tokens_per_second": null
+    },
+    {
+      "trace": "pypi-extract-kaggle_extractor-shard4of4-20261128T064512Z.jsonl",
+      "command": "pypi-extract",
+      "role": "kaggle_extractor",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "started": "2026-11-28T06:45:12.049000Z",
+      "outcome": "complete",
+      "seconds": 92.2,
+      "calls": 874,
+      "network_calls": 0,
+      "cache_hits": 874,
+      "rejections": 0,
+      "extractions": {
+        "ok": 874
+      },
+      "latency_p50": null,
+      "latency_p90": null,
+      "completion_tokens_per_second": null
     }
   ],
   "nightly": [

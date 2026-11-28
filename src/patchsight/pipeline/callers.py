@@ -351,7 +351,7 @@ class _Item(BaseModel):
 def _capped(found: Callers) -> Callers:
     if len(found.callers) <= MAX_CALLERS:
         return found
-    return found.model_copy(update={"status": "too many callers", "callers": ()})
+    return found.model_copy(update={"status": "too many callers", "callers": (), "names": ()})
 
 
 def _seeds(record: Record) -> frozenset[str]:
@@ -418,8 +418,20 @@ def _run_group(
         toward = callgraph.closure(graph, seeds)
         edges = tuple(sorted((c, t) for c, t in toward.items() if c not in seeds))
         results.append(_capped(Callers(**{**item.base, "seeds_found": len(seeds)}, status="ok",
-                                       callers=edges)))  # fmt: skip
+                                       callers=edges, names=_names(graph, toward))))  # fmt: skip
     return results, not isinstance(graph, str), time.monotonic() - started
+
+
+def _names(graph: callgraph.Graph, reached: Iterable[str]) -> tuple[tuple[str, str], ...]:
+    """The package's other names for the record's callers and symbols, and for the classes
+    that hold them: what a scan needs to match ``requests.get`` to ``requests.api.get``, or
+    ``urllib3.PoolManager`` to a method of ``urllib3.poolmanager.PoolManager``."""
+    wanted = set(reached)
+    holders = {name.rsplit(".", k)[0] for name in wanted for k in range(1, name.count("."))}
+    return tuple(sorted(
+        (name, target) for name, targets in graph.names.items() for target in targets
+        if target in wanted or target in holders
+    ))  # fmt: skip
 
 
 def _worker(

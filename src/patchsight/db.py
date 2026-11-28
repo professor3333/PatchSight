@@ -114,6 +114,13 @@ CREATE TABLE callers (
     toward TEXT NOT NULL,
     PRIMARY KEY (vulnerability, package, caller)
 );
+CREATE TABLE callers_names (
+    vulnerability TEXT NOT NULL,
+    package TEXT NOT NULL,
+    name TEXT NOT NULL,
+    target TEXT NOT NULL,
+    PRIMARY KEY (vulnerability, package, name, target)
+);
 """
 
 
@@ -187,6 +194,9 @@ class Callers(BaseModel):
     seeds_found: int  # of them, defined in the release read
     graph_revision: int
     callers: tuple[tuple[str, str], ...] = ()  # (caller, next definition), sorted
+    # (a name the package binds, the caller, symbol or class holding one it names), sorted:
+    # re-exports and module-level aliases, such as ("requests.get", "requests.api.get").
+    names: tuple[tuple[str, str], ...] = ()
 
 
 class SymbolEvidence(BaseModel):
@@ -287,6 +297,10 @@ def write(
                 "INSERT INTO callers VALUES (?, ?, ?, ?)",
                 [(c.vulnerability, c.package, caller, toward) for caller, toward in c.callers],
             )
+            connection.executemany(
+                "INSERT INTO callers_names VALUES (?, ?, ?, ?)",
+                [(c.vulnerability, c.package, name, target) for name, target in c.names],
+            )
         for record in records:
             count += 1
             connection.execute(
@@ -378,7 +392,7 @@ class SymbolDatabase:
         self._has_evidence = "evidence" in tables
         self._has_builds = "builds" in tables
         self._has_import_names = "import_names" in tables
-        self._has_callers = {"callers", "callers_source"} <= tables
+        self._has_callers = {"callers", "callers_source", "callers_names"} <= tables
 
     def close(self) -> None:
         self._connection.close()
@@ -438,11 +452,13 @@ class SymbolDatabase:
     )
 
     @staticmethod
-    def _callers(row: tuple[Any, ...], edges: Iterable[tuple[str, str]]) -> Callers:
+    def _callers(
+        row: tuple[Any, ...], edges: Iterable[tuple[str, str]], names: Iterable[tuple[str, str]]
+    ) -> Callers:
         return Callers(
             vulnerability=row[0], package=row[1], symbols_digest=row[2], version=row[3],
             filename=row[4], sha256=row[5], status=row[6], seeds=row[7], seeds_found=row[8],
-            graph_revision=row[9], callers=tuple(edges),
+            graph_revision=row[9], callers=tuple(edges), names=tuple(names),
         )  # fmt: skip
 
     def callers(self) -> dict[tuple[str, str], Callers]:
@@ -455,8 +471,16 @@ class SymbolDatabase:
             "SELECT vulnerability, package, caller, toward FROM callers ORDER BY 1, 2, 3"
         ):
             edges.setdefault((v, p), []).append((caller, toward))
+        names: dict[tuple[str, str], list[tuple[str, str]]] = {}
+        for v, p, name, target in self._connection.execute(
+            "SELECT vulnerability, package, name, target FROM callers_names ORDER BY 1, 2, 3, 4"
+        ):
+            names.setdefault((v, p), []).append((name, target))
         rows = self._connection.execute(self._CALLERS_SOURCE)
-        return {(r[0], r[1]): self._callers(r, edges.get((r[0], r[1]), ())) for r in rows}
+        return {
+            (r[0], r[1]): self._callers(r, edges.get((r[0], r[1]), ()), names.get((r[0], r[1]), ()))
+            for r in rows
+        }
 
     def callers_for(self, vulnerability: str, package: str) -> Callers | None:
         """One record's callers; none for an older database or a record not read."""
@@ -473,7 +497,14 @@ class SymbolDatabase:
             "ORDER BY caller",
             key,
         ).fetchall()
-        return self._callers(row, ((str(c), str(t)) for c, t in edges))
+        names = self._connection.execute(
+            "SELECT name, target FROM callers_names WHERE vulnerability = ? AND package = ? "
+            "ORDER BY name, target",
+            key,
+        ).fetchall()
+        return self._callers(
+            row, ((str(c), str(t)) for c, t in edges), ((str(n), str(t)) for n, t in names)
+        )
 
     def build_status(self, vulnerability: str) -> str | None:
         """Why the builder made a vulnerability's records, or none: its ledger status."""

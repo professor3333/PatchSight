@@ -233,3 +233,38 @@ def test_a_record_with_too_many_callers_keeps_none(tmp_path: Path) -> None:
     again, _ = callers.annotate([_record("pkg.core._parse")], lambda v: [], pypi, fetcher,
                                 {("GHSA-1", "pkg"): earlier})  # fmt: skip
     assert again[0].status == "too many callers"  # the cap holds for reused callers too
+
+
+def test_a_record_keeps_the_package_names_for_its_callers_and_symbols(tmp_path: Path) -> None:
+    init = (
+        b"from .api import load\nfrom .core import unrelated\nfrom .core import _parse as parse\n"
+        b"from .client import Client\nfrom .other import Other\n"
+    )
+    client = (
+        b"from .core import _parse\nclass Client:\n"
+        b"    def read(self, s):\n        return _parse(s)\n"
+    )
+    other = b"class Other:\n    def run(self):\n        pass\n"
+    wheel = _wheel({"pkg/__init__.py": init, "pkg/core.py": CORE, "pkg/api.py": API,
+                    "pkg/client.py": client, "pkg/other.py": other})  # fmt: skip
+    files = {"1.0": [_file("pkg-1.0-py3-none-any.whl", wheel)]}
+    advisory = _advisory(_package(versions=("1.0",)))
+    found, _ = callers.annotate(
+        [_record("pkg.core._parse")], lambda v: [advisory], _pypi(tmp_path, files),
+        _fetcher(tmp_path, {"pkg-1.0-py3-none-any.whl": wheel}),
+    )  # fmt: skip
+    assert dict(found[0].callers) == {"pkg.api.load": "pkg.core._parse",
+                                      "pkg.client.Client.read": "pkg.core._parse"}  # fmt: skip
+    # A caller's re-export, a symbol's, and the re-export of a class holding a caller; not
+    # the names of definitions that reach nothing, nor private names (pkg.api._parse).
+    assert found[0].names == (
+        ("pkg.Client", "pkg.client.Client"),
+        ("pkg.load", "pkg.api.load"),
+        ("pkg.parse", "pkg.core._parse"),
+    )
+    assert _capped_names(found[0]) == ()
+
+
+def _capped_names(found: db.Callers) -> tuple[tuple[str, str], ...]:
+    many = tuple((f"pkg.f{i}", "pkg.core._parse") for i in range(callers.MAX_CALLERS + 1))
+    return callers._capped(found.model_copy(update={"callers": many})).names

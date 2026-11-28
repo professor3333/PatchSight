@@ -240,6 +240,7 @@ class CallersReport(BaseModel):
     downloads: int
     downloaded_bytes: int
     seconds: float
+    slowest: tuple[tuple[str, float], ...] = ()  # release files, seconds to parse and close
 
 
 def _packages_of(advisories: Iterable[Advisory], package: str) -> list[AffectedPackage]:
@@ -285,12 +286,14 @@ def annotate(
     # The largest files first, so that a slow one does not finish last.
     order = sorted(groups, key=lambda sha: (-int(files[sha].get("size", 0)), sha))
     read = downloads = downloaded = 0
+    timings: list[tuple[float, str]] = []
     if jobs <= 1:
         for done, sha in enumerate(order):
             if progress is not None:
                 progress(done, len(order))
-            results, was_read = _run_group(fetcher, files[sha], groups[sha])
+            results, was_read, took = _run_group(fetcher, files[sha], groups[sha])
             read += was_read
+            timings.append((took, str(files[sha]["filename"])))
             for item, result in zip(groups[sha], results, strict=True):
                 found[item.index] = result
         downloads, downloaded = fetcher.downloads, fetcher.bytes
@@ -304,8 +307,9 @@ def annotate(
             for done, future in enumerate(as_completed(futures)):
                 if progress is not None:
                     progress(done, len(order))
-                results, was_read, count, size = future.result()
+                results, was_read, count, size, took = future.result()
                 read, downloads, downloaded = read + was_read, downloads + count, downloaded + size
+                timings.append((took, str(files[futures[future]]["filename"])))
                 for item, result in zip(groups[futures[future]], results, strict=True):
                     found[item.index] = result
     stored = [c for c in found if c is not None]
@@ -322,6 +326,7 @@ def annotate(
         callers_max=sizes[-1] if sizes else 0,
         releases_read=read, downloads=downloads, downloaded_bytes=downloaded,
         seconds=round(time.monotonic() - started, 1),
+        slowest=tuple((name, round(took, 1)) for took, name in sorted(timings, reverse=True)[:10]),
     )  # fmt: skip
     return stored, report
 
@@ -373,9 +378,10 @@ def _plan(
 
 def _run_group(
     fetcher: DistFetcher, file: Mapping[str, Any], items: Sequence[_Item]
-) -> tuple[list[Callers], bool]:
-    """Read one release file and give each of its records its callers; and whether the
-    file could be read."""
+) -> tuple[list[Callers], bool, float]:
+    """Read one release file and give each of its records its callers; whether the file
+    could be read, and the seconds it took."""
+    started = time.monotonic()
     graph: callgraph.Graph | str
     try:
         sources = python_sources(fetcher.fetch(file), str(file["filename"]))
@@ -399,16 +405,16 @@ def _run_group(
         edges = tuple(sorted((c, t) for c, t in toward.items() if c not in seeds))
         results.append(Callers(**{**item.base, "seeds_found": len(seeds)}, status="ok",
                                callers=edges))  # fmt: skip
-    return results, not isinstance(graph, str)
+    return results, not isinstance(graph, str), time.monotonic() - started
 
 
 def _worker(
     cache_dir: Any, offline: bool, file: Mapping[str, Any], items: Sequence[_Item]
-) -> tuple[list[Callers], bool, int, int]:
+) -> tuple[list[Callers], bool, int, int, float]:
     """``_run_group`` in a worker process, with its own fetcher."""
     fetcher = DistFetcher(cache_dir, offline=offline)
     try:
-        results, read = _run_group(fetcher, file, items)
-        return results, read, fetcher.downloads, fetcher.bytes
+        results, read, took = _run_group(fetcher, file, items)
+        return results, read, fetcher.downloads, fetcher.bytes, took
     finally:
         fetcher.close()

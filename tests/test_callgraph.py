@@ -323,3 +323,17 @@ def test_builtin_receivers_stores_and_sibling_classes_are_not_references() -> No
     assert graph.refers["pkg.m.typed_hint"] == {"pkg.m.Client.request", "pkg.m.Base.request"}
     # self.stream is an attribute (no such method): nothing; self.request is Async's own line.
     assert graph.refers["pkg.m.Async.send"] == {"pkg.m.Async.request", "pkg.m.Base.request"}
+
+
+def test_star_import_cycles_resolve_once_and_keep_private_names_private() -> None:
+    """Modules that star-import each other: linear work, not one search per path."""
+    files = {"pkg/__init__.py": ""}
+    for i in range(30):
+        stars = "".join(f"from .m{j} import *\n" for j in range(30) if j != i)
+        files[f"pkg/m{i}.py"] = (
+            stars + f"def f{i}(x):\n    return len(x) + f{(i + 1) % 30}(x) + _hidden{i}()\n"
+            f"def _hidden{(i + 1) % 30}():\n    pass\n"
+        )
+    graph = _graph(files)
+    # f1 comes through the star imports; _hidden0 is defined in m29 and stays private there.
+    assert graph.refers["pkg.m0.f0"] == {"pkg.m1.f1"}

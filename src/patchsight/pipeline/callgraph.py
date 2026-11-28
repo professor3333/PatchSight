@@ -242,6 +242,8 @@ class _Builder:
                     self.methods[leaf].add(d.qualified)
                     self.class_methods[d.cls][leaf] = d.qualified
         self.graph.params = {q: v for q, v in self.graph.params.items() if q in self.defs}
+        self._resolved: dict[str, frozenset[str]] = {}
+        self.star_names = self._star_names()
         self.roots = {m.split(".")[0] for m in self.scopes}
         self._locals: frozenset[str] = frozenset()  # the definition being walked shadows these
         self._types: dict[str, set[str]] = {}  # its local names known to hold these classes
@@ -257,10 +259,40 @@ class _Builder:
 
     # Resolution -------------------------------------------------------------------------
 
+    def _star_names(self) -> dict[str, dict[str, str]]:
+        """Per module, the public names its ``import *`` statements bind and what each
+        names, through chains of star imports: a fixed point, computed once, so that
+        resolving a name never has to search the star imports again."""
+        names: dict[str, dict[str, str]] = {m: {} for m in self.scopes}
+        changed = True
+        while changed:
+            changed = False
+            for module, scope in self.scopes.items():
+                current = names[module]
+                for star in scope.star:
+                    source = self.scopes.get(star)
+                    if source is None:
+                        continue
+                    offered = {**names[star], **source.imports, **source.definitions}
+                    for name, target in offered.items():
+                        if not name.startswith("_") and name not in current:
+                            current[name] = target
+                            changed = True
+        return names
+
     def resolve_dotted(self, dotted: str, depth: int = 0) -> set[str]:
-        """The definitions a dotted name of the package names, through re-exports."""
+        """The definitions a dotted name of the package names, through re-exports. Each
+        step follows one binding, so this is linear in the chain; results are kept."""
         if depth > _ALIAS_DEPTH or not dotted:
             return set()
+        if dotted in self._resolved:
+            return set(self._resolved[dotted])
+        result = self._resolve(dotted, depth)
+        if depth == 0:  # a chain cut short by the depth limit is not kept
+            self._resolved[dotted] = frozenset(result)
+        return result
+
+    def _resolve(self, dotted: str, depth: int) -> set[str]:
         if dotted in self.defs:
             return {dotted}
         parts = dotted.split(".")
@@ -276,10 +308,10 @@ class _Builder:
             if head in scope.imports:
                 return self.resolve_dotted(".".join(filter(None, (scope.imports[head], tail))),
                                            depth + 1)  # fmt: skip
-            for star in scope.star:
-                found = self.resolve_dotted(".".join((star, *rest)), depth + 1)
-                if found:
-                    return found
+            starred = self.star_names.get(module, {})
+            if head in starred:
+                return self.resolve_dotted(".".join(filter(None, (starred[head], tail))),
+                                           depth + 1)  # fmt: skip
             return set()
         return set()
 
@@ -291,10 +323,9 @@ class _Builder:
             return {scope.definitions[name]}
         if name in scope.imports:
             return self.resolve_dotted(scope.imports[name])
-        for star in scope.star:
-            found = self.resolve_dotted(f"{star}.{name}")
-            if found:
-                return found
+        starred = self.star_names.get(d.module, {})
+        if name in starred:
+            return self.resolve_dotted(starred[name])
         return set()
 
     def _chain(self, node: ast.expr) -> list[str] | None:

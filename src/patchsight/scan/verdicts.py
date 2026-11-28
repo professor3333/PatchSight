@@ -137,23 +137,28 @@ class NameIndex:
                 self._same_class_end[(s[0], s[-2], s[-1])].append(name)
 
     def match(self, reference: str) -> str | None:
-        """The closest name the reference matches: itself, a member of it, a name it
-        reaches into (the longest), then a re-export; the first in sorted order on a tie."""
+        found = self.closest(reference)
+        return found[1] if found else None
+
+    def closest(self, reference: str) -> tuple[int, str] | None:
+        """The closest name the reference matches, with how close: 0 itself, 1 a member of
+        it, 2 a name it reaches into (the longest), 3 a re-export, which is the only one a
+        mere collision of names can give; the first in sorted order on a tie."""
         if reference in self.names:
-            return reference
+            return 0, reference
         r = reference.split(".")
         if len(r) >= 2 and (members := self._members.get(reference)):
-            return members[0]
+            return 1, members[0]
         for k in range(len(r) - 1, 0, -1):
             if (prefix := ".".join(r[:k])) in self.names:
-                return prefix
+                return 2, prefix
         if len(r) < 2:
             return None
         if _is_dunder(r[-1]):
             found = self._same_class_end.get((r[0], r[-2], r[-1])) if len(r) >= 3 else None
         else:
             found = self._same_end.get((r[0], r[-1]))
-        return found[0] if found else None
+        return (3, found[0]) if found else None
 
 
 def reaching(record: Record, callers: Callers | None) -> dict[str, str]:
@@ -219,9 +224,16 @@ def decide(
         )
     if callers is not None and (toward := reaching(record, callers)):
         index = NameIndex(toward)
-        through = [(r, found) for r in into_package if (found := index.match(r.name))]
+        through = [(r, *found) for r in into_package if (found := index.closest(r.name))]
         if through:
-            nearest, caller = min(through, key=lambda h: (h[0].location.path, h[0].location.line))
+            # The path shown starts at the closest match, so a genuine one comes before a
+            # re-export that may be a collision of names; then the shortest path, which
+            # rests on the fewest links; then the first in the code.
+            paths = {caller: call_path(caller, toward) for _, _, caller in through}
+            nearest, _, caller = min(
+                through,
+                key=lambda h: (h[1], len(paths[h[2]]), h[0].location.path, h[0].location.line),
+            )
             return Alert(
                 **base,
                 **context,
@@ -230,10 +242,10 @@ def decide(
                 f"through the package's own calls (static call path in {package} "
                 f"{callers.version}'s source)",
                 evidence=tuple(
-                    sorted({r.location for r, _ in through}, key=lambda loc: (loc.path, loc.line))
+                    sorted({h[0].location for h in through}, key=lambda loc: (loc.path, loc.line))
                 ),
-                matched=tuple(sorted({r.name for r, _ in through})),
-                path=call_path(caller, toward),
+                matched=tuple(sorted({h[0].name for h in through})),
+                path=paths[caller],
             )
 
     unparsable = _mentions(usage.unparsable, roots)

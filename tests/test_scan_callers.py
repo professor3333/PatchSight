@@ -80,8 +80,24 @@ def test_a_re_exported_caller_matches_like_a_symbol(tmp_path: Path) -> None:
     alert = decide("A", "pyyaml", "5.3.1", record, usage, None, _callers(record))
     assert alert.verdict == "CALLED"
     assert alert.matched == ("yaml.FullLoader", "yaml.load")
-    assert alert.path[0] in {"yaml.load", "yaml.loader.FullLoader"}
-    assert alert.path[-1] == SYMBOL
+    assert alert.path == ("yaml.load", SYMBOL)  # the same name comes before a re-export
+
+
+def test_the_path_shown_starts_at_the_closest_match(tmp_path: Path) -> None:
+    # yaml.cache.load matches yaml.load only as a possible re-export (same package and
+    # final name), which a collision of names can give; yaml.full_load is a caller itself.
+    code = "import yaml\n\nyaml.cache.load(k)\nyaml.full_load(f)\n"
+    record = _record()
+    alert = decide("A", "pyyaml", "5.3.1", record, _usage(tmp_path, code), None, _callers(record))
+    assert alert.matched == ("yaml.cache.load", "yaml.full_load")
+    assert alert.path == ("yaml.full_load", "yaml.load", SYMBOL)
+    assert "references yaml.full_load" in alert.reason
+    assert NameIndex(["yaml.load", "yaml.x.load"]).closest("yaml.x.load") == (0, "yaml.x.load")
+    # Two callers referenced by their own names: the shorter path is shown, wherever it is.
+    code = "import yaml\n\nyaml.full_load(f)\nyaml.load(g)\n"
+    alert = decide("A", "pyyaml", "5.3.1", record, _usage(tmp_path, code), None, _callers(record))
+    assert alert.path == ("yaml.load", SYMBOL)
+    assert NameIndex(["yaml.load"]).closest("yaml.x.load") == (3, "yaml.load")
 
 
 def test_a_symbol_hit_comes_before_a_caller(tmp_path: Path) -> None:

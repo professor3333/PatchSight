@@ -7,8 +7,11 @@ Rules, in order:
    at any confidence; low-confidence data may raise an alert's priority.
 2a. Otherwise, a reference matches one of the record's stored callers, a definition of the
    package that reaches a symbol through calls in the source of a release the record
-   affects: CALLED, with the call path as evidence (ADR 0017). Callers count only while
-   they were computed for the record's current symbols.
+   affects, or matches a symbol under a name the package binds to it: CALLED, with the
+   call path as evidence (ADR 0017). The reference is first rewritten through the names
+   the package binds (``requests.get`` is ``requests.api.get``), then matched without the
+   re-export rule, which those names make unnecessary. Callers count only while they were
+   computed for the record's current symbols.
 3. The package is never imported: NOT_IMPORTED (transitive use is not analysed), unless an
    unparsable file mentions it, a file that starts processes names it (``exec gunicorn
    app.wsgi`` in a start script runs gunicorn's code without an import), a dynamic import
@@ -35,6 +38,7 @@ dunder such as ``__init__``, the class before it must agree too, since every cla
 import re
 from collections import defaultdict
 from collections.abc import Iterable, Mapping, Sequence
+from dataclasses import dataclass
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict
@@ -88,7 +92,7 @@ class Alert(BaseModel):
     path: tuple[str, ...] = ()
 
 
-def matches(reference: str, symbol: str) -> bool:
+def matches(reference: str, symbol: str, reexports: bool = True) -> bool:
     r, s = reference.split("."), symbol.split(".")
     if r == s:
         return True
@@ -96,7 +100,7 @@ def matches(reference: str, symbol: str) -> bool:
         return True  # the containing class or module of a vulnerable member
     if len(r) > len(s) and r[: len(s)] == s:
         return True  # reaching into a vulnerable class
-    if len(r) < 2 or r[0] != s[0] or r[-1] != s[-1]:
+    if not reexports or len(r) < 2 or r[0] != s[0] or r[-1] != s[-1]:
         return False
     # A re-exported name. A dunder alone says nothing about which code is reached:
     # django.test.TestCase.__init__ is not HttpResponseRedirectBase.__init__ (ADR 0015).
@@ -124,8 +128,9 @@ class NameIndex:
     one, and says which name matched: a record can have hundreds of callers, and a project
     hundreds of references into one package."""
 
-    def __init__(self, names: Iterable[str]) -> None:
+    def __init__(self, names: Iterable[str], reexports: bool = True) -> None:
         self.names = set(names)
+        self.reexports = reexports
         self._members: dict[str, list[str]] = defaultdict(list)
         self._same_end: dict[tuple[str, str], list[str]] = defaultdict(list)
         self._same_class_end: dict[tuple[str, str, str], list[str]] = defaultdict(list)
@@ -152,7 +157,7 @@ class NameIndex:
         for k in range(len(r) - 1, 0, -1):
             if (prefix := ".".join(r[:k])) in self.names:
                 return 2, prefix
-        if len(r) < 2:
+        if not self.reexports or len(r) < 2:
             return None
         if _is_dunder(r[-1]):
             found = self._same_class_end.get((r[0], r[-2], r[-1])) if len(r) >= 3 else None
@@ -161,14 +166,38 @@ class NameIndex:
         return (3, found[0]) if found else None
 
 
-def reaching(record: Record, callers: Callers | None) -> dict[str, str]:
-    """The record's stored callers, each mapped to the next definition towards a symbol.
-    None when they could not be computed, or were computed for other symbols."""
+@dataclass(frozen=True)
+class Reach:
+    """A record's stored callers, ready to match references against."""
+
+    toward: dict[str, str]  # each caller -> the next definition towards a symbol
+    names: dict[str, tuple[str, ...]]  # a name the package binds -> what it names
+    targets: frozenset[str]  # the callers and the record's symbols
+
+    def canonical(self, reference: str) -> list[str]:
+        """The reference as the package's definitions name it: its longest prefix that is a
+        name the package binds, replaced by each definition it names. ``urllib3.PoolManager
+        .urlopen`` becomes ``urllib3.poolmanager.PoolManager.urlopen``."""
+        parts = reference.split(".")
+        for k in range(len(parts), 1, -1):
+            if found := self.names.get(".".join(parts[:k])):
+                return [".".join((target, *parts[k:])) for target in found]
+        return [reference]
+
+
+def reaching(record: Record, callers: Callers | None) -> Reach | None:
+    """The record's stored callers; none when they could not be computed, or were computed
+    for other symbols."""
     if callers is None or callers.status != "ok":
-        return {}
+        return None
     if callers.symbols_digest != symbols_digest(record):
-        return {}
-    return dict(callers.callers)
+        return None
+    names: dict[str, list[str]] = defaultdict(list)
+    for name, target in callers.names:
+        names[name].append(target)
+    symbols = {s.qualified_name for s in record.symbols if s.module}
+    toward = dict(callers.callers)
+    return Reach(toward, {n: tuple(t) for n, t in names.items()}, frozenset({*toward, *symbols}))
 
 
 def call_path(caller: str, toward: Mapping[str, str]) -> tuple[str, ...]:
@@ -222,14 +251,18 @@ def decide(
             ),
             matched=tuple(sorted({h.name for h in hits})),
         )
-    if callers is not None and (toward := reaching(record, callers)):
-        index = NameIndex(toward)
-        through = [(r, *found) for r in into_package if (found := index.closest(r.name))]
+    if callers is not None and (reach := reaching(record, callers)) is not None:
+        index = NameIndex(reach.targets, reexports=False)
+        through = []
+        for r in into_package:
+            found = [f for name in reach.canonical(r.name) if (f := index.closest(name))]
+            if found:
+                through.append((r, *min(found)))
         if through:
-            # The path shown starts at the closest match, so a genuine one comes before a
-            # re-export that may be a collision of names; then the shortest path, which
-            # rests on the fewest links; then the first in the code.
-            paths = {caller: call_path(caller, toward) for _, _, caller in through}
+            # The path shown starts at the closest match (the name itself, a member of it,
+            # then a name inside it), then the shortest path, which rests on the fewest
+            # links, then the first in the code.
+            paths = {caller: call_path(caller, reach.toward) for _, _, caller in through}
             nearest, _, caller = min(
                 through,
                 key=lambda h: (h[1], len(paths[h[2]]), h[0].location.path, h[0].location.line),
@@ -239,8 +272,7 @@ def decide(
                 **context,
                 verdict="CALLED",
                 reason=f"your code references {nearest.name}, which reaches a vulnerable symbol "
-                f"through the package's own calls (static call path in {package} "
-                f"{callers.version}'s source)",
+                f"(static call path in the source of {package} {callers.version})",
                 evidence=tuple(
                     sorted({h[0].location for h in through}, key=lambda loc: (loc.path, loc.line))
                 ),

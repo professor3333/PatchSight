@@ -42,6 +42,14 @@ EDGES = (
     ("yaml.load", SYMBOL),
     ("yaml.loader.FullLoader", "yaml.constructor.FullConstructor"),
     ("yaml.constructor.FullConstructor", SYMBOL),
+    ("yaml.loader.Loader.load_all", SYMBOL),
+)
+# The names PyYAML binds to them: re-exports from yaml/__init__.py, and an alias for the
+# symbol itself.
+NAMES = (
+    ("yaml.FullLoader", "yaml.loader.FullLoader"),
+    ("yaml.Loader", "yaml.loader.Loader"),
+    ("yaml.construct", SYMBOL),
 )
 
 
@@ -50,7 +58,8 @@ def _callers(record: db.Record, status: str = "ok", digest: str | None = None) -
         vulnerability=record.vulnerability, package=record.package,
         symbols_digest=digest or db.symbols_digest(record), version="5.3.1",
         filename="PyYAML-5.3.1.tar.gz", sha256="b" * 64, status=status, seeds=1,
-        seeds_found=1, graph_revision=2, callers=EDGES if status == "ok" else (),
+        seeds_found=1, graph_revision=3, callers=EDGES if status == "ok" else (),
+        names=NAMES if status == "ok" else (),
     )  # fmt: skip
 
 
@@ -73,31 +82,59 @@ def test_a_reference_to_a_caller_is_called_with_the_path(tmp_path: Path) -> None
     assert decide("GHSA-0001-0001-0001", "pyyaml", "5.3.1", record, usage).verdict == "UNKNOWN"
 
 
-def test_a_re_exported_caller_matches_like_a_symbol(tmp_path: Path) -> None:
+def test_a_name_the_package_binds_matches_what_it_names(tmp_path: Path) -> None:
     # yaml.FullLoader is yaml.loader.FullLoader, re-exported by the package's __init__.
     usage = _usage(tmp_path, "import yaml\n\nyaml.load(open('x'), Loader=yaml.FullLoader)\n")
     record = _record()
     alert = decide("A", "pyyaml", "5.3.1", record, usage, None, _callers(record))
     assert alert.verdict == "CALLED"
     assert alert.matched == ("yaml.FullLoader", "yaml.load")
-    assert alert.path == ("yaml.load", SYMBOL)  # the same name comes before a re-export
+    assert alert.path == ("yaml.load", SYMBOL)  # the shorter path
 
 
-def test_the_path_shown_starts_at_the_closest_match(tmp_path: Path) -> None:
-    # yaml.cache.load matches yaml.load only as a possible re-export (same package and
-    # final name), which a collision of names can give; yaml.full_load is a caller itself.
-    code = "import yaml\n\nyaml.cache.load(k)\nyaml.full_load(f)\n"
+def test_a_re_exported_class_holds_its_methods(tmp_path: Path) -> None:
+    # yaml.Loader is not a caller, but it is yaml.loader.Loader, whose load_all is one: the
+    # scanner cannot type ``loader``, so using the class is what it can see.
+    code = "import yaml\n\nloader = yaml.Loader(stream)\nloader.load_all()\n"
     record = _record()
     alert = decide("A", "pyyaml", "5.3.1", record, _usage(tmp_path, code), None, _callers(record))
-    assert alert.matched == ("yaml.cache.load", "yaml.full_load")
-    assert alert.path == ("yaml.full_load", "yaml.load", SYMBOL)
-    assert "references yaml.full_load" in alert.reason
-    assert NameIndex(["yaml.load", "yaml.x.load"]).closest("yaml.x.load") == (0, "yaml.x.load")
+    assert alert.verdict == "CALLED"
+    assert alert.path == ("yaml.loader.Loader.load_all", SYMBOL)
+
+
+def test_a_symbol_under_another_name_is_reached(tmp_path: Path) -> None:
+    code = "import yaml\n\nyaml.construct(node)\n"
+    record = _record()
+    usage = _usage(tmp_path, code)
+    assert decide("A", "pyyaml", "5.3.1", record, usage).verdict == "UNKNOWN"
+    alert = decide("A", "pyyaml", "5.3.1", record, usage, None, _callers(record))
+    assert alert.verdict == "CALLED"
+    assert alert.path == (SYMBOL,)
+
+
+def test_a_name_that_only_ends_like_a_caller_is_not_one(tmp_path: Path) -> None:
+    # Same package and final name: the re-export rule would match yaml.cache.load to the
+    # caller yaml.load, but the package binds no such name, so it is a collision of names.
+    code = "import yaml\n\nyaml.cache.load(k)\nyaml.cache.Loader.load_all(k)\n"
+    record = _record()
+    alert = decide("A", "pyyaml", "5.3.1", record, _usage(tmp_path, code), None, _callers(record))
+    assert alert.verdict == "UNKNOWN"
+    assert NameIndex(["yaml.load"]).closest("yaml.x.load") == (3, "yaml.load")
+    assert NameIndex(["yaml.load"], reexports=False).closest("yaml.x.load") is None
+
+
+def test_the_path_shown_is_the_closest_then_the_shortest(tmp_path: Path) -> None:
+    record = _record()
     # Two callers referenced by their own names: the shorter path is shown, wherever it is.
     code = "import yaml\n\nyaml.full_load(f)\nyaml.load(g)\n"
     alert = decide("A", "pyyaml", "5.3.1", record, _usage(tmp_path, code), None, _callers(record))
     assert alert.path == ("yaml.load", SYMBOL)
-    assert NameIndex(["yaml.load"]).closest("yaml.x.load") == (3, "yaml.load")
+    assert "references yaml.load" in alert.reason
+    # A caller's own name comes before a class that holds one, though its path is longer.
+    code = "import yaml\n\nyaml.Loader(s)\nyaml.full_load(f)\n"
+    alert = decide("A", "pyyaml", "5.3.1", record, _usage(tmp_path, code), None, _callers(record))
+    assert alert.path == ("yaml.full_load", "yaml.load", SYMBOL)
+    assert NameIndex(["yaml.load", "yaml.x.load"]).closest("yaml.x.load") == (0, "yaml.x.load")
 
 
 def test_a_symbol_hit_comes_before_a_caller(tmp_path: Path) -> None:
@@ -160,13 +197,15 @@ _PART = st.sampled_from(["p", "q", "m", "f", "__init__", "load"])
 _NAME = st.lists(_PART, min_size=1, max_size=4).map(".".join)
 
 
-@given(st.lists(_NAME, max_size=8), _NAME)
-def test_the_name_index_matches_exactly_as_matches_does(names: list[str], reference: str) -> None:
-    found = NameIndex(names).match(reference)
-    assert (found is not None) == any(matches(reference, n) for n in names)
+@given(st.lists(_NAME, max_size=8), _NAME, st.booleans())
+def test_the_name_index_matches_exactly_as_matches_does(
+    names: list[str], reference: str, reexports: bool
+) -> None:
+    found = NameIndex(names, reexports).match(reference)
+    assert (found is not None) == any(matches(reference, n, reexports) for n in names)
     if found is not None:
         assert found in names
-        assert matches(reference, found)
+        assert matches(reference, found, reexports)
 
 
 def test_callers_for_reads_one_record(tmp_path: Path) -> None:
@@ -181,6 +220,7 @@ def test_callers_for_reads_one_record(tmp_path: Path) -> None:
         stored = database.callers_for(record.vulnerability, "pyyaml")
         assert stored is not None
         assert stored.callers == tuple(sorted(EDGES))
+        assert stored.names == tuple(sorted(NAMES))
         assert stored == database.callers()[(record.vulnerability, "pyyaml")]
         assert database.callers_for(record.vulnerability, "other") is None
     finally:
@@ -228,8 +268,9 @@ def test_explain_says_which_callers_a_scan_uses(tmp_path: Path) -> None:
     shown = CliRunner().invoke(app, ["explain", record.vulnerability, "--db", str(database)])
     assert shown.exit_code == 0
     assert (
-        "callers (4, read from pyyaml 5.3.1): a reference to one marks an alert CALLED too: "
-        "yaml.full_load, yaml.load, yaml.constructor.FullConstructor, yaml.loader.FullLoader"
+        "callers (5, read from pyyaml 5.3.1): a reference to one marks an alert CALLED too: "
+        "yaml.full_load, yaml.load, yaml.constructor.FullConstructor, yaml.loader.FullLoader, "
+        "yaml.loader.Loader.load_all"
     ) in shown.output
     as_json = CliRunner().invoke(
         app, ["explain", record.vulnerability, "--db", str(database), "--format", "json"]

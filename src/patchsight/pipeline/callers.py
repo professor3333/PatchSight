@@ -16,6 +16,10 @@ read in memory, never unpacked: only regular ``.py`` members, each at most
 ranges; among the releases with files, the newest final release, or the newest of any
 kind if none is final.
 
+**Which graph:** ``callgraph.build``'s defaults. A stored caller marks an alert CALLED
+(ADR 0017), so each link should be a likely call: an unknown receiver is linked only to a
+unique method, and ``self.m`` is the method that class runs, not a subclass's override.
+
 Offline pipeline only; the scanner reads the stored callers and never package source.
 """
 
@@ -35,7 +39,7 @@ from packaging.version import InvalidVersion, Version
 from pydantic import BaseModel, ConfigDict
 from tenacity import Retrying, retry_if_exception_type, stop_after_attempt, wait_exponential
 
-from patchsight.db import Callers, Record
+from patchsight.db import Callers, Record, symbols_digest
 from patchsight.names import canonical_package_name
 from patchsight.pipeline import callgraph
 from patchsight.pipeline.http import CacheMissError, HttpError, NotFoundError
@@ -51,12 +55,6 @@ CACHE_SUFFIX = ".dist"
 # anything in such a package reaches its symbols, so the callers would sharpen no alert,
 # and they would multiply the database. The same bound as a fix too broad to extract.
 MAX_CALLERS = 500
-
-
-def symbols_digest(record: Record) -> str:
-    """Names the record symbols a closure was computed for."""
-    names = "\n".join(sorted({s.qualified_name for s in record.symbols}))
-    return hashlib.sha256(names.encode("utf-8")).hexdigest()
 
 
 def _versions(packages: Iterable[AffectedPackage], releases: Iterable[str]) -> set[str]:
@@ -262,7 +260,8 @@ def annotate(
     jobs: int = 1,
 ) -> tuple[list[Callers], CallersReport]:
     """Callers for every record, in record order. A previous database's are reused while
-    the record's symbols are the same; a failure for one record is stored as its status.
+    the record's symbols and the call graph's revision are the same; a failure for one
+    record is stored as its status.
 
     Records are planned first (which release file each needs), then each file is read and
     parsed once for all its records. With ``jobs`` above 1, files are handled in that many
@@ -276,7 +275,11 @@ def annotate(
     for index, record in enumerate(records):
         digest = symbols_digest(record)
         earlier = previous.get((record.vulnerability, record.package))
-        if earlier is not None and earlier.symbols_digest == digest:
+        if (
+            earlier is not None
+            and earlier.symbols_digest == digest
+            and earlier.graph_revision == callgraph.REVISION
+        ):
             found[index], reused = _capped(earlier), reused + 1
             continue
         planned = _plan(record, digest, advisories_for, pypi)
@@ -364,7 +367,8 @@ def _plan(
     """The release file a record needs, or its result already when it needs none."""
     base: dict[str, Any] = {
         "vulnerability": record.vulnerability, "package": record.package,
-        "symbols_digest": digest, "version": None, "filename": None, "sha256": None,
+        "symbols_digest": digest, "graph_revision": callgraph.REVISION, "version": None,
+        "filename": None, "sha256": None,
         "seeds": len(_seeds(record)), "seeds_found": 0,
     }  # fmt: skip
     packages = _packages_of(advisories_for(record.vulnerability), record.package)

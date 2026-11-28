@@ -14,7 +14,7 @@ import httpx
 import pytest
 
 from patchsight import db
-from patchsight.pipeline import callers
+from patchsight.pipeline import callers, callgraph
 from patchsight.pipeline.http import CacheMissError
 from patchsight.pipeline.ingest.osv import Advisory, AffectedPackage, OsvEvent, VersionRange
 from patchsight.pipeline.pypi import PyPIClient
@@ -174,6 +174,11 @@ def test_each_record_gets_its_callers_and_unchanged_records_reuse_theirs(tmp_pat
     recomputed, report = callers.annotate(changed, lambda v: [advisory], pypi, fetcher, previous)
     assert report.computed == 1  # its symbols changed, so its callers are computed again
     assert recomputed[0].seeds == 2
+    older = {k: c.model_copy(update={"graph_revision": c.graph_revision - 1})
+             for k, c in previous.items()}  # fmt: skip
+    _, report = callers.annotate(records, lambda v: [advisory], pypi, fetcher, older)
+    assert (report.reused, report.computed) == (0, 3)  # another graph: computed again
+    assert {c.graph_revision for c in found} == {callgraph.REVISION}
 
 
 def test_a_record_with_no_affected_release_says_so(tmp_path: Path) -> None:
@@ -188,7 +193,8 @@ def test_the_database_keeps_callers_and_an_older_one_has_none(tmp_path: Path) ->
     stored = db.Callers(
         vulnerability="GHSA-1", package="pkg", symbols_digest="d" * 64, version="1.0",
         filename="pkg-1.0-py3-none-any.whl", sha256="s" * 64, status="ok", seeds=1,
-        seeds_found=1, callers=(("pkg.api.load", "pkg.core._parse"),),
+        seeds_found=1, graph_revision=callgraph.REVISION,
+        callers=(("pkg.api.load", "pkg.core._parse"),),
     )  # fmt: skip
     path = tmp_path / "db.sqlite"
     db.write(path, [_record("pkg.core._parse")], {"GHSA-1": "GHSA-1"}, {}, callers=[stored])

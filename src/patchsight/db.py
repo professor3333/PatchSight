@@ -18,12 +18,13 @@ query them, so they keep working; this reader treats a database without them as 
 such data. Evidence holds commit SHAs, paths and line ranges only, never code (rule 13).
 """
 
+import hashlib
 import json
 import sqlite3
 from collections.abc import Iterable
 from datetime import datetime
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict
 
@@ -103,6 +104,7 @@ CREATE TABLE callers_source (
     status TEXT NOT NULL,
     seeds INTEGER NOT NULL,
     seeds_found INTEGER NOT NULL,
+    graph_revision INTEGER NOT NULL,
     PRIMARY KEY (vulnerability, package)
 );
 CREATE TABLE callers (
@@ -167,8 +169,10 @@ class Callers(BaseModel):
 
     Each caller maps to the next definition on one path towards a symbol, so a path can be
     shown as evidence; a path ends at a record symbol. ``symbols_digest`` names the record
-    symbols they were computed for: once those change, the callers are stale. ``status``
-    is ``ok``, or why there are none (no affected release with files, too large, ...)."""
+    symbols they were computed for: once those change, the callers are stale.
+    ``graph_revision`` is the call graph's (``callgraph.REVISION``): callers from another
+    revision are computed again, never reused. ``status`` is ``ok``, or why there are none
+    (no affected release with files, too large, ...)."""
 
     model_config = ConfigDict(frozen=True)
 
@@ -181,6 +185,7 @@ class Callers(BaseModel):
     status: str
     seeds: int  # record symbols
     seeds_found: int  # of them, defined in the release read
+    graph_revision: int
     callers: tuple[tuple[str, str], ...] = ()  # (caller, next definition), sorted
 
 
@@ -232,6 +237,13 @@ class Record(BaseModel):
     evidence: tuple[SymbolEvidence, ...] = ()
 
 
+def symbols_digest(record: Record) -> str:
+    """Names the record symbols a callers closure was computed for (``Callers``). Shared by
+    the pipeline, which stores it, and the scanner, which uses callers only while it holds."""
+    names = "\n".join(sorted({s.qualified_name for s in record.symbols}))
+    return hashlib.sha256(names.encode("utf-8")).hexdigest()
+
+
 def write(
     path: Path,
     records: Iterable[Record],
@@ -267,9 +279,9 @@ def write(
             connection.executescript(_CALLERS_SCHEMA)
         for c in stored:
             connection.execute(
-                "INSERT INTO callers_source VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO callers_source VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (c.vulnerability, c.package, c.symbols_digest, c.version, c.filename,
-                 c.sha256, c.status, c.seeds, c.seeds_found),
+                 c.sha256, c.status, c.seeds, c.seeds_found, c.graph_revision),
             )  # fmt: skip
             connection.executemany(
                 "INSERT INTO callers VALUES (?, ?, ?, ?)",
@@ -420,6 +432,19 @@ class SymbolDatabase:
             for r in rows
         }
 
+    _CALLERS_SOURCE = (
+        "SELECT vulnerability, package, symbols_digest, version, filename, sha256, status, "
+        "seeds, seeds_found, graph_revision FROM callers_source"
+    )
+
+    @staticmethod
+    def _callers(row: tuple[Any, ...], edges: Iterable[tuple[str, str]]) -> Callers:
+        return Callers(
+            vulnerability=row[0], package=row[1], symbols_digest=row[2], version=row[3],
+            filename=row[4], sha256=row[5], status=row[6], seeds=row[7], seeds_found=row[8],
+            graph_revision=row[9], callers=tuple(edges),
+        )  # fmt: skip
+
     def callers(self) -> dict[tuple[str, str], Callers]:
         """Every record's callers, by (vulnerability, package); empty for an older
         database."""
@@ -430,18 +455,25 @@ class SymbolDatabase:
             "SELECT vulnerability, package, caller, toward FROM callers ORDER BY 1, 2, 3"
         ):
             edges.setdefault((v, p), []).append((caller, toward))
-        rows = self._connection.execute(
-            "SELECT vulnerability, package, symbols_digest, version, filename, sha256, status, "
-            "seeds, seeds_found FROM callers_source"
-        )
-        return {
-            (r[0], r[1]): Callers(
-                vulnerability=r[0], package=r[1], symbols_digest=r[2], version=r[3],
-                filename=r[4], sha256=r[5], status=r[6], seeds=r[7], seeds_found=r[8],
-                callers=tuple(edges.get((r[0], r[1]), ())),
-            )
-            for r in rows
-        }  # fmt: skip
+        rows = self._connection.execute(self._CALLERS_SOURCE)
+        return {(r[0], r[1]): self._callers(r, edges.get((r[0], r[1]), ())) for r in rows}
+
+    def callers_for(self, vulnerability: str, package: str) -> Callers | None:
+        """One record's callers; none for an older database or a record not read."""
+        if not self._has_callers:
+            return None
+        key = (vulnerability, package)
+        row = self._connection.execute(
+            f"{self._CALLERS_SOURCE} WHERE vulnerability = ? AND package = ?", key
+        ).fetchone()
+        if row is None:
+            return None
+        edges = self._connection.execute(
+            "SELECT caller, toward FROM callers WHERE vulnerability = ? AND package = ? "
+            "ORDER BY caller",
+            key,
+        ).fetchall()
+        return self._callers(row, ((str(c), str(t)) for c, t in edges))
 
     def build_status(self, vulnerability: str) -> str | None:
         """Why the builder made a vulnerability's records, or none: its ledger status."""

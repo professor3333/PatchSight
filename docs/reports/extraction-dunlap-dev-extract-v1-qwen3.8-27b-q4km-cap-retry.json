@@ -1,0 +1,4716 @@
+{
+  "as_of": "2026-11-15",
+  "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+  "prompt_version": "extract-v1",
+  "reports": 60,
+  "split": "dunlap-v1:dev",
+  "split_sha256": "c1ec2476e0acf0660114389c7cba7a3435b48e90dfc63445f2582eea614867c0",
+  "sample_size": null,
+  "sample_seed": 20261114,
+  "extraction": {
+    "reports": 60,
+    "true_positives": 76,
+    "false_positives": 31,
+    "false_negatives": 42,
+    "precision": 0.7102803738317757,
+    "recall": 0.6440677966101694,
+    "f1": 0.6755555555555555,
+    "miss_rate": 0.21666666666666667,
+    "exact_match": 0.4666666666666667,
+    "precision_ci95": {
+      "low": 0.5871509772636618,
+      "high": 0.822043798511009
+    },
+    "recall_ci95": {
+      "low": 0.5254237288135594,
+      "high": 0.7628933803581117
+    },
+    "f1_ci95": {
+      "low": 0.5665157661630118,
+      "high": 0.7798278273748301
+    }
+  },
+  "changedfuncs": {
+    "reports": 60,
+    "true_positives": 96,
+    "false_positives": 290,
+    "false_negatives": 22,
+    "precision": 0.24870466321243523,
+    "recall": 0.8135593220338984,
+    "f1": 0.38095238095238093,
+    "miss_rate": 0.15,
+    "exact_match": 0.45,
+    "precision_ci95": {
+      "low": 0.11249463342140027,
+      "high": 0.5545568181818181
+    },
+    "recall_ci95": {
+      "low": 0.719276954522228,
+      "high": 0.8931297709923665
+    },
+    "f1_ci95": {
+      "low": 0.1953799416081433,
+      "high": 0.6744885387565289
+    }
+  },
+  "status": {
+    "no_candidates": 1,
+    "ok": 59
+  },
+  "truncated": 7,
+  "invented_ids_first_attempt": 0,
+  "entry_points_dropped": 2,
+  "prompt_tokens": 97638,
+  "completion_tokens": 18787,
+  "estimated_prompt_tokens": 98053,
+  "calls": 59,
+  "cached_calls": 59,
+  "provider_rejections": 0,
+  "outcomes": [
+    {
+      "advisory_id": "GO-2020-0004",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 3,
+      "vulnerable": [
+        "Auth.ListenAndServe",
+        "Auth.ListenAndServeTLS",
+        "Auth.ServeHTTP"
+      ],
+      "vulnerable_locations": [
+        [
+          "nanoauth.go",
+          "Auth.ListenAndServe"
+        ],
+        [
+          "nanoauth.go",
+          "Auth.ListenAndServeTLS"
+        ],
+        [
+          "nanoauth.go",
+          "Auth.ServeHTTP"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "nanoauth.go",
+          "name": "Auth.ListenAndServe",
+          "rationale": "The fix removes the logic that disabled global authentication when an empty token was provided, preventing the authentication bypass.",
+          "hunks": [
+            {
+              "id": "H5",
+              "source": "063a3fb69896acf985759f0fe3851f15973993f3",
+              "path": "nanoauth.go",
+              "old_start": 95,
+              "old_count": 14,
+              "new_start": 94,
+              "new_count": 14
+            }
+          ]
+        },
+        {
+          "path": "nanoauth.go",
+          "name": "Auth.ListenAndServeTLS",
+          "rationale": "The fix removes the logic that disabled global authentication when an empty token was provided in the TLS listener, preventing the authentication bypass.",
+          "hunks": [
+            {
+              "id": "H3",
+              "source": "063a3fb69896acf985759f0fe3851f15973993f3",
+              "path": "nanoauth.go",
+              "old_start": 69,
+              "old_count": 6,
+              "new_start": 68,
+              "new_count": 9
+            },
+            {
+              "id": "H4",
+              "source": "063a3fb69896acf985759f0fe3851f15973993f3",
+              "path": "nanoauth.go",
+              "old_start": 78,
+              "old_count": 9,
+              "new_start": 80,
+              "new_count": 6
+            }
+          ]
+        },
+        {
+          "path": "nanoauth.go",
+          "name": "Auth.ServeHTTP",
+          "rationale": "The fix replaces the direct string comparison with a constant-time comparison to eliminate the timing side channel.",
+          "hunks": [
+            {
+              "id": "H2",
+              "source": "063a3fb69896acf985759f0fe3851f15973993f3",
+              "path": "nanoauth.go",
+              "old_start": 51,
+              "old_count": 14,
+              "new_start": 50,
+              "new_count": 14
+            }
+          ]
+        }
+      ],
+      "entry_points": [
+        "Auth.ListenAndServe",
+        "Auth.ListenAndServeTLS"
+      ],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 1151,
+      "prompt_tokens": 1152,
+      "completion_tokens": 263,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2020-0009",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 7,
+      "vulnerable": [
+        "cbcAEAD.Open",
+        "cbcAEAD.computeAuthTag"
+      ],
+      "vulnerable_locations": [
+        [
+          "cipher/cbc_hmac.go",
+          "cbcAEAD.Open"
+        ],
+        [
+          "cipher/cbc_hmac.go",
+          "cbcAEAD.computeAuthTag"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "cipher/cbc_hmac.go",
+          "name": "cbcAEAD.Open",
+          "rationale": "The fix corrects integer overflow in buffer size calculations within the Open method, which is the entry point for the vulnerability described in the advisory.",
+          "hunks": [
+            {
+              "id": "H3",
+              "source": "789a4c4bd4c118f7564954f441b29c153ccd6a96",
+              "path": "cipher/cbc_hmac.go",
+              "old_start": 128,
+              "old_count": 20,
+              "new_start": 128,
+              "new_count": 20
+            }
+          ]
+        },
+        {
+          "path": "cipher/cbc_hmac.go",
+          "name": "cbcAEAD.computeAuthTag",
+          "rationale": "The fix corrects integer overflow in the buffer allocation and length calculation within computeAuthTag, which directly addresses the vulnerability allowing manipulated ciphertexts to be verified as authentic.",
+          "hunks": [
+            {
+              "id": "H3",
+              "source": "789a4c4bd4c118f7564954f441b29c153ccd6a96",
+              "path": "cipher/cbc_hmac.go",
+              "old_start": 128,
+              "old_count": 20,
+              "new_start": 128,
+              "new_count": 20
+            }
+          ]
+        }
+      ],
+      "entry_points": [
+        "cbcAEAD.Open"
+      ],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 2295,
+      "prompt_tokens": 2296,
+      "completion_tokens": 572,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2020-0010",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 3,
+      "vulnerable": [
+        "DeriveECDHES",
+        "ecDecrypterSigner.decryptKey",
+        "rawJsonWebKey.ecPublicKey"
+      ],
+      "vulnerable_locations": [
+        [
+          "asymmetric.go",
+          "ecDecrypterSigner.decryptKey"
+        ],
+        [
+          "cipher/ecdh_es.go",
+          "DeriveECDHES"
+        ],
+        [
+          "jwk.go",
+          "rawJsonWebKey.ecPublicKey"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "asymmetric.go",
+          "name": "ecDecrypterSigner.decryptKey",
+          "rationale": "The fix adds a check to ensure the supplied public key is on the same curve as the receiver's private key, preventing invalid curve attacks during decryption.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "c7581939a3656bb65e89d64da0a52364a33d2507",
+              "path": "asymmetric.go",
+              "old_start": 370,
+              "old_count": 6,
+              "new_start": 370,
+              "new_count": 10
+            }
+          ]
+        },
+        {
+          "path": "cipher/ecdh_es.go",
+          "name": "DeriveECDHES",
+          "rationale": "The fix adds a check to ensure the public key is on the same curve as the private key before performing the scalar multiplication, preventing invalid curve attacks.",
+          "hunks": [
+            {
+              "id": "H2",
+              "source": "c7581939a3656bb65e89d64da0a52364a33d2507",
+              "path": "cipher/ecdh_es.go",
+              "old_start": 33,
+              "old_count": 6,
+              "new_start": 33,
+              "new_count": 10
+            }
+          ]
+        },
+        {
+          "path": "jwk.go",
+          "name": "rawJsonWebKey.ecPublicKey",
+          "rationale": "The fix adds a check to ensure the X and Y coordinates of the EC key are on the declared curve, preventing the use of invalid curve points.",
+          "hunks": [
+            {
+              "id": "H3",
+              "source": "c7581939a3656bb65e89d64da0a52364a33d2507",
+              "path": "jwk.go",
+              "old_start": 277,
+              "old_count": 13,
+              "new_start": 278,
+              "new_count": 20
+            }
+          ]
+        }
+      ],
+      "entry_points": [
+        "DeriveECDHES",
+        "ecDecrypterSigner.decryptKey",
+        "rawJsonWebKey.ecPublicKey"
+      ],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 1059,
+      "prompt_tokens": 1060,
+      "completion_tokens": 297,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2020-0013",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 5,
+      "vulnerable": [
+        "NewClientConn",
+        "handshakeTransport.client"
+      ],
+      "vulnerable_locations": [
+        [
+          "ssh/client.go",
+          "NewClientConn"
+        ],
+        [
+          "ssh/handshake.go",
+          "handshakeTransport.client"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "ssh/client.go",
+          "name": "NewClientConn",
+          "rationale": "The fix adds a check to ensure HostKeyCallback is not nil, preventing the default insecure behavior that allowed man-in-the-middle attacks.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "e4e2799dd7aab89f583e1d898300d96367750991",
+              "path": "ssh/client.go",
+              "old_start": 68,
+              "old_count": 6,
+              "new_start": 69,
+              "new_count": 11
+            }
+          ]
+        },
+        {
+          "path": "ssh/handshake.go",
+          "name": "handshakeTransport.client",
+          "rationale": "The fix removes the conditional check for a nil hostKeyCallback, ensuring that the callback is always invoked to verify the host key, thereby preventing man-in-the-middle attacks when the callback was previously skipped.",
+          "hunks": [
+            {
+              "id": "H3",
+              "source": "e4e2799dd7aab89f583e1d898300d96367750991",
+              "path": "ssh/handshake.go",
+              "old_start": 614,
+              "old_count": 11,
+              "new_start": 614,
+              "new_count": 9
+            }
+          ]
+        }
+      ],
+      "entry_points": [
+        "NewClientConn"
+      ],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 1773,
+      "prompt_tokens": 1774,
+      "completion_tokens": 437,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2020-0014",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 2,
+      "vulnerable": [
+        "inSelectIM",
+        "inSelectInTableIM"
+      ],
+      "vulnerable_locations": [
+        [
+          "html/parse.go",
+          "inSelectIM"
+        ],
+        [
+          "html/parse.go",
+          "inSelectInTableIM"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "html/parse.go",
+          "name": "inSelectIM",
+          "rationale": "The fix adds a check to ignore the token if the 'select' element is not in scope, preventing the parser from entering an infinite loop when handling malformed 'select' tags.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "d26f9f9a57f3fab6a695bec0d84433c2c50f8bbf",
+              "path": "html/parse.go",
+              "old_start": 1719,
+              "old_count": 8,
+              "new_start": 1719,
+              "new_count": 12
+            },
+            {
+              "id": "H2",
+              "source": "d26f9f9a57f3fab6a695bec0d84433c2c50f8bbf",
+              "path": "html/parse.go",
+              "old_start": 1750,
+              "old_count": 6,
+              "new_start": 1754,
+              "new_count": 9
+            }
+          ]
+        },
+        {
+          "path": "html/parse.go",
+          "name": "inSelectInTableIM",
+          "rationale": "The fix corrects the logic for handling table-related tags within a 'select' context to properly pop the 'select' element and reset the insertion mode, preventing potential infinite loops or incorrect parsing states.",
+          "hunks": [
+            {
+              "id": "H3",
+              "source": "d26f9f9a57f3fab6a695bec0d84433c2c50f8bbf",
+              "path": "html/parse.go",
+              "old_start": 1775,
+              "old_count": 13,
+              "new_start": 1782,
+              "new_count": 22
+            }
+          ]
+        }
+      ],
+      "entry_points": [],
+      "entry_points_dropped": 1,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 1114,
+      "prompt_tokens": 1115,
+      "completion_tokens": 214,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2020-0022",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 1,
+      "vulnerable": [
+        "Uncompress"
+      ],
+      "vulnerable_locations": [
+        [
+          "lz4.go",
+          "Uncompress"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "lz4.go",
+          "name": "Uncompress",
+          "rationale": "The function previously used the deprecated and unsafe `C.LZ4_uncompress` API, which is vulnerable to out-of-bounds writes, and the fix replaces it with the safe `C.LZ4_decompress_safe` API.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "199f5f7878062ca17a98e079f2dbe1205e2ed898",
+              "path": "lz4.go",
+              "old_start": 25,
+              "old_count": 14,
+              "new_start": 26,
+              "new_count": 12
+            }
+          ]
+        }
+      ],
+      "entry_points": [
+        "Uncompress"
+      ],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 681,
+      "prompt_tokens": 682,
+      "completion_tokens": 128,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2020-0023",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 1,
+      "vulnerable": [
+        "Algorithm.validateSignature"
+      ],
+      "vulnerable_locations": [
+        [
+          "algorithms.go",
+          "Algorithm.validateSignature"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "algorithms.go",
+          "name": "Algorithm.validateSignature",
+          "rationale": "The fix replaces the non-constant-time `strings.Compare` with `hmac.Equal` to prevent timing side-channel attacks during signature validation.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "ca1404ee6e83fcbafb66b09ed0d543850a15b654",
+              "path": "algorithms.go",
+              "old_start": 142,
+              "old_count": 7,
+              "new_start": 142,
+              "new_count": 7
+            }
+          ]
+        }
+      ],
+      "entry_points": [
+        "Algorithm.validateSignature"
+      ],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 588,
+      "prompt_tokens": 589,
+      "completion_tokens": 110,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2020-0026",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 5,
+      "vulnerable": [
+        "stiTar.ExtractTarStreamFromTarReader",
+        "stiTar.extractFile",
+        "stiTar.extractLink"
+      ],
+      "vulnerable_locations": [
+        [
+          "pkg/tar/tar.go",
+          "stiTar.ExtractTarStreamFromTarReader"
+        ],
+        [
+          "pkg/tar/tar.go",
+          "stiTar.extractFile"
+        ],
+        [
+          "pkg/tar/tar.go",
+          "stiTar.extractLink"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "pkg/tar/tar.go",
+          "name": "stiTar.ExtractTarStreamFromTarReader",
+          "rationale": "The fix adds path sanitization and special file checks to prevent archives from writing files outside the target directory or creating dangerous file types.",
+          "hunks": [
+            {
+              "id": "H3",
+              "source": "f5cbcbc5cc6f8cc2f479a7302443bea407a700cb",
+              "path": "pkg/tar/tar.go",
+              "old_start": 327,
+              "old_count": 8,
+              "new_start": 343,
+              "new_count": 27
+            },
+            {
+              "id": "H4",
+              "source": "f5cbcbc5cc6f8cc2f479a7302443bea407a700cb",
+              "path": "pkg/tar/tar.go",
+              "old_start": 337,
+              "old_count": 7,
+              "new_start": 372,
+              "new_count": 7
+            }
+          ]
+        },
+        {
+          "path": "pkg/tar/tar.go",
+          "name": "stiTar.extractFile",
+          "rationale": "The fix adds a check to prevent the extraction process from overwriting existing files, which is part of the security hardening for archive extraction.",
+          "hunks": [
+            {
+              "id": "H6",
+              "source": "f5cbcbc5cc6f8cc2f479a7302443bea407a700cb",
+              "path": "pkg/tar/tar.go",
+              "old_start": 384,
+              "old_count": 6,
+              "new_start": 434,
+              "new_count": 13
+            }
+          ]
+        },
+        {
+          "path": "pkg/tar/tar.go",
+          "name": "stiTar.extractLink",
+          "rationale": "The fix adds validation to ensure symbolic links do not point outside the target directory and prevents overwriting existing files.",
+          "hunks": [
+            {
+              "id": "H5",
+              "source": "f5cbcbc5cc6f8cc2f479a7302443bea407a700cb",
+              "path": "pkg/tar/tar.go",
+              "old_start": 376,
+              "old_count": 6,
+              "new_start": 411,
+              "new_count": 21
+            }
+          ]
+        }
+      ],
+      "entry_points": [],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 1821,
+      "prompt_tokens": 1822,
+      "completion_tokens": 413,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2020-0028",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 1,
+      "vulnerable": [],
+      "vulnerable_locations": [],
+      "evidence": [],
+      "entry_points": [],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 637,
+      "prompt_tokens": 638,
+      "completion_tokens": 114,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2020-0034",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 1,
+      "vulnerable": [
+        "Unzip.Extract"
+      ],
+      "vulnerable_locations": [
+        [
+          "unzip.go",
+          "Unzip.Extract"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "unzip.go",
+          "name": "Unzip.Extract",
+          "rationale": "The fix adds a check to ensure the resolved file path remains within the destination directory, preventing path traversal attacks where archives could write files outside the target directory.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "4975cbe0a719dc50b12da8585f1f207c82f7dfe0",
+              "path": "unzip.go",
+              "old_start": 46,
+              "old_count": 6,
+              "new_start": 47,
+              "new_count": 9
+            }
+          ]
+        }
+      ],
+      "entry_points": [
+        "Unzip.Extract"
+      ],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 576,
+      "prompt_tokens": 577,
+      "completion_tokens": 114,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2020-0037",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 1,
+      "vulnerable": [
+        "makeHTTPClient"
+      ],
+      "vulnerable_locations": [
+        [
+          "rpc/lib/client/http_client.go",
+          "makeHTTPClient"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "rpc/lib/client/http_client.go",
+          "name": "makeHTTPClient",
+          "rationale": "The fix disables GZIP compression in the HTTP transport to prevent GZIP-bomb denial of service attacks, which was the vulnerability described in the advisory.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "03085c2da23b179c4a51f59a03cb40aa4e85a613",
+              "path": "rpc/lib/client/http_client.go",
+              "old_start": 74,
+              "old_count": 7,
+              "new_start": 74,
+              "new_count": 9
+            }
+          ]
+        }
+      ],
+      "entry_points": [],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 611,
+      "prompt_tokens": 612,
+      "completion_tokens": 102,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2021-0057",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 1,
+      "vulnerable": [
+        "searchKeys"
+      ],
+      "vulnerable_locations": [
+        [
+          "parser.go",
+          "searchKeys"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "parser.go",
+          "name": "searchKeys",
+          "rationale": "The fix adds bounds checking to ensure the key string is long enough and properly formatted before slicing, preventing an out-of-bounds panic.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "df3ea76ece10095374fd1c9a22a4fb85a44efc42",
+              "path": "parser.go",
+              "old_start": 308,
+              "old_count": 7,
+              "new_start": 308,
+              "new_count": 11
+            }
+          ]
+        }
+      ],
+      "entry_points": [],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 645,
+      "prompt_tokens": 646,
+      "completion_tokens": 99,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2021-0072",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 9,
+      "vulnerable": [
+        "blobStore.Get",
+        "copyFullPayload"
+      ],
+      "vulnerable_locations": [
+        [
+          "registry/handlers/helpers.go",
+          "copyFullPayload"
+        ],
+        [
+          "registry/storage/blobstore.go",
+          "blobStore.Get"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "registry/handlers/helpers.go",
+          "name": "copyFullPayload",
+          "rationale": "The function previously copied the entire request body without any size limit, allowing uncontrolled memory allocation, which is fixed by introducing a `limit` parameter and using `http.MaxBytesReader`.",
+          "hunks": [
+            {
+              "id": "H3",
+              "source": "91c507a39abfce14b5c8541cf284330e22208c0f",
+              "path": "registry/handlers/helpers.go",
+              "old_start": 23,
+              "old_count": 7,
+              "new_start": 22,
+              "new_count": 9
+            },
+            {
+              "id": "H4",
+              "source": "91c507a39abfce14b5c8541cf284330e22208c0f",
+              "path": "registry/handlers/helpers.go",
+              "old_start": 32,
+              "old_count": 8,
+              "new_start": 33,
+              "new_count": 13
+            }
+          ]
+        },
+        {
+          "path": "registry/storage/blobstore.go",
+          "name": "blobStore.Get",
+          "rationale": "The method previously called `driver.GetContent` directly, which could allocate unbounded memory, and is fixed by delegating to `getContent` which enforces a size limit.",
+          "hunks": [
+            {
+              "id": "H7",
+              "source": "91c507a39abfce14b5c8541cf284330e22208c0f",
+              "path": "registry/storage/blobstore.go",
+              "old_start": 27,
+              "old_count": 7,
+              "new_start": 27,
+              "new_count": 7
+            }
+          ]
+        }
+      ],
+      "entry_points": [
+        "blobStore.Get",
+        "blobUploadHandler.PatchBlobData",
+        "blobUploadHandler.PutBlobUploadComplete",
+        "manifestHandler.PutManifest"
+      ],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 4283,
+      "prompt_tokens": 4284,
+      "completion_tokens": 771,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2021-0078",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 2,
+      "vulnerable": [
+        "inFramesetIM"
+      ],
+      "vulnerable_locations": [
+        [
+          "html/parse.go",
+          "inFramesetIM"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "html/parse.go",
+          "name": "inFramesetIM",
+          "rationale": "The fix removes the handling of template tags in the frameset insertion mode, which was causing the parser to panic on malformed HTML.",
+          "hunks": [
+            {
+              "id": "H2",
+              "source": "aaf60122140d3fcf75376d319f0554393160eb50",
+              "path": "html/parse.go",
+              "old_start": 1925,
+              "old_count": 11,
+              "new_start": 1919,
+              "new_count": 6
+            }
+          ]
+        }
+      ],
+      "entry_points": [],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 860,
+      "prompt_tokens": 861,
+      "completion_tokens": 177,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2021-0079",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 1,
+      "vulnerable": [
+        "Network.checkTopicRegister"
+      ],
+      "vulnerable_locations": [
+        [
+          "p2p/discover/net.go",
+          "Network.checkTopicRegister"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "p2p/discover/net.go",
+          "name": "Network.checkTopicRegister",
+          "rationale": "The fix corrects an improper bounds check on `data.Idx` that could cause an out-of-bounds panic when the index is negative or exceeds the slice length.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "1ac3c8ac4f2b1e1df9675228290bda6b9586ba42",
+              "path": "p2p/discover/net.go",
+              "old_start": 1221,
+              "old_count": 7,
+              "new_start": 1221,
+              "new_count": 7
+            }
+          ]
+        }
+      ],
+      "entry_points": [],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 611,
+      "prompt_tokens": 612,
+      "completion_tokens": 106,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2021-0085",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 16,
+      "vulnerable": [
+        "CloseExecFrom",
+        "readCon",
+        "setProcAttr",
+        "writeCon"
+      ],
+      "vulnerable_locations": [
+        [
+          "go-selinux/selinux_linux.go",
+          "readCon"
+        ],
+        [
+          "go-selinux/selinux_linux.go",
+          "writeCon"
+        ],
+        [
+          "libcontainer/apparmor/apparmor.go",
+          "setProcAttr"
+        ],
+        [
+          "libcontainer/utils/utils_unix.go",
+          "CloseExecFrom"
+        ],
+        [
+          "vendor/github.com/opencontainers/selinux/go-selinux/selinux_linux.go",
+          "readCon"
+        ],
+        [
+          "vendor/github.com/opencontainers/selinux/go-selinux/selinux_linux.go",
+          "writeCon"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "libcontainer/apparmor/apparmor.go",
+          "name": "setProcAttr",
+          "rationale": "The function previously wrote to a file handle without verifying it was on procfs, allowing a malicious mount to bypass AppArmor restrictions, which is fixed by adding the EnsureProcHandle check.",
+          "hunks": [
+            {
+              "id": "H5",
+              "source": "cad42f6e0932db0ce08c3a3d9e89e6063ec283e4",
+              "path": "libcontainer/apparmor/apparmor.go",
+              "old_start": 30,
+              "old_count": 14,
+              "new_start": 32,
+              "new_count": 18
+            }
+          ]
+        },
+        {
+          "path": "libcontainer/utils/utils_unix.go",
+          "name": "CloseExecFrom",
+          "rationale": "The function previously used ioutil.ReadDir which could be tricked by a malicious mount, and the fix adds a check to ensure the directory handle is on procfs before reading.",
+          "hunks": [
+            {
+              "id": "H6",
+              "source": "cad42f6e0932db0ce08c3a3d9e89e6063ec283e4",
+              "path": "libcontainer/utils/utils_unix.go",
+              "old_start": 3,
+              "old_count": 33,
+              "new_start": 3,
+              "new_count": 57
+            }
+          ]
+        },
+        {
+          "path": "vendor/github.com/opencontainers/selinux/go-selinux/selinux_linux.go",
+          "name": "readCon",
+          "rationale": "The function previously read from a file handle without verifying it was on procfs, allowing a malicious mount to bypass SELinux restrictions, which is fixed by adding the isProcHandle check.",
+          "hunks": [
+            {
+              "id": "H9",
+              "source": "cad42f6e0932db0ce08c3a3d9e89e6063ec283e4",
+              "path": "vendor/github.com/opencontainers/selinux/go-selinux/selinux_linux.go",
+              "old_start": 263,
+              "old_count": 6,
+              "new_start": 271,
+              "new_count": 12
+            }
+          ]
+        },
+        {
+          "path": "vendor/github.com/opencontainers/selinux/go-selinux/selinux_linux.go",
+          "name": "writeCon",
+          "rationale": "The function previously wrote to a file handle without verifying it was on procfs, allowing a malicious mount to bypass SELinux restrictions, which is fixed by adding the isProcHandle check.",
+          "hunks": [
+            {
+              "id": "H10",
+              "source": "cad42f6e0932db0ce08c3a3d9e89e6063ec283e4",
+              "path": "vendor/github.com/opencontainers/selinux/go-selinux/selinux_linux.go",
+              "old_start": 345,
+              "old_count": 6,
+              "new_start": 359,
+              "new_count": 12
+            }
+          ]
+        },
+        {
+          "path": "go-selinux/selinux_linux.go",
+          "name": "readCon",
+          "rationale": "The function previously read from a file handle without verifying it was on procfs, allowing a malicious mount to bypass SELinux restrictions, which is fixed by adding the isProcHandle check.",
+          "hunks": [
+            {
+              "id": "H2",
+              "source": "03b517dc4fd57245b1cf506e8ba7b817b6d309da",
+              "path": "go-selinux/selinux_linux.go",
+              "old_start": 264,
+              "old_count": 6,
+              "new_start": 271,
+              "new_count": 12
+            }
+          ]
+        },
+        {
+          "path": "go-selinux/selinux_linux.go",
+          "name": "writeCon",
+          "rationale": "The function previously wrote to a file handle without verifying it was on procfs, allowing a malicious mount to bypass SELinux restrictions, which is fixed by adding the isProcHandle check.",
+          "hunks": [
+            {
+              "id": "H3",
+              "source": "03b517dc4fd57245b1cf506e8ba7b817b6d309da",
+              "path": "go-selinux/selinux_linux.go",
+              "old_start": 346,
+              "old_count": 6,
+              "new_start": 359,
+              "new_count": 12
+            }
+          ]
+        }
+      ],
+      "entry_points": [],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 4498,
+      "prompt_tokens": 4499,
+      "completion_tokens": 1274,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2021-0086",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 1,
+      "vulnerable": [
+        "Provider.Render"
+      ],
+      "vulnerable_locations": [
+        [
+          "domain/section/markdown/markdown.go",
+          "Provider.Render"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "domain/section/markdown/markdown.go",
+          "name": "Provider.Render",
+          "rationale": "The function previously returned raw HTML generated by blackfriday without sanitization, which allowed XSS; the fix adds bluemonday sanitization to the output.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "a4384210d4d0d6b18e6fdb7e155de96d4a1cf9f3",
+              "path": "domain/section/markdown/markdown.go",
+              "old_start": 47,
+              "old_count": 9,
+              "new_start": 48,
+              "new_count": 11
+            }
+          ]
+        }
+      ],
+      "entry_points": [
+        "Provider.Render"
+      ],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 592,
+      "prompt_tokens": 593,
+      "completion_tokens": 112,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2021-0090",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 1,
+      "vulnerable": [
+        "VoteSet.MakeCommit"
+      ],
+      "vulnerable_locations": [
+        [
+          "types/vote_set.go",
+          "VoteSet.MakeCommit"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "types/vote_set.go",
+          "name": "VoteSet.MakeCommit",
+          "rationale": "The fix modifies the function to exclude signatures for blocks that do not match the majority block ID, preventing verification failures caused by malicious proposers including mismatched signatures.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "480b995a31727593f58b361af979054d17d84340",
+              "path": "types/vote_set.go",
+              "old_start": 567,
+              "old_count": 7,
+              "new_start": 569,
+              "new_count": 12
+            }
+          ]
+        }
+      ],
+      "entry_points": [
+        "VoteSet.MakeCommit"
+      ],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 677,
+      "prompt_tokens": 678,
+      "completion_tokens": 115,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2021-0107",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 1,
+      "vulnerable": [
+        "Server.socketHandler"
+      ],
+      "vulnerable_locations": [
+        [
+          "websocket.go",
+          "Server.socketHandler"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "websocket.go",
+          "name": "Server.socketHandler",
+          "rationale": "The fix adds the missing execution of the `AuthenticateMethod` hook and proper handling of nil `UserData` to prevent authentication bypass and nil pointer dereferences.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "5a78f8d5c41ce60dcf9f61aaf47a7a8dc3e0002f",
+              "path": "websocket.go",
+              "old_start": 24,
+              "old_count": 14,
+              "new_start": 25,
+              "new_count": 33
+            }
+          ]
+        }
+      ],
+      "entry_points": [
+        "Server.socketHandler"
+      ],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 836,
+      "prompt_tokens": 837,
+      "completion_tokens": 113,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2021-0142",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 1,
+      "vulnerable": [
+        "ReadUvarint"
+      ],
+      "vulnerable_locations": [
+        [
+          "src/encoding/binary/varint.go",
+          "ReadUvarint"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "src/encoding/binary/varint.go",
+          "name": "ReadUvarint",
+          "rationale": "The fix adds a loop bound `i < MaxVarintLen64` to prevent `ReadUvarint` from reading an unlimited number of bytes from invalid inputs.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "027d7241ce050d197e7fabea3d541ffbe3487258",
+              "path": "src/encoding/binary/varint.go",
+              "old_start": 106,
+              "old_count": 20,
+              "new_start": 106,
+              "new_count": 21
+            }
+          ]
+        }
+      ],
+      "entry_points": [
+        "ReadUvarint"
+      ],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 783,
+      "prompt_tokens": 784,
+      "completion_tokens": 118,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2021-0154",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 2,
+      "vulnerable": [
+        "Conn.decryptTicket",
+        "serverHandshakeState.checkForResumption"
+      ],
+      "vulnerable_locations": [
+        [
+          "src/crypto/tls/handshake_server.go",
+          "serverHandshakeState.checkForResumption"
+        ],
+        [
+          "src/crypto/tls/ticket.go",
+          "Conn.decryptTicket"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "src/crypto/tls/handshake_server.go",
+          "name": "serverHandshakeState.checkForResumption",
+          "rationale": "The fix adds a check to prevent session resumption when SessionTicketsDisabled is true, which closes the vulnerability allowing MITM attackers to spoof clients.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "64df53ed7f46db4a404812e2ef347521dc95a039",
+              "path": "src/crypto/tls/handshake_server.go",
+              "old_start": 231,
+              "old_count": 6,
+              "new_start": 231,
+              "new_count": 10
+            }
+          ]
+        },
+        {
+          "path": "src/crypto/tls/ticket.go",
+          "name": "Conn.decryptTicket",
+          "rationale": "The fix adds a check to prevent ticket decryption when SessionTicketsDisabled is true, which closes the vulnerability allowing MITM attackers to spoof clients.",
+          "hunks": [
+            {
+              "id": "H2",
+              "source": "64df53ed7f46db4a404812e2ef347521dc95a039",
+              "path": "src/crypto/tls/ticket.go",
+              "old_start": 153,
+              "old_count": 7,
+              "new_start": 153,
+              "new_count": 8
+            }
+          ]
+        }
+      ],
+      "entry_points": [],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 757,
+      "prompt_tokens": 758,
+      "completion_tokens": 180,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2021-0235",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 1,
+      "vulnerable": [
+        "p224Contract"
+      ],
+      "vulnerable_locations": [
+        [
+          "src/crypto/elliptic/p224.go",
+          "p224Contract"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "src/crypto/elliptic/p224.go",
+          "name": "p224Contract",
+          "rationale": "The function p224Contract contained logic errors in the reduction and carry propagation steps that could result in values not being correctly reduced modulo p, which the fix corrects by adjusting the carry logic and adding a final carry-down step.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "d95ca9138026cbe40e0857d76a81a16d03230871",
+              "path": "src/crypto/elliptic/p224.go",
+              "old_start": 386,
+              "old_count": 21,
+              "new_start": 386,
+              "new_count": 25
+            },
+            {
+              "id": "H3",
+              "source": "d95ca9138026cbe40e0857d76a81a16d03230871",
+              "path": "src/crypto/elliptic/p224.go",
+              "old_start": 470,
+              "old_count": 12,
+              "new_start": 473,
+              "new_count": 11
+            },
+            {
+              "id": "H4",
+              "source": "d95ca9138026cbe40e0857d76a81a16d03230871",
+              "path": "src/crypto/elliptic/p224.go",
+              "old_start": 484,
+              "old_count": 8,
+              "new_start": 486,
+              "new_count": 8
+            },
+            {
+              "id": "H5",
+              "source": "d95ca9138026cbe40e0857d76a81a16d03230871",
+              "path": "src/crypto/elliptic/p224.go",
+              "old_start": 494,
+              "old_count": 6,
+              "new_start": 496,
+              "new_count": 15
+            }
+          ]
+        }
+      ],
+      "entry_points": [],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 1948,
+      "prompt_tokens": 1949,
+      "completion_tokens": 137,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2021-0241",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 1,
+      "vulnerable": [
+        "ReverseProxy.ServeHTTP"
+      ],
+      "vulnerable_locations": [
+        [
+          "src/net/http/httputil/reverseproxy.go",
+          "ReverseProxy.ServeHTTP"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "src/net/http/httputil/reverseproxy.go",
+          "name": "ReverseProxy.ServeHTTP",
+          "rationale": "The fix removes the logic that conditionally preserved hop-by-hop headers like 'Te' and 'Connection' based on their values, ensuring they are always stripped to prevent header manipulation attacks.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "950fa11c4cb01a145bb07eeb167d90a1846061b3",
+              "path": "src/net/http/httputil/reverseproxy.go",
+              "old_start": 253,
+              "old_count": 22,
+              "new_start": 253,
+              "new_count": 18
+            }
+          ]
+        }
+      ],
+      "entry_points": [
+        "ReverseProxy.ServeHTTP"
+      ],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 882,
+      "prompt_tokens": 883,
+      "completion_tokens": 120,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2021-0242",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 1,
+      "vulnerable": [
+        "Rat.SetString"
+      ],
+      "vulnerable_locations": [
+        [
+          "src/math/big/ratconv.go",
+          "Rat.SetString"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "src/math/big/ratconv.go",
+          "name": "Rat.SetString",
+          "rationale": "The function previously contained explicit panic calls for large exponents, which were replaced with safe error returns to prevent crashes.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "6c591f79b0b5327549bd4e94970f7a279efb4ab0",
+              "path": "src/math/big/ratconv.go",
+              "old_start": 169,
+              "old_count": 6,
+              "new_start": 170,
+              "new_count": 9
+            },
+            {
+              "id": "H2",
+              "source": "6c591f79b0b5327549bd4e94970f7a279efb4ab0",
+              "path": "src/math/big/ratconv.go",
+              "old_start": 181,
+              "old_count": 15,
+              "new_start": 185,
+              "new_count": 12
+            }
+          ]
+        }
+      ],
+      "entry_points": [
+        "Rat.SetString"
+      ],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 807,
+      "prompt_tokens": 808,
+      "completion_tokens": 111,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2021-0243",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 1,
+      "vulnerable": [
+        "rsaKeyAgreement.generateClientKeyExchange"
+      ],
+      "vulnerable_locations": [
+        [
+          "src/crypto/tls/key_agreement.go",
+          "rsaKeyAgreement.generateClientKeyExchange"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "src/crypto/tls/key_agreement.go",
+          "name": "rsaKeyAgreement.generateClientKeyExchange",
+          "rationale": "The fix adds a type assertion check to prevent a panic when the certificate's public key is not of type *rsa.PublicKey, which was the cause of the vulnerability.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "a98589711da5e9d935e8d690cfca92892e86d557",
+              "path": "src/crypto/tls/key_agreement.go",
+              "old_start": 86,
+              "old_count": 7,
+              "new_start": 86,
+              "new_count": 11
+            }
+          ]
+        }
+      ],
+      "entry_points": [],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 639,
+      "prompt_tokens": 640,
+      "completion_tokens": 106,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2021-0264",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 3,
+      "vulnerable": [
+        "Reader.Open",
+        "Reader.initFileList",
+        "split"
+      ],
+      "vulnerable_locations": [
+        [
+          "src/archive/zip/reader.go",
+          "Reader.Open"
+        ],
+        [
+          "src/archive/zip/reader.go",
+          "Reader.initFileList"
+        ],
+        [
+          "src/archive/zip/reader.go",
+          "split"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "src/archive/zip/reader.go",
+          "name": "Reader.Open",
+          "rationale": "The fix adds an early check for `fs.ValidPath(name)` to prevent a panic when `Reader.Open` is called with an invalid path like an empty string or one consisting only of slashes.",
+          "hunks": [
+            {
+              "id": "H2",
+              "source": "b24687394b55a93449e2be4e6892ead58ea9a10f",
+              "path": "src/archive/zip/reader.go",
+              "old_start": 782,
+              "old_count": 8,
+              "new_start": 785,
+              "new_count": 11
+            }
+          ]
+        },
+        {
+          "path": "src/archive/zip/reader.go",
+          "name": "Reader.initFileList",
+          "rationale": "The fix skips files in the internal file list if their cleaned name is empty, preventing invalid entries from being added which could lead to panics or incorrect behavior during lookup.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "b24687394b55a93449e2be4e6892ead58ea9a10f",
+              "path": "src/archive/zip/reader.go",
+              "old_start": 741,
+              "old_count": 6,
+              "new_start": 741,
+              "new_count": 9
+            }
+          ]
+        },
+        {
+          "path": "src/archive/zip/reader.go",
+          "name": "split",
+          "rationale": "The fix adds a length check to prevent an index out of range panic in the `split` function when called with an empty string, serving as a defense-in-depth measure.",
+          "hunks": [
+            {
+              "id": "H3",
+              "source": "b24687394b55a93449e2be4e6892ead58ea9a10f",
+              "path": "src/archive/zip/reader.go",
+              "old_start": 797,
+              "old_count": 7,
+              "new_start": 803,
+              "new_count": 7
+            }
+          ]
+        }
+      ],
+      "entry_points": [
+        "Reader.Open"
+      ],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 1044,
+      "prompt_tokens": 1045,
+      "completion_tokens": 291,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2021-0317",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 1,
+      "vulnerable": [
+        "Rat.SetString"
+      ],
+      "vulnerable_locations": [
+        [
+          "src/math/big/ratconv.go",
+          "Rat.SetString"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "src/math/big/ratconv.go",
+          "name": "Rat.SetString",
+          "rationale": "The fix adds a check to prevent integer overflow when negating the exponent `n`, which previously could lead to uncontrolled memory consumption.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "ad345c265916bbf6c646865e4642eafce6d39e78",
+              "path": "src/math/big/ratconv.go",
+              "old_start": 169,
+              "old_count": 6,
+              "new_start": 169,
+              "new_count": 11
+            }
+          ]
+        }
+      ],
+      "entry_points": [
+        "Rat.SetString"
+      ],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 588,
+      "prompt_tokens": 589,
+      "completion_tokens": 109,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2021-0356",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 6,
+      "vulnerable": [
+        "algorithmSignerWrapper.SignWithAlgorithm",
+        "handshakeTransport.server",
+        "pickHostKey"
+      ],
+      "vulnerable_locations": [
+        [
+          "ssh/handshake.go",
+          "algorithmSignerWrapper.SignWithAlgorithm"
+        ],
+        [
+          "ssh/handshake.go",
+          "handshakeTransport.server"
+        ],
+        [
+          "ssh/handshake.go",
+          "pickHostKey"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "ssh/handshake.go",
+          "name": "algorithmSignerWrapper.SignWithAlgorithm",
+          "rationale": "The fix introduces `algorithmSignerWrapper` and `pickHostKey` to safely handle Signers that do not implement `AlgorithmSigner`, preventing the crash described in the advisory.",
+          "hunks": [
+            {
+              "id": "H8",
+              "source": "1baeb1ce4c0b006eff0f294c47cb7617598dfb3d",
+              "path": "ssh/handshake.go",
+              "old_start": 618,
+              "old_count": 33,
+              "new_start": 626,
+              "new_count": 52
+            }
+          ]
+        },
+        {
+          "path": "ssh/handshake.go",
+          "name": "handshakeTransport.server",
+          "rationale": "The `server` method is modified to use the new `pickHostKey` function, which ensures that only compatible Signers are used for signing, thereby preventing the denial of service.",
+          "hunks": [
+            {
+              "id": "H8",
+              "source": "1baeb1ce4c0b006eff0f294c47cb7617598dfb3d",
+              "path": "ssh/handshake.go",
+              "old_start": 618,
+              "old_count": 33,
+              "new_start": 626,
+              "new_count": 52
+            }
+          ]
+        },
+        {
+          "path": "ssh/handshake.go",
+          "name": "pickHostKey",
+          "rationale": "The new `pickHostKey` function is added to safely select a host key signer, wrapping non-AlgorithmSigner Signers to prevent crashes when they are used.",
+          "hunks": [
+            {
+              "id": "H8",
+              "source": "1baeb1ce4c0b006eff0f294c47cb7617598dfb3d",
+              "path": "ssh/handshake.go",
+              "old_start": 618,
+              "old_count": 33,
+              "new_start": 626,
+              "new_count": 52
+            }
+          ]
+        }
+      ],
+      "entry_points": [
+        "ServerConfig.AddHostKey"
+      ],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": true,
+      "dropped_candidates": [
+        "Certificate.SignCert",
+        "Certificate.Type",
+        "certToPrivAlgo",
+        "underlyingAlgo",
+        "algorithmsForKeyFormat",
+        "handshakeTransport.client",
+        "handshakeTransport.enterKeyExchange",
+        "curve25519sha256.Server",
+        "dhGroup.Server",
+        "ecHash",
+        "ecdh.Server",
+        "dsaPrivateKey.Sign",
+        "dsaPrivateKey.SignWithAlgorithm",
+        "dsaPublicKey.Verify",
+        "ecHash",
+        "ecdsaPublicKey.Verify",
+        "parsePubKey",
+        "rsaPublicKey.Verify",
+        "rsaSigner.Sign",
+        "skECDSAPublicKey.Verify",
+        "skEd25519PublicKey.Verify",
+        "wrappedSigner.Sign",
+        "wrappedSigner.SignWithAlgorithm",
+        "signAndMarshal"
+      ],
+      "estimated_prompt_tokens": 4585,
+      "prompt_tokens": 4586,
+      "completion_tokens": 518,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2022-0189",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 5,
+      "vulnerable": [
+        "downloadPackage"
+      ],
+      "vulnerable_locations": [
+        [
+          "src/cmd/go/internal/get/get.go",
+          "downloadPackage"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "src/cmd/go/internal/get/get.go",
+          "name": "downloadPackage",
+          "rationale": "The function previously lacked validation of the import path, allowing malicious paths to trigger the vulnerability, which is fixed by adding the CheckImportPath call.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "bc82d7c7db83487e05d7a88e06549d4ae2a688c3",
+              "path": "src/cmd/go/internal/get/get.go",
+              "old_start": 402,
+              "old_count": 6,
+              "new_start": 402,
+              "new_count": 10
+            }
+          ]
+        }
+      ],
+      "entry_points": [
+        "downloadPackage"
+      ],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": true,
+      "dropped_candidates": [
+        "fileNameOK"
+      ],
+      "estimated_prompt_tokens": 3998,
+      "prompt_tokens": 3999,
+      "completion_tokens": 355,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2022-0190",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 5,
+      "vulnerable": [
+        "CheckImportPath"
+      ],
+      "vulnerable_locations": [
+        [
+          "src/cmd/go/internal/get/path.go",
+          "CheckImportPath"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "src/cmd/go/internal/get/path.go",
+          "name": "CheckImportPath",
+          "rationale": "The function CheckImportPath is added to validate import paths and reject malicious characters like curly braces, preventing the directory traversal vulnerability.",
+          "hunks": [
+            {
+              "id": "H2",
+              "source": "bc82d7c7db83487e05d7a88e06549d4ae2a688c3",
+              "path": "src/cmd/go/internal/get/path.go",
+              "old_start": 0,
+              "old_count": 0,
+              "new_start": 1,
+              "new_count": 172
+            }
+          ]
+        }
+      ],
+      "entry_points": [
+        "CheckImportPath"
+      ],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": true,
+      "dropped_candidates": [
+        "downloadPackage"
+      ],
+      "estimated_prompt_tokens": 4444,
+      "prompt_tokens": 4445,
+      "completion_tokens": 391,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2022-0251",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 1,
+      "vulnerable": [
+        "readObject"
+      ],
+      "vulnerable_locations": [
+        [
+          "validator/lib/ber.go",
+          "readObject"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "validator/lib/ber.go",
+          "name": "readObject",
+          "rationale": "The fix adds a bounds check to prevent a panic when processing a BER object with NUL contents, which was the cause of the crash described in the advisory.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "76f0f7a98da001fa04e5bc0407c6702f91096bfa",
+              "path": "validator/lib/ber.go",
+              "old_start": 162,
+              "old_count": 6,
+              "new_start": 162,
+              "new_count": 10
+            }
+          ]
+        }
+      ],
+      "entry_points": [],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 595,
+      "prompt_tokens": 596,
+      "completion_tokens": 104,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2022-0273",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 1,
+      "vulnerable": [
+        "Reader.init"
+      ],
+      "vulnerable_locations": [
+        [
+          "src/archive/zip/reader.go",
+          "Reader.init"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "src/archive/zip/reader.go",
+          "name": "Reader.init",
+          "rationale": "The fix adds a bounds check to prevent an integer underflow in the size calculation, which previously caused a panic when the archive claimed to have more files than the actual data size allowed.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "bacbc33439b124ffd7392c91a5f5d96eca8c0c0b",
+              "path": "src/archive/zip/reader.go",
+              "old_start": 102,
+              "old_count": 7,
+              "new_start": 102,
+              "new_count": 7
+            }
+          ]
+        }
+      ],
+      "entry_points": [
+        "NewReader",
+        "OpenReader"
+      ],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 670,
+      "prompt_tokens": 671,
+      "completion_tokens": 124,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2022-0274",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 4,
+      "vulnerable": [
+        "createLibcontainerMount",
+        "linuxContainer.bootstrapData"
+      ],
+      "vulnerable_locations": [
+        [
+          "libcontainer/container_linux.go",
+          "linuxContainer.bootstrapData"
+        ],
+        [
+          "libcontainer/specconv/spec_linux.go",
+          "createLibcontainerMount"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "libcontainer/container_linux.go",
+          "name": "linuxContainer.bootstrapData",
+          "rationale": "The fix adds a check to reject mount sources containing null bytes, preventing the namespace restriction bypass described in the advisory.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "dde509df4e28cec33b3c99c6cda3d4fd5beafc77",
+              "path": "libcontainer/container_linux.go",
+              "old_start": 2195,
+              "old_count": 6,
+              "new_start": 2195,
+              "new_count": 9
+            }
+          ]
+        },
+        {
+          "path": "libcontainer/specconv/spec_linux.go",
+          "name": "createLibcontainerMount",
+          "rationale": "The fix adds validation to ensure mount fields do not contain null bytes, which is necessary to prevent the namespace restriction bypass.",
+          "hunks": [
+            {
+              "id": "H2",
+              "source": "dde509df4e28cec33b3c99c6cda3d4fd5beafc77",
+              "path": "libcontainer/specconv/spec_linux.go",
+              "old_start": 407,
+              "old_count": 6,
+              "new_start": 407,
+              "new_count": 18
+            }
+          ]
+        }
+      ],
+      "entry_points": [],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 1526,
+      "prompt_tokens": 1527,
+      "completion_tokens": 337,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2022-0289",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 1,
+      "vulnerable": [
+        "forkExec"
+      ],
+      "vulnerable_locations": [
+        [
+          "src/syscall/exec_unix.go",
+          "forkExec"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "src/syscall/exec_unix.go",
+          "name": "forkExec",
+          "rationale": "The fix removes the `goto error` pattern and the shared `error` label that could lead to incorrect file descriptor handling (specifically closing fd 0) when `forkExecPipe` fails, by explicitly closing the pipe ends and returning immediately.",
+          "hunks": [
+            {
+              "id": "H2",
+              "source": "a76511f3a40ea69ee4f5cd86e735e1c8a84f0aa2",
+              "path": "src/syscall/exec_unix.go",
+              "old_start": 204,
+              "old_count": 14,
+              "new_start": 201,
+              "new_count": 17
+            },
+            {
+              "id": "H3",
+              "source": "a76511f3a40ea69ee4f5cd86e735e1c8a84f0aa2",
+              "path": "src/syscall/exec_unix.go",
+              "old_start": 243,
+              "old_count": 14,
+              "new_start": 243,
+              "new_count": 6
+            }
+          ]
+        }
+      ],
+      "entry_points": [],
+      "entry_points_dropped": 1,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 963,
+      "prompt_tokens": 964,
+      "completion_tokens": 139,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2022-0345",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 5,
+      "vulnerable": [
+        "RunUsingChroot",
+        "runUsingChroot"
+      ],
+      "vulnerable_locations": [
+        [
+          "chroot/run.go",
+          "RunUsingChroot"
+        ],
+        [
+          "chroot/run.go",
+          "runUsingChroot"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "chroot/run.go",
+          "name": "RunUsingChroot",
+          "rationale": "The fix removes the propagation of the current process's environment variables to the child process by replacing `os.Environ()` with an empty list.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "a468ce0ffd347035d53ee0e26c205ef604097fb0",
+              "path": "chroot/run.go",
+              "old_start": 161,
+              "old_count": 7,
+              "new_start": 161,
+              "new_count": 7
+            }
+          ]
+        },
+        {
+          "path": "chroot/run.go",
+          "name": "runUsingChroot",
+          "rationale": "The fix removes the propagation of the current process's environment variables to the child process by replacing `os.Environ()` with an empty list.",
+          "hunks": [
+            {
+              "id": "H3",
+              "source": "a468ce0ffd347035d53ee0e26c205ef604097fb0",
+              "path": "chroot/run.go",
+              "old_start": 573,
+              "old_count": 7,
+              "new_start": 573,
+              "new_count": 7
+            }
+          ]
+        }
+      ],
+      "entry_points": [
+        "RunUsingChroot"
+      ],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 1480,
+      "prompt_tokens": 1481,
+      "completion_tokens": 378,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2022-0355",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 1,
+      "vulnerable": [
+        "normalizePath"
+      ],
+      "vulnerable_locations": [
+        [
+          "uri.go",
+          "normalizePath"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "uri.go",
+          "name": "normalizePath",
+          "rationale": "The fix adds logic to normalize Windows-specific path separators (backslashes) and remove traversal patterns like `..\\`, which were previously ignored, allowing directory traversal attacks.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "6b5bc7bb304975147b4af68df54ac214ed2554c1",
+              "path": "uri.go",
+              "old_start": 634,
+              "old_count": 6,
+              "new_start": 635,
+              "new_count": 60
+            }
+          ]
+        }
+      ],
+      "entry_points": [],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 1030,
+      "prompt_tokens": 1031,
+      "completion_tokens": 105,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2022-0370",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 4,
+      "vulnerable": [
+        "Dialer.Dial",
+        "Dialer.config",
+        "NewClient"
+      ],
+      "vulnerable_locations": [
+        [
+          "websocket/ws.go",
+          "Dialer.Dial"
+        ],
+        [
+          "websocket/ws.go",
+          "Dialer.config"
+        ],
+        [
+          "websocket/ws.go",
+          "NewClient"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "websocket/ws.go",
+          "name": "Dialer.Dial",
+          "rationale": "The fix updates the call to `d.config` to pass the correct destination domain (`addr.Domain().String()`) as the first argument, ensuring the TLS certificate is validated against the intended server rather than the one from the DNS TXT record.",
+          "hunks": [
+            {
+              "id": "H2",
+              "source": "0d92aa486da69b71f2f4a30e62aa722c711b98ac",
+              "path": "websocket/ws.go",
+              "old_start": 190,
+              "old_count": 7,
+              "new_start": 190,
+              "new_count": 7
+            }
+          ]
+        },
+        {
+          "path": "websocket/ws.go",
+          "name": "Dialer.config",
+          "rationale": "The vulnerability resides in the `config` method where `ServerName` was incorrectly set to `cfg.Location.Host` (derived from the DNS record) instead of the actual remote address, allowing MITM attacks via DNS spoofing.",
+          "hunks": [
+            {
+              "id": "H4",
+              "source": "0d92aa486da69b71f2f4a30e62aa722c711b98ac",
+              "path": "websocket/ws.go",
+              "old_start": 225,
+              "old_count": 7,
+              "new_start": 225,
+              "new_count": 7
+            }
+          ]
+        },
+        {
+          "path": "websocket/ws.go",
+          "name": "NewClient",
+          "rationale": "The fix updates the call to `d.config` in `NewClient` to pass the correct destination domain (`addr.Domain().String()`) as the first argument, ensuring proper TLS validation for the new client connection.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "0d92aa486da69b71f2f4a30e62aa722c711b98ac",
+              "path": "websocket/ws.go",
+              "old_start": 61,
+              "old_count": 7,
+              "new_start": 61,
+              "new_count": 7
+            }
+          ]
+        }
+      ],
+      "entry_points": [
+        "Dialer.Dial",
+        "NewClient"
+      ],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 1307,
+      "prompt_tokens": 1308,
+      "completion_tokens": 421,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2022-0379",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 4,
+      "vulnerable": [
+        "init",
+        "validateIndex",
+        "validateManifest"
+      ],
+      "vulnerable_locations": [
+        [
+          "manifest/manifestlist/manifestlist.go",
+          "init"
+        ],
+        [
+          "manifest/manifestlist/manifestlist.go",
+          "validateIndex"
+        ],
+        [
+          "manifest/ocischema/manifest.go",
+          "init"
+        ],
+        [
+          "manifest/ocischema/manifest.go",
+          "validateManifest"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "manifest/manifestlist/manifestlist.go",
+          "name": "init",
+          "rationale": "The fix adds a call to validateIndex to prevent type confusion by rejecting manifests that are incorrectly parsed as indexes.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "b59a6f827947f9e0e67df0cfb571046de4733586",
+              "path": "manifest/manifestlist/manifestlist.go",
+              "old_start": 54,
+              "old_count": 6,
+              "new_start": 54,
+              "new_count": 9
+            }
+          ]
+        },
+        {
+          "path": "manifest/manifestlist/manifestlist.go",
+          "name": "validateIndex",
+          "rationale": "This function implements the validation logic that detects and rejects manifests containing fields specific to image manifests, thereby preventing the type confusion vulnerability.",
+          "hunks": [
+            {
+              "id": "H2",
+              "source": "b59a6f827947f9e0e67df0cfb571046de4733586",
+              "path": "manifest/manifestlist/manifestlist.go",
+              "old_start": 221,
+              "old_count": 3,
+              "new_start": 224,
+              "new_count": 23
+            }
+          ]
+        },
+        {
+          "path": "manifest/ocischema/manifest.go",
+          "name": "init",
+          "rationale": "The fix adds a call to validateManifest to prevent type confusion by rejecting indexes that are incorrectly parsed as manifests.",
+          "hunks": [
+            {
+              "id": "H3",
+              "source": "b59a6f827947f9e0e67df0cfb571046de4733586",
+              "path": "manifest/ocischema/manifest.go",
+              "old_start": 22,
+              "old_count": 6,
+              "new_start": 22,
+              "new_count": 9
+            }
+          ]
+        },
+        {
+          "path": "manifest/ocischema/manifest.go",
+          "name": "validateManifest",
+          "rationale": "This function implements the validation logic that detects and rejects indexes containing fields specific to image indexes, thereby preventing the type confusion vulnerability.",
+          "hunks": [
+            {
+              "id": "H4",
+              "source": "b59a6f827947f9e0e67df0cfb571046de4733586",
+              "path": "manifest/ocischema/manifest.go",
+              "old_start": 122,
+              "old_count": 3,
+              "new_start": 125,
+              "new_count": 22
+            }
+          ]
+        }
+      ],
+      "entry_points": [],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 1265,
+      "prompt_tokens": 1266,
+      "completion_tokens": 319,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2022-0463",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 1,
+      "vulnerable": [
+        "Tree.match"
+      ],
+      "vulnerable_locations": [
+        [
+          "server/web/tree.go",
+          "Tree.match"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "server/web/tree.go",
+          "name": "Tree.match",
+          "rationale": "The fix corrects the overly-broad matching logic in the suffix extension filter by removing the `strings.HasSuffix(treePattern, seg)` check and adding a `pattern == \"\"` guard, which prevents unintended URL patterns from matching routes and bypassing access controls.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "64cf44d725c8cc35d782327d333df9cbeb1bf2dd",
+              "path": "server/web/tree.go",
+              "old_start": 341,
+              "old_count": 9,
+              "new_start": 341,
+              "new_count": 9
+            }
+          ]
+        }
+      ],
+      "entry_points": [],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 712,
+      "prompt_tokens": 713,
+      "completion_tokens": 125,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2022-0536",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 7,
+      "vulnerable": [
+        "http2FrameWriteRequest.isControl",
+        "http2Server.maxQueuedControlFrames",
+        "http2serverConn.scheduleFrameWrite",
+        "http2serverConn.serve",
+        "http2serverConn.writeFrame"
+      ],
+      "vulnerable_locations": [
+        [
+          "src/net/http/h2_bundle.go",
+          "http2FrameWriteRequest.isControl"
+        ],
+        [
+          "src/net/http/h2_bundle.go",
+          "http2Server.maxQueuedControlFrames"
+        ],
+        [
+          "src/net/http/h2_bundle.go",
+          "http2serverConn.scheduleFrameWrite"
+        ],
+        [
+          "src/net/http/h2_bundle.go",
+          "http2serverConn.serve"
+        ],
+        [
+          "src/net/http/h2_bundle.go",
+          "http2serverConn.writeFrame"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "src/net/http/h2_bundle.go",
+          "name": "http2FrameWriteRequest.isControl",
+          "rationale": "The new `isControl` method is added to identify control frames (like RST_STREAM) so they can be counted and limited to prevent memory exhaustion.",
+          "hunks": [
+            {
+              "id": "H7",
+              "source": "145e193131eb486077b66009beb051aba07c52a5",
+              "path": "src/net/http/h2_bundle.go",
+              "old_start": 9489,
+              "old_count": 6,
+              "new_start": 9519,
+              "new_count": 12
+            }
+          ]
+        },
+        {
+          "path": "src/net/http/h2_bundle.go",
+          "name": "http2Server.maxQueuedControlFrames",
+          "rationale": "The new `maxQueuedControlFrames` method provides the limit for queued control frames, which is essential for the fix to prevent memory exhaustion.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "145e193131eb486077b66009beb051aba07c52a5",
+              "path": "src/net/http/h2_bundle.go",
+              "old_start": 3722,
+              "old_count": 6,
+              "new_start": 3723,
+              "new_count": 15
+            }
+          ]
+        },
+        {
+          "path": "src/net/http/h2_bundle.go",
+          "name": "http2serverConn.scheduleFrameWrite",
+          "rationale": "The change decrements the `queuedControlFrames` counter when a control frame is popped from the write schedule, ensuring the limit is correctly maintained.",
+          "hunks": [
+            {
+              "id": "H4",
+              "source": "145e193131eb486077b66009beb051aba07c52a5",
+              "path": "src/net/http/h2_bundle.go",
+              "old_start": 4805,
+              "old_count": 6,
+              "new_start": 4830,
+              "new_count": 9
+            }
+          ]
+        },
+        {
+          "path": "src/net/http/h2_bundle.go",
+          "name": "http2serverConn.serve",
+          "rationale": "The change adds a check in the serve loop to close the connection if the number of queued control frames exceeds the limit, directly preventing the denial of service.",
+          "hunks": [
+            {
+              "id": "H2",
+              "source": "145e193131eb486077b66009beb051aba07c52a5",
+              "path": "src/net/http/h2_bundle.go",
+              "old_start": 4456,
+              "old_count": 6,
+              "new_start": 4467,
+              "new_count": 14
+            }
+          ]
+        },
+        {
+          "path": "src/net/http/h2_bundle.go",
+          "name": "http2serverConn.writeFrame",
+          "rationale": "The change increments the `queuedControlFrames` counter when a control frame is pushed to the write schedule, enabling the limit check to function.",
+          "hunks": [
+            {
+              "id": "H3",
+              "source": "145e193131eb486077b66009beb051aba07c52a5",
+              "path": "src/net/http/h2_bundle.go",
+              "old_start": 4657,
+              "old_count": 6,
+              "new_start": 4676,
+              "new_count": 14
+            }
+          ]
+        }
+      ],
+      "entry_points": [],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 1787,
+      "prompt_tokens": 1788,
+      "completion_tokens": 544,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2022-0621",
+      "status": "no_candidates",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 0,
+      "vulnerable": [],
+      "vulnerable_locations": [],
+      "evidence": [],
+      "entry_points": [],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 474,
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "calls": 0,
+      "cached_calls": 0,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2022-0646",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 6,
+      "vulnerable": [],
+      "vulnerable_locations": [],
+      "evidence": [],
+      "entry_points": [],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": true,
+      "dropped_candidates": [
+        "S3Target.SetConnectionName",
+        "AppSummary.SetImportedAppId",
+        "AppSummary.SetLatestReplicationTime",
+        "AppSummary.SetLaunchConfigurationStatus",
+        "AppSummary.SetName",
+        "AppSummary.SetReplicationConfigurationStatus",
+        "AppValidationConfiguration.GoString",
+        "AppValidationConfiguration.SetAppValidationStrategy",
+        "AppValidationConfiguration.SetName",
+        "AppValidationConfiguration.SetSsmValidationParameters",
+        "AppValidationConfiguration.SetValidationId",
+        "AppValidationConfiguration.String",
+        "AppValidationConfiguration.Validate",
+        "AppValidationOutput.GoString",
+        "AppValidationOutput.SetSsmOutput",
+        "AppValidationOutput.String",
+        "DeleteAppValidationConfigurationInput.GoString",
+        "DeleteAppValidationConfigurationInput.SetAppId",
+        "DeleteAppValidationConfigurationInput.String",
+        "DeleteAppValidationConfigurationInput.Validate",
+        "DeleteAppValidationConfigurationOutput.GoString",
+        "DeleteAppValidationConfigurationOutput.String",
+        "DryRunOperationException.Code",
+        "DryRunOperationException.Error",
+        "DryRunOperationException.GoString",
+        "DryRunOperationException.Message",
+        "DryRunOperationException.OrigErr",
+        "DryRunOperationException.RequestID",
+        "DryRunOperationException.StatusCode",
+        "DryRunOperationException.String",
+        "GetAppLaunchConfigurationOutput.SetAppId",
+        "GetAppLaunchConfigurationOutput.SetAutoLaunch",
+        "GetAppReplicationConfigurationOutput.SetServerGroupReplicationConfigurations",
+        "GetAppValidationConfigurationInput.GoString",
+        "GetAppValidationConfigurationInput.SetAppId",
+        "GetAppValidationConfigurationInput.String",
+        "GetAppValidationConfigurationInput.Validate",
+        "GetAppValidationConfigurationOutput.GoString",
+        "GetAppValidationConfigurationOutput.SetAppValidationConfigurations",
+        "GetAppValidationConfigurationOutput.SetServerGroupValidationConfigurations",
+        "GetAppValidationConfigurationOutput.String",
+        "GetAppValidationOutputInput.GoString",
+        "GetAppValidationOutputInput.SetAppId",
+        "GetAppValidationOutputInput.String",
+        "GetAppValidationOutputInput.Validate",
+        "GetAppValidationOutputOutput.GoString",
+        "GetAppValidationOutputOutput.SetValidationOutputList",
+        "GetAppValidationOutputOutput.String",
+        "GetServersOutput.SetServerList",
+        "ImportAppCatalogInput.SetRoleName",
+        "ImportAppCatalogInput.String",
+        "ImportAppCatalogOutput.GoString",
+        "ImportAppCatalogOutput.String",
+        "NotificationContext.GoString",
+        "NotificationContext.SetStatus",
+        "NotificationContext.SetStatusMessage",
+        "NotificationContext.SetValidationId",
+        "NotificationContext.String",
+        "NotifyAppValidationOutputInput.GoString",
+        "NotifyAppValidationOutputInput.SetAppId",
+        "NotifyAppValidationOutputInput.SetNotificationContext",
+        "NotifyAppValidationOutputInput.String",
+        "NotifyAppValidationOutputInput.Validate",
+        "NotifyAppValidationOutputOutput.GoString",
+        "NotifyAppValidationOutputOutput.String",
+        "PutAppLaunchConfigurationInput.SetAppId",
+        "PutAppLaunchConfigurationInput.SetAutoLaunch",
+        "PutAppLaunchConfigurationInput.Validate",
+        "PutAppValidationConfigurationInput.GoString",
+        "PutAppValidationConfigurationInput.SetAppId",
+        "PutAppValidationConfigurationInput.SetAppValidationConfigurations",
+        "PutAppValidationConfigurationInput.SetServerGroupValidationConfigurations",
+        "PutAppValidationConfigurationInput.String",
+        "PutAppValidationConfigurationInput.Validate",
+        "PutAppValidationConfigurationOutput.GoString",
+        "PutAppValidationConfigurationOutput.String",
+        "S3Location.GoString",
+        "S3Location.Validate",
+        "SMS.DeleteAppReplicationConfigurationWithContext",
+        "SMS.DeleteAppValidationConfiguration",
+        "SMS.DeleteAppValidationConfigurationRequest",
+        "SMS.DeleteAppValidationConfigurationWithContext",
+        "SMS.GetAppValidationConfigurationRequest",
+        "SMS.GetAppValidationOutput",
+        "SMS.GetAppValidationOutputRequest",
+        "SMS.ImportAppCatalog",
+        "SMS.ImportAppCatalogRequest",
+        "SMS.ImportAppCatalogWithContext",
+        "SMS.ListAppsWithContext",
+        "SMS.NotifyAppValidationOutput",
+        "SMS.NotifyAppValidationOutputRequest",
+        "SMS.NotifyAppValidationOutputWithContext",
+        "SMS.PutAppReplicationConfigurationWithContext",
+        "SMS.PutAppValidationConfiguration",
+        "SMS.PutAppValidationConfigurationRequest",
+        "SMS.PutAppValidationConfigurationWithContext",
+        "SMS.StartAppReplicationWithContext",
+        "SMS.StartOnDemandAppReplication",
+        "SMS.StartOnDemandAppReplicationRequest",
+        "SMS.StartOnDemandAppReplicationWithContext",
+        "SSMOutput.GoString",
+        "SSMOutput.SetS3Location",
+        "SSMOutput.String",
+        "SSMValidationParameters.GoString",
+        "SSMValidationParameters.SetCommand",
+        "SSMValidationParameters.SetExecutionTimeoutSeconds",
+        "SSMValidationParameters.SetInstanceId",
+        "SSMValidationParameters.SetOutputS3BucketName",
+        "SSMValidationParameters.SetScriptType",
+        "SSMValidationParameters.SetSource",
+        "SSMValidationParameters.String",
+        "SSMValidationParameters.Validate",
+        "ServerGroupLaunchConfiguration.GoString",
+        "ServerGroupLaunchConfiguration.Validate",
+        "ServerGroupValidationConfiguration.GoString",
+        "ServerGroupValidationConfiguration.SetServerGroupId",
+        "ServerGroupValidationConfiguration.SetServerValidationConfigurations",
+        "ServerGroupValidationConfiguration.String",
+        "ServerGroupValidationConfiguration.Validate",
+        "ServerLaunchConfiguration.SetConfigureScript",
+        "ServerLaunchConfiguration.SetConfigureScriptType",
+        "ServerLaunchConfiguration.SetIamInstanceProfileName",
+        "ServerLaunchConfiguration.Validate",
+        "ServerValidationConfiguration.GoString",
+        "ServerValidationConfiguration.SetName",
+        "ServerValidationConfiguration.SetServer",
+        "ServerValidationConfiguration.SetServerValidationStrategy",
+        "ServerValidationConfiguration.SetUserDataValidationParameters",
+        "ServerValidationConfiguration.SetValidationId",
+        "ServerValidationConfiguration.String",
+        "ServerValidationConfiguration.Validate",
+        "ServerValidationOutput.GoString",
+        "ServerValidationOutput.SetServer",
+        "ServerValidationOutput.String",
+        "Source.GoString",
+        "Source.SetS3Location",
+        "Source.String",
+        "Source.Validate",
+        "StartOnDemandAppReplicationInput.GoString",
+        "StartOnDemandAppReplicationInput.SetAppId",
+        "StartOnDemandAppReplicationInput.SetDescription",
+        "StartOnDemandAppReplicationInput.String",
+        "StartOnDemandAppReplicationInput.Validate",
+        "StartOnDemandAppReplicationOutput.GoString",
+        "StartOnDemandAppReplicationOutput.String",
+        "UserData.SetS3Location",
+        "UserData.Validate",
+        "UserDataValidationParameters.GoString",
+        "UserDataValidationParameters.SetScriptType",
+        "UserDataValidationParameters.SetSource",
+        "UserDataValidationParameters.String",
+        "UserDataValidationParameters.Validate",
+        "ValidationOutput.GoString",
+        "ValidationOutput.SetAppValidationOutput",
+        "ValidationOutput.SetLatestValidationTime",
+        "ValidationOutput.SetName",
+        "ValidationOutput.SetServerValidationOutput",
+        "ValidationOutput.SetStatus",
+        "ValidationOutput.SetStatusMessage",
+        "ValidationOutput.SetValidationId",
+        "ValidationOutput.String",
+        "newErrorDryRunOperationException"
+      ],
+      "estimated_prompt_tokens": 4551,
+      "prompt_tokens": 4552,
+      "completion_tokens": 490,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2022-0945",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 9,
+      "vulnerable": [
+        "JsonWebEncryption.Decrypt",
+        "JsonWebSignature.Verify"
+      ],
+      "vulnerable_locations": [
+        [
+          "crypter.go",
+          "JsonWebEncryption.Decrypt"
+        ],
+        [
+          "signing.go",
+          "JsonWebSignature.Verify"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "crypter.go",
+          "name": "JsonWebEncryption.Decrypt",
+          "rationale": "The fix modifies the Decrypt function to reject multi-recipient payloads and restrict processing to a single recipient, addressing the ambiguity in which key was used for decryption.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "2c5656adca9909843c4ff50acf1d2cf8f32da7e6",
+              "path": "crypter.go",
+              "old_start": 292,
+              "old_count": 10,
+              "new_start": 293,
+              "new_count": 16
+            },
+            {
+              "id": "H2",
+              "source": "2c5656adca9909843c4ff50acf1d2cf8f32da7e6",
+              "path": "crypter.go",
+              "old_start": 323,
+              "old_count": 27,
+              "new_start": 330,
+              "new_count": 87
+            }
+          ]
+        },
+        {
+          "path": "signing.go",
+          "name": "JsonWebSignature.Verify",
+          "rationale": "The fix modifies the Verify function to reject multi-signature payloads and restrict processing to a single signature, ensuring the caller knows exactly which signature was validated.",
+          "hunks": [
+            {
+              "id": "H3",
+              "source": "2c5656adca9909843c4ff50acf1d2cf8f32da7e6",
+              "path": "signing.go",
+              "old_start": 193,
+              "old_count": 13,
+              "new_start": 194,
+              "new_count": 46
+            },
+            {
+              "id": "H4",
+              "source": "2c5656adca9909843c4ff50acf1d2cf8f32da7e6",
+              "path": "signing.go",
+              "old_start": 210,
+              "old_count": 9,
+              "new_start": 244,
+              "new_count": 9
+            }
+          ]
+        }
+      ],
+      "entry_points": [
+        "JsonWebEncryption.Decrypt",
+        "JsonWebSignature.Verify"
+      ],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": true,
+      "dropped_candidates": [
+        "cbcAEAD.Open",
+        "cbcAEAD.Seal",
+        "cbcAEAD.computeAuthTag",
+        "padBuffer",
+        "NewConcatKDF"
+      ],
+      "estimated_prompt_tokens": 4511,
+      "prompt_tokens": 4512,
+      "completion_tokens": 710,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2022-0956",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 4,
+      "vulnerable": [
+        "allowedAliasRatio",
+        "decoder.unmarshal",
+        "yaml_parser_increase_flow_level",
+        "yaml_parser_roll_indent"
+      ],
+      "vulnerable_locations": [
+        [
+          "decode.go",
+          "allowedAliasRatio"
+        ],
+        [
+          "decode.go",
+          "decoder.unmarshal"
+        ],
+        [
+          "scannerc.go",
+          "yaml_parser_increase_flow_level"
+        ],
+        [
+          "scannerc.go",
+          "yaml_parser_roll_indent"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "decode.go",
+          "name": "allowedAliasRatio",
+          "rationale": "The function `allowedAliasRatio` is introduced to dynamically limit the alias expansion ratio, preventing excessive resource consumption from malicious YAML documents.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "f221b8435cfb71e54062f6c6e99e9ade30b124d5",
+              "path": "decode.go",
+              "old_start": 318,
+              "old_count": 12,
+              "new_start": 318,
+              "new_count": 37
+            }
+          ]
+        },
+        {
+          "path": "decode.go",
+          "name": "decoder.unmarshal",
+          "rationale": "The `unmarshal` method is modified to use the new `allowedAliasRatio` function instead of a fixed threshold, which mitigates the excessive resource consumption vulnerability.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "f221b8435cfb71e54062f6c6e99e9ade30b124d5",
+              "path": "decode.go",
+              "old_start": 318,
+              "old_count": 12,
+              "new_start": 318,
+              "new_count": 37
+            }
+          ]
+        },
+        {
+          "path": "scannerc.go",
+          "name": "yaml_parser_increase_flow_level",
+          "rationale": "The function `yaml_parser_increase_flow_level` is updated to enforce a maximum flow level, preventing excessive memory usage from deeply nested flow structures.",
+          "hunks": [
+            {
+              "id": "H2",
+              "source": "f221b8435cfb71e54062f6c6e99e9ade30b124d5",
+              "path": "scannerc.go",
+              "old_start": 906,
+              "old_count": 13,
+              "new_start": 906,
+              "new_count": 21
+            }
+          ]
+        },
+        {
+          "path": "scannerc.go",
+          "name": "yaml_parser_roll_indent",
+          "rationale": "The function `yaml_parser_roll_indent` is updated to enforce a maximum indent level, preventing excessive memory usage from deeply nested block structures.",
+          "hunks": [
+            {
+              "id": "H3",
+              "source": "f221b8435cfb71e54062f6c6e99e9ade30b124d5",
+              "path": "scannerc.go",
+              "old_start": 939,
+              "old_count": 6,
+              "new_start": 950,
+              "new_count": 11
+            }
+          ]
+        }
+      ],
+      "entry_points": [],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 2080,
+      "prompt_tokens": 2081,
+      "completion_tokens": 339,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2022-0962",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 1,
+      "vulnerable": [
+        "setIndex"
+      ],
+      "vulnerable_locations": [
+        [
+          "pkg/strvals/parser.go",
+          "setIndex"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "pkg/strvals/parser.go",
+          "name": "setIndex",
+          "rationale": "The fix adds a check to ensure the index does not exceed MaxIndex, preventing the creation of excessively large arrays that cause an out-of-memory panic.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "10466e3e179cc8cad4b0bb451108d3c442c69fbc",
+              "path": "pkg/strvals/parser.go",
+              "old_start": 249,
+              "old_count": 6,
+              "new_start": 253,
+              "new_count": 9
+            }
+          ]
+        }
+      ],
+      "entry_points": [],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 734,
+      "prompt_tokens": 735,
+      "completion_tokens": 102,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2022-1052",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 7,
+      "vulnerable": [
+        "Pool.AddEvidenceFromConsensus",
+        "Pool.ReportConflictingVotes",
+        "Pool.flushConsensusBuffer",
+        "Pool.processConsensusBuffer"
+      ],
+      "vulnerable_locations": [
+        [
+          "evidence/pool.go",
+          "Pool.AddEvidenceFromConsensus"
+        ],
+        [
+          "evidence/pool.go",
+          "Pool.ReportConflictingVotes"
+        ],
+        [
+          "evidence/pool.go",
+          "Pool.flushConsensusBuffer"
+        ],
+        [
+          "evidence/pool.go",
+          "Pool.processConsensusBuffer"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "evidence/pool.go",
+          "name": "Pool.AddEvidenceFromConsensus",
+          "rationale": "The function `AddEvidenceFromConsensus` is replaced by `ReportConflictingVotes` to store raw votes instead of pre-formed evidence, preventing the creation of evidence with inconsistent timestamps before the block is committed.",
+          "hunks": [
+            {
+              "id": "H5",
+              "source": "a2a6852ab99e4a0f9e79f0ea8c1726e262e25c76",
+              "path": "evidence/pool.go",
+              "old_start": 169,
+              "old_count": 25,
+              "new_start": 168,
+              "new_count": 22
+            }
+          ]
+        },
+        {
+          "path": "evidence/pool.go",
+          "name": "Pool.ReportConflictingVotes",
+          "rationale": "The function `AddEvidenceFromConsensus` is replaced by `ReportConflictingVotes` to store raw votes instead of pre-formed evidence, preventing the creation of evidence with inconsistent timestamps before the block is committed.",
+          "hunks": [
+            {
+              "id": "H5",
+              "source": "a2a6852ab99e4a0f9e79f0ea8c1726e262e25c76",
+              "path": "evidence/pool.go",
+              "old_start": 169,
+              "old_count": 25,
+              "new_start": 168,
+              "new_count": 22
+            }
+          ]
+        },
+        {
+          "path": "evidence/pool.go",
+          "name": "Pool.flushConsensusBuffer",
+          "rationale": "The function `flushConsensusBuffer` is replaced by `processConsensusBuffer`, which correctly constructs `DuplicateVoteEvidence` using the finalized block time and validator set from the state, resolving the timestamp mismatch issue.",
+          "hunks": [
+            {
+              "id": "H8",
+              "source": "a2a6852ab99e4a0f9e79f0ea8c1726e262e25c76",
+              "path": "evidence/pool.go",
+              "old_start": 507,
+              "old_count": 19,
+              "new_start": 503,
+              "new_count": 91
+            }
+          ]
+        },
+        {
+          "path": "evidence/pool.go",
+          "name": "Pool.processConsensusBuffer",
+          "rationale": "The function `flushConsensusBuffer` is replaced by `processConsensusBuffer`, which correctly constructs `DuplicateVoteEvidence` using the finalized block time and validator set from the state, resolving the timestamp mismatch issue.",
+          "hunks": [
+            {
+              "id": "H8",
+              "source": "a2a6852ab99e4a0f9e79f0ea8c1726e262e25c76",
+              "path": "evidence/pool.go",
+              "old_start": 507,
+              "old_count": 19,
+              "new_start": 503,
+              "new_count": 91
+            }
+          ]
+        }
+      ],
+      "entry_points": [
+        "Pool.ReportConflictingVotes"
+      ],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": true,
+      "dropped_candidates": [
+        "State.tryAddVote",
+        "NewPool",
+        "Pool.Update",
+        "Pool.removePendingEvidence",
+        "EmptyEvidencePool.AddEvidence",
+        "EmptyEvidencePool.AddEvidenceFromConsensus",
+        "EmptyEvidencePool.CheckEvidence",
+        "EmptyEvidencePool.ReportConflictingVotes",
+        "EmptyEvidencePool.Update"
+      ],
+      "estimated_prompt_tokens": 4567,
+      "prompt_tokens": 4568,
+      "completion_tokens": 633,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2022-1178",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 1,
+      "vulnerable": [
+        "Transport.refreshToken"
+      ],
+      "vulnerable_locations": [
+        [
+          "transport.go",
+          "Transport.refreshToken"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "transport.go",
+          "name": "Transport.refreshToken",
+          "rationale": "The fix removes the inclusion of the request object (which contains the JWT in the Authorization header) from the error message, preventing the token from being leaked in the error string.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "d24f14f8be70d94129d76026e8b0f4f9170c8c3e",
+              "path": "transport.go",
+              "old_start": 170,
+              "old_count": 7,
+              "new_start": 170,
+              "new_count": 7
+            }
+          ]
+        }
+      ],
+      "entry_points": [],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 612,
+      "prompt_tokens": 613,
+      "completion_tokens": 107,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2023-1494",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 4,
+      "vulnerable": [
+        "ExecDb",
+        "QueryDbToArray",
+        "QueryDbToMap"
+      ],
+      "vulnerable_locations": [
+        [
+          "gosqljson.go",
+          "ExecDb"
+        ],
+        [
+          "gosqljson.go",
+          "QueryDbToArray"
+        ],
+        [
+          "gosqljson.go",
+          "QueryDbToMap"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "gosqljson.go",
+          "name": "ExecDb",
+          "rationale": "The function previously executed SQL statements without sanitization, allowing injection, which is fixed by adding the SqlSafe call.",
+          "hunks": [
+            {
+              "id": "H3",
+              "source": "2740b331546cb88eb61771df4c07d389e9f0363a",
+              "path": "gosqljson.go",
+              "old_start": 124,
+              "old_count": 6,
+              "new_start": 129,
+              "new_count": 8
+            }
+          ]
+        },
+        {
+          "path": "gosqljson.go",
+          "name": "QueryDbToArray",
+          "rationale": "The function previously executed SQL queries without sanitization, allowing injection, which is fixed by adding the SqlSafe call.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "2740b331546cb88eb61771df4c07d389e9f0363a",
+              "path": "gosqljson.go",
+              "old_start": 26,
+              "old_count": 6,
+              "new_start": 26,
+              "new_count": 9
+            }
+          ]
+        },
+        {
+          "path": "gosqljson.go",
+          "name": "QueryDbToMap",
+          "rationale": "The function previously executed SQL queries without sanitization, allowing injection, which is fixed by adding the SqlSafe call.",
+          "hunks": [
+            {
+              "id": "H2",
+              "source": "2740b331546cb88eb61771df4c07d389e9f0363a",
+              "path": "gosqljson.go",
+              "old_start": 73,
+              "old_count": 6,
+              "new_start": 76,
+              "new_count": 8
+            }
+          ]
+        }
+      ],
+      "entry_points": [
+        "ExecDb",
+        "QueryDbToArray",
+        "QueryDbToMap"
+      ],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 891,
+      "prompt_tokens": 892,
+      "completion_tokens": 338,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2023-1573",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 1,
+      "vulnerable": [
+        "onUntarJSON"
+      ],
+      "vulnerable_locations": [
+        [
+          "images/archive/importer.go",
+          "onUntarJSON"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "images/archive/importer.go",
+          "name": "onUntarJSON",
+          "rationale": "The function previously used `io.ReadAll` to read the entire input into memory without any size limit, which allowed for memory exhaustion; the fix replaces this with `io.LimitReader` to cap the number of bytes read.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "0c314901076a74a7b797a545d2f462285fdbb8c4",
+              "path": "images/archive/importer.go",
+              "old_start": 232,
+              "old_count": 12,
+              "new_start": 232,
+              "new_count": 14
+            }
+          ]
+        }
+      ],
+      "entry_points": [],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 684,
+      "prompt_tokens": 685,
+      "completion_tokens": 117,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2023-1574",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 8,
+      "vulnerable": [
+        "WithAdditionalGIDs",
+        "WithUIDGID",
+        "WithUser",
+        "WithUserID",
+        "WithUsername",
+        "criService.containerSpecOpts"
+      ],
+      "vulnerable_locations": [
+        [
+          "oci/spec_opts.go",
+          "WithAdditionalGIDs"
+        ],
+        [
+          "oci/spec_opts.go",
+          "WithUIDGID"
+        ],
+        [
+          "oci/spec_opts.go",
+          "WithUser"
+        ],
+        [
+          "oci/spec_opts.go",
+          "WithUserID"
+        ],
+        [
+          "oci/spec_opts.go",
+          "WithUsername"
+        ],
+        [
+          "pkg/cri/server/container_create_linux.go",
+          "criService.containerSpecOpts"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "oci/spec_opts.go",
+          "name": "WithAdditionalGIDs",
+          "rationale": "The function previously failed to reset the AdditionalGids list before populating it, allowing stale or incorrect supplementary groups to persist and potentially escalate privileges.",
+          "hunks": [
+            {
+              "id": "H10",
+              "source": "133f6bb6cd827ce35a5fb279c1ead12b9d21460a",
+              "path": "oci/spec_opts.go",
+              "old_start": 742,
+              "old_count": 7,
+              "new_start": 744,
+              "new_count": 9
+            }
+          ]
+        },
+        {
+          "path": "oci/spec_opts.go",
+          "name": "WithUIDGID",
+          "rationale": "The function previously did not clear the AdditionalGids list when setting UID/GID, which could leave stale supplementary groups that bypass primary group restrictions.",
+          "hunks": [
+            {
+              "id": "H3",
+              "source": "133f6bb6cd827ce35a5fb279c1ead12b9d21460a",
+              "path": "oci/spec_opts.go",
+              "old_start": 615,
+              "old_count": 7,
+              "new_start": 628,
+              "new_count": 9
+            }
+          ]
+        },
+        {
+          "path": "oci/spec_opts.go",
+          "name": "WithUser",
+          "rationale": "The function previously did not clear the AdditionalGids list when setting the user, which could leave stale supplementary groups that bypass primary group restrictions.",
+          "hunks": [
+            {
+              "id": "H2",
+              "source": "133f6bb6cd827ce35a5fb279c1ead12b9d21460a",
+              "path": "oci/spec_opts.go",
+              "old_start": 522,
+              "old_count": 7,
+              "new_start": 533,
+              "new_count": 9
+            }
+          ]
+        },
+        {
+          "path": "oci/spec_opts.go",
+          "name": "WithUserID",
+          "rationale": "The function previously did not clear the AdditionalGids list when setting the user ID, which could leave stale supplementary groups that bypass primary group restrictions.",
+          "hunks": [
+            {
+              "id": "H4",
+              "source": "133f6bb6cd827ce35a5fb279c1ead12b9d21460a",
+              "path": "oci/spec_opts.go",
+              "old_start": 628,
+              "old_count": 12,
+              "new_start": 643,
+              "new_count": 11
+            }
+          ]
+        },
+        {
+          "path": "oci/spec_opts.go",
+          "name": "WithUsername",
+          "rationale": "The function previously did not clear the AdditionalGids list when setting the username, which could leave stale supplementary groups that bypass primary group restrictions.",
+          "hunks": [
+            {
+              "id": "H7",
+              "source": "133f6bb6cd827ce35a5fb279c1ead12b9d21460a",
+              "path": "oci/spec_opts.go",
+              "old_start": 685,
+              "old_count": 13,
+              "new_start": 691,
+              "new_count": 12
+            }
+          ]
+        },
+        {
+          "path": "pkg/cri/server/container_create_linux.go",
+          "name": "criService.containerSpecOpts",
+          "rationale": "The function previously did not apply the supplemental groups from the security context, leading to improperly set supplementary groups inside the container.",
+          "hunks": [
+            {
+              "id": "H12",
+              "source": "133f6bb6cd827ce35a5fb279c1ead12b9d21460a",
+              "path": "pkg/cri/server/container_create_linux.go",
+              "old_start": 348,
+              "old_count": 7,
+              "new_start": 348,
+              "new_count": 8
+            }
+          ]
+        }
+      ],
+      "entry_points": [
+        "WithAdditionalGIDs",
+        "WithAppendAdditionalGroups",
+        "WithUIDGID",
+        "WithUser",
+        "WithUserID",
+        "WithUsername",
+        "criService.containerSpecOpts",
+        "ensureAdditionalGids"
+      ],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 3371,
+      "prompt_tokens": 3372,
+      "completion_tokens": 707,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2023-1595",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 4,
+      "vulnerable": [
+        "P256Point.ScalarBaseMult",
+        "P256Point.ScalarMult",
+        "p256OrdInverse"
+      ],
+      "vulnerable_locations": [
+        [
+          "p256_asm.go",
+          "P256Point.ScalarBaseMult"
+        ],
+        [
+          "p256_asm.go",
+          "P256Point.ScalarMult"
+        ],
+        [
+          "p256_ordinv.go",
+          "p256OrdInverse"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "p256_asm.go",
+          "name": "P256Point.ScalarBaseMult",
+          "rationale": "The fix adds a call to p256OrdReduce to ensure the scalar is reduced modulo the group order before multiplication, preventing incorrect results for unreduced scalars.",
+          "hunks": [
+            {
+              "id": "H2",
+              "source": "c58aa1223ccf3943513e1e661cebce95af137244",
+              "path": "p256_asm.go",
+              "old_start": 393,
+              "old_count": 6,
+              "new_start": 408,
+              "new_count": 7
+            }
+          ]
+        },
+        {
+          "path": "p256_asm.go",
+          "name": "P256Point.ScalarMult",
+          "rationale": "The fix adds a call to p256OrdReduce to ensure the scalar is reduced modulo the group order before multiplication, preventing incorrect results for unreduced scalars.",
+          "hunks": [
+            {
+              "id": "H3",
+              "source": "c58aa1223ccf3943513e1e661cebce95af137244",
+              "path": "p256_asm.go",
+              "old_start": 407,
+              "old_count": 6,
+              "new_start": 423,
+              "new_count": 7
+            }
+          ]
+        },
+        {
+          "path": "p256_ordinv.go",
+          "name": "p256OrdInverse",
+          "rationale": "The fix adds a call to p256OrdReduce to ensure the scalar is reduced modulo the group order before inversion, preventing incorrect results for unreduced scalars.",
+          "hunks": [
+            {
+              "id": "H4",
+              "source": "c58aa1223ccf3943513e1e661cebce95af137244",
+              "path": "p256_ordinv.go",
+              "old_start": 25,
+              "old_count": 6,
+              "new_start": 25,
+              "new_count": 7
+            }
+          ]
+        }
+      ],
+      "entry_points": [
+        "P256Point.ScalarBaseMult",
+        "P256Point.ScalarMult"
+      ],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 1329,
+      "prompt_tokens": 1330,
+      "completion_tokens": 370,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2023-1600",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 1,
+      "vulnerable": [
+        "Teler.checkCommonWebAttack"
+      ],
+      "vulnerable_locations": [
+        [
+          "analyze.go",
+          "Teler.checkCommonWebAttack"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "analyze.go",
+          "name": "Teler.checkCommonWebAttack",
+          "rationale": "The function previously failed to sanitize special characters like CR/LF and tabs in the URI and body, allowing for potential code execution, which is fixed by wrapping the decoded strings with removeSpecialChars.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "6e1b0e19b8adc1bbc3513a986025d4adf88d59f8",
+              "path": "analyze.go",
+              "old_start": 206,
+              "old_count": 8,
+              "new_start": 206,
+              "new_count": 9
+            },
+            {
+              "id": "H2",
+              "source": "6e1b0e19b8adc1bbc3513a986025d4adf88d59f8",
+              "path": "analyze.go",
+              "old_start": 226,
+              "old_count": 8,
+              "new_start": 227,
+              "new_count": 9
+            }
+          ]
+        }
+      ],
+      "entry_points": [],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 786,
+      "prompt_tokens": 787,
+      "completion_tokens": 117,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2023-1623",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 5,
+      "vulnerable": [
+        "Paved.setValue"
+      ],
+      "vulnerable_locations": [
+        [
+          "pkg/fieldpath/paved.go",
+          "Paved.setValue"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "pkg/fieldpath/paved.go",
+          "name": "Paved.setValue",
+          "rationale": "The fix adds a check in the setValue method to reject indices exceeding the maximum allowed value, preventing the out-of-memory panic caused by unbounded array growth.",
+          "hunks": [
+            {
+              "id": "H2",
+              "source": "53508a9f4374604db140dd8ab2fa52276441e738",
+              "path": "pkg/fieldpath/paved.go",
+              "old_start": 358,
+              "old_count": 6,
+              "new_start": 381,
+              "new_count": 10
+            }
+          ]
+        }
+      ],
+      "entry_points": [
+        "Pave",
+        "PaveObject"
+      ],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 2771,
+      "prompt_tokens": 2772,
+      "completion_tokens": 400,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2023-1640",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 8,
+      "vulnerable": [
+        "unzipFile"
+      ],
+      "vulnerable_locations": [
+        [
+          "zip/unzip.go",
+          "unzipFile"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "zip/unzip.go",
+          "name": "unzipFile",
+          "rationale": "The fix sanitizes the file name from the zip archive to prevent path traversal attacks by stripping leading path separators and normalizing the path.",
+          "hunks": [
+            {
+              "id": "H5",
+              "source": "0e308b0fac8973e6fa251b0ab095cdc5c1c0956b",
+              "path": "zip/unzip.go",
+              "old_start": 26,
+              "old_count": 8,
+              "new_start": 27,
+              "new_count": 12
+            }
+          ]
+        }
+      ],
+      "entry_points": [
+        "unzipFile"
+      ],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 3260,
+      "prompt_tokens": 3261,
+      "completion_tokens": 608,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2023-1713",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 3,
+      "vulnerable": [
+        "Server.upload"
+      ],
+      "vulnerable_locations": [
+        [
+          "server/http_upload.go",
+          "Server.upload"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "server/http_upload.go",
+          "name": "Server.upload",
+          "rationale": "The fix sanitizes the user-provided file path by removing dots, preventing path traversal sequences like '..' from being used to write files to arbitrary locations.",
+          "hunks": [
+            {
+              "id": "H3",
+              "source": "61cbff5124c61e292994099372b11c06cdb5b80b",
+              "path": "server/http_upload.go",
+              "old_start": 169,
+              "old_count": 6,
+              "new_start": 169,
+              "new_count": 8
+            }
+          ]
+        }
+      ],
+      "entry_points": [
+        "Server.upload"
+      ],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 914,
+      "prompt_tokens": 915,
+      "completion_tokens": 265,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2023-1765",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 11,
+      "vulnerable": [
+        "EncryptCCA",
+        "PublicKey.EncapsulateTo",
+        "RSAVerifier.Blind",
+        "scheme.Encapsulate"
+      ],
+      "vulnerable_locations": [
+        [
+          "abe/cpabe/tkn20/internal/tkn/bk.go",
+          "EncryptCCA"
+        ],
+        [
+          "blindsign/blindrsa/blindrsa.go",
+          "RSAVerifier.Blind"
+        ],
+        [
+          "kem/frodo/frodo640shake/frodo.go",
+          "PublicKey.EncapsulateTo"
+        ],
+        [
+          "kem/kyber/kyber1024/kyber.go",
+          "PublicKey.EncapsulateTo"
+        ],
+        [
+          "kem/kyber/kyber512/kyber.go",
+          "PublicKey.EncapsulateTo"
+        ],
+        [
+          "kem/kyber/kyber768/kyber.go",
+          "PublicKey.EncapsulateTo"
+        ],
+        [
+          "kem/kyber/templates/pkg.templ.go",
+          "PublicKey.EncapsulateTo"
+        ],
+        [
+          "kem/sike/sikep434/sike.go",
+          "scheme.Encapsulate"
+        ],
+        [
+          "kem/sike/sikep503/sike.go",
+          "scheme.Encapsulate"
+        ],
+        [
+          "kem/sike/sikep751/sike.go",
+          "scheme.Encapsulate"
+        ],
+        [
+          "kem/sike/templates/pkg.templ.go",
+          "scheme.Encapsulate"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "abe/cpabe/tkn20/internal/tkn/bk.go",
+          "name": "EncryptCCA",
+          "rationale": "The fix replaces `rand.Read` with `io.ReadFull` to ensure the full seed is read, addressing the advisory's concern about weak blinding in tkn20 when insufficient randomness is returned.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "ff8d91225f8954b4970b6d6382d2e4c78f4a4cf8",
+              "path": "abe/cpabe/tkn20/internal/tkn/bk.go",
+              "old_start": 78,
+              "old_count": 7,
+              "new_start": 78,
+              "new_count": 7
+            }
+          ]
+        },
+        {
+          "path": "blindsign/blindrsa/blindrsa.go",
+          "name": "RSAVerifier.Blind",
+          "rationale": "The fix replaces `random.Read` with `io.ReadFull` to ensure the full salt is read, addressing the advisory's concern about weak blinding in blindrsa when insufficient randomness is returned.",
+          "hunks": [
+            {
+              "id": "H2",
+              "source": "ff8d91225f8954b4970b6d6382d2e4c78f4a4cf8",
+              "path": "blindsign/blindrsa/blindrsa.go",
+              "old_start": 183,
+              "old_count": 7,
+              "new_start": 183,
+              "new_count": 7
+            }
+          ]
+        },
+        {
+          "path": "kem/frodo/frodo640shake/frodo.go",
+          "name": "PublicKey.EncapsulateTo",
+          "rationale": "The fix adds an error check for `cryptoRand.Read` to prevent a predictable shared secret if the read fails, as described in the advisory for FrodoKEM.",
+          "hunks": [
+            {
+              "id": "H3",
+              "source": "ff8d91225f8954b4970b6d6382d2e4c78f4a4cf8",
+              "path": "kem/frodo/frodo640shake/frodo.go",
+              "old_start": 160,
+              "old_count": 7,
+              "new_start": 160,
+              "new_count": 9
+            }
+          ]
+        },
+        {
+          "path": "kem/kyber/kyber1024/kyber.go",
+          "name": "PublicKey.EncapsulateTo",
+          "rationale": "The fix adds an error check for `cryptoRand.Read` to prevent a predictable shared secret if the read fails, as described in the advisory for Kyber.",
+          "hunks": [
+            {
+              "id": "H4",
+              "source": "ff8d91225f8954b4970b6d6382d2e4c78f4a4cf8",
+              "path": "kem/kyber/kyber1024/kyber.go",
+              "old_start": 106,
+              "old_count": 7,
+              "new_start": 106,
+              "new_count": 9
+            }
+          ]
+        },
+        {
+          "path": "kem/kyber/kyber512/kyber.go",
+          "name": "PublicKey.EncapsulateTo",
+          "rationale": "The fix adds an error check for `cryptoRand.Read` to prevent a predictable shared secret if the read fails, as described in the advisory for Kyber.",
+          "hunks": [
+            {
+              "id": "H5",
+              "source": "ff8d91225f8954b4970b6d6382d2e4c78f4a4cf8",
+              "path": "kem/kyber/kyber512/kyber.go",
+              "old_start": 106,
+              "old_count": 7,
+              "new_start": 106,
+              "new_count": 9
+            }
+          ]
+        },
+        {
+          "path": "kem/kyber/kyber768/kyber.go",
+          "name": "PublicKey.EncapsulateTo",
+          "rationale": "The fix adds an error check for `cryptoRand.Read` to prevent a predictable shared secret if the read fails, as described in the advisory for Kyber.",
+          "hunks": [
+            {
+              "id": "H6",
+              "source": "ff8d91225f8954b4970b6d6382d2e4c78f4a4cf8",
+              "path": "kem/kyber/kyber768/kyber.go",
+              "old_start": 106,
+              "old_count": 7,
+              "new_start": 106,
+              "new_count": 9
+            }
+          ]
+        },
+        {
+          "path": "kem/kyber/templates/pkg.templ.go",
+          "name": "PublicKey.EncapsulateTo",
+          "rationale": "The fix adds an error check for `cryptoRand.Read` in the template to prevent a predictable shared secret if the read fails, as described in the advisory for Kyber.",
+          "hunks": [
+            {
+              "id": "H7",
+              "source": "ff8d91225f8954b4970b6d6382d2e4c78f4a4cf8",
+              "path": "kem/kyber/templates/pkg.templ.go",
+              "old_start": 110,
+              "old_count": 7,
+              "new_start": 110,
+              "new_count": 9
+            }
+          ]
+        },
+        {
+          "path": "kem/sike/sikep434/sike.go",
+          "name": "scheme.Encapsulate",
+          "rationale": "The fix adds an error check for `cryptoRand.Read` to prevent a predictable shared secret if the read fails, consistent with the advisory's description of missing error checks in KEM implementations.",
+          "hunks": [
+            {
+              "id": "H8",
+              "source": "ff8d91225f8954b4970b6d6382d2e4c78f4a4cf8",
+              "path": "kem/sike/sikep434/sike.go",
+              "old_start": 130,
+              "old_count": 7,
+              "new_start": 130,
+              "new_count": 9
+            }
+          ]
+        },
+        {
+          "path": "kem/sike/sikep503/sike.go",
+          "name": "scheme.Encapsulate",
+          "rationale": "The fix adds an error check for `cryptoRand.Read` to prevent a predictable shared secret if the read fails, consistent with the advisory's description of missing error checks in KEM implementations.",
+          "hunks": [
+            {
+              "id": "H9",
+              "source": "ff8d91225f8954b4970b6d6382d2e4c78f4a4cf8",
+              "path": "kem/sike/sikep503/sike.go",
+              "old_start": 130,
+              "old_count": 7,
+              "new_start": 130,
+              "new_count": 9
+            }
+          ]
+        },
+        {
+          "path": "kem/sike/sikep751/sike.go",
+          "name": "scheme.Encapsulate",
+          "rationale": "The fix adds an error check for `cryptoRand.Read` to prevent a predictable shared secret if the read fails, consistent with the advisory's description of missing error checks in KEM implementations.",
+          "hunks": [
+            {
+              "id": "H10",
+              "source": "ff8d91225f8954b4970b6d6382d2e4c78f4a4cf8",
+              "path": "kem/sike/sikep751/sike.go",
+              "old_start": 130,
+              "old_count": 7,
+              "new_start": 130,
+              "new_count": 9
+            }
+          ]
+        },
+        {
+          "path": "kem/sike/templates/pkg.templ.go",
+          "name": "scheme.Encapsulate",
+          "rationale": "The fix adds an error check for `cryptoRand.Read` in the template to prevent a predictable shared secret if the read fails, consistent with the advisory's description of missing error checks in KEM implementations.",
+          "hunks": [
+            {
+              "id": "H11",
+              "source": "ff8d91225f8954b4970b6d6382d2e4c78f4a4cf8",
+              "path": "kem/sike/templates/pkg.templ.go",
+              "old_start": 135,
+              "old_count": 7,
+              "new_start": 135,
+              "new_count": 9
+            }
+          ]
+        }
+      ],
+      "entry_points": [
+        "EncryptCCA",
+        "PublicKey.EncapsulateTo",
+        "RSAVerifier.Blind",
+        "scheme.Encapsulate"
+      ],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 2374,
+      "prompt_tokens": 2375,
+      "completion_tokens": 1020,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2023-1992",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 1,
+      "vulnerable": [
+        "Decode"
+      ],
+      "vulnerable_locations": [
+        [
+          "openpgp/clearsign/clearsign.go",
+          "Decode"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "openpgp/clearsign/clearsign.go",
+          "name": "Decode",
+          "rationale": "The fix adds validation to reject malformed headers in the SIGNED MESSAGE section, specifically checking for control/Unicode characters and ensuring only 'Hash' headers are accepted, which prevents misleading message verification.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "c05e17bb3b2dca130fc919668a96b4bec9eb9442",
+              "path": "openpgp/clearsign/clearsign.go",
+              "old_start": 83,
+              "old_count": 8,
+              "new_start": 89,
+              "new_count": 11
+            },
+            {
+              "id": "H2",
+              "source": "c05e17bb3b2dca130fc919668a96b4bec9eb9442",
+              "path": "openpgp/clearsign/clearsign.go",
+              "old_start": 103,
+              "old_count": 15,
+              "new_start": 112,
+              "new_count": 25
+            }
+          ]
+        }
+      ],
+      "entry_points": [
+        "Decode"
+      ],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 892,
+      "prompt_tokens": 893,
+      "completion_tokens": 124,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2023-2024",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 2,
+      "vulnerable": [
+        "idService.consumeMessage"
+      ],
+      "vulnerable_locations": [
+        [
+          "p2p/protocol/identify/id.go",
+          "idService.consumeMessage"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "p2p/protocol/identify/id.go",
+          "name": "idService.consumeMessage",
+          "rationale": "The fix adds a check to ensure the signed peer record's public key matches the remote peer's ID, preventing a malicious actor from storing arbitrary data in memory by sending records for randomly generated peers.",
+          "hunks": [
+            {
+              "id": "H2",
+              "source": "45d3c6fff662ddd6938982e7e9309ad5fa2ad8dd",
+              "path": "p2p/protocol/identify/id.go",
+              "old_start": 766,
+              "old_count": 10,
+              "new_start": 766,
+              "new_count": 14
+            }
+          ]
+        }
+      ],
+      "entry_points": [
+        "idService.consumeMessage"
+      ],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 1019,
+      "prompt_tokens": 1020,
+      "completion_tokens": 210,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2023-2077",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 1,
+      "vulnerable": [
+        "HandleConnection0"
+      ],
+      "vulnerable_locations": [
+        [
+          "protocol/socks/handshake.go",
+          "HandleConnection0"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "protocol/socks/handshake.go",
+          "name": "HandleConnection0",
+          "rationale": "The fix adds a check to ensure the SOCKS5 authentication response status is successful, preventing an authentication bypass where failed authentication was previously ignored.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "5b05b5c147d9650e8accb4441e216c72a61f4859",
+              "path": "protocol/socks/handshake.go",
+              "old_start": 171,
+              "old_count": 6,
+              "new_start": 171,
+              "new_count": 9
+            }
+          ]
+        }
+      ],
+      "entry_points": [
+        "HandleConnection0"
+      ],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": false,
+      "dropped_candidates": [],
+      "estimated_prompt_tokens": 565,
+      "prompt_tokens": 566,
+      "completion_tokens": 110,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    },
+    {
+      "advisory_id": "GO-2023-2101",
+      "status": "ok",
+      "model": "ggml-org/Qwen3.8-27B-GGUF@c1869413:Q4_K_M",
+      "prompt_version": "extract-v1",
+      "candidates": 18,
+      "vulnerable": [
+        "E12.ExpGLV",
+        "E24.ExpGLV",
+        "G1Jac.mulWindowed",
+        "G2Jac.mulWindowed"
+      ],
+      "vulnerable_locations": [
+        [
+          "ecc/bls12-377/g1.go",
+          "G1Jac.mulWindowed"
+        ],
+        [
+          "ecc/bls12-377/g2.go",
+          "G2Jac.mulWindowed"
+        ],
+        [
+          "ecc/bls12-377/internal/fptower/e12.go",
+          "E12.ExpGLV"
+        ],
+        [
+          "ecc/bls12-378/g1.go",
+          "G1Jac.mulWindowed"
+        ],
+        [
+          "ecc/bls12-378/g2.go",
+          "G2Jac.mulWindowed"
+        ],
+        [
+          "ecc/bls12-378/internal/fptower/e12.go",
+          "E12.ExpGLV"
+        ],
+        [
+          "ecc/bls12-381/g1.go",
+          "G1Jac.mulWindowed"
+        ],
+        [
+          "ecc/bls12-381/g2.go",
+          "G2Jac.mulWindowed"
+        ],
+        [
+          "ecc/bls12-381/internal/fptower/e12.go",
+          "E12.ExpGLV"
+        ],
+        [
+          "ecc/bls24-315/g1.go",
+          "G1Jac.mulWindowed"
+        ],
+        [
+          "ecc/bls24-315/g2.go",
+          "G2Jac.mulWindowed"
+        ],
+        [
+          "ecc/bls24-315/internal/fptower/e24.go",
+          "E24.ExpGLV"
+        ],
+        [
+          "ecc/bls24-317/g1.go",
+          "G1Jac.mulWindowed"
+        ],
+        [
+          "ecc/bls24-317/g2.go",
+          "G2Jac.mulWindowed"
+        ],
+        [
+          "ecc/bls24-317/internal/fptower/e24.go",
+          "E24.ExpGLV"
+        ],
+        [
+          "ecc/bn254/g1.go",
+          "G1Jac.mulWindowed"
+        ],
+        [
+          "ecc/bn254/g2.go",
+          "G2Jac.mulWindowed"
+        ],
+        [
+          "ecc/bw6-633/g1.go",
+          "G1Jac.mulWindowed"
+        ]
+      ],
+      "evidence": [
+        {
+          "path": "ecc/bls12-377/g1.go",
+          "name": "G1Jac.mulWindowed",
+          "rationale": "The fix adds handling for negative scalar inputs in the windowed multiplication, which was previously missing and caused incorrect exponentiation results.",
+          "hunks": [
+            {
+              "id": "H1",
+              "source": "ec6be1a037f7c496d595c541a8a8d31c47bcfa3d",
+              "path": "ecc/bls12-377/g1.go",
+              "old_start": 434,
+              "old_count": 8,
+              "new_start": 441,
+              "new_count": 15
+            }
+          ]
+        },
+        {
+          "path": "ecc/bls12-377/g2.go",
+          "name": "G2Jac.mulWindowed",
+          "rationale": "The fix adds handling for negative scalar inputs in the windowed multiplication, which was previously missing and caused incorrect exponentiation results.",
+          "hunks": [
+            {
+              "id": "H2",
+              "source": "ec6be1a037f7c496d595c541a8a8d31c47bcfa3d",
+              "path": "ecc/bls12-377/g2.go",
+              "old_start": 416,
+              "old_count": 8,
+              "new_start": 416,
+              "new_count": 15
+            }
+          ]
+        },
+        {
+          "path": "ecc/bls12-377/internal/fptower/e12.go",
+          "name": "E12.ExpGLV",
+          "rationale": "The fix corrects the loop bounds for the GLV exponentiation to use the actual bit length of the exponents, preventing incorrect results when the exponents have different lengths.",
+          "hunks": [
+            {
+              "id": "H3",
+              "source": "ec6be1a037f7c496d595c541a8a8d31c47bcfa3d",
+              "path": "ecc/bls12-377/internal/fptower/e12.go",
+              "old_start": 610,
+              "old_count": 8,
+              "new_start": 610,
+              "new_count": 14
+            }
+          ]
+        },
+        {
+          "path": "ecc/bls12-378/g1.go",
+          "name": "G1Jac.mulWindowed",
+          "rationale": "The fix adds handling for negative scalar inputs in the windowed multiplication, which was previously missing and caused incorrect exponentiation results.",
+          "hunks": [
+            {
+              "id": "H4",
+              "source": "ec6be1a037f7c496d595c541a8a8d31c47bcfa3d",
+              "path": "ecc/bls12-378/g1.go",
+              "old_start": 434,
+              "old_count": 8,
+              "new_start": 441,
+              "new_count": 15
+            }
+          ]
+        },
+        {
+          "path": "ecc/bls12-378/g2.go",
+          "name": "G2Jac.mulWindowed",
+          "rationale": "The fix adds handling for negative scalar inputs in the windowed multiplication, which was previously missing and caused incorrect exponentiation results.",
+          "hunks": [
+            {
+              "id": "H5",
+              "source": "ec6be1a037f7c496d595c541a8a8d31c47bcfa3d",
+              "path": "ecc/bls12-378/g2.go",
+              "old_start": 416,
+              "old_count": 8,
+              "new_start": 416,
+              "new_count": 15
+            }
+          ]
+        },
+        {
+          "path": "ecc/bls12-378/internal/fptower/e12.go",
+          "name": "E12.ExpGLV",
+          "rationale": "The fix corrects the loop bounds for the GLV exponentiation to use the actual bit length of the exponents, preventing incorrect results when the exponents have different lengths.",
+          "hunks": [
+            {
+              "id": "H6",
+              "source": "ec6be1a037f7c496d595c541a8a8d31c47bcfa3d",
+              "path": "ecc/bls12-378/internal/fptower/e12.go",
+              "old_start": 610,
+              "old_count": 8,
+              "new_start": 610,
+              "new_count": 14
+            }
+          ]
+        },
+        {
+          "path": "ecc/bls12-381/g1.go",
+          "name": "G1Jac.mulWindowed",
+          "rationale": "The fix adds handling for negative scalar inputs in the windowed multiplication, which was previously missing and caused incorrect exponentiation results.",
+          "hunks": [
+            {
+              "id": "H7",
+              "source": "ec6be1a037f7c496d595c541a8a8d31c47bcfa3d",
+              "path": "ecc/bls12-381/g1.go",
+              "old_start": 434,
+              "old_count": 8,
+              "new_start": 441,
+              "new_count": 15
+            }
+          ]
+        },
+        {
+          "path": "ecc/bls12-381/g2.go",
+          "name": "G2Jac.mulWindowed",
+          "rationale": "The fix adds handling for negative scalar inputs in the windowed multiplication, which was previously missing and caused incorrect exponentiation results.",
+          "hunks": [
+            {
+              "id": "H8",
+              "source": "ec6be1a037f7c496d595c541a8a8d31c47bcfa3d",
+              "path": "ecc/bls12-381/g2.go",
+              "old_start": 417,
+              "old_count": 8,
+              "new_start": 417,
+              "new_count": 15
+            }
+          ]
+        },
+        {
+          "path": "ecc/bls12-381/internal/fptower/e12.go",
+          "name": "E12.ExpGLV",
+          "rationale": "The fix corrects the loop bounds for the GLV exponentiation to use the actual bit length of the exponents, preventing incorrect results when the exponents have different lengths.",
+          "hunks": [
+            {
+              "id": "H9",
+              "source": "ec6be1a037f7c496d595c541a8a8d31c47bcfa3d",
+              "path": "ecc/bls12-381/internal/fptower/e12.go",
+              "old_start": 610,
+              "old_count": 8,
+              "new_start": 610,
+              "new_count": 14
+            }
+          ]
+        },
+        {
+          "path": "ecc/bls24-315/g1.go",
+          "name": "G1Jac.mulWindowed",
+          "rationale": "The fix adds handling for negative scalar inputs in the windowed multiplication, which was previously missing and caused incorrect exponentiation results.",
+          "hunks": [
+            {
+              "id": "H10",
+              "source": "ec6be1a037f7c496d595c541a8a8d31c47bcfa3d",
+              "path": "ecc/bls24-315/g1.go",
+              "old_start": 436,
+              "old_count": 8,
+              "new_start": 443,
+              "new_count": 15
+            }
+          ]
+        },
+        {
+          "path": "ecc/bls24-315/g2.go",
+          "name": "G2Jac.mulWindowed",
+          "rationale": "The fix adds handling for negative scalar inputs in the windowed multiplication, which was previously missing and caused incorrect exponentiation results.",
+          "hunks": [
+            {
+              "id": "H11",
+              "source": "ec6be1a037f7c496d595c541a8a8d31c47bcfa3d",
+              "path": "ecc/bls24-315/g2.go",
+              "old_start": 418,
+              "old_count": 8,
+              "new_start": 418,
+              "new_count": 15
+            }
+          ]
+        },
+        {
+          "path": "ecc/bls24-315/internal/fptower/e24.go",
+          "name": "E24.ExpGLV",
+          "rationale": "The fix corrects the loop bounds for the GLV exponentiation to use the actual bit length of the exponents, preventing incorrect results when the exponents have different lengths.",
+          "hunks": [
+            {
+              "id": "H12",
+              "source": "ec6be1a037f7c496d595c541a8a8d31c47bcfa3d",
+              "path": "ecc/bls24-315/internal/fptower/e24.go",
+              "old_start": 599,
+              "old_count": 8,
+              "new_start": 599,
+              "new_count": 14
+            }
+          ]
+        },
+        {
+          "path": "ecc/bls24-317/g1.go",
+          "name": "G1Jac.mulWindowed",
+          "rationale": "The fix adds handling for negative scalar inputs in the windowed multiplication, which was previously missing and caused incorrect exponentiation results.",
+          "hunks": [
+            {
+              "id": "H13",
+              "source": "ec6be1a037f7c496d595c541a8a8d31c47bcfa3d",
+              "path": "ecc/bls24-317/g1.go",
+              "old_start": 436,
+              "old_count": 8,
+              "new_start": 443,
+              "new_count": 15
+            }
+          ]
+        },
+        {
+          "path": "ecc/bls24-317/g2.go",
+          "name": "G2Jac.mulWindowed",
+          "rationale": "The fix adds handling for negative scalar inputs in the windowed multiplication, which was previously missing and caused incorrect exponentiation results.",
+          "hunks": [
+            {
+              "id": "H14",
+              "source": "ec6be1a037f7c496d595c541a8a8d31c47bcfa3d",
+              "path": "ecc/bls24-317/g2.go",
+              "old_start": 418,
+              "old_count": 8,
+              "new_start": 418,
+              "new_count": 15
+            }
+          ]
+        },
+        {
+          "path": "ecc/bls24-317/internal/fptower/e24.go",
+          "name": "E24.ExpGLV",
+          "rationale": "The fix corrects the loop bounds for the GLV exponentiation to use the actual bit length of the exponents, preventing incorrect results when the exponents have different lengths.",
+          "hunks": [
+            {
+              "id": "H15",
+              "source": "ec6be1a037f7c496d595c541a8a8d31c47bcfa3d",
+              "path": "ecc/bls24-317/internal/fptower/e24.go",
+              "old_start": 521,
+              "old_count": 8,
+              "new_start": 521,
+              "new_count": 14
+            }
+          ]
+        },
+        {
+          "path": "ecc/bn254/g1.go",
+          "name": "G1Jac.mulWindowed",
+          "rationale": "The fix adds handling for negative scalar inputs in the windowed multiplication, which was previously missing and caused incorrect exponentiation results.",
+          "hunks": [
+            {
+              "id": "H16",
+              "source": "ec6be1a037f7c496d595c541a8a8d31c47bcfa3d",
+              "path": "ecc/bn254/g1.go",
+              "old_start": 424,
+              "old_count": 8,
+              "new_start": 431,
+              "new_count": 15
+            }
+          ]
+        },
+        {
+          "path": "ecc/bn254/g2.go",
+          "name": "G2Jac.mulWindowed",
+          "rationale": "The fix adds handling for negative scalar inputs in the windowed multiplication, which was previously missing and caused incorrect exponentiation results.",
+          "hunks": [
+            {
+              "id": "H17",
+              "source": "ec6be1a037f7c496d595c541a8a8d31c47bcfa3d",
+              "path": "ecc/bn254/g2.go",
+              "old_start": 423,
+              "old_count": 8,
+              "new_start": 423,
+              "new_count": 15
+            }
+          ]
+        },
+        {
+          "path": "ecc/bw6-633/g1.go",
+          "name": "G1Jac.mulWindowed",
+          "rationale": "The fix adds handling for negative scalar inputs in the windowed multiplication, which was previously missing and caused incorrect exponentiation results.",
+          "hunks": [
+            {
+              "id": "H19",
+              "source": "ec6be1a037f7c496d595c541a8a8d31c47bcfa3d",
+              "path": "ecc/bw6-633/g1.go",
+              "old_start": 439,
+              "old_count": 8,
+              "new_start": 446,
+              "new_count": 15
+            }
+          ]
+        }
+      ],
+      "entry_points": [],
+      "entry_points_dropped": 0,
+      "invented_ids_first_attempt": 0,
+      "errors": [],
+      "truncated": true,
+      "dropped_candidates": [
+        "E12.ExpGLV",
+        "G2Jac.mulWindowed",
+        "E6.ExpGLV",
+        "G1Jac.mulWindowed",
+        "G2Jac.mulWindowed",
+        "E6.ExpGLV",
+        "G1Jac.mulWindowed",
+        "G2Jac.mulWindowed",
+        "E6.ExpGLV",
+        "G1Jac.mulWindowed"
+      ],
+      "estimated_prompt_tokens": 4550,
+      "prompt_tokens": 4551,
+      "completion_tokens": 1457,
+      "calls": 1,
+      "cached_calls": 1,
+      "provider_rejections": 0
+    }
+  ]
+}

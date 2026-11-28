@@ -18,11 +18,13 @@ it in one of these ways:
 * a bare name: a definition of the same module, or a name the module imports from another
   module of the package (``from .loader import Loader``), followed through re-exports;
 * ``module.name``, through a module of the package bound by an import;
-* ``self.m``, ``cls.m`` or ``super().m`` in a class: the methods ``m`` of that class, its
-  ancestors and its descendants in the package (not its siblings). None there: an instance
+* ``self.m``, ``cls.m`` or ``super().m`` in a class: the method ``m`` an instance of that
+  class runs, its own or the nearest ancestor's in the package (for ``super()``, the
+  nearest ancestor's). With ``overrides=True`` (see ``build``), the methods ``m`` of the
+  class, its ancestors and its descendants (not its siblings). None there: an instance
   attribute, or a method of another package's base, so nothing;
 * ``x.m`` where ``x`` is known to hold a package class (``x = Cls(...)``, ``with Cls(...) as
-  x``, or a parameter annotated ``x: Cls``): the methods ``m`` of that class's hierarchy;
+  x``, or a parameter annotated ``x: Cls``): likewise, for that class;
 * ``x.m`` on anything else: the type of ``x`` is not known. By default only the one class
   that defines ``m`` is linked, if exactly one does and ``m`` is no builtin type's method;
   with ``receivers="all"``, every method ``m`` (see ``build``). A literal receiver
@@ -58,6 +60,9 @@ from typing import Literal
 
 from patchsight.names import module_for_path
 
+# Bumped whenever a change alters what the graph links: stored callers of another revision
+# are computed again, never reused. 2: ``self.m`` no longer follows subclass overrides.
+REVISION = 2
 CONSTRUCTORS = ("__init__", "__new__", "__post_init__")
 # Methods of builtin types and files: ``x.get()`` or ``x.read()`` on an unknown ``x`` is as
 # likely a dict's or a file's as the package's, so a unique package method of that name is
@@ -188,8 +193,11 @@ def _definitions(
 
 
 class _Builder:
-    def __init__(self, files: Mapping[str, bytes], receivers: Receivers = "unique") -> None:
+    def __init__(
+        self, files: Mapping[str, bytes], receivers: Receivers = "unique", overrides: bool = False
+    ) -> None:
         self.receivers = receivers
+        self.overrides = overrides
         self.graph = Graph()
         self.scopes: dict[str, _Scope] = {}
         self.defs: dict[str, _Definition] = {}
@@ -366,12 +374,22 @@ class _Builder:
             todo.extend(sorted(self.bases.get(current, set())))
         return set()
 
+    def _runs(self, cls: str, leaf: str) -> set[str]:
+        """What ``x.leaf`` names for ``x`` an instance of ``cls``: the method it runs, or
+        with ``overrides``, every method ``leaf`` of the class's hierarchy."""
+        if not self.overrides:
+            return self._inherited(cls, leaf)
+        return {self.class_methods[c][leaf] for c in self._hierarchy(cls)
+                if leaf in self.class_methods[c]}  # fmt: skip
+
     def _member(self, leaf: str, d: _Definition, receiver: str | None) -> set[str]:
         if receiver in ("self", "cls", "super") and d.cls is not None:
             # No such method in the hierarchy: an instance attribute, or a method of a base
             # from another package. Either way, not one of this package's methods.
-            return {self.class_methods[c][leaf] for c in self._hierarchy(d.cls)
-                    if leaf in self.class_methods[c]}  # fmt: skip
+            if receiver == "super" and not self.overrides:
+                return {m for base in sorted(self.bases.get(d.cls, set()))
+                        for m in self._inherited(base, leaf)}  # fmt: skip
+            return self._runs(d.cls, leaf)
         found = self.methods.get(leaf, set())
         if self.receivers == "unique" and (
             leaf in BUILTIN_METHODS or len({m.rsplit(".", 1)[0] for m in found}) != 1
@@ -395,8 +413,7 @@ class _Builder:
         if not rest:
             return targets
         if head in self._types and len(rest) == 1:
-            return {self.class_methods[c][rest[0]] for t in self._types[head]
-                    for c in self._hierarchy(t) if rest[0] in self.class_methods[c]}  # fmt: skip
+            return {m for t in self._types[head] for m in self._runs(t, rest[0])}
         if head in ("self", "cls") and d.cls is not None:
             return (
                 self._member(rest[0], d, head)
@@ -707,18 +724,28 @@ def _children(node: ast.AST) -> list[ast.AST]:
     return list(ast.iter_child_nodes(node))
 
 
-def build(files: Mapping[str, bytes], receivers: Receivers = "unique") -> Graph:
+def build(
+    files: Mapping[str, bytes], receivers: Receivers = "unique", overrides: bool = False
+) -> Graph:
     """The reference graph of a package from its source files, keyed by path (the paths
-    give the module names, as in the database).
+    give the module names, as in the database). The defaults are what the callers step
+    stores: an alert raised on the closure should rest on a likely call.
 
     ``receivers`` decides what ``x.m`` means when the type of ``x`` is unknown. ``"unique"``
     (the default) links it only to the one class in the package that defines ``m``, and not
-    at all when ``m`` is also a builtin type's method (``get``, ``read``, ``decode``): an
-    alert raised on the closure should rest on a likely call. ``"all"`` links it to every
-    method ``m``, which also follows dispatch through registries and plugins, as when
-    ``Image.open(f).load()`` reaches whichever decoder the file selects; most of a large
-    package can then reach one definition."""
-    return _Builder(files, receivers).build()
+    at all when ``m`` is also a builtin type's method (``get``, ``read``, ``decode``).
+    ``"all"`` links it to every method ``m``, which also follows dispatch through registries
+    and plugins, as when ``Image.open(f).load()`` reaches whichever decoder the file selects;
+    most of a large package can then reach one definition.
+
+    ``overrides`` decides what ``self.m`` means. By default it is the method an instance of
+    that very class runs, found through its ancestors. With ``True``, it is also every
+    override of ``m`` in the class's descendants, since ``self`` may be an instance of one:
+    a base's method calling ``self._open()`` then reaches every plugin's ``_open``, and a
+    mixin calling ``self.process_response()`` every middleware's, including those a user's
+    own subclass replaces. ``True`` misses fewer paths; ``False`` claims fewer that only a
+    particular subclass would take (ADR 0017)."""
+    return _Builder(files, receivers, overrides).build()
 
 
 class _Unreached:

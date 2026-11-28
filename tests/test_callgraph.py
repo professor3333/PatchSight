@@ -9,8 +9,8 @@ from patchsight.pipeline import callgraph
 from patchsight.pipeline.diffs.mapping import definitions
 
 
-def _graph(files: dict[str, str]) -> callgraph.Graph:
-    return callgraph.build({p: s.encode() for p, s in files.items()})
+def _graph(files: dict[str, str], overrides: bool = False) -> callgraph.Graph:
+    return callgraph.build({p: s.encode() for p, s in files.items()}, overrides=overrides)
 
 
 def _refers(files: dict[str, str], name: str) -> set[str]:
@@ -316,13 +316,43 @@ def test_builtin_receivers_stores_and_sibling_classes_are_not_references() -> No
     graph = _graph(files)
     assert graph.refers["pkg.m.literal"] == set()
     assert graph.refers["pkg.m.store"] == set()
-    # A typed receiver reaches its class's hierarchy: ancestors and descendants, no siblings.
+    # A typed receiver reaches the method its class runs: Client's own request.
     for name in ("typed_with", "typed_assign"):
-        assert graph.refers[f"pkg.m.{name}"] == {"pkg.m.Client", "pkg.m.Client.request",
-                                                 "pkg.m.Base.request"}  # fmt: skip
-    assert graph.refers["pkg.m.typed_hint"] == {"pkg.m.Client.request", "pkg.m.Base.request"}
-    # self.stream is an attribute (no such method): nothing; self.request is Async's own line.
-    assert graph.refers["pkg.m.Async.send"] == {"pkg.m.Async.request", "pkg.m.Base.request"}
+        assert graph.refers[f"pkg.m.{name}"] == {"pkg.m.Client", "pkg.m.Client.request"}
+    assert graph.refers["pkg.m.typed_hint"] == {"pkg.m.Client.request"}
+    # self.stream is an attribute (no such method): nothing; self.request is Async's own.
+    assert graph.refers["pkg.m.Async.send"] == {"pkg.m.Async.request"}
+    # With overrides, the class's whole hierarchy: ancestors and descendants, no siblings.
+    every = _graph(files, overrides=True)
+    assert every.refers["pkg.m.typed_hint"] == {"pkg.m.Client.request", "pkg.m.Base.request"}
+    assert every.refers["pkg.m.Async.send"] == {"pkg.m.Async.request", "pkg.m.Base.request"}
+
+
+def test_a_subclass_override_is_followed_only_with_overrides() -> None:
+    """A base's method that calls ``self.step()`` runs a subclass's ``step`` only for an
+    instance of that subclass: a user's own subclass of ``Base`` replaces it."""
+    files = {
+        "pkg/m.py": (
+            "class Base:\n    def run(self):\n        self.step()\n"
+            "    def step(self):\n        pass\n    def hook(self):\n        self.plugin()\n"
+            "class Cache(Base):\n    def step(self):\n        super().step()\n"
+            "    def plugin(self):\n        pass\n"
+        )
+    }
+    graph = _graph(files)
+    assert graph.refers["pkg.m.Base.run"] == {"pkg.m.Base.step"}
+    assert graph.refers["pkg.m.Base.hook"] == set()  # only a subclass defines plugin
+    assert graph.refers["pkg.m.Cache.step"] == {"pkg.m.Base.step"}  # super(): the base's
+    assert callgraph.closure(graph, {"pkg.m.Cache.plugin"}) == {
+        "pkg.m.Cache.plugin": "pkg.m.Cache.plugin"
+    }
+    every = _graph(files, overrides=True)
+    assert every.refers["pkg.m.Base.run"] == {"pkg.m.Base.step", "pkg.m.Cache.step"}
+    assert every.refers["pkg.m.Base.hook"] == {"pkg.m.Cache.plugin"}
+    assert set(callgraph.closure(every, {"pkg.m.Cache.plugin"})) == {
+        "pkg.m.Cache.plugin",
+        "pkg.m.Base.hook",
+    }
 
 
 def test_star_import_cycles_resolve_once_and_keep_private_names_private() -> None:

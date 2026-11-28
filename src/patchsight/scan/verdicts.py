@@ -107,6 +107,12 @@ def matches(reference: str, symbol: str, reexports: bool = True) -> bool:
     return not _is_dunder(r[-1]) or (len(r) >= 3 and len(s) >= 3 and r[-2] == s[-2])
 
 
+def guessed_reexport(reference: str, symbol: str) -> bool:
+    """Whether the two match only by the re-export rule: a guess, which a package that
+    defines ``reference`` as a different definition proves wrong."""
+    return matches(reference, symbol) and not matches(reference, symbol, reexports=False)
+
+
 def _is_dunder(name: str) -> bool:
     return len(name) > 4 and name.startswith("__") and name.endswith("__")
 

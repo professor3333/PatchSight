@@ -268,3 +268,35 @@ def test_a_record_keeps_the_package_names_for_its_callers_and_symbols(tmp_path: 
 def _capped_names(found: db.Callers) -> tuple[tuple[str, str], ...]:
     many = tuple((f"pkg.f{i}", "pkg.core._parse") for i in range(callers.MAX_CALLERS + 1))
     return callers._capped(found.model_copy(update={"callers": many})).names
+
+
+def test_a_record_keeps_the_definitions_that_only_share_a_name_with_its_symbols(
+    tmp_path: Path,
+) -> None:
+    files = {
+        "pkg/__init__.py": b"from .image import open\n",
+        "pkg/image.py": b"def open(fp):\n    pass\n",
+        "pkg/gd.py": b"from .core import _parse\ndef open(fp):\n    return _parse(fp)\n",
+        "pkg/core.py": CORE,
+        "pkg/one.py": b"class A:\n    def __init__(self):\n        pass\n",
+        "pkg/two.py": b"class B:\n    def __init__(self):\n        pass\n",
+    }
+    wheel = _wheel(files)
+    advisory = _advisory(_package(versions=("1.0",)))
+    record = _record("pkg.core._parse", "pkg.one.A.__init__").model_copy(
+        update={"entry_points": ("pkg.gd.open",)}
+    )
+    found, _ = callers.annotate(
+        [record], lambda v: [advisory],
+        _pypi(tmp_path, {"1.0": [_file("pkg-1.0-py3-none-any.whl", wheel)]}),
+        _fetcher(tmp_path, {"pkg-1.0-py3-none-any.whl": wheel}),
+    )  # fmt: skip
+    # pkg.image.open shares the package and final name with the entry point pkg.gd.open;
+    # pkg.two.B.__init__ does not collide with A.__init__, whose class differs (ADR 0015).
+    assert found[0].collisions == ("pkg.image.open",)
+
+
+def test_new_entry_points_make_stored_callers_stale(tmp_path: Path) -> None:
+    record = _record("pkg.core._parse")
+    moved = record.model_copy(update={"entry_points": ("pkg.gd.open",)})
+    assert db.symbols_digest(record) != db.symbols_digest(moved)  # collisions depend on them

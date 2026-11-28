@@ -72,8 +72,9 @@ from patchsight.names import module_for_path
 # follows subclass overrides. 3: module-level aliases and instances resolve, and the
 # package's own names for its definitions are recorded. 4: so do instance attributes
 # assigned a package class (``self._jws = PyJWS()``), and only the names users write are
-# recorded: a package's re-exports and instances, and aliases.
-REVISION = 4
+# recorded: a package's re-exports and instances, and aliases. 5: each record also keeps
+# the package's definitions that only share a name with its symbols (ADR 0018).
+REVISION = 5
 CONSTRUCTORS = ("__init__", "__new__", "__post_init__")
 # Methods of builtin types and files: ``x.get()`` or ``x.read()`` on an unknown ``x`` is as
 # likely a dict's or a file's as the package's, so a unique package method of that name is

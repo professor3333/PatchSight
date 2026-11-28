@@ -45,6 +45,7 @@ from patchsight.pipeline import callgraph
 from patchsight.pipeline.http import CacheMissError, HttpError, NotFoundError
 from patchsight.pipeline.ingest.osv import Advisory, AffectedPackage
 from patchsight.pipeline.pypi import PyPIClient
+from patchsight.scan.verdicts import guessed_reexport
 
 FILES_HOST = "files.pythonhosted.org"
 MAX_BYTES = 50_000_000  # largest file read
@@ -289,7 +290,9 @@ def annotate(
         file, base = planned
         sha = str(file["digests"]["sha256"])
         files[sha] = file
-        groups.setdefault(sha, []).append(_Item(index=index, base=base, seeds=_seeds(record)))
+        entry_points = frozenset(record.entry_points)
+        item = _Item(index=index, base=base, seeds=_seeds(record), entry_points=entry_points)
+        groups.setdefault(sha, []).append(item)
     # The largest files first, so that a slow one does not finish last.
     order = sorted(groups, key=lambda sha: (-int(files[sha].get("size", 0)), sha))
     read = downloads = downloaded = 0
@@ -346,16 +349,36 @@ class _Item(BaseModel):
     index: int
     base: dict[str, Any]
     seeds: frozenset[str]
+    entry_points: frozenset[str] = frozenset()
 
 
 def _capped(found: Callers) -> Callers:
     if len(found.callers) <= MAX_CALLERS:
         return found
-    return found.model_copy(update={"status": "too many callers", "callers": (), "names": ()})
+    return found.model_copy(
+        update={"status": "too many callers", "callers": (), "names": (), "collisions": ()}
+    )
 
 
 def _seeds(record: Record) -> frozenset[str]:
     return frozenset(s.qualified_name for s in record.symbols)
+
+
+def _collisions(graph: callgraph.Graph, wanted: Iterable[str]) -> tuple[str, ...]:
+    """The package's definitions that the scanner's re-export rule would match to one of
+    the names, though each is a definition of its own (ADR 0018). Kept for a record's
+    entry points, the names the model says users write: its symbols are every changed
+    definition, and would multiply the list by seven."""
+    by_end: dict[tuple[str, str], list[str]] = {}
+    for name in graph.kinds:
+        parts = name.split(".")
+        by_end.setdefault((parts[0], parts[-1]), []).append(name)
+    found = set()
+    for target in wanted:
+        parts = target.split(".")
+        found |= {d for d in by_end.get((parts[0], parts[-1]), ())
+                  if d != target and guessed_reexport(d, target)}  # fmt: skip
+    return tuple(sorted(found))
 
 
 def _plan(
@@ -417,8 +440,11 @@ def _run_group(
             continue
         toward = callgraph.closure(graph, seeds)
         edges = tuple(sorted((c, t) for c, t in toward.items() if c not in seeds))
-        results.append(_capped(Callers(**{**item.base, "seeds_found": len(seeds)}, status="ok",
-                                       callers=edges, names=_names(graph, toward))))  # fmt: skip
+        found = Callers(
+            **{**item.base, "seeds_found": len(seeds)}, status="ok", callers=edges,
+            names=_names(graph, toward), collisions=_collisions(graph, item.entry_points),
+        )  # fmt: skip
+        results.append(_capped(found))
     return results, not isinstance(graph, str), time.monotonic() - started
 
 

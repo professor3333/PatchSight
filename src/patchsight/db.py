@@ -121,6 +121,12 @@ CREATE TABLE callers_names (
     target TEXT NOT NULL,
     PRIMARY KEY (vulnerability, package, name, target)
 );
+CREATE TABLE callers_collisions (
+    vulnerability TEXT NOT NULL,
+    package TEXT NOT NULL,
+    name TEXT NOT NULL,
+    PRIMARY KEY (vulnerability, package, name)
+);
 """
 
 
@@ -176,7 +182,7 @@ class Callers(BaseModel):
 
     Each caller maps to the next definition on one path towards a symbol, so a path can be
     shown as evidence; a path ends at a record symbol. ``symbols_digest`` names the record
-    symbols they were computed for: once those change, the callers are stale.
+    symbols and entry points they were computed for: once those change, they are stale.
     ``graph_revision`` is the call graph's (``callgraph.REVISION``): callers from another
     revision are computed again, never reused. ``status`` is ``ok``, or why there are none
     (no affected release with files, too large, ...)."""
@@ -197,6 +203,10 @@ class Callers(BaseModel):
     # (a name the package binds, the caller, symbol or class holding one it names), sorted:
     # re-exports and module-level aliases, such as ("requests.get", "requests.api.get").
     names: tuple[tuple[str, str], ...] = ()
+    # The package's definitions that share the package and final name with a record's
+    # entry point but are other definitions (ADR 0018), sorted: PIL.Image.open for the
+    # entry point PIL.GdImageFile.open.
+    collisions: tuple[str, ...] = ()
 
 
 class SymbolEvidence(BaseModel):
@@ -248,10 +258,13 @@ class Record(BaseModel):
 
 
 def symbols_digest(record: Record) -> str:
-    """Names the record symbols a callers closure was computed for (``Callers``). Shared by
-    the pipeline, which stores it, and the scanner, which uses callers only while it holds."""
-    names = "\n".join(sorted({s.qualified_name for s in record.symbols}))
-    return hashlib.sha256(names.encode("utf-8")).hexdigest()
+    """Names the record symbols and entry points stored callers were computed for
+    (``Callers``): the closure follows the symbols, the collisions the entry points too.
+    Shared by the pipeline, which stores it, and the scanner, which uses callers only while
+    it holds."""
+    symbols = "\n".join(sorted({s.qualified_name for s in record.symbols}))
+    entry_points = "\n".join(sorted(set(record.entry_points)))
+    return hashlib.sha256(f"{symbols}\n\n{entry_points}".encode()).hexdigest()
 
 
 def write(
@@ -300,6 +313,10 @@ def write(
             connection.executemany(
                 "INSERT INTO callers_names VALUES (?, ?, ?, ?)",
                 [(c.vulnerability, c.package, name, target) for name, target in c.names],
+            )
+            connection.executemany(
+                "INSERT INTO callers_collisions VALUES (?, ?, ?)",
+                [(c.vulnerability, c.package, name) for name in c.collisions],
             )
         for record in records:
             count += 1
@@ -392,7 +409,9 @@ class SymbolDatabase:
         self._has_evidence = "evidence" in tables
         self._has_builds = "builds" in tables
         self._has_import_names = "import_names" in tables
-        self._has_callers = {"callers", "callers_source", "callers_names"} <= tables
+        self._has_callers = {
+            "callers", "callers_source", "callers_names", "callers_collisions"
+        } <= tables  # fmt: skip
 
     def close(self) -> None:
         self._connection.close()
@@ -453,12 +472,16 @@ class SymbolDatabase:
 
     @staticmethod
     def _callers(
-        row: tuple[Any, ...], edges: Iterable[tuple[str, str]], names: Iterable[tuple[str, str]]
+        row: tuple[Any, ...],
+        edges: Iterable[tuple[str, str]],
+        names: Iterable[tuple[str, str]],
+        collisions: Iterable[str],
     ) -> Callers:
         return Callers(
             vulnerability=row[0], package=row[1], symbols_digest=row[2], version=row[3],
             filename=row[4], sha256=row[5], status=row[6], seeds=row[7], seeds_found=row[8],
             graph_revision=row[9], callers=tuple(edges), names=tuple(names),
+            collisions=tuple(collisions),
         )  # fmt: skip
 
     def callers(self) -> dict[tuple[str, str], Callers]:
@@ -476,11 +499,19 @@ class SymbolDatabase:
             "SELECT vulnerability, package, name, target FROM callers_names ORDER BY 1, 2, 3, 4"
         ):
             names.setdefault((v, p), []).append((name, target))
+        collisions: dict[tuple[str, str], list[str]] = {}
+        for v, p, name in self._connection.execute(
+            "SELECT vulnerability, package, name FROM callers_collisions ORDER BY 1, 2, 3"
+        ):
+            collisions.setdefault((v, p), []).append(name)
         rows = self._connection.execute(self._CALLERS_SOURCE)
         return {
-            (r[0], r[1]): self._callers(r, edges.get((r[0], r[1]), ()), names.get((r[0], r[1]), ()))
+            (r[0], r[1]): self._callers(
+                r, edges.get((r[0], r[1]), ()), names.get((r[0], r[1]), ()),
+                collisions.get((r[0], r[1]), ()),
+            )
             for r in rows
-        }
+        }  # fmt: skip
 
     def callers_for(self, vulnerability: str, package: str) -> Callers | None:
         """One record's callers; none for an older database or a record not read."""
@@ -502,8 +533,16 @@ class SymbolDatabase:
             "ORDER BY name, target",
             key,
         ).fetchall()
+        collisions = self._connection.execute(
+            "SELECT name FROM callers_collisions WHERE vulnerability = ? AND package = ? "
+            "ORDER BY name",
+            key,
+        ).fetchall()
         return self._callers(
-            row, ((str(c), str(t)) for c, t in edges), ((str(n), str(t)) for n, t in names)
+            row,
+            ((str(c), str(t)) for c, t in edges),
+            ((str(n), str(t)) for n, t in names),
+            (str(n) for (n,) in collisions),
         )
 
     def build_status(self, vulnerability: str) -> str | None:

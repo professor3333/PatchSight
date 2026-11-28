@@ -109,7 +109,28 @@ def test_a_symbol_under_another_name_is_reached(tmp_path: Path) -> None:
     assert decide("A", "pyyaml", "5.3.1", record, usage).verdict == "UNKNOWN"
     alert = decide("A", "pyyaml", "5.3.1", record, usage, None, _callers(record))
     assert alert.verdict == "CALLED"
-    assert alert.path == (SYMBOL,)
+    assert alert.reason == "your code references a vulnerable symbol"  # rule 2, by its name
+    assert alert.matched == ("yaml.construct",)
+
+
+def test_a_name_the_package_defines_otherwise_is_not_a_re_export(tmp_path: Path) -> None:
+    # PIL.Image.open is Pillow's own function, not a re-export of the entry point
+    # PIL.GdImageFile.open; werkzeug.utils.safe_join is what an older Werkzeug called
+    # werkzeug.security.safe_join, and the release read no longer defines it.
+    record = _record(entry_points=("yaml.gd.open",))
+    usage = _usage(tmp_path, "import yaml\n\nyaml.image.open(f)\nyaml.old.open(g)\n")
+    without = decide("A", "pyyaml", "5.3.1", record, usage)
+    assert without.matched == ("yaml.image.open", "yaml.old.open")  # the guess, for both
+    stored = _callers(record).model_copy(update={"collisions": ("yaml.image.open",)})
+    alert = decide("A", "pyyaml", "5.3.1", record, usage, None, stored)
+    assert alert.verdict == "CALLED"
+    assert alert.matched == ("yaml.old.open",)  # a name the package does not define
+    (tmp_path / "b").mkdir()
+    only = _usage(tmp_path / "b", "import yaml\n\nyaml.image.open(f)\n")
+    assert decide("A", "pyyaml", "5.3.1", record, only, None, stored).verdict == "UNKNOWN"
+    # Stale callers: the guess for both again.
+    stale = stored.model_copy(update={"symbols_digest": "0" * 64})
+    assert decide("A", "pyyaml", "5.3.1", record, only, None, stale).verdict == "CALLED"
 
 
 def test_a_name_that_only_ends_like_a_caller_is_not_one(tmp_path: Path) -> None:

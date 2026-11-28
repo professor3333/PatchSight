@@ -4,7 +4,10 @@ Rules, in order:
 
 1. No record in the database: UNKNOWN.
 2. A reference in user code matches a vulnerable symbol or entry point: CALLED. This holds
-   at any confidence; low-confidence data may raise an alert's priority.
+   at any confidence; low-confidence data may raise an alert's priority. Where the
+   database stores the package's names and definitions for the record (ADR 0018), the
+   reference is first rewritten through the names, and the re-export rule below does not
+   match a name the package defines as another definition.
 2a. Otherwise, a reference matches one of the record's stored callers, a definition of the
    package that reaches a symbol through calls in the source of a release the record
    affects, or matches a symbol under a name the package binds to it: CALLED, with the
@@ -32,7 +35,9 @@ that directly contains the symbol; when it reaches into the symbol (``yaml.Loade
 ``yaml.Loader``); or when it has the same top-level package and the same final name, which
 catches re-exports such as ``pkg.load`` for ``pkg.loader.load``. When that final name is a
 dunder such as ``__init__``, the class before it must agree too, since every class has one
-(ADR 0015). False matches only raise priority.
+(ADR 0015). False matches only raise priority. That last rule is a guess at a re-export; where
+the database stores the package's definitions, it is not applied to a reference that names
+another of them.
 """
 
 import re
@@ -179,6 +184,10 @@ class Reach:
     toward: dict[str, str]  # each caller -> the next definition towards a symbol
     names: dict[str, tuple[str, ...]]  # a name the package binds -> what it names
     targets: frozenset[str]  # the callers and the record's symbols
+    version: str | None  # the release they were read from
+    # The package's definitions that the re-export rule would match to an entry point but
+    # that are other definitions (PIL.Image.open for PIL.GdImageFile.open).
+    collisions: frozenset[str] = frozenset()
 
     def canonical(self, reference: str) -> list[str]:
         """The reference as the package's definitions name it: its longest prefix that is a
@@ -203,7 +212,13 @@ def reaching(record: Record, callers: Callers | None) -> Reach | None:
         names[name].append(target)
     symbols = {s.qualified_name for s in record.symbols if s.module}
     toward = dict(callers.callers)
-    return Reach(toward, {n: tuple(t) for n, t in names.items()}, frozenset({*toward, *symbols}))
+    return Reach(
+        toward,
+        {n: tuple(t) for n, t in names.items()},
+        frozenset({*toward, *symbols}),
+        callers.version,
+        frozenset(callers.collisions),
+    )
 
 
 def call_path(caller: str, toward: Mapping[str, str]) -> tuple[str, ...]:
@@ -245,7 +260,17 @@ def decide(
     context = {"confidence": record.confidence, "vulnerable": tuple(sorted(set(qualified + bare)))}
 
     into_package = usage.references_into(roots)
-    hits = [r for r in into_package if hit(r.name, qualified, bare)]
+    reach = reaching(record, callers)
+    if reach is not None:
+        # The package's names and definitions are stored (ADR 0018): a reference is
+        # rewritten through the names, and the re-export rule is not applied to a name the
+        # package defines as something else.
+        index = NameIndex(qualified, reexports=False)
+        hits = [r for r in into_package
+                if any(index.match(c) or (c not in reach.collisions and hit(c, qualified, bare))
+                       for c in reach.canonical(r.name))]  # fmt: skip
+    else:
+        hits = [r for r in into_package if hit(r.name, qualified, bare)]
     if hits:
         return Alert(
             **base,
@@ -257,7 +282,7 @@ def decide(
             ),
             matched=tuple(sorted({h.name for h in hits})),
         )
-    if callers is not None and (reach := reaching(record, callers)) is not None:
+    if reach is not None:
         index = NameIndex(reach.targets, reexports=False)
         through = []
         for r in into_package:
@@ -278,7 +303,7 @@ def decide(
                 **context,
                 verdict="CALLED",
                 reason=f"your code references {nearest.name}, which reaches a vulnerable symbol "
-                f"(static call path in the source of {package} {callers.version})",
+                f"(static call path in the source of {package} {reach.version})",
                 evidence=tuple(
                     sorted({h[0].location for h in through}, key=lambda loc: (loc.path, loc.line))
                 ),

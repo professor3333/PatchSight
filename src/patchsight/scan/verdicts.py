@@ -5,6 +5,10 @@ Rules, in order:
 1. No record in the database: UNKNOWN.
 2. A reference in user code matches a vulnerable symbol or entry point: CALLED. This holds
    at any confidence; low-confidence data may raise an alert's priority.
+2a. Otherwise, a reference matches one of the record's stored callers, a definition of the
+   package that reaches a symbol through calls in the source of a release the record
+   affects: CALLED, with the call path as evidence (ADR 0017). Callers count only while
+   they were computed for the record's current symbols.
 3. The package is never imported: NOT_IMPORTED (transitive use is not analysed), unless an
    unparsable file mentions it, a file that starts processes names it (``exec gunicorn
    app.wsgi`` in a start script runs gunicorn's code without an import), a dynamic import
@@ -29,12 +33,13 @@ dunder such as ``__init__``, the class before it must agree too, since every cla
 """
 
 import re
-from collections.abc import Sequence
+from collections import defaultdict
+from collections.abc import Iterable, Mapping, Sequence
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict
 
-from patchsight.db import Record
+from patchsight.db import Callers, Record, symbols_digest
 from patchsight.names import KNOWN_IMPORT_NAMES, canonical_package_name, import_names
 from patchsight.scan.ast_scanner import Location, Usage
 
@@ -78,6 +83,9 @@ class Alert(BaseModel):
     referenced: tuple[str, ...] = ()
     confidence: str | None = None
     vulnerable: tuple[str, ...] = ()
+    # CALLED through a stored caller: the definition matched, then each next one on a
+    # static call path, ending at a vulnerable symbol.
+    path: tuple[str, ...] = ()
 
 
 def matches(reference: str, symbol: str) -> bool:
@@ -111,6 +119,63 @@ def hit(reference: str, qualified: Sequence[str], bare: Sequence[str]) -> bool:
     return any(matches(reference, t) for t in qualified) or reference.split(".")[-1] in bare
 
 
+class NameIndex:
+    """Matches references against many names at once, exactly as ``matches`` would one by
+    one, and says which name matched: a record can have hundreds of callers, and a project
+    hundreds of references into one package."""
+
+    def __init__(self, names: Iterable[str]) -> None:
+        self.names = set(names)
+        self._members: dict[str, list[str]] = defaultdict(list)
+        self._same_end: dict[tuple[str, str], list[str]] = defaultdict(list)
+        self._same_class_end: dict[tuple[str, str, str], list[str]] = defaultdict(list)
+        for name in sorted(self.names):
+            s = name.split(".")
+            self._same_end[(s[0], s[-1])].append(name)
+            if len(s) >= 3:
+                self._members[".".join(s[:-1])].append(name)
+                self._same_class_end[(s[0], s[-2], s[-1])].append(name)
+
+    def match(self, reference: str) -> str | None:
+        """The closest name the reference matches: itself, a member of it, a name it
+        reaches into (the longest), then a re-export; the first in sorted order on a tie."""
+        if reference in self.names:
+            return reference
+        r = reference.split(".")
+        if len(r) >= 2 and (members := self._members.get(reference)):
+            return members[0]
+        for k in range(len(r) - 1, 0, -1):
+            if (prefix := ".".join(r[:k])) in self.names:
+                return prefix
+        if len(r) < 2:
+            return None
+        if _is_dunder(r[-1]):
+            found = self._same_class_end.get((r[0], r[-2], r[-1])) if len(r) >= 3 else None
+        else:
+            found = self._same_end.get((r[0], r[-1]))
+        return found[0] if found else None
+
+
+def reaching(record: Record, callers: Callers | None) -> dict[str, str]:
+    """The record's stored callers, each mapped to the next definition towards a symbol.
+    None when they could not be computed, or were computed for other symbols."""
+    if callers is None or callers.status != "ok":
+        return {}
+    if callers.symbols_digest != symbols_digest(record):
+        return {}
+    return dict(callers.callers)
+
+
+def call_path(caller: str, toward: Mapping[str, str]) -> tuple[str, ...]:
+    """From a caller to a vulnerable symbol, following each next definition."""
+    path = [caller]
+    while (step := toward.get(path[-1])) is not None and step not in path:
+        path.append(step)
+    if path[-1] in toward:  # a cycle: a malformed table, shown as far as it goes
+        path.append(toward[path[-1]])
+    return tuple(path)
+
+
 def _mentions(sources: dict[str, str], roots: set[str]) -> list[str]:
     return sorted(
         path
@@ -126,8 +191,10 @@ def decide(
     record: Record | None,
     usage: Usage,
     status: str | None = None,
+    callers: Callers | None = None,
 ) -> Alert:
-    """``status``: the vulnerability's ledger status, which says why ``record`` is missing."""
+    """``status``: the vulnerability's ledger status, which says why ``record`` is missing.
+    ``callers``: the record's stored callers, if the database has them."""
     base = {"advisory": advisory, "package": package, "version": version}
     if record is None:
         return Alert(**base, verdict="UNKNOWN", reason=no_data_reason(advisory, status))
@@ -150,6 +217,24 @@ def decide(
             ),
             matched=tuple(sorted({h.name for h in hits})),
         )
+    if callers is not None and (toward := reaching(record, callers)):
+        index = NameIndex(toward)
+        through = [(r, found) for r in into_package if (found := index.match(r.name))]
+        if through:
+            nearest, caller = min(through, key=lambda h: (h[0].location.path, h[0].location.line))
+            return Alert(
+                **base,
+                **context,
+                verdict="CALLED",
+                reason=f"your code references {nearest.name}, which reaches a vulnerable symbol "
+                f"through the package's own calls (static call path in {package} "
+                f"{callers.version}'s source)",
+                evidence=tuple(
+                    sorted({r.location for r, _ in through}, key=lambda loc: (loc.path, loc.line))
+                ),
+                matched=tuple(sorted({r.name for r, _ in through})),
+                path=call_path(caller, toward),
+            )
 
     unparsable = _mentions(usage.unparsable, roots)
     computed = [d for d in usage.dynamic if d.root == "?"]

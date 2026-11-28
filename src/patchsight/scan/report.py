@@ -57,6 +57,8 @@ def render_text(
             lines.append(f"    {alert.reason}")
             if alert.matched:
                 lines.append(f"    matched: {', '.join(alert.matched)}")
+            if alert.path:
+                lines.append(f"    call path: {' -> '.join(alert.path)}")
             if verdict != "CALLED" and alert.referenced:
                 lines.append(f"    your code uses: {', '.join(alert.referenced[:8])}")
             if alert.evidence:
@@ -109,6 +111,8 @@ def _row(alert: Alert) -> str:
         where += f" +{len(alert.evidence) - 3}"
     if alert.verdict == "CALLED":
         detail = ", ".join(f"`{_cell(m)}`" for m in alert.matched[:4]) or "—"
+        if alert.path:
+            detail += f", which reaches `{_cell(alert.path[-1])}`"
     else:
         detail = _cell(alert.reason)
     return (

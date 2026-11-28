@@ -68,6 +68,8 @@ def _message(alert: Alert) -> str:
     )
     if alert.matched:
         text += f" Matched: {', '.join(alert.matched)}."
+    if alert.path:
+        text += f" Call path: {' -> '.join(alert.path)}."
     if alert.confidence:
         text += f" Symbol data: {alert.confidence} confidence."
     return text
@@ -136,6 +138,8 @@ def render_sarif(
                 "confidence": alert.confidence,
             },
         }
+        if alert.path:
+            result["properties"]["callPath"] = list(alert.path)
         if related:
             for number, location in enumerate(related, 1):
                 location["id"] = number

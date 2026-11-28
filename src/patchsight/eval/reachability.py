@@ -30,7 +30,7 @@ from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, computed_field
 
-from patchsight.db import FixCommitRef, Record, Symbol, SymbolDatabase
+from patchsight.db import Callers, FixCommitRef, Record, Symbol, SymbolDatabase
 from patchsight.names import canonical_package_name
 from patchsight.scan.ast_scanner import scan
 from patchsight.scan.verdicts import DISPLAY_ORDER, Verdict, decide
@@ -155,13 +155,16 @@ def run(
     directory: Path,
     records: Callable[[Advisory], Record | None],
     data: str,
+    callers: Callable[[Advisory], Callers | None] = lambda _: None,
 ) -> FixtureRun:
     outcomes = []
     for case in fixtures.cases:
         advisory = fixtures.advisories[case.advisory]
         record = records(advisory)
         package = canonical_package_name(advisory.package)
-        alert = decide(advisory.id, package, advisory.version, record, scan(directory / case.name))
+        usage = scan(directory / case.name)
+        found = callers(advisory) if record else None
+        alert = decide(advisory.id, package, advisory.version, record, usage, callers=found)
         outcomes.append(
             Outcome(
                 case=case.name,
@@ -191,8 +194,13 @@ def run_database(fixtures: Fixtures, directory: Path, database: Path) -> Fixture
             package = canonical_package_name(advisory.package)
             return symbols.record(key, package) if key else None
 
+        def stored(advisory: Advisory) -> Callers | None:
+            key = symbols.vulnerability_for(advisory.id)
+            package = canonical_package_name(advisory.package)
+            return symbols.callers_for(key, package) if key else None
+
         version = symbols.meta.get("db_version", "?")
-        return run(fixtures, directory, lookup, f"database {version}")
+        return run(fixtures, directory, lookup, f"database {version}", stored)
     finally:
         symbols.close()
 

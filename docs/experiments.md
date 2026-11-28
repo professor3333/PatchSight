@@ -29,6 +29,7 @@ Every controlled experiment on the extraction system, including the ones that lo
 | E11 | Self-hosted second opinion | gpt-oss-120b on Groq; gpt-oss-20b (MXFP4) on Kaggle | Safety view, frozen rule, dev: overall miss 8.3% and 10.0%; high-confidence misses 1 of 27 and 1 of 25 | Lost: fails ADR 0007's declared miss-rate criterion by one report; the Groq second opinion stays |
 | E12 | The switch-on batch, before and after | as shipped; with the output cap, smallest-first ordering and dotted entry points | Dev F1 0.676 to 0.688 at the same recall; all 280: 0.680 to 0.662 (precision 0.751 to 0.702, recall 0.621 to 0.628); miss rate unchanged; dead letters 1 to 0 | Measured; the PyPI shadow and its review decide the promotion |
 | E13 | Run-to-run determinism (hosted) | last night's Groq answers; the same prompts asked again the next morning | 5 of 7 answers byte-identical; every pick, entry point and cited hunk identical; 2 rationales reworded | Measured: Groq is reproducible in what it decides, not in its wording. The nightly's live drift check therefore compares decisions only ([ADR 0016](adr/0016-live-drift-check.md)). Its first two checks: 19 of 20 answers kept their decisions, 1 changed on an identical request |
+| E14 | The call graph behind stored callers, which raise an alert to CALLED | `self.m` follows every subclass override; it does not; it does not and unknown receivers are not linked either | Panel CALLED 163 to 546 with overrides and 428 without; the overrides gave hub paths (any Django middleware into the cache middleware). Rebuilt on the first graph's 383 new alerts, the second keeps 240 and the third 221 | Decided: no overrides, unknown receivers as #164 left them ([ADR 0017](adr/0017-stored-callers-mark-an-alert-called.md)) |
 
 ## E1: 4-bit self-hosted against hosted serving
 
@@ -459,3 +460,15 @@ The sample is small: five vulnerabilities on one pair of days ([recorded report]
 - **One changed.** In the runner, `GHSA-4vqv-7265-gm2w` (pypdf, 9 candidates) came back with only F9 vulnerable, where the pinned answer and the local re-ask both marked all 9.
 - **So Groq can change a decision on an identical request.** E13's sample was too small to show it. A single change is therefore a note, not drift, as ADR 0016 declared before either check.
 
+## E14: The call graph behind stored callers
+
+**Question.** A stored caller of a record raises an alert to CALLED ([ADR 0017](adr/0017-stored-callers-mark-an-alert-called.md)), so each link of its path should be a likely call. Which call graph gives that?
+
+**Factor.** How the graph resolves a method named on `self` and on an object of unknown type. Everything else is fixed: db-2026.11.27, the same release file per record, the scanner's matching rule, the 20-repository panel.
+
+**Result.** On the panel, against 163 CALLED alerts without callers:
+- **Following every subclass override** (`self.m` names the method of the class, its ancestors and its descendants): 546 CALLED. Many paths were ones only a particular subclass takes. Any Django middleware reached `UpdateCacheMiddleware.process_response`, which a user's own subclass replaces, and `Image.new` reached TIFF loading through `ImageFile.load`.
+- **Not following overrides** (`self.m` is the method an instance of that class runs): 428 CALLED. In a sample of 40 of the 265 new alerts, 35 are genuine, 2 doubtful and 3 false. The false ones are collisions of names under the re-export rule.
+- **Also not linking unknown receivers:** measured only by rebuilding the graphs behind the first graph's 383 new alerts, where the second graph keeps 240 and this one 221. The 19 it drops are mostly genuine (sqlparse's lexer, tornado's request parsing, aiohttp's response parser).
+
+**Decision.** The callers step stores the second graph (`callgraph.REVISION` 2). `build(overrides=True)` keeps the first for measuring what static analysis could miss, which the lifting of ADR 0008 needs.

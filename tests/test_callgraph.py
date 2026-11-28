@@ -421,3 +421,21 @@ def test_the_package_names_its_definitions_by() -> None:
     assert "pkg.sub" not in names  # a module, not a definition
     assert "pkg.Any" not in names  # another package's
     assert "pkg.api.get" not in names  # a definition's own name
+
+
+def test_an_attribute_assigned_a_package_class_has_its_methods() -> None:
+    files = {
+        "pkg/m.py": (
+            "class JWS:\n    def decode_complete(self):\n        pass\n"
+            "class JWT:\n    def __init__(self):\n        self._jws = JWS()\n"
+            "    def decode_complete(self):\n        return self._jws.decode_complete()\n"
+            "    def other(self):\n        return self._unknown.decode_complete()\n"
+            "class Strict(JWT):\n    def check(self):\n        return self._jws.decode_complete()\n"
+        )
+    }
+    graph = _graph(files)
+    # decode_complete is defined by two classes, so an unknown receiver links neither; the
+    # attribute's class gives the one that runs, in the class and its subclasses.
+    assert graph.refers["pkg.m.JWT.decode_complete"] == {"pkg.m.JWS.decode_complete"}
+    assert graph.refers["pkg.m.Strict.check"] == {"pkg.m.JWS.decode_complete"}
+    assert graph.refers["pkg.m.JWT.other"] == set()

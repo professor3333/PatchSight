@@ -24,7 +24,8 @@ it in one of these ways:
   class, its ancestors and its descendants (not its siblings). None there: an instance
   attribute, or a method of another package's base, so nothing;
 * ``x.m`` where ``x`` is known to hold a package class (``x = Cls(...)``, ``with Cls(...) as
-  x``, or a parameter annotated ``x: Cls``): likewise, for that class;
+  x``, or a parameter annotated ``x: Cls``): likewise, for that class. So is ``self.x.m``
+  where a method of the class or an ancestor assigns ``self.x = Cls(...)``;
 * ``x.m`` on anything else: the type of ``x`` is not known. By default only the one class
   that defines ``m`` is linked, if exactly one does and ``m`` is no builtin type's method;
   with ``receivers="all"``, every method ``m`` (see ``build``). A literal receiver
@@ -69,8 +70,9 @@ from patchsight.names import module_for_path
 # Bumped whenever a change alters what the graph links or what is stored from it: stored
 # callers of another revision are computed again, never reused. 2: ``self.m`` no longer
 # follows subclass overrides. 3: module-level aliases and instances resolve, and the
-# package's own names for its definitions are recorded.
-REVISION = 3
+# package's own names for its definitions are recorded. 4: so do instance attributes
+# assigned a package class (``self._jws = PyJWS()``).
+REVISION = 4
 CONSTRUCTORS = ("__init__", "__new__", "__post_init__")
 # Methods of builtin types and files: ``x.get()`` or ``x.read()`` on an unknown ``x`` is as
 # likely a dict's or a file's as the package's, so a unique package method of that name is
@@ -195,6 +197,31 @@ def _bind_imports(scope: _Scope, statements: Iterable[ast.stmt]) -> None:
                     scope.imports[alias.asname or alias.name] = f"{source}.{alias.name}"
 
 
+def _attribute_calls(node: ast.FunctionDef | ast.AsyncFunctionDef) -> Iterator[tuple[str, str]]:
+    """``self.x = Cls(...)`` in a method, with ``self`` its first parameter: (x, the dotted
+    name called)."""
+    args = (*node.args.posonlyargs, *node.args.args)
+    if not args:
+        return
+    first = args[0].arg
+    for child in ast.walk(node):
+        if isinstance(child, ast.Assign):
+            targets, value = child.targets, child.value
+        elif isinstance(child, ast.AnnAssign) and child.value is not None:
+            targets, value = [child.target], child.value
+        else:
+            continue
+        if not isinstance(value, ast.Call) or (called := _dotted(value.func)) is None:
+            continue
+        for target in targets:
+            if (
+                isinstance(target, ast.Attribute)
+                and isinstance(target.value, ast.Name)
+                and target.value.id == first
+            ):
+                yield target.attr, called
+
+
 def _private(dotted: str) -> bool:
     """Whether a part of a dotted name is private: ``_x``, though not a dunder."""
     return any(p.startswith("_") and not p.endswith("__") for p in dotted.split("."))
@@ -252,6 +279,9 @@ class _Builder:
         # parameters. Syntax trees are dropped; build() parses one module at a time again.
         self.files = files
         self.module_paths: dict[str, str] = {}  # a module's file; a later path wins
+        # Per class, ``self.x = Cls(...)`` in its methods: (x, module, the dotted name called).
+        self._attribute_calls: dict[str, list[tuple[str, str, str]]] = defaultdict(list)
+        self._attribute_types: dict[str, dict[str, set[str]]] = {}
         self.module_defs: dict[str, list[str]] = {}
         found: dict[str, list[_Definition]] = {}
         for path in sorted(files):
@@ -276,6 +306,9 @@ class _Builder:
                     self.graph.params[d.qualified] = tuple(
                         a.arg for a in (*node.args.posonlyargs, *node.args.args)
                     )
+                if d.cls is not None and isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
+                    for attribute, called in _attribute_calls(node):
+                        self._attribute_calls[d.cls].append((attribute, module, called))
                 d.node = None
                 found[module].append(d)
         for module, definitions in found.items():
@@ -409,6 +442,21 @@ class _Builder:
                             )
         return names
 
+    def _attributes(self, cls: str) -> dict[str, set[str]]:
+        """The package classes a class's instances hold in attributes, from ``self.x =
+        Cls(...)`` in its methods and its ancestors'."""
+        if cls in self._attribute_types:
+            return self._attribute_types[cls]
+        held: dict[str, set[str]] = {}
+        self._attribute_types[cls] = held  # an inheritance cycle stops here
+        for base in sorted(self.bases.get(cls, set())):
+            for attribute, classes in self._attributes(base).items():
+                held.setdefault(attribute, set()).update(classes)
+        for attribute, module, called in self._attribute_calls.get(cls, ()):
+            if classes := self._classes_called(module, called, 0):
+                held.setdefault(attribute, set()).update(classes)
+        return held
+
     def _leaves(self, cls: str) -> set[str]:
         """The method names an instance of ``cls`` has: its own and its ancestors'."""
         leaves: set[str] = set()
@@ -515,6 +563,9 @@ class _Builder:
         if head in self._types and len(rest) == 1:
             return {m for t in self._types[head] for m in self._runs(t, rest[0])}
         if head in ("self", "cls") and d.cls is not None:
+            if len(rest) == 2 and (held := self._attributes(d.cls).get(rest[0])):
+                # self._jws = PyJWS(...) in a method: self._jws.decode is PyJWS's.
+                return {m for cls in held for m in self._runs(cls, rest[1])}
             return (
                 self._member(rest[0], d, head)
                 if len(rest) == 1

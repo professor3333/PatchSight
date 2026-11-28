@@ -71,7 +71,8 @@ from patchsight.names import module_for_path
 # callers of another revision are computed again, never reused. 2: ``self.m`` no longer
 # follows subclass overrides. 3: module-level aliases and instances resolve, and the
 # package's own names for its definitions are recorded. 4: so do instance attributes
-# assigned a package class (``self._jws = PyJWS()``).
+# assigned a package class (``self._jws = PyJWS()``), and only the names users write are
+# recorded: a package's re-exports and instances, and aliases.
 REVISION = 4
 CONSTRUCTORS = ("__init__", "__new__", "__post_init__")
 # Methods of builtin types and files: ``x.get()`` or ``x.read()`` on an unknown ``x`` is as
@@ -417,21 +418,25 @@ class _Builder:
         return {c for c in found if self.graph.kinds.get(c) == "class"}
 
     def _names(self) -> dict[str, set[str]]:
-        """Every public name a module binds to a package definition other than its own:
-        imports and star imports (re-exports), module-level aliases, and the methods of
-        module-level instances (``django.conf.settings.configure``). A name with a private
-        part (``pkg._compat.x``, ``pkg.api._helper``) is left out: users write a package's
-        public names, and a definition's own name needs no other."""
+        """The public names a package binds to its definitions other than their own: what a
+        package's ``__init__`` imports or star-imports (its re-exports) and the methods of
+        the instances it creates (``django.conf.settings.configure``), and module-level
+        aliases in any module (``jwt.api_jws.decode = _obj.decode``). Left out: a plain
+        module's imports, which it makes for its own use, and any name with a private part
+        (``pkg._compat.x``). Users write a package's public names, and a definition's own
+        name needs no other."""
         names: dict[str, set[str]] = {}
         for module, scope in sorted(self.scopes.items()):
             if _private(module):
                 continue
-            bound = {*scope.imports, *self.star_names.get(module, {}), *scope.assigned}
+            bound = set(scope.assigned)
+            if scope.is_package:
+                bound |= {*scope.imports, *self.star_names.get(module, {})}
             for name in sorted(bound - set(scope.definitions)):
                 dotted = f"{module}.{name}"
                 if not _private(name) and (found := self.resolve_dotted(dotted) - {dotted}):
                     names[dotted] = found
-            for name, called in sorted(scope.instances.items()):
+            for name, called in sorted(scope.instances.items() if scope.is_package else ()):
                 if name in scope.definitions or name in scope.imports or _private(name):
                     continue
                 for cls in sorted(self._classes_called(module, called, 0)):

@@ -393,7 +393,7 @@ def test_the_package_names_its_definitions_by() -> None:
     files = {
         "pkg/__init__.py": (
             "from .api import get\nfrom .pool import *\nfrom .tokens import decode\n"
-            "from . import sub\nfrom typing import Any\n"
+            "from . import sub\nfrom typing import Any\nfrom .tokens import JWT\nclient = JWT()\n"
         ),
         "pkg/api.py": (
             "from .core import request\ndef get(url):\n    return request(url)\nfetch = get\n"
@@ -405,7 +405,7 @@ def test_the_package_names_its_definitions_by() -> None:
         "pkg/tokens.py": (
             "class Base:\n    def verify(self):\n        pass\n"
             "class JWT(Base):\n    def decode(self):\n        pass\n"
-            "_obj = JWT()\ndecode = _obj.decode\nclient = JWT()\n"
+            "_obj = JWT()\ndecode = _obj.decode\nlocal = JWT()\n"
         ),
         "pkg/sub.py": "",
     }
@@ -413,9 +413,10 @@ def test_the_package_names_its_definitions_by() -> None:
     assert names["pkg.get"] == {"pkg.api.get"}  # a re-export
     assert names["pkg.Pool"] == {"pkg.pool.Pool"}  # through a star import
     assert names["pkg.decode"] == {"pkg.tokens.JWT.decode"}  # a bound method, re-exported
-    assert names["pkg.api.fetch"] == {"pkg.api.get"}  # a module-level alias
-    assert names["pkg.api.request"] == {"pkg.core.request"}  # imported for its own use
-    assert names["pkg.tokens.client.verify"] == {"pkg.tokens.Base.verify"}  # an instance's
+    assert names["pkg.api.fetch"] == {"pkg.api.get"}  # a module-level alias, anywhere
+    assert names["pkg.client.verify"] == {"pkg.tokens.Base.verify"}  # the package's instance
+    assert "pkg.api.request" not in names  # a plain module's import, for its own use
+    assert "pkg.tokens.local.verify" not in names  # a plain module's instance
     assert "pkg.tokens._obj.decode" not in names  # a private name
     assert "pkg._Hidden" not in names  # a star import binds public names only
     assert "pkg.sub" not in names  # a module, not a definition

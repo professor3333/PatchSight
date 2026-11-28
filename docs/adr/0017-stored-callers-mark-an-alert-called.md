@@ -21,7 +21,7 @@ The callers step (#165 to #168, `pipeline/callers.py`) stores, for each record, 
   - An unknown receiver `x.m` is linked only to the one package class that defines `m`, and never for a builtin type's method name. This was #164.
   - `self.m` is the method an instance of that very class runs, its own or the nearest ancestor's, and never a subclass's override. A base method calling `self.process_response()` runs a subclass's override only for an instance of that subclass, and a user's own subclass replaces it. `callgraph.build(overrides=True)` keeps the wider graph for measuring what static analysis could miss.
 - **Each stored entry records the graph revision it was computed with** (`callgraph.REVISION`, now 2). An entry from another revision is computed again, never reused.
-- **Matching** is the rule that matches symbols, unchanged:
+- **Matching** (superseded the same day for callers: see [the amendment](#amendment-2026-11-28-the-packages-own-names)) is the rule that matches symbols, unchanged:
   - the same name;
   - the containing class or module;
   - a name inside it;
@@ -100,6 +100,62 @@ The rule would also need each caller's kind stored. The better fix is the follow
   - a subclass's override.
 
   Nor does it match a reference to a re-exported class against callers that are its methods: `urllib3.PoolManager` does not match `urllib3.poolmanager.PoolManager.urlopen`. Symbols have the same gap. An alert these would have raised keeps its verdict.
-- **Follow-up: store real re-exports.** The callers step already resolves each package's imports, re-exports and star imports. Storing the public names a caller is reachable by would make a name-based re-export guess unnecessary for callers, removing the collisions and the re-exported class gap together. That covers `requests.get` for `requests.api.get`, and module-level aliases such as `jwt.decode`. It is the source-reading approach #141 proposed for symbols.
+- **Follow-up: store real re-exports** (done the same day: see the amendment). The callers step already resolves each package's imports, re-exports and star imports. Storing the public names a caller is reachable by would make a name-based re-export guess unnecessary for callers, removing the collisions and the re-exported class gap together. That covers `requests.get` for `requests.api.get`, and module-level aliases such as `jwt.decode`. It is the source-reading approach #141 proposed for symbols.
 - **Users see this only once a published database stores callers.** The nightly's database rewrites (`update-db`, `merge-llm`, `import-names`) do not carry the tables yet. Carrying them, and adding the callers step to the nightly, changes the nightly path, so it waits until the 14-night count ends on 2026-12-02. The published CLI 0.9.0 reads a database with the tables normally and ignores them.
 - **Not decided here:** using callers to *lower* an alert. "No stored caller is referenced" would be part of a rule for IMPORTED_NOT_CALLED, which is the lifting of ADR 0008 (#162). That needs the wider graph (`overrides=True`, unknown receivers to every method), its own rule chosen on design data, and one evaluation on unseen data.
+
+## Amendment, 2026-11-28: the package's own names
+
+This is the follow-up named above, done the same day.
+
+**Decision.**
+- **The call graph records the names a package binds to its definitions** (`Graph.names`):
+  - what each package `__init__` imports or star-imports, which are its re-exports;
+  - the methods of the instances an `__init__` creates;
+  - module-level aliases in any module.
+
+  Private names and a plain module's imports, which it makes for its own use, are left out.
+- **It also resolves three kinds of assignment, in calls as in names** (revision 4):
+  - module-level aliases (`connect = Connect`, `decode = _jwt_global_obj.decode`);
+  - module-level instances (`_jwt_global_obj = PyJWT()`);
+  - instance attributes assigned a package class (`self._jws = PyJWS(...)`).
+
+  Before, `jwt.decode` resolved to nothing.
+- **The callers step stores, per record, the names that point at a caller, a symbol or a class that holds one** (`callers_names`).
+- **Rule 2a rewrites each reference through those names**, longest prefix first: `urllib3.PoolManager.urlopen` becomes `urllib3.poolmanager.PoolManager.urlopen`. It then matches the result against the callers and the record's symbols by the same name, a member, or a name inside one.
+  - The re-export rule is no longer used for callers, so two names that merely end alike no longer match.
+  - Symbols keep their own rule (rule 2).
+
+**Evidence.** The same shadow and the same panel, measured against the re-export rule:
+
+| | Re-export rule | The package's own names |
+|---|---:|---:|
+| Records with callers | 2,280 | 2,293 |
+| Callers stored | 85,105 | 87,627 |
+| Names stored | none | 15,073 |
+| Gzip asset (db-2026.11.27 alone: 4.3 MB) | 8.2 MB | 9.0 MB |
+| Fixtures given the expected verdict, of 58 | 31 | 34 |
+| Panel: CALLED, of 3,545 (db-2026.11.27 alone: 163) | 428 | 474 |
+
+- **Fixtures:** still 0 false suppressions. Three programs that call the vulnerable code become CALLED:
+  - `requests-session`;
+  - `urllib3-poolmanager`, the re-exported class gap;
+  - `langgraph-store-search`.
+- **Panel: 10 alerts lost.**
+  - 8 are collisions: Django's `default_storage.save` against `LayerMapping.save` and `PasswordResetForm.save`, GeoDjango's `DatabaseWrapper` and `Length`, and strawberry's two `GraphQLView`s.
+  - 2 are uses through dispatch that only a collision had caught: authlib's `JsonWebKey.import_key` and dnspython's `resolver.query`.
+- **Panel: 56 alerts gained.** Most are a re-exported class whose method is a caller, such as `aiohttp.ClientSession` reaching `ClientSession._request` (22 aiohttp alerts). Others are functions reached under their package names, such as `cryptography.hazmat.primitives.serialization.load_ssh_private_key`.
+- **PyJWT's 27 alerts stay, now with real paths:** `jwt.decode -> PyJWT.decode -> PyJWT.decode_complete -> PyJWS.decode_complete -> PyJWS._load`. Under the re-export rule they had matched `PyJWS.decode` by name.
+- **A sample of 40 of the 311 new alerts** (seed 20261128), each path read against the package's code: 33 genuine (Wilson 68–91%), 7 doubtful, 0 false.
+  - 5 doubtful alerts match only a class named in the code, such as `QuerySet` or `PIL.Image.Image` in a type hint, to one of its methods.
+  - 1 rests on a guessed receiver.
+  - 1 reaches an exception class that is the record's symbol.
+- **Scan time** for the 200+-dependency repositories: p50 1.95 s, p95 5.50 s.
+- **Keeping a plain module's own imports too** stored 67,470 names (10.9 MB gzip). Restricting to the names users write kept every fixture change and cost 2 panel alerts. Both are Django's `AbstractBaseUser`, which Django re-exports through the plain module `django.contrib.auth.models`.
+
+**Consequences.**
+- **A collision of names no longer raises an alert through callers.** A wrong CALLED can still come from two sources:
+  - the call graph's over-approximation: a guessed receiver, or a class body that only names a function;
+  - a class named only in a type hint, matched to its methods by membership.
+- **Re-exports the source does not show are missed:** a package `__getattr__` that loads names lazily, names added through `globals()`, and a plain module's re-exports. Missing one leaves the alert as it would be without callers.
+- **Symbols still match by the re-export rule** (rule 2), because most records have no stored names. Rule 2a does reach a symbol under a name the package binds to it.

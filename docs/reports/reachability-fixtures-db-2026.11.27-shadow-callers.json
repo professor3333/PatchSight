@@ -9,7 +9,7 @@
       "form": "module attribute",
       "expected": "CALLED",
       "verdict": "CALLED",
-      "reason": "your code references yaml.full_load, which reaches a vulnerable symbol through the package's own calls (static call path in pyyaml 5.3.1's source)",
+      "reason": "your code references yaml.full_load, which reaches a vulnerable symbol (static call path in the source of pyyaml 5.3.1)",
       "confidence": "low",
       "false_suppression": false,
       "as_expected": true
@@ -22,7 +22,7 @@
       "form": "import alias, class passed as an argument",
       "expected": "CALLED",
       "verdict": "CALLED",
-      "reason": "your code references yaml.load, which reaches a vulnerable symbol through the package's own calls (static call path in pyyaml 5.3.1's source)",
+      "reason": "your code references yaml.FullLoader, which reaches a vulnerable symbol (static call path in the source of pyyaml 5.3.1)",
       "confidence": "low",
       "false_suppression": false,
       "as_expected": true
@@ -74,7 +74,7 @@
       "form": "getattr with a constant name",
       "expected": "CALLED",
       "verdict": "CALLED",
-      "reason": "your code references yaml.full_load, which reaches a vulnerable symbol through the package's own calls (static call path in pyyaml 5.3.1's source)",
+      "reason": "your code references yaml.full_load, which reaches a vulnerable symbol (static call path in the source of pyyaml 5.3.1)",
       "confidence": "low",
       "false_suppression": false,
       "as_expected": true
@@ -139,7 +139,7 @@
       "form": "re-exported through the project's own module",
       "expected": "CALLED",
       "verdict": "CALLED",
-      "reason": "your code references yaml.full_load, which reaches a vulnerable symbol through the package's own calls (static call path in pyyaml 5.3.1's source)",
+      "reason": "your code references yaml.full_load, which reaches a vulnerable symbol (static call path in the source of pyyaml 5.3.1)",
       "confidence": "low",
       "false_suppression": false,
       "as_expected": true
@@ -152,7 +152,7 @@
       "form": "re-exported, then imported relatively",
       "expected": "CALLED",
       "verdict": "CALLED",
-      "reason": "your code references yaml.full_load, which reaches a vulnerable symbol through the package's own calls (static call path in pyyaml 5.3.1's source)",
+      "reason": "your code references yaml.full_load, which reaches a vulnerable symbol (static call path in the source of pyyaml 5.3.1)",
       "confidence": "low",
       "false_suppression": false,
       "as_expected": true
@@ -165,7 +165,7 @@
       "form": "named only in a type annotation",
       "expected": "CALLED",
       "verdict": "CALLED",
-      "reason": "your code references yaml.FullLoader, which reaches a vulnerable symbol through the package's own calls (static call path in pyyaml 5.3.1's source)",
+      "reason": "your code references yaml.FullLoader, which reaches a vulnerable symbol (static call path in the source of pyyaml 5.3.1)",
       "confidence": "low",
       "false_suppression": false,
       "as_expected": true
@@ -295,7 +295,7 @@
       "form": "public entry point",
       "expected": "CALLED",
       "verdict": "CALLED",
-      "reason": "your code references werkzeug.utils.send_from_directory, which reaches a vulnerable symbol through the package's own calls (static call path in werkzeug 3.0.5's source)",
+      "reason": "your code references werkzeug.utils.send_from_directory, which reaches a vulnerable symbol (static call path in the source of werkzeug 3.0.5)",
       "confidence": "low",
       "false_suppression": false,
       "as_expected": true
@@ -334,7 +334,7 @@
       "form": "public entry point",
       "expected": "CALLED",
       "verdict": "CALLED",
-      "reason": "your code references requests.get, which reaches a vulnerable symbol through the package's own calls (static call path in requests 2.30.0's source)",
+      "reason": "your code references requests.get, which reaches a vulnerable symbol (static call path in the source of requests 2.30.0)",
       "confidence": "low",
       "false_suppression": false,
       "as_expected": true
@@ -346,11 +346,11 @@
       "calls": true,
       "form": "class of a public entry point",
       "expected": "CALLED",
-      "verdict": "UNKNOWN",
-      "reason": "symbol data is low confidence, so 'not called' cannot be claimed",
+      "verdict": "CALLED",
+      "reason": "your code references requests.Session, which reaches a vulnerable symbol (static call path in the source of requests 2.30.0)",
       "confidence": "low",
       "false_suppression": false,
-      "as_expected": false
+      "as_expected": true
     },
     {
       "case": "requests-structures-only",
@@ -372,11 +372,11 @@
       "calls": true,
       "form": "public entry point",
       "expected": "CALLED",
-      "verdict": "UNKNOWN",
-      "reason": "symbol data is low confidence, so 'not called' cannot be claimed",
+      "verdict": "CALLED",
+      "reason": "your code references urllib3.PoolManager, which reaches a vulnerable symbol (static call path in the source of urllib3 2.0.5)",
       "confidence": "low",
       "false_suppression": false,
-      "as_expected": false
+      "as_expected": true
     },
     {
       "case": "urllib3-retry-reexport",
@@ -620,7 +620,7 @@
       "form": "inherited method through a subclass",
       "expected": "CALLED",
       "verdict": "CALLED",
-      "reason": "your code references paramiko.RSAKey.write_private_key_file, which reaches a vulnerable symbol through the package's own calls (static call path in paramiko 2.10.0's source)",
+      "reason": "your code references paramiko.RSAKey.write_private_key_file, which reaches a vulnerable symbol (static call path in the source of paramiko 2.10.0)",
       "confidence": "low",
       "false_suppression": false,
       "as_expected": true
@@ -710,11 +710,11 @@
       "calls": true,
       "form": "import name differs; package in a monorepo",
       "expected": "CALLED",
-      "verdict": "UNKNOWN",
-      "reason": "symbol data is low confidence, so 'not called' cannot be claimed",
+      "verdict": "CALLED",
+      "reason": "your code references langgraph.store.sqlite.SqliteStore, which reaches a vulnerable symbol (static call path in the source of langgraph-checkpoint-sqlite 2.0.10)",
       "confidence": "low",
       "false_suppression": false,
-      "as_expected": false
+      "as_expected": true
     },
     {
       "case": "langgraph-saver-only",

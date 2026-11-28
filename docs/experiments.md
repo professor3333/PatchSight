@@ -30,6 +30,7 @@ Every controlled experiment on the extraction system, including the ones that lo
 | E12 | The switch-on batch, before and after | as shipped; with the output cap, smallest-first ordering and dotted entry points | Dev F1 0.676 to 0.688 at the same recall; all 280: 0.680 to 0.662 (precision 0.751 to 0.702, recall 0.621 to 0.628); miss rate unchanged; dead letters 1 to 0 | Measured; the PyPI shadow and its review decide the promotion |
 | E13 | Run-to-run determinism (hosted) | last night's Groq answers; the same prompts asked again the next morning | 5 of 7 answers byte-identical; every pick, entry point and cited hunk identical; 2 rationales reworded | Measured: Groq is reproducible in what it decides, not in its wording. The nightly's live drift check therefore compares decisions only ([ADR 0016](adr/0016-live-drift-check.md)). Its first two checks: 19 of 20 answers kept their decisions, 1 changed on an identical request |
 | E14 | The call graph behind stored callers, which raise an alert to CALLED | `self.m` follows every subclass override; it does not; it does not and unknown receivers are not linked either | Panel CALLED 163 to 546 with overrides and 428 without; the overrides gave hub paths (any Django middleware into the cache middleware). Rebuilt on the first graph's 383 new alerts, the second keeps 240 and the third 221 | Decided: no overrides, unknown receivers as #164 left them ([ADR 0017](adr/0017-stored-callers-mark-an-alert-called.md)) |
+| E15 | Matching a reference to stored callers | by name: same package and final name (the re-export rule); through the names the package binds | Panel CALLED 428 and 474; 8 collisions gone, 56 alerts gained, 2 dispatch uses lost; sample of 40: 33 genuine, 7 doubtful, 0 false | Decided: the package's names ([ADR 0017](adr/0017-stored-callers-mark-an-alert-called.md#amendment-2026-11-28-the-packages-own-names)) |
 
 ## E1: 4-bit self-hosted against hosted serving
 
@@ -472,3 +473,23 @@ The sample is small: five vulnerabilities on one pair of days ([recorded report]
 - **Also not linking unknown receivers:** measured only by rebuilding the graphs behind the first graph's 383 new alerts, where the second graph keeps 240 and this one 221. The 19 it drops are mostly genuine (sqlparse's lexer, tornado's request parsing, aiohttp's response parser).
 
 **Decision.** The callers step stores the second graph (`callgraph.REVISION` 2). `build(overrides=True)` keeps the first for measuring what static analysis could miss, which the lifting of ADR 0008 needs.
+
+## E15: Matching a reference to stored callers
+
+**Question.** Callers are definition names (`requests.api.get`), and users write the names a package exposes (`requests.get`). How should one be matched to the other?
+
+**Factor.** The matching. The same shadow database, the same panel and the same call graph, except that the names also needed the graph to resolve module-level assignments and instance attributes (revision 4).
+- **By name.** The rule symbols use, whose re-export clause matches the same package and final name.
+- **Through the names the package binds.** The callers step stores what each `__init__` re-exports, the methods of the instances it creates, and module-level aliases. The scanner rewrites the reference through them, then matches without the re-export clause.
+
+**Result.**
+- **By name:** 428 CALLED. The paths in a sample of 40 included collisions such as `django.conf.settings.DATABASES.get` against `RedirectView.get`.
+- **Through the package's names:** 474 CALLED.
+  - Lost: 8 collisions, and 2 uses through dispatch that only a collision had caught.
+  - Gained: 56, mostly re-exported classes whose methods are callers.
+  - In a fresh sample of 40: 33 genuine, 7 doubtful, 0 false.
+  - Fixtures: 31 to 34 of 58 as expected.
+  - The asset grows from 8.2 to 9.0 MB.
+- **Keeping a plain module's own imports too** stored 67,470 names (10.9 MB gzip). Leaving them out cost 2 panel alerts: Django's `AbstractBaseUser`, which `django.contrib.auth.models` re-exports.
+
+**Decision.** Match through the package's names, as the amendment to ADR 0017 records.
